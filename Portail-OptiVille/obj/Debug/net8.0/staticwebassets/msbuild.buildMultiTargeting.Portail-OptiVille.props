@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Portail-OptiVille.props" />
+</Project>

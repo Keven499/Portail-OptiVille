@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "Portail-OptiVille/1.0.0": {
+        "runtime": {
+          "Portail-OptiVille.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Portail-OptiVille/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
