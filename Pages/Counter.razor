@@ -1,12 +1,13 @@
 ﻿@page "/counter"
-
+@using Portail_OptiVille.Data.Utilities
+@inject MailManager _mailManager
 <PageTitle>Counter</PageTitle>
 
 <h1>Counter</h1>
 
 <p role="status">Current count: @currentCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<button class="btn btn-primary" @onclick="SendMail">Click me</button>
 
 @code {
     private int currentCount = 0;
@@ -14,5 +15,9 @@
     private void IncrementCount()
     {
         currentCount++;
+    }
+    private void SendMail()
+    {
+        _mailManager.SendMail("kevenmichel721@gmail.com", "Test", "Test");
     }
 }

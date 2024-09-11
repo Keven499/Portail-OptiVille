@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
 using Portail_OptiVille.Data;
 using Portail_OptiVille.Data.Models;
+using Portail_OptiVille.Data.Utilities;
+using static Portail_OptiVille.Data.Utilities.MailManager;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,12 +13,21 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 
+#region Mail
+//Envoie de mail
+builder.Services.Configure<DefaultMail>(builder.Configuration.GetSection("DefaultMail"));
+builder.Services.AddScoped<MailManager>();
+#endregion
+
+#region Database
+//Injection de dépendance pour la connexion à la base de données
 builder.Services.AddDbContext<A2024420517riGr1Eq6Context>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         new MySqlServerVersion(new Version(8, 0, 18)) // Remplacez par une version générique
     )
 );
+#endregion
 
 var app = builder.Build();
 
