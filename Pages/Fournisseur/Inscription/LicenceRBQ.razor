@@ -1,40 +1,87 @@
 @page "/RBQ"
+@using Microsoft.EntityFrameworkCore
+@using Portail_OptiVille.Data.Models
+@using System.ComponentModel.DataAnnotations
+@inject A2024420517riGr1Eq6Context _context
 <PageTitle>LicenceRBQComponent</PageTitle>
+
 <style>
     .overflow-auto {
-        height: 48px;
+        height: 192px;
     }
 </style>
+
+<EditForm Model="@validationRBQ" OnValidSubmit="HandleValidSubmit">
     <label for="noLicenceRBQ">Numéro</label>
-        <input type="text" id="noLicenceRBQ"/>
-<br>
+        <input type="text" id="noLicenceRBQ">
+    <br>
     <label for="statut">Statut</label>
-        <select id="statut" name="statut">
-            <option value="valide">Valide</option>
-            <option value="valideRestriction">Valide avec restriction</option>
-            <option value="nonValide">Non valide</option>
-        </select>
-<br>
+    <select id="statut" name="statut">
+        <option value="valide">Valide</option>
+        <option value="valideRestriction">Valide avec restriction</option>
+        <option value="nonValide">Non valide</option>
+    </select>
+    <br>
     <label for="licenceType">Type de licence</label>
-        <select id="licenceType" name="licenceType">
-            <option value="entrepreneur">Entrepreneur</option>
-            <option value="construPropri">Constructeur-Propriétaire</option>
-        </select>
-<br>
- <!-- 
-    FAIRE UNE SCROLLBAR ET LOADER LA TALBE CATEGORIE DE LA BD
- -->
- <div class="overflow-auto">
-    <input type="checkbox" id="categorie1">
-    <label for="categorie1">NAN</label><br>
-    <input type="checkbox" id="categorie2">
-    <label for="categorie2">NAN</label><br>
-    <input type="checkbox" id="categorie3">
-    <label for="categorie3">NAN</label><br>
-    <input type="checkbox" id="categorie4">
-    <label for="categorie4">NAN</label><br>
-</div>
+    <select id="licenceType" name="licenceType">
+        <option value="entrepreneur">Entrepreneur</option>
+        <option value="construPropri">Constructeur-Propriétaire</option>
+    </select>
+    <br>
+    <p>Entrepeneur général</p>
+    <div class="overflow-auto">
+    @{
+        int i = 0;
+        @foreach (var categorie in categoriesGeneral) {
+        
+            <input type="checkbox" id="categorie@(i)">
+            <label for="categorie@(i)">@categorie.CodeSousCategorie @categorie.Nom</label>
+            i++;
+            <br>
+        }
+    }
+    </div>
+    <p>Entrepeneur spécialisé</p>
+    <div class="overflow-auto">
+        @foreach (var categorie in categorieSpecialise) {
+            <input type="checkbox" id="categorie@(i)">
+            <label for="categorie@(i)">@categorie.CodeSousCategorie @categorie.Nom</label>
+            i++;
+            <br>
+        }
+    </div>
+</EditForm>
 
 @code {
+    private LicenceRBQ validationRBQ = new LicenceRBQ();
 
+    public void HandleValidSubmit()
+    {
+        Console.WriteLine("OnValidSubmit");
+    }
+
+    public class LicenceRQBModel
+    {
+        [Required(ErrorMessage = "Le numéro de licence est requis")]
+        public string? RBQ { get; set; }
+    }
+
+    private List<Categorie> categoriesGeneral = new List<Categorie>();
+    private List<Categorie> categorieSpecialise = new List<Categorie>();
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            categoriesGeneral = await _context.Categories
+                               .Where(c => c.NomCategorie == "Général")
+                               .ToListAsync();
+            categorieSpecialise = await _context.Categories
+                               .Where(c => c.NomCategorie == "Spécialisé")
+                               .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors de la récupération des personnes: {ex.Message}");
+        }
+    }
 }
