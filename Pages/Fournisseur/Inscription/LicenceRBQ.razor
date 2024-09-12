@@ -1,0 +1,40 @@
+@page "/RBQ"
+<PageTitle>LicenceRBQComponent</PageTitle>
+<style>
+    .overflow-auto {
+        height: 48px;
+    }
+</style>
+    <label for="noLicenceRBQ">Numéro</label>
+        <input type="text" id="noLicenceRBQ"/>
+<br>
+    <label for="statut">Statut</label>
+        <select id="statut" name="statut">
+            <option value="valide">Valide</option>
+            <option value="valideRestriction">Valide avec restriction</option>
+            <option value="nonValide">Non valide</option>
+        </select>
+<br>
+    <label for="licenceType">Type de licence</label>
+        <select id="licenceType" name="licenceType">
+            <option value="entrepreneur">Entrepreneur</option>
+            <option value="construPropri">Constructeur-Propriétaire</option>
+        </select>
+<br>
+ <!-- 
+    FAIRE UNE SCROLLBAR ET LOADER LA TALBE CATEGORIE DE LA BD
+ -->
+ <div class="overflow-auto">
+    <input type="checkbox" id="categorie1">
+    <label for="categorie1">NAN</label><br>
+    <input type="checkbox" id="categorie2">
+    <label for="categorie2">NAN</label><br>
+    <input type="checkbox" id="categorie3">
+    <label for="categorie3">NAN</label><br>
+    <input type="checkbox" id="categorie4">
+    <label for="categorie4">NAN</label><br>
+</div>
+
+@code {
+
+}
