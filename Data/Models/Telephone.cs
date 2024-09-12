@@ -9,7 +9,7 @@ public partial class Telephone
 
     public string Type { get; set; } = null!;
 
-    public string? Telephone1 { get; set; }
+    public string? NumTelephone { get; set; }
 
     public string? Poste { get; set; }
 

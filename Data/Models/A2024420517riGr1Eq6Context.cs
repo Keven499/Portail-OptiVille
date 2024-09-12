@@ -53,12 +53,12 @@ public partial class A2024420517riGr1Eq6Context : DbContext
             entity.Property(e => e.CodeSousCategorie)
                 .HasMaxLength(10)
                 .HasColumnName("codeSousCategorie");
-            entity.Property(e => e.Categorie1)
-                .HasMaxLength(50)
-                .HasColumnName("categorie");
             entity.Property(e => e.Nom)
-                .HasMaxLength(125)
+                .HasMaxLength(150)
                 .HasColumnName("nom");
+            entity.Property(e => e.NomCategorie)
+                .HasMaxLength(50)
+                .HasColumnName("nomCategorie");
 
             entity.HasMany(d => d.IdLicenceRbqs).WithMany(p => p.CodeSousCategories)
                 .UsingEntity<Dictionary<string, object>>(
@@ -393,12 +393,12 @@ public partial class A2024420517riGr1Eq6Context : DbContext
             entity.Property(e => e.IdFournisseur)
                 .HasColumnType("int(11)")
                 .HasColumnName("idFournisseur");
+            entity.Property(e => e.NumTelephone)
+                .HasMaxLength(10)
+                .HasColumnName("numTelephone");
             entity.Property(e => e.Poste)
                 .HasMaxLength(6)
                 .HasColumnName("poste");
-            entity.Property(e => e.Telephone1)
-                .HasMaxLength(10)
-                .HasColumnName("telephone");
             entity.Property(e => e.Type)
                 .HasColumnType("enum('Bureau','Télécopieur','Cellulaire')")
                 .HasColumnName("type");
