@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Pomelo.EntityFrameworkCore.MySql.Scaffolding.Internal;
 
 namespace Portail_OptiVille.Data.Models;
 
@@ -14,6 +15,8 @@ public partial class A2024420517riGr1Eq6Context : DbContext
         : base(options)
     {
     }
+
+    public virtual DbSet<Categorie> Categories { get; set; }
 
     public virtual DbSet<Contact> Contacts { get; set; }
 
@@ -33,10 +36,55 @@ public partial class A2024420517riGr1Eq6Context : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySQL("Server=cours.cegep3r.info;Database=a2024_420517ri_gr1-eq6;User=2263519;Password=2263519;");
+        => optionsBuilder.UseMySql("server=cours.cegep3r.info;database=a2024_420517ri_gr1-eq6;user=2263519;password=2263519", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.18-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder
+            .UseCollation("latin1_swedish_ci")
+            .HasCharSet("latin1");
+
+        modelBuilder.Entity<Categorie>(entity =>
+        {
+            entity.HasKey(e => e.CodeSousCategorie).HasName("PRIMARY");
+
+            entity.ToTable("categorie");
+
+            entity.Property(e => e.CodeSousCategorie)
+                .HasMaxLength(10)
+                .HasColumnName("codeSousCategorie");
+            entity.Property(e => e.Categorie1)
+                .HasMaxLength(50)
+                .HasColumnName("categorie");
+            entity.Property(e => e.Nom)
+                .HasMaxLength(125)
+                .HasColumnName("nom");
+
+            entity.HasMany(d => d.IdLicenceRbqs).WithMany(p => p.CodeSousCategories)
+                .UsingEntity<Dictionary<string, object>>(
+                    "Licencerbqcategorie",
+                    r => r.HasOne<Licencerbq>().WithMany()
+                        .HasForeignKey("IdLicenceRbq")
+                        .HasConstraintName("licencerbqcategorie_ibfk_2"),
+                    l => l.HasOne<Categorie>().WithMany()
+                        .HasForeignKey("CodeSousCategorie")
+                        .HasConstraintName("licencerbqcategorie_ibfk_1"),
+                    j =>
+                    {
+                        j.HasKey("CodeSousCategorie", "IdLicenceRbq")
+                            .HasName("PRIMARY")
+                            .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+                        j.ToTable("licencerbqcategorie");
+                        j.HasIndex(new[] { "IdLicenceRbq" }, "idLicenceRBQ");
+                        j.IndexerProperty<string>("CodeSousCategorie")
+                            .HasMaxLength(10)
+                            .HasColumnName("codeSousCategorie");
+                        j.IndexerProperty<string>("IdLicenceRbq")
+                            .HasMaxLength(12)
+                            .HasColumnName("idLicenceRBQ");
+                    });
+        });
+
         modelBuilder.Entity<Contact>(entity =>
         {
             entity.HasKey(e => e.IdContact).HasName("PRIMARY");
@@ -217,7 +265,9 @@ public partial class A2024420517riGr1Eq6Context : DbContext
                         .HasConstraintName("fournisseurproduitservice_ibfk_1"),
                     j =>
                     {
-                        j.HasKey("IdFournisseur", "CodeUnspsc").HasName("PRIMARY");
+                        j.HasKey("IdFournisseur", "CodeUnspsc")
+                            .HasName("PRIMARY")
+                            .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
                         j.ToTable("fournisseurproduitservice");
                         j.HasIndex(new[] { "CodeUnspsc" }, "codeUNSPSC");
                         j.IndexerProperty<int>("IdFournisseur")
@@ -239,7 +289,9 @@ public partial class A2024420517riGr1Eq6Context : DbContext
                         .HasConstraintName("fournisseurlicencerbq_ibfk_1"),
                     j =>
                     {
-                        j.HasKey("IdFournisseur", "IdLicenceRbq").HasName("PRIMARY");
+                        j.HasKey("IdFournisseur", "IdLicenceRbq")
+                            .HasName("PRIMARY")
+                            .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
                         j.ToTable("fournisseurlicencerbq");
                         j.HasIndex(new[] { "IdLicenceRbq" }, "idLicenceRBQ");
                         j.IndexerProperty<int>("IdFournisseur")
@@ -290,12 +342,6 @@ public partial class A2024420517riGr1Eq6Context : DbContext
             entity.Property(e => e.IdLicenceRbq)
                 .HasMaxLength(10)
                 .HasColumnName("idLicenceRBQ");
-            entity.Property(e => e.Categorie)
-                .HasMaxLength(50)
-                .HasColumnName("categorie");
-            entity.Property(e => e.CodeSousCategorie)
-                .HasMaxLength(5)
-                .HasColumnName("codeSousCategorie");
             entity.Property(e => e.Statut)
                 .HasColumnType("enum('Valide','Valide avec restriction','Non valide')")
                 .HasColumnName("statut");
