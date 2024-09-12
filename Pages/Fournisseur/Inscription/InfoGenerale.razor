@@ -1,0 +1,83 @@
+    @page "/InfoGenerale"
+@using System.ComponentModel.DataAnnotations
+
+    <EditForm Model="@identificationModel" OnValidSubmit="HandleValidSubmit">
+
+        <div class="form-group">
+            <label for="NEQ">NEQ</label>
+            <InputNumber @bind-Value="identificationModel.NEQ" class="form-control" id="NEQ" aria-placeholder="Entrer NEQ" />
+        </div>
+
+        <div class="form-group">
+            <label for="nomEntreprise">Nom de l'entreprise</label>
+            <InputText id="nomEntreprise" @bind-Value="identificationModel.nomEntreprise" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label for="courrielEntreprise">Courriel de l'entreprise</label>
+            <InputText id="courrielEntreprise" @bind-Value="identificationModel.courrielEntreprise" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label for="MotDePasse">Mot de passe</label>
+            <InputText id="MotDePasse" @bind-Value="identificationModel.MotDePasse" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label for="ConfirmationMotDePasse">Confirmation du mot de passe</label>
+            <InputText id="ConfirmationMotDePasse" @bind-Value="identificationModel.ConfirmationMotDePasse" class="form-control" />
+        </div>
+
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <button type="submit">Submit</button>
+    </EditForm>
+
+    @* <EditForm Model="Model" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <button type="submit">Submit</button>
+    </EditForm>
+
+    <EditForm Model="Model" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <button type="submit">Submit</button>
+    </EditForm> *@
+
+@code {
+    private IdentificationModel identificationModel = new IdentificationModel();
+
+
+
+    public void HandleValidSubmit()
+    {
+        Console.WriteLine("OnValidSubmit");
+    }
+
+#region Identification
+    public class IdentificationModel
+    {
+        //Si rien n'est entré, écrire NEQ non-valide
+        [Required] 
+        [Range(1100000000, 8899999999, ErrorMessage = "NEQ non-valide")] 
+        public Int64? NEQ { get; set; }
+
+        [Required(ErrorMessage = "Le nom de l'entreprise est requis")]
+        public string  nomEntreprise { get; set; }
+
+        [Required(ErrorMessage = "Le courriel est requis")]
+        public string courrielEntreprise { get; set; }
+
+        [Required(ErrorMessage = "Le mot de passe est requis")]
+        public string MotDePasse { get; set; }
+
+        [Required(ErrorMessage = "La confirmation du mot de passe est requise.")]
+        [Compare(nameof(MotDePasse), ErrorMessage = "Les mots de passe ne correspondent pas.")]
+        public string ConfirmationMotDePasse { get; set; }
+    }
+#endregion
+    }
