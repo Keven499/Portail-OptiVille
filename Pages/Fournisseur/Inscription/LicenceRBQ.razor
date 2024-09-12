@@ -1,4 +1,4 @@
-@page "/RBQ"
+@page "/rbq"
 @using Microsoft.EntityFrameworkCore
 @using Portail_OptiVille.Data.Models
 @using System.ComponentModel.DataAnnotations
@@ -11,30 +11,33 @@
     }
 </style>
 
-<EditForm Model="@validationRBQ" OnValidSubmit="HandleValidSubmit">
+<EditForm Model="@this" OnValidSubmit="HandleValidSubmit">
     <label for="noLicenceRBQ">Numéro</label>
-        <input type="text" id="noLicenceRBQ">
+        <InputText type="text" id="noLicenceRBQ" @bind-Value="noLicenceRBQ"></InputText>
     <br>
     <label for="statut">Statut</label>
-    <select id="statut" name="statut">
-        <option value="valide">Valide</option>
-        <option value="valideRestriction">Valide avec restriction</option>
-        <option value="nonValide">Non valide</option>
-    </select>
+        <select id="statut" @bind="statutLicence">
+            <option value="1">Valide</option>
+            <option value="2">Valide avec restriction</option>
+            <option value="3">Non valide</option>
+        </select>
     <br>
     <label for="licenceType">Type de licence</label>
-    <select id="licenceType" name="licenceType">
-        <option value="entrepreneur">Entrepreneur</option>
-        <option value="construPropri">Constructeur-Propriétaire</option>
-    </select>
+        <select id="licenceType" @bind="typeLicence">
+            <option value="1">Entrepreneur</option>
+            <option value="2">Constructeur-Propriétaire</option>
+        </select>
     <br>
     <p>Entrepeneur général</p>
     <div class="overflow-auto">
     @{
         int i = 0;
-        @foreach (var categorie in categoriesGeneral) {
-        
-            <input type="checkbox" id="categorie@(i)">
+        foreach (var categorie in categorieGeneral)
+        {
+            <input type="checkbox" 
+                id="categorie@(i)" 
+                checked="@sousCategoSelected[categorie.CodeSousCategorie]" 
+                @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
             <label for="categorie@(i)">@categorie.CodeSousCategorie @categorie.Nom</label>
             i++;
             <br>
@@ -44,44 +47,92 @@
     <p>Entrepeneur spécialisé</p>
     <div class="overflow-auto">
         @foreach (var categorie in categorieSpecialise) {
-            <input type="checkbox" id="categorie@(i)">
+            <input type="checkbox" 
+                id="categorie@(i)" 
+                checked="@sousCategoSelected[categorie.CodeSousCategorie]" 
+                @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
             <label for="categorie@(i)">@categorie.CodeSousCategorie @categorie.Nom</label>
             i++;
             <br>
         }
     </div>
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <button type="submit">Soumettre</button>
 </EditForm>
 
 @code {
-    private LicenceRBQ validationRBQ = new LicenceRBQ();
-
-    public void HandleValidSubmit()
-    {
-        Console.WriteLine("OnValidSubmit");
-    }
-
-    public class LicenceRQBModel
-    {
-        [Required(ErrorMessage = "Le numéro de licence est requis")]
-        public string? RBQ { get; set; }
-    }
-
-    private List<Categorie> categoriesGeneral = new List<Categorie>();
+    private List<Categorie> categorieGeneral = new List<Categorie>();
     private List<Categorie> categorieSpecialise = new List<Categorie>();
+    private List<Categorie> allCategories = new List<Categorie>();
+    private Dictionary<string, bool> sousCategoSelected = new Dictionary<string, bool>();
+    
+    [Required(ErrorMessage = "Le numéro est requis")]
+    public string? noLicenceRBQ { get; set; }
+    private int statutLicence = 1;
+    private int typeLicence = 1;
+
+    private Dictionary<int, string> statutLicenceText = new Dictionary<int, string>
+    {
+        { 1, "Valide" },
+        { 2, "Valide avec restriction" },
+        { 3, "Non valide" }
+    };
+
+    private Dictionary<int, string> typeLicenceText = new Dictionary<int, string>
+    {
+        { 1, "Entrepreneur" },
+        { 2, "Constructeur-Propriétaire" }
+    };
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            categoriesGeneral = await _context.Categories
-                               .Where(c => c.NomCategorie == "Général")
-                               .ToListAsync();
-            categorieSpecialise = await _context.Categories
-                               .Where(c => c.NomCategorie == "Spécialisé")
-                               .ToListAsync();
+            allCategories = await _context.Categories.ToListAsync();
+            sousCategoSelected = allCategories.ToDictionary(
+                c => c.CodeSousCategorie,
+                c => false
+            );
+             categorieGeneral = allCategories
+                .Where(c => c.NomCategorie == "Général")
+                .ToList();
+
+            categorieSpecialise = allCategories
+                .Where(c => c.NomCategorie == "Spécialisé")
+                .ToList();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Erreur lors de la récupération des personnes: {ex.Message}");
+        }
+    }
+
+    private List<Categorie> GetSelectedCategories()
+    {
+        return allCategories
+            .Where(c => sousCategoSelected[c.CodeSousCategorie])
+            .ToList();
+    }
+
+    private void OnCheckboxChange(string codeSousCategorie, ChangeEventArgs e)
+    {
+        if (e.Value is bool isChecked)
+        {
+            sousCategoSelected[codeSousCategorie] = isChecked;
+        }
+    }
+    
+    public void HandleValidSubmit()
+    {
+        Console.WriteLine("OnValidSubmit");
+        Console.WriteLine(noLicenceRBQ);
+        Console.WriteLine(@statutLicenceText[statutLicence]);
+        Console.WriteLine(@typeLicenceText[typeLicence]);
+        var selectedSousCatego = GetSelectedCategories();
+        foreach (var category in selectedSousCatego)
+        {
+            Console.WriteLine($"Selected: {category.CodeSousCategorie} - {category.Nom}");
         }
     }
 }
