@@ -1,7 +1,6 @@
 @page "/rbq"
 @using Microsoft.EntityFrameworkCore
 @using Portail_OptiVille.Data.Models
-@using System.ComponentModel.DataAnnotations
 @inject A2024420517riGr1Eq6Context _context
 <PageTitle>LicenceRBQComponent</PageTitle>
 
@@ -9,11 +8,20 @@
     .overflow-auto {
         height: 192px;
     }
+
+    .error {
+        color: red;
+    }
 </style>
 
 <EditForm Model="@this" OnValidSubmit="HandleValidSubmit">
     <label for="noLicenceRBQ">Numéro</label>
         <InputText type="text" id="noLicenceRBQ" @bind-Value="noLicenceRBQ"></InputText>
+        @{
+        if (numError) {
+            <div class="error">Numéro de licence requis</div>
+        }
+    }
     <br>
     <label for="statut">Statut</label>
         <select id="statut" @bind="statutLicence">
@@ -28,7 +36,7 @@
             <option value="2">Constructeur-Propriétaire</option>
         </select>
     <br>
-    <p>Entrepeneur général</p>
+    <strong>Entrepeneur général</strong>
     <div class="overflow-auto">
     @{
         int i = 0;
@@ -44,7 +52,7 @@
         }
     }
     </div>
-    <p>Entrepeneur spécialisé</p>
+    <strong>Entrepeneur spécialisé</strong>
     <div class="overflow-auto">
         @foreach (var categorie in categorieSpecialise) {
             <input type="checkbox" 
@@ -56,8 +64,11 @@
             <br>
         }
     </div>
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+    @{
+        if (sousCategoError) {
+            <div class="error">Au moins une catégorie doit être sélectionné</div>
+        }
+    }
     <button type="submit">Soumettre</button>
 </EditForm>
 
@@ -66,11 +77,11 @@
     private List<Categorie> categorieSpecialise = new List<Categorie>();
     private List<Categorie> allCategories = new List<Categorie>();
     private Dictionary<string, bool> sousCategoSelected = new Dictionary<string, bool>();
-    
-    [Required(ErrorMessage = "Le numéro est requis")]
     public string? noLicenceRBQ { get; set; }
     private int statutLicence = 1;
     private int typeLicence = 1;
+    private bool numError = false;
+    private bool sousCategoError = false;
 
     private Dictionary<int, string> statutLicenceText = new Dictionary<int, string>
     {
@@ -122,17 +133,36 @@
             sousCategoSelected[codeSousCategorie] = isChecked;
         }
     }
+
+    private bool ValidateSelection()
+    {
+        return sousCategoSelected.Values.Any(isSelected => isSelected);
+    }
     
     public void HandleValidSubmit()
     {
-        Console.WriteLine("OnValidSubmit");
-        Console.WriteLine(noLicenceRBQ);
-        Console.WriteLine(@statutLicenceText[statutLicence]);
-        Console.WriteLine(@typeLicenceText[typeLicence]);
-        var selectedSousCatego = GetSelectedCategories();
-        foreach (var category in selectedSousCatego)
+        if (!ValidateSelection())
         {
-            Console.WriteLine($"Selected: {category.CodeSousCategorie} - {category.Nom}");
+           sousCategoError = true;
+        }
+        else {
+            sousCategoError = false;
+        }
+        if (string.IsNullOrEmpty(noLicenceRBQ)) {
+            numError = true;
+        }
+        else {
+            numError = false;
+        }
+        if (!numError && !sousCategoError) {
+            Console.WriteLine(noLicenceRBQ);
+            Console.WriteLine(@statutLicenceText[statutLicence]);
+            Console.WriteLine(@typeLicenceText[typeLicence]);
+            var selectedSousCatego = GetSelectedCategories();
+            foreach (var category in selectedSousCatego)
+            {
+                Console.WriteLine($"Selected: {category.CodeSousCategorie} - {category.Nom}");
+            }
         }
     }
 }
