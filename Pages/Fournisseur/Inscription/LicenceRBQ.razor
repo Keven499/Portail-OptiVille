@@ -2,75 +2,210 @@
 @using Microsoft.EntityFrameworkCore
 @using Portail_OptiVille.Data.Models
 @inject A2024420517riGr1Eq6Context _context
+@inject IJSRuntime JS
 <PageTitle>LicenceRBQComponent</PageTitle>
 
 <style>
     .overflow-auto {
         height: 192px;
+        border: solid rgb(11, 35, 65) 2px;
+        padding: 4px;
     }
-
+    .litteStrong {
+        font-size: 14px;
+    }
+    .form-control {
+        background-color: rgb(120, 198, 224);
+        border-bottom: solid rgb(11, 35, 65) 3px;
+    }
+    .form-select {
+        background-color: rgb(120, 198, 224);
+        border-bottom: solid rgb(11, 35, 65) 3px;
+    }
+    .btn {
+        color: white;
+        background-color: rgb(120, 198, 224);
+        border-bottom: solid rgb(11, 35, 65) 3px;
+    }
+    .btn:hover {
+        background-color: rgb(11, 35, 65);
+        color: white;
+    }
     .error {
         color: red;
     }
+    .dark-background {
+        background-color: rgb(11, 35, 65);
+    }
+    h1 {
+        color: white;
+        padding: 15px;
+    }
+    input[type="checkbox"] {
+        opacity: 0;
+        position: absolute;
+        width: 0;
+        height: 0;
+    }
+    input[type="checkbox"] {
+        opacity: 0;
+        position: absolute;
+        width: 0;
+        height: 0;
+    }
+    .custom-checkbox {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        background-color:  rgb(120, 198, 224);
+        border: 1px solid  rgb(11, 35, 65);
+        border-radius: 3px;
+        position: relative;
+        cursor: pointer;
+        vertical-align: middle;
+    }
+    input[type="checkbox"]:checked + .custom-checkbox {
+        background-color:  rgb(11, 35, 65);
+    }
+    .custom-checkbox:before {
+        content: '';
+        position: absolute;
+        left: 6px;
+        top: 2px;
+        width: 6px;
+        height: 12px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+        opacity: 0; 
+    }
+    input[type="checkbox"]:checked + .custom-checkbox:before {
+        opacity: 1;
+    }
 </style>
 
-<EditForm Model="@this" OnValidSubmit="HandleValidSubmit">
-    <label for="noLicenceRBQ">Numéro</label>
-        <InputText type="text" id="noLicenceRBQ" @bind-Value="noLicenceRBQ"></InputText>
-        @{
-        if (numError) {
-            <div class="error">Numéro de licence requis</div>
-        }
-    }
-    <br>
-    <label for="statut">Statut</label>
-        <select id="statut" @bind="statutLicence">
-            <option value="1">Valide</option>
-            <option value="2">Valide avec restriction</option>
-            <option value="3">Non valide</option>
-        </select>
-    <br>
-    <label for="licenceType">Type de licence</label>
-        <select id="licenceType" @bind="typeLicence">
-            <option value="1">Entrepreneur</option>
-            <option value="2">Constructeur-Propriétaire</option>
-        </select>
-    <br>
-    <strong>Entrepeneur général</strong>
-    <div class="overflow-auto">
-    @{
-        int i = 0;
-        foreach (var categorie in categorieGeneral)
-        {
-            <input type="checkbox" 
-                id="categorie@(i)" 
-                checked="@sousCategoSelected[categorie.CodeSousCategorie]" 
-                @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
-            <label for="categorie@(i)">@categorie.CodeSousCategorie @categorie.Nom</label>
-            i++;
-            <br>
-        }
-    }
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+    
+        </div>
+        <div class="col bg-white">
+            <h1 class="text-center dark-background">Licence RBQ</h1>
+            <EditForm Model="@this" OnValidSubmit="HandleValidSubmit">
+                <div class="row mb-2">
+                    <div class="col">
+                        <label class="form-label" for="noLicenceRBQ"><strong>Numéro</strong></label>
+                        <InputText class="form-control" type="text" id="noLicenceRBQ" @bind-Value="noLicenceRBQ"></InputText>
+                        @{
+                            if (numErrorBool) {
+                                <strong class="error">@numErrorMessage</strong>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <div class="row">
+                            <label class="form-label" for="statut"><strong>Statut</strong></label>
+                        </div>
+                        <select class="form-select" id="statut" @bind="statutLicence">
+                            <option value="1">Valide</option>
+                            <option value="2">Valide avec restriction</option>
+                            <option value="3">Non valide</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <div class="row">
+                            <label class="form-label" for="licenceType"><strong>Type de licence</strong></label>
+                        </div>
+                        <select class="form-select" id="licenceType" @bind="typeLicence">
+                            <option value="1">Entrepreneur</option>
+                            <option value="2">Constructeur-Propriétaire</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <label class="form-label mb-1"><strong>Entrepeneur général</strong></label>
+                <div class="overflow-auto mb-2">
+                @{
+                    int i = 0;
+                    foreach (var categorie in categorieGeneral)
+                    {
+                        <label for="categorie@(i)">
+                            <input type="checkbox" 
+                                id="categorie@(i)" 
+                                checked="@sousCategoSelected[categorie.CodeSousCategorie]" 
+                                @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
+                            <span class="custom-checkbox"></span>
+                            <strong class="litteStrong ellipsis">@categorie.CodeSousCategorie @categorie.Nom</strong>
+                        </label>
+                        i++;
+                        <br>
+                    }
+                }
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <label class="form-label mb-1"><strong>Entrepeneur spécialisé</strong></label>
+                        <div class="overflow-auto">
+                            @foreach (var categorie in categorieSpecialise) {
+                                <label for="categorie@(i)">
+                                    <input type="checkbox" 
+                                        id="categorie@(i)" 
+                                        checked="@sousCategoSelected[categorie.CodeSousCategorie]" 
+                                        @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
+                                    <span class="custom-checkbox"></span>
+                                    <strong class="litteStrong">@categorie.CodeSousCategorie @categorie.Nom</strong>
+                                </label>
+                                i++;
+                                <br>
+                            }
+                        </div>
+                        @{
+                            if (sousCategoError) {
+                                <strong class="error">Au moins une catégorie doit être sélectionné</strong>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="d-grid gap-2">
+                    <button class="btn" type="submit">Soumettre</button>
+                </div>
+            </EditForm>
+        </div>
     </div>
-    <strong>Entrepeneur spécialisé</strong>
-    <div class="overflow-auto">
-        @foreach (var categorie in categorieSpecialise) {
-            <input type="checkbox" 
-                id="categorie@(i)" 
-                checked="@sousCategoSelected[categorie.CodeSousCategorie]" 
-                @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
-            <label for="categorie@(i)">@categorie.CodeSousCategorie @categorie.Nom</label>
-            i++;
-            <br>
-        }
-    </div>
-    @{
-        if (sousCategoError) {
-            <div class="error">Au moins une catégorie doit être sélectionné</div>
-        }
+</div>
+
+<script>
+    // Define the function to perform the API request
+    function fetchSQLData(resourceId, field, searchQuery) {
+        return "test"
+        /*
+        // Create the SQL query dynamically
+        var sqlQuery = `SELECT * from "${resourceId}" WHERE ${field} LIKE '${searchQuery}'`;
+        // URL encode the SQL query
+        var encodedQuery = encodeURIComponent(sqlQuery);
+        // Make the fetch request
+        return fetch(`https://www.donneesquebec.ca/recherche/api/3/action/datastore_search_sql?sql=${encodedQuery}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json()) // Parse the JSON response
+        .then(data => {
+            if (data.result && data.result.records && data.result.records.length > 0) {
+            return data.result.records[0].title; 
+            } else {
+                return ''; // Return an empty string if no results found
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+        */
     }
-    <button type="submit">Soumettre</button>
-</EditForm>
+</script>
 
 @code {
     private List<Categorie> categorieGeneral = new List<Categorie>();
@@ -79,10 +214,13 @@
     private Dictionary<string, bool> sousCategoSelected = new Dictionary<string, bool>();
     public string? noLicenceRBQ { get; set; }
     private int statutLicence = 1;
+    private string? resultMessage;
     private int typeLicence = 1;
-    private bool numError = false;
+    private bool numErrorBool = false;
+     private string? numErrorMessage;
     private bool sousCategoError = false;
 
+    // Dictionary permettant de faire le lien entre la value du champ sélectionné et son texte
     private Dictionary<int, string> statutLicenceText = new Dictionary<int, string>
     {
         { 1, "Valide" },
@@ -90,25 +228,33 @@
         { 3, "Non valide" }
     };
 
+    // Dictionary permettant de faire le lien entre la value du champ sélectionné et son texte
     private Dictionary<int, string> typeLicenceText = new Dictionary<int, string>
     {
         { 1, "Entrepreneur" },
         { 2, "Constructeur-Propriétaire" }
     };
 
+    // Fonction permettant de récupérer les informations dans la base de données
     protected override async Task OnInitializedAsync()
     {
         try
         {
+            // Permet d'aller chercher toutes les catégories 
             allCategories = await _context.Categories.ToListAsync();
+
+            // Créer une copie de toutes les catégories pour leur attribuer un bool qui détermine si la catégorie est coché ou non
             sousCategoSelected = allCategories.ToDictionary(
                 c => c.CodeSousCategorie,
                 c => false
             );
-             categorieGeneral = allCategories
+
+            // Récupère toutes les catégories de type Général
+            categorieGeneral = allCategories
                 .Where(c => c.NomCategorie == "Général")
                 .ToList();
 
+             // Récupère toutes les catégories de type Spécialisé
             categorieSpecialise = allCategories
                 .Where(c => c.NomCategorie == "Spécialisé")
                 .ToList();
@@ -119,6 +265,7 @@
         }
     }
 
+    // Fonction permettant de récupérer les catégories sélectionné
     private List<Categorie> GetSelectedCategories()
     {
         return allCategories
@@ -126,6 +273,7 @@
             .ToList();
     }
 
+    // Fonction permettant d'indiquer dans la liste qu'une catégorie est sélectionné
     private void OnCheckboxChange(string codeSousCategorie, ChangeEventArgs e)
     {
         if (e.Value is bool isChecked)
@@ -134,35 +282,81 @@
         }
     }
 
+    // Fonction permettant de voir si au moins une catégorie a été sélectionné
     private bool ValidateSelection()
     {
         return sousCategoSelected.Values.Any(isSelected => isSelected);
     }
-    
-    public void HandleValidSubmit()
+
+    // Call the JavaScript function using JavaScript Interop
+    private async Task CallLicenceValidation(string resourceId, string field, string noLicence)
     {
+        try {
+            resultMessage = await JS.InvokeAsync<string>("fetchSQLData", resourceId, field, noLicence);
+        }
+        catch (Exception ex) {
+            Console.WriteLine($"Erreur lors de la récupération du numéro de licence: {ex.Message}");
+        }
+    }
+
+    // Fonction permettant de formatter la licence 
+    static string InsertHyphens(string input)
+    {
+        if (input.Length == 10)
+        {
+            return input.Substring(0, 4) + "-" + input.Substring(4, 4) + "-" + input.Substring(8, 2);
+        }
+        return input;
+    }
+    
+    // Fonction exécuter au moment de soumettre le Form
+    public async Task HandleValidSubmit()
+    {
+        #region Regarde si au moins 1 catégorie est sélectionné
         if (!ValidateSelection())
         {
            sousCategoError = true;
-        }
-        else {
+        } else {
             sousCategoError = false;
         }
-        if (string.IsNullOrEmpty(noLicenceRBQ)) {
-            numError = true;
+        #endregion
+
+        #region Regarde si le no de licence RBQ nest pas vide et valide avec API
+        if (!string.IsNullOrEmpty(noLicenceRBQ)) {
+            noLicenceRBQ = InsertHyphens(noLicenceRBQ);
+            await CallLicenceValidation("32f6ec46-85fd-45e9-945b-965d9235840a", "Numero de licence", noLicenceRBQ);
+            if (noLicenceRBQ.Equals(resultMessage)) {
+                numErrorBool = false;
+            }
+            else {
+                numErrorMessage = "Numéro de licence invalide";
+                numErrorBool = true;
+            }
         }
         else {
-            numError = false;
+            numErrorBool = true;
+            numErrorMessage = "Numéro de licence requis";
         }
-        if (!numError && !sousCategoError) {
+        #endregion
+
+        #region Regarde si toutes les informations sont entrées correctement et exécute la requête
+        if (!numErrorBool && !sousCategoError) {
+            // TESTS POUR VOIR LES DONNÉES ENTRÉES
             Console.WriteLine(noLicenceRBQ);
-            Console.WriteLine(@statutLicenceText[statutLicence]);
-            Console.WriteLine(@typeLicenceText[typeLicence]);
+            Console.WriteLine(statutLicenceText[statutLicence]);
+            Console.WriteLine(typeLicenceText[typeLicence]);
             var selectedSousCatego = GetSelectedCategories();
             foreach (var category in selectedSousCatego)
             {
                 Console.WriteLine($"Selected: {category.CodeSousCategorie} - {category.Nom}");
             }
+            // IL FAUT MAINTENANT FAIRE LES REQUÊTES POUR INSÉRER TOUTES LES LICENCES DE FAÇONS APPROPRIÉES
+            // CELA INCLUS ÉNORMÉMENT DE CHOSES
+            // NOUS ALLONS DEVOIR TOUCHER AUX TABLES SUIVANTES (DANS L'ORDRE D'INSERTION): CATEGORIE, LICENCERBQ, LICENCERBQCATEGORIE, FOURNISSEURLICENCERBQ ??
+            // À CE POINT DANS LA DEMANDE, L'ID DU FOURNISSEUR N'EXISTE TECHNIQUEMENT PAS ENCORE, L'INSERTION DANS LA TABLE FOURNISSEURLICENCERBQ DEVRA DONC SE FAIRE FORCÉMENT À LA FIN
+            // LÀ OÙ NOUS EN SOMMES, NOUS NE POUVONS QUE INSÉRER DANS LES TABLES: CATEGORIE, LICENCERBQ, LICENCERBQCATEGORIE.
+            // RESTE À DÉTERMINER SI UNE LICENCE AVEC LE STATUT NON VALIDE DOIT ÊTRE VÉRIFIÉ PAR L'API ET QU'EST-CE QUE LES TRAVAUX PERMIS
         }
+        #endregion
     }
 }
