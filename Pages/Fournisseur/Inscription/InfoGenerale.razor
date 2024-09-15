@@ -2,55 +2,223 @@
 @using System.ComponentModel.DataAnnotations
 
 <EditForm Model="@identificationModel" OnValidSubmit="HandleValidSubmit">
-    <h3>Identification</h3>
 
-    <div class="form-group">
-        <label for="NEQ">NEQ</label>
-        <InputNumber TValue="long?" @bind-Value="identificationModel.NEQ" class="form-control" id="NEQ" aria-placeholder="NEQ Requis"/>
+    <div class="form-group container-fluid">
+        <h3>Identification</h3>
+        <div class="row">
+            <div class="col-lg-12 col-xl-12">
+                <label for="NEQ">NEQ</label>
+                <InputNumber TValue="long?" @bind-Value="identificationModel.NEQ" class="form-control" id="NEQ" aria-placeholder="NEQ Requis"/>
+            </div>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="nomEntreprise">Nom de l'entreprise</label>
-        <InputText id="nomEntreprise" @bind-Value="identificationModel.nomEntreprise" class="form-control" />
+    <div class="form-group container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-xl-12">
+                <label for="nomEntreprise">Nom de l'entreprise</label>
+                <InputText id="nomEntreprise" @bind-Value="identificationModel.nomEntreprise" class="form-control" />
+            </div>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="courrielEntreprise">Courriel de l'entreprise</label>
-        <InputText type="email" id="courrielEntreprise" @bind-Value="identificationModel.courrielEntreprise" class="form-control" />
+    <div class="form-group container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-xl-12">
+                <label for="courrielEntreprise">Courriel de l'entreprise</label>
+                <InputText type="email" id="courrielEntreprise" @bind-Value="identificationModel.courrielEntreprise" class="form-control" />
+            </div>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="MotDePasse">Mot de passe</label>
-        <InputText type="password" id="MotDePasse" @bind-Value="identificationModel.MotDePasse" class="form-control" />
+    <div class="form-group container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-xl-12">
+                <label for="MotDePasse">Mot de passe</label>
+                <InputText type="password" id="MotDePasse" @bind-Value="identificationModel.MotDePasse" class="form-control" />
+            </div>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label for="ConfirmationMotDePasse">Confirmation du mot de passe</label>
-        <InputText type="password" id="ConfirmationMotDePasse" @bind-Value="identificationModel.ConfirmationMotDePasse" class="form-control" />
+    <div class="form-group container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-xl-12">
+                <label for="ConfirmationMotDePasse">Confirmation du mot de passe</label>
+                <InputText type="password" id="ConfirmationMotDePasse" @bind-Value="identificationModel.ConfirmationMotDePasse" class="form-control" />
+            </div>
+        </div>
     </div>
 
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <button type="submit">Enregistrer</button>
+    <div class="form-group container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-xl-12">
+                <button type="submit">Enregistrer</button>
+            </div>
+        </div>
+    </div>
 </EditForm>
 
-    @* <EditForm Model="Model" OnValidSubmit="HandleValidSubmit">
+<EditForm Model="@informationModel" OnValidSubmit="HandleValidSubmit">
+
+    <div class="form-group container-fluid">
+    <h3>Coordonnées</h3>
+        
+        <h4>Adresse</h4>
+        <div class="row">
+            <div class="col-lg-2 col-xl-2">
+                <label for="No">No</label>
+                <InputText @bind-Value="informationModel.noEntreprise" class="form-control" id="No" />
+            </div>
+            <div class="col-lg-7 col-xl-7">
+                <label for="Rue">Rue</label>
+                <InputText @bind-Value="informationModel.rueEntreprise" class="form-control" id="Rue" />
+            </div>
+            <div class="col-lg-3 col-xl-3">
+                <label for="Bureau">Bureau</label>
+                <InputText @bind-Value="informationModel.bureauEntreprise" class="form-control" id="Bureau" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-xl-12">
+                <label for="Ville">Ville</label>
+                <InputText @bind-Value="informationModel.villeEntreprise" class="form-control" id="Ville" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group container-fluid">
+        <div class="row">
+            <div class="col-lg-6 col-xl-6">
+                <label for="Province">Province</label>
+                <InputText @bind-Value="informationModel.provinceEntreprise" class="form-control" id="Province" />
+            </div>
+            <div class="col-lg-6 col-xl-6">
+                <label for="CodePostal">Code Postal</label>
+                <InputText @bind-Value="informationModel.codePostalEntreprise" class="form-control" id="CodePostal" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group container-fluid">
+        <div class="row">
+            <div class="col-lg-2 col-xl-2">
+                <label for="codeAdm">Code</label>
+                <InputNumber @bind-Value="informationModel.codeAdmEntreprise" class="form-control" id="codeAdm" />
+            </div>
+            <div class="col-lg-10 col-xl-10">
+                <label for="RegionAdm">Région Admnistrative</label>
+                <InputText @bind-Value="informationModel.regionAdmEntreprise" class="form-control" id="RegionAdm" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-xl-12">
+                <label for="SiteWeb">Site Internet</label>
+                <InputText @bind-Value="informationModel.siteWebEntreprise" class="form-control" id="SiteWeb" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group container-fluid">
+        <div class="row">
+            <div class="col-lg-2 col-xl-2">
+                <label for="typeTel">Type</label>
+                <InputText @bind-Value="informationModel.typeTelEntreprise" class="form-control" id="typeTel" />
+            </div>
+            <div class="col-lg-7 col-xl-7">
+                <label for="NoTel">Numéro de téléphone</label>
+                <InputNumber TValue="long?" @bind-Value="informationModel.noTelEntreprise" class="form-control" id="NoTel" />
+            </div>
+            <div class="col-lg-3 col-xl-3">
+                <label for="PosteCoordo">Poste</label>
+                <InputNumber TValue="long?" @bind-Value="informationModel.posteTelEntreprise" class="form-control" id="PosteCoordo" />
+            </div>
+        </div>
+    </div>
+
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <button type="submit">Submit</button>
-    </EditForm>
+    <div class="form-group container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-xl-12">
+                <button type="submit">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
 
-    <EditForm Model="Model" OnValidSubmit="HandleValidSubmit">
+<EditForm Model="@contactModel" OnValidSubmit="HandleValidSubmit">
+
+    <div class="form-group container-fluid">
+    <h3>Contacts</h3>
+        <div class="row">
+            <div class="col-lg-4 col-xl-4">
+                <label for="Prenom">Prénom</label>
+                <InputText @bind-Value="contactModel.prenomContact" class="form-control" id="Prenom" />
+            </div>
+            <div class="col-lg-4 col-xl-4">
+                <label for="Nom">Nom</label>
+                <InputText @bind-Value="contactModel.nomContact" class="form-control" id="Nom" />
+            </div>
+            <div class="col-lg-4 col-xl-4">
+                <label for="Fonction">Fonction</label>
+                <InputText @bind-Value="contactModel.fonctionContact" class="form-control" id="Fonction" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-xl-12">
+                <label for="Courriel">Adresse courriel</label>
+                <InputText @bind-Value="contactModel.courrielContact" class="form-control" id="Courriel" />
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group container-fluid">
+        <div class="row">
+            <div class="col-lg-2 col-xl-2">
+                <label for="typeTel">Type</label>
+                <InputText @bind-Value="contactModel.typeTelContact" class="form-control" id="typeTel" />
+            </div>
+            <div class="col-lg-7 col-xl-7">
+                <label for="NoTel">Numéro de téléphone</label>
+                <InputNumber TValue="long?" @bind-Value="contactModel.noTelContact" class="form-control" id="NoTel" />
+            </div>
+            <div class="col-lg-3 col-xl-3">
+                <label for="PosteCoordo">Poste</label>
+                <InputNumber TValue="long?" @bind-Value="contactModel.posteTelContact" class="form-control" id="PosteCoordo" />
+            </div>
+        </div>
+    </div>
+
     <DataAnnotationsValidator />
     <ValidationSummary />
 
-    <button type="submit">Submit</button>
-    </EditForm> *@
+    <div class="form-group container-fluid">
+        <div class="row">
+            <div class="col-lg-12 col-xl-12">
+                <button type="submit">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
 
 @code {
     private IdentificationModel identificationModel = new IdentificationModel();
+    private InformationModel informationModel = new InformationModel();
+
+    private ContactModel contactModel = new ContactModel();
 
     public void HandleValidSubmit()
     {
@@ -80,5 +248,76 @@
         [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).+$", ErrorMessage = "Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre, et un caractère spécial (@$!%*?&).")]
         [Compare(nameof(MotDePasse), ErrorMessage = "Les mots de passe ne correspondent pas.")]
         public string? ConfirmationMotDePasse { get; set; }
+    }
+
+    public class InformationModel 
+    {
+        [Required(ErrorMessage = "Le numéro de la rue est requis")]
+        [MaxLength(8, ErrorMessage = "Le numéro de la rue ne peut pas dépasser 8 caractères")]
+        public string? noEntreprise { get; set; }
+
+        [Required(ErrorMessage = "Le nom de la rue est requis")]
+        [MaxLength(64, ErrorMessage = "Le nom de la rue ne peut pas dépasser 64 caractères")]
+        public string? rueEntreprise { get; set; }
+
+        [MaxLength(8, ErrorMessage = "Le numéro de bureau ne peut pas dépasser 8 caractères")]
+        public string? bureauEntreprise { get; set; }
+
+        [Required(ErrorMessage = "Le nom de la ville est requis")]
+        [MaxLength(64, ErrorMessage = "Le nom de la ville ne peut pas dépasser 64 caractères")]
+        public string? villeEntreprise { get; set; }
+
+        [Required(ErrorMessage = "La province est requise")]
+        public string? provinceEntreprise { get; set; }
+
+        [Required(ErrorMessage = "Le code postal est requis")]
+        [RegularExpression("^(?!.*[DFIOQU])[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9]$", ErrorMessage = "Le code postal n'est pas valide")]
+        [MaxLength(6, ErrorMessage = "Le code postal ne peut pas dépasser 6 caractères")]
+           
+        public string? codePostalEntreprise { get; set; }
+
+        [Required(ErrorMessage = "Le numéro du code de la région est requis")]
+        [MaxLength(2, ErrorMessage = "Le code de la région ne peut pas dépasser 2 caractères")]
+        public int? codeAdmEntreprise { get; set; }
+
+        [Required(ErrorMessage = "La région administrative est requise")]
+        public string? regionAdmEntreprise { get; set; }
+
+        [MaxLength(64, ErrorMessage = "Le site Internet ne peut pas dépasser 64 caractères")]
+        public string? siteWebEntreprise { get; set; }
+
+        [Required(ErrorMessage = "Le type de numéro de téléphone est requis")]
+        public string? typeTelEntreprise { get; set; }
+
+        [Required(ErrorMessage = "Le numéro de téléphone est requis")]
+        [Range(1000000000, 9999999999, ErrorMessage = "Le numéro de téléphone n'est pas valide")]
+        public long? noTelEntreprise { get; set; }
+
+        [Range(000000, 999999, ErrorMessage = "Le numéro de poste n'est pas valide")]
+        public long? posteTelEntreprise { get; set; }
+    }
+
+    public class ContactModel
+    {
+        [MaxLength(32, ErrorMessage = "La prénom ne doit pas dépasser 32 caractères.")]
+        [RegularExpression("^[a-zA-Z'-]+$", ErrorMessage = "Le prénom n'est pas valide")]
+        public string? prenomContact { get; set; }
+
+        [MaxLength(32, ErrorMessage = "La nom ne doit pas dépasser 32 caractères.")]
+        [RegularExpression("^[a-zA-Z'-]+$", ErrorMessage = "Le nom n'est pas valide")]
+        public string? nomContact { get; set; }
+
+        [MaxLength(32, ErrorMessage = "La fonction ne doit pas dépasser 32 caractères.")]
+        public string? fonctionContact { get; set; }
+
+        [MaxLength(64, ErrorMessage = "Le courriel ne doit pas dépasser 64 caractères.")]
+        public string? courrielContact { get; set; }
+        public string? typeTelContact { get; set; }
+
+        [Range(1000000000, 9999999999, ErrorMessage = "Le numéro de téléphone n'est pas valide")]
+        public long? noTelContact { get; set; }
+
+        [Range(000000, 999999, ErrorMessage = "Le numéro de poste n'est pas valide")]
+        public long? posteTelContact { get; set; }        
     }
 }
