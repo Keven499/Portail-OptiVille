@@ -1,6 +1,7 @@
 @page "/rbq"
 @using Microsoft.EntityFrameworkCore
 @using Portail_OptiVille.Data.Models
+@using System.ComponentModel.DataAnnotations
 @inject A2024420517riGr1Eq6Context _context
 @inject IJSRuntime JS
 <PageTitle>LicenceRBQComponent</PageTitle>
@@ -122,7 +123,7 @@
                         <label class="form-label mb-1" for="noLicenceRBQ"><strong>Numéro</strong></label>
                         <div class="row align-items-center">
                             <div class="col pe-0">
-                                <InputText class="form-control @errorFieldNo" type="text" id="noLicenceRBQ" @bind-Value="noLicenceRBQ"></InputText>
+                                <InputText class="form-control" type="text" id="noLicenceRBQ" @bind-Value="noLicenceRBQ"></InputText>
                             </div>
                             <div class="col-auto">
                                 @{
