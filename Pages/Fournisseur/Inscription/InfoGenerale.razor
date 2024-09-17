@@ -10,6 +10,7 @@
             <div class="col-lg-12 col-xl-12">
                 <label for="NEQ">NEQ</label>
                 <InputNumber TValue="long?" @bind-Value="identificationModel.NEQ" class="form-control" id="NEQ" />
+                <ValidationMessage For="@(() => identificationModel.NEQ)" />
             </div>
         </div>
     </div>
@@ -19,6 +20,7 @@
             <div class="col-lg-12 col-xl-12">
                 <label for="nomEntreprise">Nom de l'entreprise</label>
                 <InputText id="nomEntreprise" @bind-Value="identificationModel.nomEntreprise" class="form-control" />
+                <ValidationMessage For="@(() => identificationModel.nomEntreprise)" />
             </div>
         </div>
     </div>
@@ -28,6 +30,7 @@
             <div class="col-lg-12 col-xl-12">
                 <label for="courrielEntreprise">Courriel de l'entreprise</label>
                 <InputText type="email" id="courrielEntreprise" @bind-Value="identificationModel.courrielEntreprise" class="form-control" />
+                <ValidationMessage For="@(() => identificationModel.courrielEntreprise)" />
             </div>
         </div>
     </div>
@@ -37,6 +40,7 @@
             <div class="col-lg-12 col-xl-12">
                 <label for="MotDePasse">Mot de passe</label>
                 <InputText type="password" id="MotDePasse" @bind-Value="identificationModel.MotDePasse" class="form-control" />
+                <ValidationMessage For="@(() => identificationModel.MotDePasse)" />
             </div>
         </div>
     </div>
@@ -46,6 +50,7 @@
             <div class="col-lg-12 col-xl-12">
                 <label for="ConfirmationMotDePasse">Confirmation du mot de passe</label>
                 <InputText type="password" id="ConfirmationMotDePasse" @bind-Value="identificationModel.ConfirmationMotDePasse" class="form-control" />
+                <ValidationMessage For="@(() => identificationModel.ConfirmationMotDePasse)" />
             </div>
         </div>
     </div>
@@ -58,10 +63,12 @@
             <div class="col-lg-2 col-xl-2">
                 <label for="No">No</label>
                 <InputText @bind-Value="identificationModel.noEntreprise" class="form-control" id="No" />
+                <ValidationMessage For="@(() => identificationModel.noEntreprise)" />
             </div>
             <div class="col-lg-7 col-xl-7">
                 <label for="Rue">Rue</label>
                 <InputText @bind-Value="identificationModel.rueEntreprise" class="form-control" id="Rue" />
+                <ValidationMessage For="@(() => identificationModel.rueEntreprise)" />
             </div>
             <div class="col-lg-3 col-xl-3">
                 <label for="Bureau">Bureau</label>
@@ -234,7 +241,7 @@
         public string? ConfirmationMotDePasse { get; set; }
 #endregion
 #region coordonnees
-        [Required(ErrorMessage = "Le numéro de la rue est requis")]
+        [Required(ErrorMessage = "Le numéro est requis")]
         [MaxLength(8, ErrorMessage = "Le numéro de la rue ne peut pas dépasser 8 caractères")]
         public string? noEntreprise { get; set; }
 
@@ -249,8 +256,8 @@
         [MaxLength(64, ErrorMessage = "Le nom de la ville ne peut pas dépasser 64 caractères")]
         public string? villeEntreprise { get; set; }
 
-        [Required(ErrorMessage = "Requis")]
-        public string? provinceEntreprise { get; set; }
+        [Required(ErrorMessage = "Requis")] 
+        public string? provinceEntreprise { get; set; } 
 
         [Required(ErrorMessage = "Le code postal est requis")]
         [RegularExpression("^(?!.*[DFIOQU])[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9]$", ErrorMessage = "Le code postal n'est pas valide")]
