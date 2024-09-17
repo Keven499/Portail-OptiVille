@@ -83,19 +83,14 @@
         <div class="row">
             <div class="col-lg-6 col-xl-6">
                 <label for="Province">Province</label>
-                <InputSelect class="form-control" id="Province" @bind-Value="identificationModel.provinceEntreprise">
-                <option value="Québec" selected>Québec</option> <!-- Option placeholder -->
-                @foreach(string province in listeProvinces){
-                        <option value="@province">@province</option>
-                }
-                </InputSelect>
-                <select class="form-control" id="Province" @bind="selectedProvince">
-                    <option value="Québec">Québec</option> 
-                    <option value="Ontario">Ontario</option> 
-                    <option value="Saskatchewan">Saskatchewan</option> 
-                    <option value="Colombie-Britannique">Colombie-Britannique</option> 
-                    <option value="Alberta">Alberta</option> 
-                </select>
+<InputSelect class="form-control" id="Province" @bind-Value="identificationModel.provinceEntreprise">
+    <option value="" disabled selected>Veuillez choisir une province</option>
+    @foreach(string province in listeProvinces)
+    {
+        <option value="@province">@province</option>
+    }
+</InputSelect>
+
             </div>
             
             <div class="col-lg-6 col-xl-6">
@@ -203,15 +198,15 @@
 @code {
     private IdentificationModel identificationModel = new IdentificationModel();
     private string selectedProvince = "Québec";
-    private List<string> listeProvinces = new List<string>{"Ontario", "Manitoba", "Saskatchewan", "Alberta", "Colombie-Britanique",
+    private List<string> listeProvinces = new List<string>{"Québec", "Ontario", "Manitoba", "Saskatchewan", "Alberta", "Colombie-Britanique",
         "Île-du-Prince-Édouard", "Nouveau-Brunswick", "Nouvelle-Écosse", "Terre-Neuve-et-Labrador", "Nunavut", "Territoires du Nord-Ouest", 
         "Yukon"};
     public void HandleValidSubmit()
     {
         Console.WriteLine("OnValidSubmit");
-        Console.WriteLine(identificationModel.provinceEntreprise);
 
     }
+
 
     public class IdentificationModel
     {
