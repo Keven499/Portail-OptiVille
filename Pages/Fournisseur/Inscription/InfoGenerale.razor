@@ -204,16 +204,15 @@
 
 @code {
     private IdentificationModel identificationModel = new IdentificationModel();
-    private string selectedProvince = "Québec";
     private List<string> listeProvinces = new List<string>{"Québec", "Ontario", "Manitoba", "Saskatchewan", "Alberta", "Colombie-Britanique",
         "Île-du-Prince-Édouard", "Nouveau-Brunswick", "Nouvelle-Écosse", "Terre-Neuve-et-Labrador", "Nunavut", "Territoires du Nord-Ouest", 
         "Yukon"};
+
     public void HandleValidSubmit()
     {
         Console.WriteLine("OnValidSubmit");
 
     }
-
 
     public class IdentificationModel
     {
