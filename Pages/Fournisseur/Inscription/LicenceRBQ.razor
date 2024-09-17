@@ -2,15 +2,16 @@
 @using Microsoft.EntityFrameworkCore
 @using Portail_OptiVille.Data.Models
 @using System.ComponentModel.DataAnnotations
+@using System.Text.Json
+@using System.Text.Json.Serialization
 @inject A2024420517riGr1Eq6Context _context
 @inject IJSRuntime JS
+@inject HttpClient Http
 <PageTitle>LicenceRBQComponent</PageTitle>
-<head>
-    <!-- CE LIEN EST TEMPORAIRE, ON ATTEND QUE BOOTSTRAP SOIT DOWNLOAD AVEC LES ICONS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"></head>
+
 <style>
     ::-webkit-scrollbar {
-        width: 6px; 
+        width: 6px;
     }
     ::-webkit-scrollbar-track {
         background: #f1f1f1;
@@ -75,16 +76,17 @@
         display: inline-block;
         width: 20px;
         height: 20px;
-        background-color:  rgb(120, 198, 224);
-        border: 1px solid  rgb(11, 35, 65);
+        background-color: rgb(120, 198, 224);
+        border: 1px solid rgb(11, 35, 65);
         border-radius: 3px;
         position: relative;
         cursor: pointer;
         vertical-align: middle;
     }
-    input[type="checkbox"]:checked + .custom-checkbox {
-        background-color:  rgb(11, 35, 65);
+    input[type="checkbox"]:checked+.custom-checkbox {
+        background-color: rgb(11, 35, 65);
     }
+
     .custom-checkbox:before {
         content: '';
         position: absolute;
@@ -95,9 +97,9 @@
         border: solid white;
         border-width: 0 2px 2px 0;
         transform: rotate(45deg);
-        opacity: 0; 
+        opacity: 0;
     }
-    input[type="checkbox"]:checked + .custom-checkbox:before {
+    input[type="checkbox"]:checked+.custom-checkbox:before {
         opacity: 1;
     }
     .bi-x-square {
@@ -123,23 +125,27 @@
                         <label class="form-label mb-1" for="noLicenceRBQ"><strong>Numéro</strong></label>
                         <div class="row align-items-center">
                             <div class="col pe-0">
-                                <InputText class="form-control" type="text" id="noLicenceRBQ" @bind-Value="noLicenceRBQ"></InputText>
+                                <InputText class="form-control" type="text" id="noLicenceRBQ"
+                                    @bind-Value="noLicenceRBQ"></InputText>
                             </div>
                             <div class="col-auto">
                                 @{
-                                    if (numErrorBool) {
-                                    <i class="bi bi-x-square"></i>
-                                    } 
-                                    if (numGoodBool) {
+                                    if (numErrorBool)
+                                    {
+                                        <i class="bi bi-x-square"></i>
+                                    }
+                                    if (numGoodBool)
+                                    {
                                         <i class="bi bi-check-square"></i>
                                     }
                                 }
                             </div>
-                        </div> 
+                        </div>
                         @{
-                            if (numErrorBool) {
+                            if (numErrorBool)
+                            {
                                 <strong class="error">@numErrorMessage</strong>
-                            }   
+                            }
                         }
                     </div>
                 </div>
@@ -168,54 +174,29 @@
                     <div class="col">
                         <label class="form-label m-0"><strong>Entrepeneur général</strong></label>
                     </div>
-                <div class="col-auto">
+                    <div class="col-auto">
                         @{
-                            if (sousCategoError) {
+                            if (sousCategoError)
+                            {
                                 <i class="bi bi-x-square"></i>
                             }
-                            if (sousCategoGood) {
+                            if (sousCategoGood)
+                            {
                                 <i class="bi bi-check-square"></i>
                             }
                         }
-                </div>
+                    </div>
                 </div>
                 <div class="overflow-auto mb-2">
-                @{
-                    int i = 0;
-                    foreach (var categorie in categorieGeneral)
-                    {
-                        <div class="row m-0">
-                            <div class="col-auto p-0">
-                                <label for="categorie@(i)">
-                                    <input type="checkbox" 
-                                        id="categorie@(i)" 
-                                        checked="@sousCategoSelected[categorie.CodeSousCategorie]" 
-                                        @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
-                                    <span class="custom-checkbox"></span>
-                                </label>
-                            </div>
-                            <div class="col-auto ps-1 pe-0">
-                                <strong class="litteStrong">@categorie.CodeSousCategorie</strong>
-                            </div>
-                            <div class="col ps-1">
-                                <strong class="litteStrong">@categorie.Nom</strong>
-                            </div>
-                        </div>
-                        i++;
-                    }
-                }
-                </div>
-                <div class="row mb-2">
-                    <div class="col">
-                        <label class="form-label m-0"><strong>Entrepeneur spécialisé</strong></label>
-                        <div class="overflow-auto">
-                        @foreach (var categorie in categorieSpecialise) {
+                    @{
+                        int i = 0;
+                        foreach (var categorie in categorieGeneral)
+                        {
                             <div class="row m-0">
                                 <div class="col-auto p-0">
                                     <label for="categorie@(i)">
-                                        <input type="checkbox" 
-                                            id="categorie@(i)" 
-                                            checked="@sousCategoSelected[categorie.CodeSousCategorie]" 
+                                        <input type="checkbox" id="categorie@(i)"
+                                            checked="@sousCategoSelected[categorie.CodeSousCategorie]"
                                             @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
                                         <span class="custom-checkbox"></span>
                                     </label>
@@ -229,9 +210,36 @@
                             </div>
                             i++;
                         }
+                    }
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <label class="form-label m-0"><strong>Entrepeneur spécialisé</strong></label>
+                        <div class="overflow-auto">
+                            @foreach (var categorie in categorieSpecialise)
+                            {
+                                <div class="row m-0">
+                                    <div class="col-auto p-0">
+                                        <label for="categorie@(i)">
+                                            <input type="checkbox" id="categorie@(i)"
+                                                checked="@sousCategoSelected[categorie.CodeSousCategorie]"
+                                                @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
+                                            <span class="custom-checkbox"></span>
+                                        </label>
+                                    </div>
+                                    <div class="col-auto ps-1 pe-0">
+                                        <strong class="litteStrong">@categorie.CodeSousCategorie</strong>
+                                    </div>
+                                    <div class="col ps-1">
+                                        <strong class="litteStrong">@categorie.Nom</strong>
+                                    </div>
+                                </div>
+                                i++;
+                            }
                         </div>
                         @{
-                            if (sousCategoError) {
+                            if (sousCategoError)
+                            {
                                 <strong class="error">Au moins une catégorie doit être sélectionné</strong>
                             }
                         }
@@ -252,23 +260,27 @@
                         <label class="form-label mb-1" for="noLicenceRBQ"><strong>Numéro</strong></label>
                         <div class="row align-items-center">
                             <div class="col pe-0">
-                                <InputText class="form-control" type="text" id="noLicenceRBQ" @bind-Value="noLicenceRBQ"></InputText>
+                                <InputText class="form-control" type="text" id="noLicenceRBQ"
+                                    @bind-Value="noLicenceRBQ"></InputText>
                             </div>
                             <div class="col-auto">
                                 @{
-                                    if (numErrorBool) {
-                                    <i class="bi bi-x-square"></i>
-                                    } 
-                                    if (numGoodBool) {
+                                    if (numErrorBool)
+                                    {
+                                        <i class="bi bi-x-square"></i>
+                                    }
+                                    if (numGoodBool)
+                                    {
                                         <i class="bi bi-check-square"></i>
                                     }
                                 }
                             </div>
-                        </div> 
+                        </div>
                         @{
-                            if (numErrorBool) {
+                            if (numErrorBool)
+                            {
                                 <strong class="error">@numErrorMessage</strong>
-                            }   
+                            }
                         }
                     </div>
                 </div>
@@ -297,54 +309,29 @@
                     <div class="col">
                         <label class="form-label m-0"><strong>Entrepeneur général</strong></label>
                     </div>
-                   <div class="col-auto">
+                    <div class="col-auto">
                         @{
-                            if (sousCategoError) {
+                            if (sousCategoError)
+                            {
                                 <i class="bi bi-x-square"></i>
                             }
-                            if (sousCategoGood) {
+                            if (sousCategoGood)
+                            {
                                 <i class="bi bi-check-square"></i>
                             }
                         }
-                   </div>
+                    </div>
                 </div>
                 <div class="overflow-auto mb-2">
-                @{
-                    int i = 0;
-                    foreach (var categorie in categorieGeneral)
-                    {
-                        <div class="row m-0">
-                            <div class="col-auto p-0">
-                                <label for="categorie@(i)">
-                                    <input type="checkbox" 
-                                        id="categorie@(i)" 
-                                        checked="@sousCategoSelected[categorie.CodeSousCategorie]" 
-                                        @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
-                                    <span class="custom-checkbox"></span>
-                                </label>
-                            </div>
-                            <div class="col-auto ps-1 pe-0">
-                                <strong class="litteStrong">@categorie.CodeSousCategorie</strong>
-                            </div>
-                            <div class="col ps-1">
-                                <strong class="litteStrong">@categorie.Nom</strong>
-                            </div>
-                        </div>
-                        i++;
-                    }
-                }
-                </div>
-                <div class="row mb-2">
-                    <div class="col">
-                        <label class="form-label m-0"><strong>Entrepeneur spécialisé</strong></label>
-                        <div class="overflow-auto">
-                        @foreach (var categorie in categorieSpecialise) {
+                    @{
+                        int i = 0;
+                        foreach (var categorie in categorieGeneral)
+                        {
                             <div class="row m-0">
                                 <div class="col-auto p-0">
                                     <label for="categorie@(i)">
-                                        <input type="checkbox" 
-                                            id="categorie@(i)" 
-                                            checked="@sousCategoSelected[categorie.CodeSousCategorie]" 
+                                        <input type="checkbox" id="categorie@(i)"
+                                            checked="@sousCategoSelected[categorie.CodeSousCategorie]"
                                             @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
                                         <span class="custom-checkbox"></span>
                                     </label>
@@ -358,9 +345,36 @@
                             </div>
                             i++;
                         }
+                    }
+                </div>
+                <div class="row mb-2">
+                    <div class="col">
+                        <label class="form-label m-0"><strong>Entrepeneur spécialisé</strong></label>
+                        <div class="overflow-auto">
+                            @foreach (var categorie in categorieSpecialise)
+                            {
+                                <div class="row m-0">
+                                    <div class="col-auto p-0">
+                                        <label for="categorie@(i)">
+                                            <input type="checkbox" id="categorie@(i)"
+                                                checked="@sousCategoSelected[categorie.CodeSousCategorie]"
+                                                @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
+                                            <span class="custom-checkbox"></span>
+                                        </label>
+                                    </div>
+                                    <div class="col-auto ps-1 pe-0">
+                                        <strong class="litteStrong">@categorie.CodeSousCategorie</strong>
+                                    </div>
+                                    <div class="col ps-1">
+                                        <strong class="litteStrong">@categorie.Nom</strong>
+                                    </div>
+                                </div>
+                                i++;
+                            }
                         </div>
                         @{
-                            if (sousCategoError) {
+                            if (sousCategoError)
+                            {
                                 <strong class="error">Au moins une catégorie doit être sélectionné</strong>
                             }
                         }
@@ -374,37 +388,6 @@
     </div>
 </div>
 
-<script>
-    // Define the function to perform the API request
-    function fetchSQLData(resourceId, field, searchQuery) {
-        return "test"
-        /*
-        // Create the SQL query dynamically
-        var sqlQuery = `SELECT * from "${resourceId}" WHERE ${field} LIKE '${searchQuery}'`;
-        // URL encode the SQL query
-        var encodedQuery = encodeURIComponent(sqlQuery);
-        // Make the fetch request
-        return fetch(`https://www.donneesquebec.ca/recherche/api/3/action/datastore_search_sql?sql=${encodedQuery}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json()) // Parse the JSON response
-        .then(data => {
-            if (data.result && data.result.records && data.result.records.length > 0) {
-            return data.result.records[0].title; 
-            } else {
-                return ''; // Return an empty string if no results found
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-        });
-        */
-    }
-</script>
-
 @code {
     private List<Categorie> categorieGeneral = new List<Categorie>();
     private List<Categorie> categorieSpecialise = new List<Categorie>();
@@ -416,7 +399,7 @@
     private int typeLicence = 1;
     private bool numErrorBool = false;
     private bool numGoodBool = false;
-    
+
     private string? numErrorMessage;
     private bool sousCategoError = false;
     private bool sousCategoGood = false;
@@ -441,24 +424,24 @@
     {
         try
         {
-            // Permet d'aller chercher toutes les catégories 
+            // Permet d'aller chercher toutes les catégories
             allCategories = await _context.Categories.ToListAsync();
 
             // Créer une copie de toutes les catégories pour leur attribuer un bool qui détermine si la catégorie est coché ou non
             sousCategoSelected = allCategories.ToDictionary(
-                c => c.CodeSousCategorie,
-                c => false
+            c => c.CodeSousCategorie,
+            c => false
             );
 
             // Récupère toutes les catégories de type Général
             categorieGeneral = allCategories
-                .Where(c => c.NomCategorie == "Général")
-                .ToList();
+            .Where(c => c.NomCategorie == "Général")
+            .ToList();
 
-             // Récupère toutes les catégories de type Spécialisé
+            // Récupère toutes les catégories de type Spécialisé
             categorieSpecialise = allCategories
-                .Where(c => c.NomCategorie == "Spécialisé")
-                .ToList();
+            .Where(c => c.NomCategorie == "Spécialisé")
+            .ToList();
         }
         catch (Exception ex)
         {
@@ -470,8 +453,8 @@
     private List<Categorie> GetSelectedCategories()
     {
         return allCategories
-            .Where(c => sousCategoSelected[c.CodeSousCategorie])
-            .ToList();
+        .Where(c => sousCategoSelected[c.CodeSousCategorie])
+        .ToList();
     }
 
     // Fonction permettant d'indiquer dans la liste qu'une catégorie est sélectionné
@@ -489,18 +472,7 @@
         return sousCategoSelected.Values.Any(isSelected => isSelected);
     }
 
-    // Call the JavaScript function using JavaScript Interop
-    private async Task CallLicenceValidation(string resourceId, string field, string noLicence)
-    {
-        try {
-            resultMessage = await JS.InvokeAsync<string>("fetchSQLData", resourceId, field, noLicence);
-        }
-        catch (Exception ex) {
-            Console.WriteLine($"Erreur lors de la récupération du numéro de licence: {ex.Message}");
-        }
-    }
-
-    // Fonction permettant de formatter la licence 
+    // Fonction permettant de formatter la licence
     static string InsertHyphens(string input)
     {
         if (input.Length == 10)
@@ -509,36 +481,90 @@
         }
         return input;
     }
-    
+
+public class ApiResponse
+{
+    public Result? Result { get; set; }
+}
+
+public class Result
+{
+    public List<RBQRecord>? Records { get; set; }
+}
+
+public class RBQRecord
+{
+    [JsonPropertyName("Numero de licence")]
+    public string? NumeroDeLicence { get; set; }
+}
+
+protected async Task<string?> GetNumeroDeLicenceAsync()
+{
+    try
+    {
+        var response = await Http.GetAsync($"https://www.donneesquebec.ca/recherche/api/3/action/datastore_search_sql?sql=SELECT%20*%20FROM%20%2232f6ec46-85fd-45e9-945b-965d9235840a%22%20WHERE%20%22Numero%20de%20licence%22%20=%20%27{noLicenceRBQ}%27LIMIT%201"); // Replace `url` with your API endpoint
+        if (response.IsSuccessStatusCode)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            // Deserialize the JSON into the ApiResponse object
+            var apiResponse = JsonSerializer.Deserialize<ApiResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            // Extract the first record's "Numero de licence"
+            var responseNoLicence = apiResponse?.Result?.Records?.FirstOrDefault()?.NumeroDeLicence;
+            Console.WriteLine("API: "+ responseNoLicence);
+            return responseNoLicence;
+        }
+        return "0000-0000-00"; // Return null if the request was not successful
+    }
+    catch (Exception ex)
+    {
+        // Handle exceptions (e.g., log the error)
+        Console.WriteLine($"An error occurred: {ex.Message}");
+        return null;
+    }
+}
+
     // Fonction exécuter au moment de soumettre le Form
     public async Task HandleValidSubmit()
     {
         #region Regarde si au moins 1 catégorie est sélectionné
         if (!ValidateSelection())
         {
-           sousCategoError = true;
-           sousCategoGood = false;
-        } else {
+            sousCategoError = true;
+            sousCategoGood = false;
+        }
+        else
+        {
             sousCategoError = false;
             sousCategoGood = true;
         }
         #endregion
 
         #region Regarde si le no de licence RBQ nest pas vide et valide avec API
-        if (!string.IsNullOrEmpty(noLicenceRBQ)) {
+        if (!string.IsNullOrEmpty(noLicenceRBQ))
+        {
             noLicenceRBQ = InsertHyphens(noLicenceRBQ);
-            await CallLicenceValidation("32f6ec46-85fd-45e9-945b-965d9235840a", "Numero de licence", noLicenceRBQ);
-            if (noLicenceRBQ.Equals(resultMessage)) {
-                numErrorBool = false;
-                numGoodBool = true;
+            Console.WriteLine("INPUT: " + noLicenceRBQ);
+            var tempoNoLicence = await GetNumeroDeLicenceAsync(); 
+            if (tempoNoLicence != null) {
+                if (tempoNoLicence.Equals(noLicenceRBQ))
+                {
+                    numErrorBool = false;
+                    numGoodBool = true;
+                }
+                else
+                {
+                    numErrorMessage = "Numéro de licence invalide";
+                    numErrorBool = true;
+                    numGoodBool = false;
+                }
             }
             else {
-                numErrorMessage = "Numéro de licence invalide";
                 numErrorBool = true;
                 numGoodBool = false;
             }
         }
-        else {
+        else
+        {
             numErrorBool = true;
             numGoodBool = false;
             numErrorMessage = "Numéro de licence requis";
@@ -546,8 +572,8 @@
         #endregion
 
         #region Regarde si toutes les informations sont entrées correctement et exécute la requête
-        if (!numErrorBool && !sousCategoError) {
-            // TESTS POUR VOIR LES DONNÉES ENTRÉES
+        if (!numErrorBool && !sousCategoError)
+        {
             Console.WriteLine(noLicenceRBQ);
             Console.WriteLine(statutLicenceText[statutLicence]);
             Console.WriteLine(typeLicenceText[typeLicence]);
@@ -558,10 +584,14 @@
             }
             // IL FAUT MAINTENANT FAIRE LES REQUÊTES POUR INSÉRER TOUTES LES LICENCES DE FAÇONS APPROPRIÉES
             // CELA INCLUS ÉNORMÉMENT DE CHOSES
-            // NOUS ALLONS DEVOIR TOUCHER AUX TABLES SUIVANTES (DANS L'ORDRE D'INSERTION): CATEGORIE, LICENCERBQ, LICENCERBQCATEGORIE, FOURNISSEURLICENCERBQ ??
-            // À CE POINT DANS LA DEMANDE, L'ID DU FOURNISSEUR N'EXISTE TECHNIQUEMENT PAS ENCORE, L'INSERTION DANS LA TABLE FOURNISSEURLICENCERBQ DEVRA DONC SE FAIRE FORCÉMENT À LA FIN
+            // NOUS ALLONS DEVOIR TOUCHER AUX TABLES SUIVANTES (DANS L'ORDRE D'INSERTION): CATEGORIE, LICENCERBQ,
+            // LICENCERBQCATEGORIE, FOURNISSEURLICENCERBQ ??
+            // À CE POINT DANS LA DEMANDE, L'ID DU FOURNISSEUR N'EXISTE TECHNIQUEMENT PAS ENCORE, L'INSERTION DANS LA TABLE
+            //FOURNISSEURLICENCERBQ DEVRA DONC SE FAIRE FORCÉMENT À LA FIN
             // LÀ OÙ NOUS EN SOMMES, NOUS NE POUVONS QUE INSÉRER DANS LES TABLES: CATEGORIE, LICENCERBQ, LICENCERBQCATEGORIE.
             // RESTE À DÉTERMINER SI UNE LICENCE AVEC LE STATUT NON VALIDE DOIT ÊTRE VÉRIFIÉ PAR L'API ET QU'EST-CE QUE LES TRAVAUX PERMIS
+            
+            
         }
         #endregion
     }

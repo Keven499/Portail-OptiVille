@@ -5,6 +5,7 @@ using Portail_OptiVille.Data;
 using Portail_OptiVille.Data.Models;
 using Portail_OptiVille.Data.Utilities;
 using static Portail_OptiVille.Data.Utilities.MailManager;
+using System.Net.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,15 +21,15 @@ builder.Services.AddScoped<MailManager>();
 #endregion
 
 #region Database
-//Injection de dépendance pour la connexion à la base de données
+//Injection de dï¿½pendance pour la connexion ï¿½ la base de donnï¿½es
 builder.Services.AddDbContext<A2024420517riGr1Eq6Context>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
-        new MySqlServerVersion(new Version(8, 0, 18)) // Remplacez par une version générique
+        new MySqlServerVersion(new Version(8, 0, 18)) // Remplacez par une version gï¿½nï¿½rique
     )
 );
 #endregion
-
+builder.Services.AddHttpClient();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
