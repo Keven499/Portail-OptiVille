@@ -20,7 +20,7 @@
             <div class="col-lg-12 col-xl-12">
                 <label for="nomEntreprise">Nom de l'entreprise</label>
                 <InputText id="nomEntreprise" @bind-Value="identificationModel.nomEntreprise" class="form-control" />
-                <ValidationMessage For="@(() => identificationModel.nomEntreprise)" />
+                <ValidationMessage For="@(() => identificationModel.nomEntreprise)" />               
             </div>
         </div>
     </div>
@@ -73,6 +73,7 @@
             <div class="col-lg-3 col-xl-3">
                 <label for="Bureau">Bureau</label>
                 <InputText @bind-Value="identificationModel.bureauEntreprise" class="form-control" id="Bureau" />
+                <ValidationMessage For="@(() => identificationModel.bureauEntreprise)" />
             </div>
         </div>
     </div>
@@ -82,6 +83,7 @@
             <div class="col-lg-12 col-xl-12">
                 <label for="Ville">Ville</label>
                 <InputText @bind-Value="identificationModel.villeEntreprise" class="form-control" id="Ville" />
+                <ValidationMessage For="@(() => identificationModel.villeEntreprise)" />
             </div>
         </div>
     </div>
@@ -90,32 +92,29 @@
         <div class="row">
             <div class="col-lg-6 col-xl-6">
                 <label for="Province">Province</label>
-<InputSelect class="form-control" id="Province" @bind-Value="identificationModel.provinceEntreprise">
-    <option value="" disabled selected>Veuillez choisir une province</option>
-    @foreach(string province in listeProvinces)
-    {
-        <option value="@province">@province</option>
-    }
-</InputSelect>
-
+                    <InputSelect class="form-control" id="Province" @bind-Value="identificationModel.provinceEntreprise">
+                        <option value="" disabled selected>Veuillez choisir une province</option>
+                        @foreach(string province in listeProvinces)
+                        {
+                            <option value="@province">@province</option>
+                        }
+                    </InputSelect>
             </div>
             
             <div class="col-lg-6 col-xl-6">
                 <label for="CodePostal">Code Postal</label>
                 <InputText @bind-Value="identificationModel.codePostalEntreprise" class="form-control" id="CodePostal" />
+                <ValidationMessage For="@(() => identificationModel.codePostalEntreprise)" />
             </div>
         </div>
     </div>
 
     <div class="form-group container-fluid">
         <div class="row">
-            <div class="col-lg-2 col-xl-2">
-                <label for="codeAdm">Code</label>
-                <InputNumber @bind-Value="identificationModel.codeAdmEntreprise" class="form-control" id="codeAdm" />
-            </div>
-            <div class="col-lg-10 col-xl-10">
+            <div class="col-lg-12 col-xl-12">
                 <label for="RegionAdm">Région Admnistrative</label>
                 <InputText @bind-Value="identificationModel.regionAdmEntreprise" class="form-control" id="RegionAdm" />
+                <ValidationMessage For="@(() => identificationModel.regionAdmEntreprise)" />
             </div>
         </div>
     </div>
@@ -138,6 +137,7 @@
             <div class="col-lg-7 col-xl-7">
                 <label for="NoTel">Numéro de téléphone</label>
                 <InputNumber TValue="long?" @bind-Value="identificationModel.noTelEntreprise" class="form-control" id="NoTel" />
+                <ValidationMessage For="@(() => identificationModel.noTelEntreprise)" />
             </div>
             <div class="col-lg-3 col-xl-3">
                 <label for="PosteCoordo">Poste</label>
@@ -152,14 +152,17 @@
             <div class="col-lg-4 col-xl-4">
                 <label for="Prenom">Prénom</label>
                 <InputText @bind-Value="identificationModel.prenomContact" class="form-control" id="Prenom" />
+                <ValidationMessage For="@(() => identificationModel.prenomContact)" />
             </div>
             <div class="col-lg-4 col-xl-4">
                 <label for="Nom">Nom</label>
                 <InputText @bind-Value="identificationModel.nomContact" class="form-control" id="Nom" />
+                <ValidationMessage For="@(() => identificationModel.nomContact)" />
             </div>
             <div class="col-lg-4 col-xl-4">
                 <label for="Fonction">Fonction</label>
                 <InputText @bind-Value="identificationModel.fonctionContact" class="form-control" id="Fonction" />
+                <ValidationMessage For="@(() => identificationModel.fonctionContact)" />
             </div>
         </div>
     </div>
@@ -169,6 +172,7 @@
             <div class="col-lg-12 col-xl-12">
                 <label for="Courriel">Adresse courriel</label>
                 <InputText @bind-Value="identificationModel.courrielContact" class="form-control" id="Courriel" />
+                <ValidationMessage For="@(() => identificationModel.fonctionContact)" />
             </div>
         </div>
     </div>
@@ -182,6 +186,7 @@
             <div class="col-lg-7 col-xl-7">
                 <label for="NoTel">Numéro de téléphone</label>
                 <InputNumber TValue="long?" @bind-Value="identificationModel.noTelContact" class="form-control" id="NoTel" />
+                <ValidationMessage For="@(() => identificationModel.noTelContact)" />
             </div>
             <div class="col-lg-3 col-xl-3">
                 <label for="PosteCoordo">Poste</label>
@@ -191,7 +196,6 @@
     </div>
 
     <DataAnnotationsValidator />
-    <ValidationSummary />
 
     <div class="form-group container-fluid">
         <div class="row">
