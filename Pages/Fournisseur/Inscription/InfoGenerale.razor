@@ -273,7 +273,7 @@
         [Required(ErrorMessage = "Le code postal est requis")]
         [RegularExpression("^(?!.*[DFIOQU])[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9]$", ErrorMessage = "Le code postal n'est pas valide")]
         [MaxLength(6, ErrorMessage = "Le code postal ne peut pas dépasser 6 caractères")]
-           
+
         public string? codePostalEntreprise { get; set; }
 
         [Required(ErrorMessage = "Le numéro du code de la région est requis")]
