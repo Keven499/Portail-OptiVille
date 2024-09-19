@@ -1,0 +1,20 @@
+@page "/files"
+<EditForm>
+<InputFile>
+</InputFile>
+</EditForm>
+
+@code{
+    private class LicenceRBQModel {
+        [Required(ErrorMessage = "Le numéro de licence est requis")]  
+
+        public string? NoLicenceRBQ { get; set; }
+        
+        public bool IsLicenceValid { get; set; } = true;
+
+
+        public bool IsChecked { get; set; }
+        
+        public List<string> CodeSousCategorieTrue { get; set; } = new List<string>();
+    }
+}
