@@ -1,5 +1,8 @@
 @page "/InfoGenerale"
 @using System.ComponentModel.DataAnnotations
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@inject HttpClient Http
 <PageTitle>Informations générales</PageTitle>
 
 <EditForm Model="@identificationModel" OnValidSubmit="HandleValidSubmit">
@@ -491,11 +494,14 @@
             </div>
         </div>
     </div>
-    <DataAnnotationsValidator />
+    @* <DataAnnotationsValidator /> *@
 </EditForm>
 
 @code {
+    // Modèle pour les informations générales
     private IdentificationModel identificationModel = new IdentificationModel();
+
+    #region Listes
     private List<string> listeProvinces = new List<string>{"Québec", "Ontario", "Manitoba", "Saskatchewan", "Alberta", "Colombie-Britanique",
         "Île-du-Prince-Édouard", "Nouveau-Brunswick", "Nouvelle-Écosse", "Terre-Neuve-et-Labrador", "Nunavut", "Territoires du Nord-Ouest", 
         "Yukon"};
@@ -504,11 +510,31 @@
         "(11) Gaspésie-Îles-de-la-Madeleine", "(12) Chaudière-Appalaches", "(13) Laval", "(14) Lanaudière", "(15) Laurentides", "(16) Montérégie", 
         "(17) Centre-du-Québec"};
     private List<string> listeTypeContact = new List<string>{"Bureau", "Télécopieur", "Cellulaire"};
+    #endregion
     private bool isSubmitted = false;
     private bool isValid = true;
-    public void HandleValidSubmit()
+    // Sert à gérer le scénario où le formulaire est valide.
+    public async void HandleValidSubmit()
     {
+        await getAddressWithNEQ();
         Console.WriteLine("OnValidSubmit");
+    }
+
+    //Appel de l'API des municipalite
+    private async Task getAddressWithNEQ()
+    {
+
+        var response = await Http.GetAsync($"https://www.donneesquebec.ca/recherche/api/3/action/datastore_search_sql?sql=SELECT%20DISTINCT%20*%20FROM%20%2232f6ec46-85fd-45e9-945b-965d9235840a%22%20WHERE%20%22NEQ%22%20=%20%27{identificationModel.NEQ}%27%20LIMIT%201");
+    
+        if (response.IsSuccessStatusCode){
+            // Récupération des données
+            var data = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(data);
+        }
+        else{
+            Console.WriteLine("Erreur lors de l'appel de l'API");
+        }
+
     }
 
     private void SubmitForm()
@@ -520,75 +546,76 @@
 
     public class IdentificationModel
     {
-#region identification
-        [Range(1100000000, 8899999999, ErrorMessage = "Maximum 10 caractères")]
-        public long? NEQ { get; set; }
-        
-        [Required(ErrorMessage = "Nom requis")]
-        [MaxLength(64, ErrorMessage = "Maximum 64 caractères")]
-        public string? nomEntreprise { get; set; }
 
-        [Required(ErrorMessage = "Courriel est requis")]
-        [MaxLength(64, ErrorMessage = "Maximum 64 caractères")]
-        public string? courrielEntreprise { get; set; }
+    #region identification
+            [Range(1100000000, 8899999999, ErrorMessage = "Maximum 10 caractères")]
+            public long? NEQ { get; set; }
+            
+            [Required(ErrorMessage = "Nom requis")]
+            [MaxLength(64, ErrorMessage = "Maximum 64 caractères")]
+            public string? nomEntreprise { get; set; }
 
-        [Required(ErrorMessage = "Mot de passe requis")]
-        [Length(7,12, ErrorMessage = "Contient entre 7 et 12 caractères")]
-        [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).+$", ErrorMessage = "Contient au moins une majuscule, une minuscule, un chiffre et un caractère spécial (@$!%*?&)")]
-        public string? MotDePasse { get; set; }
+            [Required(ErrorMessage = "Courriel est requis")]
+            [MaxLength(64, ErrorMessage = "Maximum 64 caractères")]
+            public string? courrielEntreprise { get; set; }
 
-        [Required(ErrorMessage = "Confirmation du mot de passe requise")]
-        [Length(7,12, ErrorMessage = "Contient entre 7 et 12 caractères")]
-        [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).+$", ErrorMessage = "Contient au moins une majuscule, une minuscule, un chiffre et un caractère spécial (@$!%*?&)")]
-        [Compare(nameof(MotDePasse), ErrorMessage = "Les mots de passe ne correspondent pas")]
-        public string? ConfirmationMotDePasse { get; set; }
-#endregion
-#region coordonnees
-        [Required(ErrorMessage = "No requis")]
-        [MaxLength(8, ErrorMessage = "Maximum 8 caractères")]
-        public string? noEntreprise { get; set; }
+            [Required(ErrorMessage = "Mot de passe requis")]
+            [Length(7,12, ErrorMessage = "Contient entre 7 et 12 caractères")]
+            [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).+$", ErrorMessage = "Contient au moins une majuscule, une minuscule, un chiffre et un caractère spécial (@$!%*?&)")]
+            public string? MotDePasse { get; set; }
 
-        [Required(ErrorMessage = "Nom requis")]
-        [MaxLength(64, ErrorMessage = "Maximum 64 caractères")]
-        public string? rueEntreprise { get; set; }
+            [Required(ErrorMessage = "Confirmation du mot de passe requise")]
+            [Length(7,12, ErrorMessage = "Contient entre 7 et 12 caractères")]
+            [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).+$", ErrorMessage = "Contient au moins une majuscule, une minuscule, un chiffre et un caractère spécial (@$!%*?&)")]
+            [Compare(nameof(MotDePasse), ErrorMessage = "Les mots de passe ne correspondent pas")]
+            public string? ConfirmationMotDePasse { get; set; }
+    #endregion
+    #region coordonnees
+            [Required(ErrorMessage = "No requis")]
+            [MaxLength(8, ErrorMessage = "Maximum 8 caractères")]
+            public string? noEntreprise { get; set; }
 
-        [MaxLength(8, ErrorMessage = "Maximum 8 caractères")]
-        public string? bureauEntreprise { get; set; }
+            [Required(ErrorMessage = "Nom requis")]
+            [MaxLength(64, ErrorMessage = "Maximum 64 caractères")]
+            public string? rueEntreprise { get; set; }
 
-        [Required(ErrorMessage = "Nom requis")]
-        [MaxLength(64, ErrorMessage = "Maximum 64 caractères")]
-        public string? villeEntreprise { get; set; }
+            [MaxLength(8, ErrorMessage = "Maximum 8 caractères")]
+            public string? bureauEntreprise { get; set; }
 
-        [Required(ErrorMessage = "Province requise")]
-        public string? provinceEntreprise { get; set; }
+            [Required(ErrorMessage = "Nom requis")]
+            [MaxLength(64, ErrorMessage = "Maximum 64 caractères")]
+            public string? villeEntreprise { get; set; }
 
-        [Required(ErrorMessage = "Code postal requis")]
-        [RegularExpression("^(?!.*[DFIOQU])[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9]$", ErrorMessage = "Code postal invalide")]
-        [MaxLength(6, ErrorMessage = "Maximum 6 caractères")]
+            [Required(ErrorMessage = "Province requise")]
+            public string? provinceEntreprise { get; set; }
 
-        public string? codePostalEntreprise { get; set; }
+            [Required(ErrorMessage = "Code postal requis")]
+            [RegularExpression("^(?!.*[DFIOQU])[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9]$", ErrorMessage = "Code postal invalide")]
+            [MaxLength(6, ErrorMessage = "Maximum 6 caractères")]
 
-        [Required(ErrorMessage = "Numéro requis")]
-        [MaxLength(2, ErrorMessage = "Maximum 2 caractères")]
-        public int? codeAdmEntreprise { get; set; }
+            public string? codePostalEntreprise { get; set; }
 
-        [Required(ErrorMessage = "Région requise")]
-        public string? regionAdmEntreprise { get; set; }
+            [Required(ErrorMessage = "Numéro requis")]
+            [MaxLength(2, ErrorMessage = "Maximum 2 caractères")]
+            public int? codeAdmEntreprise { get; set; }
 
-        [MaxLength(64, ErrorMessage = "Maximum 64 caractères")]
-        public string? siteWebEntreprise { get; set; }
+            [Required(ErrorMessage = "Région requise")]
+            public string? regionAdmEntreprise { get; set; }
 
-        [Required(ErrorMessage = "Type requis")]
-        public string? typeTelEntreprise { get; set; }
+            [MaxLength(64, ErrorMessage = "Maximum 64 caractères")]
+            public string? siteWebEntreprise { get; set; }
 
-        [Required(ErrorMessage = "Numéro requis")]
-        [Range(1000000000, 9999999999, ErrorMessage = "Numéro invalide")]
-        public long? noTelEntreprise { get; set; }
+            [Required(ErrorMessage = "Type requis")]
+            public string? typeTelEntreprise { get; set; }
 
-        [Range(000000, 999999, ErrorMessage = "Numéro invalide")]
-        public long? posteTelEntreprise { get; set; }
-#endregion
-#region contact
+            [Required(ErrorMessage = "Numéro requis")]
+            [Range(1000000000, 9999999999, ErrorMessage = "Numéro invalide")]
+            public long? noTelEntreprise { get; set; }
+
+            [Range(000000, 999999, ErrorMessage = "Numéro invalide")]
+            public long? posteTelEntreprise { get; set; }
+    #endregion
+    #region contact
         [Required(ErrorMessage = "Prénom requis")]
         [MaxLength(32, ErrorMessage = "Maximum 32 caractères.")]
         [RegularExpression("^[a-zA-Z'-]+$", ErrorMessage = "Prénom invalide")]
@@ -616,7 +643,25 @@
 
         [Range(000000, 999999, ErrorMessage = "Numéro invalide")]
         public long? posteTelContact { get; set; }
-#endregion
+    #endregion
 
     }
+
+public class ApiResponse
+{
+    public Result? Result { get; set; }
+}
+
+public class Result
+{
+    public List<NEQRecord>? Records { get; set; }
+}
+
+public class NEQRecord
+{
+    [JsonPropertyName("NEQ")]
+    public string? NEQ { get; set; }
+    [JsonPropertyName("Adresse")]
+    public string? Adresse { get; set; }
+}
 }
