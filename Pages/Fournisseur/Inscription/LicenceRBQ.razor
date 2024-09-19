@@ -102,95 +102,121 @@
     input[type="checkbox"]:checked+.custom-checkbox:before {
         opacity: 1;
     }
-    .bi-x-square {
+    .invalid {
+        outline: 1px solid red;
+    }
+    .valid {
+        outline: 1px solid #26b050;
+    }
+    .errorIcon {
         color: red;
-        font-size: 20px;
     }
-    .bi-check-square {
-        color: green;
-        font-size: 20px;
-    }
-    article {
-        background-color: greenyellow;
+    .validIcon {
+        color: #26b050;
     }
 </style>
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-xl col-12 bg-white p-0">
-            <h1 class="text-center dark-background">Licence RBQ</h1>
-            <EditForm Model="@this" OnValidSubmit="HandleValidSubmit">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <label class="form-label mb-1" for="noLicenceRBQ"><strong>Numéro</strong></label>
-                        <div class="row align-items-center">
-                            <div class="col pe-0">
-                                <InputText class="form-control" type="text" id="noLicenceRBQ"
-                                    @bind-Value="noLicenceRBQ"></InputText>
-                            </div>
-                            <div class="col-auto">
-                                @{
-                                    if (numErrorBool)
-                                    {
-                                        <i class="bi bi-x-square"></i>
-                                    }
-                                    if (numGoodBool)
-                                    {
-                                        <i class="bi bi-check-square"></i>
-                                    }
+    <div class="col-xl-12 col-12 bg-white">
+        <h1 class="text-center dark-background">Licence RBQ</h1>
+        <EditForm Model="@this" OnValidSubmit="HandleValidSubmit">
+            <div class="row align-items-center mb-2">
+                <div class="col">
+                    <label class="form-label mb-1" for="noLicenceRBQ"><strong>Numéro</strong></label>
+                    <div class="row align-items-center">
+                        <div class="col pe-0">
+                            <InputText class="form-control" type="text" id="noLicenceRBQ"
+                                @bind-Value="noLicenceRBQ"></InputText>
+                        </div>
+                        <div class="col-auto">
+                            @{
+                                if (numErrorBool)
+                                {
+                                    <i class="bi bi-x-circle me-2 errorIcon"></i>
                                 }
+                                if (numGoodBool)
+                                {
+                                    <i class="bi bi-check-circle me-2 validIcon"></i>
+                                }
+                            }
+                        </div>
+                    </div>
+                    @{
+                        if (numErrorBool)
+                        {
+                            <div class="validation-message">@numErrorMessage</div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col">
+                    <div class="row">
+                        <label class="form-label mb-1" for="statut"><strong>Statut</strong></label>
+                    </div>
+                    <select class="form-select" id="statut" @bind="statutLicence">
+                        <option value="1">Valide</option>
+                        <option value="2">Valide avec restriction</option>
+                        <option value="3">Non valide</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <div class="row">
+                        <label class="form-label mb-1" for="licenceType"><strong>Type de licence</strong></label>
+                    </div>
+                    <select class="form-select" id="licenceType" @bind="typeLicence">
+                        <option value="1">Entrepreneur</option>
+                        <option value="2">Constructeur-Propriétaire</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col">
+                    <label class="form-label m-0"><strong>Entrepeneur général</strong></label>
+                </div>
+                <div class="col-auto">
+                    @{
+                        if (sousCategoError)
+                        {
+                            <i class="bi bi-x-square"></i>
+                        }
+                        if (sousCategoGood)
+                        {
+                            <i class="bi bi-check-square"></i>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="overflow-auto mb-2">
+                @{
+                    int i = 0;
+                    foreach (var categorie in categorieGeneral)
+                    {
+                        <div class="row m-0">
+                            <div class="col-auto p-0">
+                                <label for="categorie@(i)">
+                                    <input type="checkbox" id="categorie@(i)"
+                                        checked="@sousCategoSelected[categorie.CodeSousCategorie]"
+                                        @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
+                                    <span class="custom-checkbox"></span>
+                                </label>
+                            </div>
+                            <div class="col-auto ps-1 pe-0">
+                                <strong class="litteStrong">@categorie.CodeSousCategorie</strong>
+                            </div>
+                            <div class="col ps-1">
+                                <strong class="litteStrong">@categorie.Nom</strong>
                             </div>
                         </div>
-                        @{
-                            if (numErrorBool)
-                            {
-                                <strong class="error">@numErrorMessage</strong>
-                            }
-                        }
-                    </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col">
-                        <div class="row">
-                            <label class="form-label mb-1" for="statut"><strong>Statut</strong></label>
-                        </div>
-                        <select class="form-select" id="statut" @bind="statutLicence">
-                            <option value="1">Valide</option>
-                            <option value="2">Valide avec restriction</option>
-                            <option value="3">Non valide</option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <div class="row">
-                            <label class="form-label mb-1" for="licenceType"><strong>Type de licence</strong></label>
-                        </div>
-                        <select class="form-select" id="licenceType" @bind="typeLicence">
-                            <option value="1">Entrepreneur</option>
-                            <option value="2">Constructeur-Propriétaire</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row align-items-center">
-                    <div class="col">
-                        <label class="form-label m-0"><strong>Entrepeneur général</strong></label>
-                    </div>
-                    <div class="col-auto">
-                        @{
-                            if (sousCategoError)
-                            {
-                                <i class="bi bi-x-square"></i>
-                            }
-                            if (sousCategoGood)
-                            {
-                                <i class="bi bi-check-square"></i>
-                            }
-                        }
-                    </div>
-                </div>
-                <div class="overflow-auto mb-2">
-                    @{
-                        int i = 0;
-                        foreach (var categorie in categorieGeneral)
+                        i++;
+                    }
+                }
+            </div>
+            <div class="row mb-2">
+                <div class="col">
+                    <label class="form-label m-0"><strong>Entrepeneur spécialisé</strong></label>
+                    <div class="overflow-auto">
+                        @foreach (var categorie in categorieSpecialise)
                         {
                             <div class="row m-0">
                                 <div class="col-auto p-0">
@@ -210,181 +236,19 @@
                             </div>
                             i++;
                         }
-                    }
-                </div>
-                <div class="row mb-2">
-                    <div class="col">
-                        <label class="form-label m-0"><strong>Entrepeneur spécialisé</strong></label>
-                        <div class="overflow-auto">
-                            @foreach (var categorie in categorieSpecialise)
-                            {
-                                <div class="row m-0">
-                                    <div class="col-auto p-0">
-                                        <label for="categorie@(i)">
-                                            <input type="checkbox" id="categorie@(i)"
-                                                checked="@sousCategoSelected[categorie.CodeSousCategorie]"
-                                                @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
-                                            <span class="custom-checkbox"></span>
-                                        </label>
-                                    </div>
-                                    <div class="col-auto ps-1 pe-0">
-                                        <strong class="litteStrong">@categorie.CodeSousCategorie</strong>
-                                    </div>
-                                    <div class="col ps-1">
-                                        <strong class="litteStrong">@categorie.Nom</strong>
-                                    </div>
-                                </div>
-                                i++;
-                            }
-                        </div>
-                        @{
-                            if (sousCategoError)
-                            {
-                                <strong class="error">Au moins une catégorie doit être sélectionné</strong>
-                            }
-                        }
                     </div>
-                </div>
-                <div class="d-grid gap-2">
-                    <button class="btn" type="submit">Soumettre</button>
-                </div>
-            </EditForm>
-        </div>
-        <div class="col-auto mt-2">
-        </div>
-        <div class="col-xl col-12 bg-white p-0">
-            <h1 class="text-center dark-background">Licence RBQ</h1>
-            <EditForm Model="@this" OnValidSubmit="HandleValidSubmit">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <label class="form-label mb-1" for="noLicenceRBQ"><strong>Numéro</strong></label>
-                        <div class="row align-items-center">
-                            <div class="col pe-0">
-                                <InputText class="form-control" type="text" id="noLicenceRBQ"
-                                    @bind-Value="noLicenceRBQ"></InputText>
-                            </div>
-                            <div class="col-auto">
-                                @{
-                                    if (numErrorBool)
-                                    {
-                                        <i class="bi bi-x-square"></i>
-                                    }
-                                    if (numGoodBool)
-                                    {
-                                        <i class="bi bi-check-square"></i>
-                                    }
-                                }
-                            </div>
-                        </div>
-                        @{
-                            if (numErrorBool)
-                            {
-                                <strong class="error">@numErrorMessage</strong>
-                            }
-                        }
-                    </div>
-                </div>
-                <div class="row mb-2">
-                    <div class="col">
-                        <div class="row">
-                            <label class="form-label mb-1" for="statut"><strong>Statut</strong></label>
-                        </div>
-                        <select class="form-select" id="statut" @bind="statutLicence">
-                            <option value="1">Valide</option>
-                            <option value="2">Valide avec restriction</option>
-                            <option value="3">Non valide</option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <div class="row">
-                            <label class="form-label mb-1" for="licenceType"><strong>Type de licence</strong></label>
-                        </div>
-                        <select class="form-select" id="licenceType" @bind="typeLicence">
-                            <option value="1">Entrepreneur</option>
-                            <option value="2">Constructeur-Propriétaire</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row align-items-center">
-                    <div class="col">
-                        <label class="form-label m-0"><strong>Entrepeneur général</strong></label>
-                    </div>
-                    <div class="col-auto">
-                        @{
-                            if (sousCategoError)
-                            {
-                                <i class="bi bi-x-square"></i>
-                            }
-                            if (sousCategoGood)
-                            {
-                                <i class="bi bi-check-square"></i>
-                            }
-                        }
-                    </div>
-                </div>
-                <div class="overflow-auto mb-2">
                     @{
-                        int i = 0;
-                        foreach (var categorie in categorieGeneral)
+                        if (sousCategoError)
                         {
-                            <div class="row m-0">
-                                <div class="col-auto p-0">
-                                    <label for="categorie@(i)">
-                                        <input type="checkbox" id="categorie@(i)"
-                                            checked="@sousCategoSelected[categorie.CodeSousCategorie]"
-                                            @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
-                                        <span class="custom-checkbox"></span>
-                                    </label>
-                                </div>
-                                <div class="col-auto ps-1 pe-0">
-                                    <strong class="litteStrong">@categorie.CodeSousCategorie</strong>
-                                </div>
-                                <div class="col ps-1">
-                                    <strong class="litteStrong">@categorie.Nom</strong>
-                                </div>
-                            </div>
-                            i++;
+                            <strong class="error">Au moins une catégorie doit être sélectionné</strong>
                         }
                     }
                 </div>
-                <div class="row mb-2">
-                    <div class="col">
-                        <label class="form-label m-0"><strong>Entrepeneur spécialisé</strong></label>
-                        <div class="overflow-auto">
-                            @foreach (var categorie in categorieSpecialise)
-                            {
-                                <div class="row m-0">
-                                    <div class="col-auto p-0">
-                                        <label for="categorie@(i)">
-                                            <input type="checkbox" id="categorie@(i)"
-                                                checked="@sousCategoSelected[categorie.CodeSousCategorie]"
-                                                @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
-                                            <span class="custom-checkbox"></span>
-                                        </label>
-                                    </div>
-                                    <div class="col-auto ps-1 pe-0">
-                                        <strong class="litteStrong">@categorie.CodeSousCategorie</strong>
-                                    </div>
-                                    <div class="col ps-1">
-                                        <strong class="litteStrong">@categorie.Nom</strong>
-                                    </div>
-                                </div>
-                                i++;
-                            }
-                        </div>
-                        @{
-                            if (sousCategoError)
-                            {
-                                <strong class="error">Au moins une catégorie doit être sélectionné</strong>
-                            }
-                        }
-                    </div>
-                </div>
-                <div class="d-grid gap-2">
-                    <button class="btn" type="submit">Soumettre</button>
-                </div>
-            </EditForm>
-        </div>
+            </div>
+            <div class="d-grid gap-2">
+                <button class="btn" type="submit">Soumettre</button>
+            </div>
+        </EditForm>
     </div>
 </div>
 

@@ -1,20 +1,149 @@
 @page "/files"
-<EditForm>
-<InputFile>
-</InputFile>
+@using System.ComponentModel.DataAnnotations
+<EditForm OnValidSubmit="HandleValidSubmit">
+    <InputFile OnChange="HandleFileChange" accept=".jpg"/>
+    <h1></h1>
+    <h1></h1>
+    <button class="btn" type="submit">Save</button>
 </EditForm>
 
 @code{
-    private class LicenceRBQModel {
-        [Required(ErrorMessage = "Le numéro de licence est requis")]  
+    private List<IBrowserFile> listFichiers = new List<IBrowserFile>();
+    private class FichierModel {  
+        //[FileExtensionsAttribute(png, ErrorMessage = "")]
+        public IBrowserFile fichier { get; set; }
+        public string NoLicenceRBQ { get; set; }
 
-        public string? NoLicenceRBQ { get; set; }
-        
-        public bool IsLicenceValid { get; set; } = true;
-
-
-        public bool IsChecked { get; set; }
-        
-        public List<string> CodeSousCategorieTrue { get; set; } = new List<string>();
     }
-}
+
+    private void HandleFileChange(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        var fileName = Path.GetFileName(file.Name);
+        var fileSize = file.Size;
+        var fileExtension = Path.GetExtension(fileName);
+       // uploadedFileName = $"{fileName}{fileExtension}";
+       // fichier = file;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        /*
+        // Ensure the folder exists
+        var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "{(idPERUser)}");
+        Directory.CreateDirectory(folderPath);
+
+        // Combine the folder path and the file name
+        var filePath = Path.Combine(folderPath, uploadedFileName);
+
+        // Open a stream for the uploaded file
+        using (var fileStream = new FileStream(filePath, FileMode.Create))
+        {
+            // Save the file to a folder on the server
+            await fichier.OpenReadStream(maxAllowedSize: 4096000).CopyToAsync(fileStream);
+
+            // Reset the position of the stream to the beginning
+            Stream StreamFile = fichier.OpenReadStream(maxAllowedSize: 4096000);
+
+            // Instantiate ProfilePictureService with the folder path
+            var profilePictureService = new ProfilePictureService(folderPath);
+
+            // Pass the file stream to the UploadAndRenameProfilePicture method
+            var profilePicturePath = await profilePictureService.UploadAndRenameProfilePicture(username, uploadedFileName, StreamFile);
+            //[ERREUR]
+            userData.ImagePath = profilePicturePath;
+
+            // Instantiate UserService
+            var userService = new UserService(userData);
+
+            // Now you can update the user's profile in the database with the new profile picture path
+            await userService.UpdateUserProfilePicture(username, profilePicturePath);
+*/
+        }
+    }
+<!--
+@using System.IO
+@using Classes;
+@using System;
+@using System.Threading.Tasks;
+@inject ICookie cookieManager
+
+<EditForm Model="@userData" OnValidSubmit="HandleValidSubmit">
+    <InputFile OnChange="HandleFileChange" accept=".jpg"/>
+    <button type="submit">Save</button>
+</EditForm>
+
+@code {
+    private UserDataModel userData = new UserDataModel();
+
+    private string uploadedFileName;
+    private IBrowserFile fichier;
+
+
+
+
+
+
+
+    public class UserService
+    {
+        private UserDataModel userDataCopy;
+        //Copy de userdata pour test
+        public UserService(UserDataModel userData)
+        {
+            userDataCopy = new UserDataModel
+                {
+                //[ERREUR]
+                ImagePath = userData.ImagePath
+                };
+        }
+
+        public async Task UpdateUserProfilePicture(string username, string profilePicturePath)
+        {
+
+
+            if (userDataCopy != null)
+            {
+                //[ERREUR]
+                userDataCopy.ImagePath = profilePicturePath;
+                //[ERREUR]
+                SingletonAcademate.getInstance().ChangerImagePathUser(username, profilePicturePath);
+            }
+            else
+            {
+                // Handle case where user is not found
+                // You might throw an exception, log an error, or handle it in another appropriate way
+            }
+        }
+
+    }
+
+
+    public class ProfilePictureService
+    {
+        private readonly string _profilePicturesFolderPath;
+
+        public ProfilePictureService(string profilePicturesFolderPath)
+        {
+            _profilePicturesFolderPath = profilePicturesFolderPath;
+        }
+
+        public async Task<string> UploadAndRenameProfilePicture(string username, string fileName, Stream fileStream)
+        {
+            // Ensure the folder exists
+            Directory.CreateDirectory(_profilePicturesFolderPath);
+
+            // Generate a unique file name based on the user's matricule
+            string uniqueFileName = $"{username}_profile{Path.GetExtension(fileName)}";
+
+            // Combine the folder path and the unique file name
+            string filePath = Path.Combine(_profilePicturesFolderPath, uniqueFileName);
+
+            string relativeFilePath = Path.Combine("profilepictures", uniqueFileName);
+            return relativeFilePath; // Return the path where the file is saved
+        }
+    }
+
+
+    // path = wwwroot\profilepictures\ (nompicture)
+} -->
