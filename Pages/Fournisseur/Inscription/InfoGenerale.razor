@@ -20,7 +20,7 @@
             <div class="col-lg-12 col-xl-12">
                 <label for="nomEntreprise">Nom de l'entreprise</label>
                 <InputText id="nomEntreprise" @bind-Value="identificationModel.nomEntreprise" class="form-control" />
-                <ValidationMessage For="@(() => identificationModel.nomEntreprise)" />               
+                <ValidationMessage For="@(() => identificationModel.nomEntreprise)" />       
             </div>
         </div>
     </div>
@@ -218,7 +218,7 @@
     <div class="form-group container-fluid">
         <div class="row">
             <div class="col-lg-12 col-xl-12">
-                <button type="submit">Suivant <i class="bi bi-arrow-right-circle-fill"></i></button>
+                <button type="submit" class="btn btn-secondary">Suivant <i class="bi bi-arrow-right-circle"></i></button>
             </div>
         </div>
     </div>
@@ -239,7 +239,6 @@
     public void HandleValidSubmit()
     {
         Console.WriteLine("OnValidSubmit");
-
     }
 
     public class IdentificationModel
