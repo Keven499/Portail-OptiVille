@@ -4,487 +4,484 @@
 
 <EditForm Model="@identificationModel" OnValidSubmit="HandleValidSubmit">
 <!-- OnValidSubmit="HandleValidSubmit" -->
-    <div class="form-group container-fluid">
-        <h3>Identification</h3>
-        <div class="row">
-            <div class="col-lg-12 col-xl-12">
-                <label for="NEQ">NEQ</label>
-                <InputNumber TValue="long?" @bind-Value="identificationModel.NEQ" class="form-control" id="NEQ" />
+<div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
+    <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
+        <div class="card w-75 h-75 d-flex justify-content-center p-0 m-0">
+
+@* Identification *@
+            <div class="card-header py-2 bg-bleuFonce">
+                <h3 class="py-2 p-0 my-0  text-white">Identification</h3>
+            </div>
+
+            <div class="card-body py-1">
+                <div class="col-xl-12 col-lg-12 py-2">
+                    <label class="bleuFonce fw-bold" for="NEQ">NEQ</label>
+                    <InputNumber TValue="long?" @bind-Value="identificationModel.NEQ" class="form-control" id="NEQ" />
                                            
-                    @if (isSubmitted && !isValid && identificationModel.NEQ != null)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.NEQ)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    }  
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group container-fluid">
-        <div class="row">
-            <div class="col-lg-12 col-xl-12">
-                <label for="nomEntreprise">Nom de l'entreprise</label>
-                <InputText id="nomEntreprise" class="form-control" @bind-Value="identificationModel.nomEntreprise" />
-           
-                    @if (isSubmitted && !isValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.nomEntreprise)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    }    
-            </div>
-        </div>
-    </div>
-
-
-    <div class="form-group container-fluid">
-        <div class="row">
-            <div class="col-lg-12 col-xl-12">
-                <label for="courrielEntreprise">Courriel de l'entreprise</label>
-                <InputText type="email" id="courrielEntreprise" @bind-Value="identificationModel.courrielEntreprise" class="form-control" />
-                           
-                    @if (isSubmitted && !isValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.courrielEntreprise)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    }   
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group container-fluid">
-        <div class="row">
-            <div class="col-lg-12 col-xl-12">
-                <label for="MotDePasse">Mot de passe</label>
-                <InputText type="password" id="MotDePasse" @bind-Value="identificationModel.MotDePasse" class="form-control" />
-                                           
-                    @if (isSubmitted && !isValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.MotDePasse)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    }  
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group container-fluid">
-        <div class="row">
-            <div class="col-lg-12 col-xl-12">
-                <label for="ConfirmationMotDePasse">Confirmation du mot de passe</label>
-                <InputText type="password" id="ConfirmationMotDePasse" @bind-Value="identificationModel.ConfirmationMotDePasse" class="form-control" />
-                                                                        
-                    @if (isSubmitted && !isValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.ConfirmationMotDePasse)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    } 
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group container-fluid">
-    <h3>Coordonnées</h3>
-        
-        <h4>Adresse</h4>
-        <div class="row">
-            <div class="col-lg-3 col-xl-3">
-                <label for="No">No</label>
-                <InputText @bind-Value="identificationModel.noEntreprise" class="form-control" id="No" />
-                                                                                        
-                    @if (isSubmitted && !isValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.noEntreprise)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    }                 
-            </div>
-
-            <div class="col-lg-6 col-xl-6">
-                <label for="Rue">Rue</label>
-                <InputText @bind-Value="identificationModel.rueEntreprise" class="form-control" id="Rue" />
-                                                                                                        
-                    @if (isSubmitted && !isValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.rueEntreprise)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    } 
-            </div>
-
-            <div class="col-lg-3 col-xl-3">
-                <label for="Bureau">Bureau</label>
-                <InputText @bind-Value="identificationModel.bureauEntreprise" class="form-control" id="Bureau" />
-                                                                                                                        
-                    @if (isSubmitted && !isValid && identificationModel.bureauEntreprise != null)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.bureauEntreprise)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    }
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group container-fluid">
-        <div class="row">
-            <div class="col-lg-12 col-xl-12">
-                <label for="Ville">Ville</label>
-                <InputText @bind-Value="identificationModel.villeEntreprise" class="form-control" id="Ville" />
-                                                                                                                        
-                    @if (isSubmitted && !isValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.villeEntreprise)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    } 
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group container-fluid">
-        <div class="row">
-            <div class="col-lg-6 col-xl-6">
-                <label for="Province">Province</label>
-                    <InputSelect class="form-control" id="Province" @bind-Value="identificationModel.provinceEntreprise">
-                        <option value="" disabled selected>Veuillez choisir une province</option>
-                        @foreach(string province in listeProvinces)
+                        @if (isSubmitted && !isValid && identificationModel.NEQ != null)
                         {
-                            <option value="@province">@province</option>
+                            <span class="input-group-text text-danger">
+                                <i class="bi bi-x-circle me-2"></i>
+                                <ValidationMessage For="@(() => identificationModel.NEQ)" />
+                            </span>
+                        }
+                        else if (isSubmitted && isValid)
+                        {
+                            <span class="input-group-text text-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                            </span>
+                        }  
+                </div>
+
+                <div class="col-xl-12 col-lg-12 py-2">
+                    <label class="bleuFonce fw-bold" for="nomEntreprise">Nom de l'entreprise</label>
+                    <InputText id="nomEntreprise" class="form-control" @bind-Value="identificationModel.nomEntreprise" />
+           
+                        @if (isSubmitted && !isValid)
+                        {
+                            <span class="input-group-text text-danger">
+                                <i class="bi bi-x-circle me-2"></i>
+                                <ValidationMessage For="@(() => identificationModel.nomEntreprise)" />
+                            </span>
+                        }
+                        else if (isSubmitted && isValid)
+                        {
+                            <span class="input-group-text text-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                            </span>
+                        }    
+                </div>
+
+                <div class="col-xl-12 col-lg-12 py-2">
+                    <label class="bleuFonce fw-bold" for="courrielEntreprise">Courriel de l'entreprise</label>
+                    <InputText type="email" id="courrielEntreprise" @bind-Value="identificationModel.courrielEntreprise" class="form-control" />
+                           
+                        @if (isSubmitted && !isValid)
+                        {
+                            <span class="input-group-text text-danger">
+                                <i class="bi bi-x-circle me-2"></i>
+                                <ValidationMessage For="@(() => identificationModel.courrielEntreprise)" />
+                            </span>
+                        }
+                        else if (isSubmitted && isValid)
+                        {
+                            <span class="input-group-text text-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                            </span>
+                        }   
+                </div>
+
+                <div class="col-xl-12 col-lg-12 py-2">
+                    <label class="bleuFonce fw-bold" for="MotDePasse">Mot de passe</label>
+                    <InputText type="password" id="MotDePasse" @bind-Value="identificationModel.MotDePasse" class="form-control" />
+                                           
+                        @if (isSubmitted && !isValid)
+                        {
+                            <span class="input-group-text text-danger">
+                                <i class="bi bi-x-circle me-2"></i>
+                                <ValidationMessage For="@(() => identificationModel.MotDePasse)" />
+                            </span>
+                        }
+                        else if (isSubmitted && isValid)
+                        {
+                            <span class="input-group-text text-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                            </span>
+                        }  
+                </div>
+
+                <div class="col-xl-12 col-lg-12 py-2">
+                    <label class="bleuFonce fw-bold" for="ConfirmationMotDePasse">Confirmation du mot de passe</label>
+                    <InputText type="password" id="ConfirmationMotDePasse" @bind-Value="identificationModel.ConfirmationMotDePasse" class="form-control" />
+                                                                        
+                        @if (isSubmitted && !isValid)
+                        {
+                            <span class="input-group-text text-danger">
+                                <i class="bi bi-x-circle me-2"></i>
+                                <ValidationMessage For="@(() => identificationModel.ConfirmationMotDePasse)" />
+                            </span>
+                        }
+                        else if (isSubmitted && isValid)
+                        {
+                            <span class="input-group-text text-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                            </span>
+                        } 
+                </div>
+            </div>
+
+@* Coordonnées *@
+            <div class="card-header py-2 bg-bleuFonce">
+                <h3 class="py-2 p-0 my-0 text-white">Coordonnées</h3>
+            </div>
+
+            <div class="card-body py-1">
+
+                <div class="py-2 d-flex justify-content-between">     
+                    <div class="col-xl-3 col-lg-3">
+                        <label class="bleuFonce fw-bold" for="No">No</label>
+                        <InputText @bind-Value="identificationModel.noEntreprise" class="form-control" id="No" />
+                                                                                            
+                            @if (isSubmitted && !isValid)
+                            {
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    <ValidationMessage For="@(() => identificationModel.noEntreprise)" />
+                                </span>
+                            }
+                            else if (isSubmitted && isValid)
+                            {
+                                <span class="input-group-text text-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                </span>
+                            }               
+                    </div> 
+
+                    <div class="col-xl-6 col-lg-6 ms-1 me-1">
+                        <label class="bleuFonce fw-bold" for="Rue">Rue</label>
+                        <InputText @bind-Value="identificationModel.rueEntreprise" class="form-control" id="Rue"/>
+                                                                                                                    
+                            @if (isSubmitted && !isValid)
+                            {
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    <ValidationMessage For="@(() => identificationModel.rueEntreprise)" />
+                                </span>
+                            }
+                            else if (isSubmitted && isValid)
+                            {
+                                <span class="input-group-text text-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                </span>
+                            }                         
+                    </div>                  
+
+                    <div class="col-xl-3 col-lg-3">
+                        <label class="bleuFonce fw-bold" for="Bureau">Bureau</label>
+                        <InputText @bind-Value="identificationModel.bureauEntreprise" class="form-control" id="Bureau" />
+                                                                                                                                
+                            @if (isSubmitted && !isValid && identificationModel.bureauEntreprise != null)
+                            {
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    <ValidationMessage For="@(() => identificationModel.bureauEntreprise)" />
+                                </span>
+                            }
+                            else if (isSubmitted && isValid)
+                            {
+                                <span class="input-group-text text-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                </span>
+                            }
+                    </div>
+                </div>
+
+                <div class="col-xl-12 col-lg-12 py-2">
+                    <label class="bleuFonce fw-bold" for="Ville">Ville</label>
+                    <InputText @bind-Value="identificationModel.villeEntreprise" class="form-control" id="Ville" />
+                                                                                                                        
+                        @if (isSubmitted && !isValid)
+                        {
+                            <span class="input-group-text text-danger">
+                                <i class="bi bi-x-circle me-2"></i>
+                                <ValidationMessage For="@(() => identificationModel.villeEntreprise)" />
+                            </span>
+                        }
+                        else if (isSubmitted && isValid)
+                        {
+                            <span class="input-group-text text-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                            </span>
+                        } 
+                </div>
+
+                <div class="py-2 d-flex justify-content-between">
+                    <div class="col-xl-6 col-lg-6">
+                        <label class="bleuFonce fw-bold" for="Province">Province</label>
+                        <InputSelect class="form-control" id="Province" @bind-Value="identificationModel.provinceEntreprise">
+                            <option value="" disabled selected>Veuillez choisir une province</option>
+                            @foreach(string province in listeProvinces)
+                            {
+                                <option value="@province">@province</option>
+                            }
+                        </InputSelect>
+                                                                                                                                                
+                        @if (isSubmitted && !isValid)
+                        {
+                            <span class="input-group-text text-danger">
+                                <i class="bi bi-x-circle me-2"></i>
+                                <ValidationMessage For="@(() => identificationModel.provinceEntreprise)" />
+                            </span>
+                        }
+                        else if (isSubmitted && isValid)
+                        {
+                            <span class="input-group-text text-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                            </span>
+                        } 
+                    </div>
+
+                    <div class="col-xl-6 col-lg-6 ms-1">
+                        <label class="bleuFonce fw-bold" for="CodePostal">Code Postal</label>
+                        <InputText @bind-Value="identificationModel.codePostalEntreprise" class="form-control" id="CodePostal" />
+                                                                                                                                            
+                            @if (isSubmitted && !isValid)
+                            {
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    <ValidationMessage For="@(() => identificationModel.codePostalEntreprise)" />
+                                </span>
+                            }
+                            else if (isSubmitted && isValid)
+                            {
+                                <span class="input-group-text text-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                </span>
+                            }
+                    </div>
+                </div>
+
+                <div class="col-lg-12 col-xl-12 py-2">
+                    <label class="bleuFonce fw-bold" for="RegionAdm">Région Admnistrative</label>
+                    <InputSelect id="RegionAdm" @bind-Value="identificationModel.regionAdmEntreprise" class="form-control">
+                        <!--Il faut créer un option qui n'a aucune valeur en selected et en disabled pour éviter que lorsqu'on soumet que la valeur soit nulle-->
+                        <option value="" disabled selected>Veuillez choisir une région administrative</option>
+                        @foreach(string region in listeRegionADM)
+                        {
+                            <option value="@region">@region</option>
                         }
                     </InputSelect>
-            </div>
-            
-            <div class="col-lg-6 col-xl-6">
-                <label for="CodePostal">Code Postal</label>
-                <InputText @bind-Value="identificationModel.codePostalEntreprise" class="form-control" id="CodePostal" />
-                                                                                                                                        
-                    @if (isSubmitted && !isValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.codePostalEntreprise)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    }
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group container-fluid">
-        <div class="row">
-            <div class="col-lg-12 col-xl-12">
-                <label for="RegionAdm">Région Admnistrative</label>
-                <InputSelect id="RegionAdm" @bind-Value="identificationModel.regionAdmEntreprise" class="form-control">
-                    <!--Il faut créer un option qui n'a aucune valeur en selected et en disabled pour éviter que lorsqu'on soumet que la valeur soit nulle-->
-                    <option value="" disabled selected>Veuillez choisir une région administrative</option>
-                    @foreach(string region in listeRegionADM)
-                    {
-                        <option value="@region">@region</option>
-                    }
-                </InputSelect>
                                                                                                                                                         
-                    @if (isSubmitted && !isValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.regionAdmEntreprise)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    }
-            </div>
-        </div>
-    </div>
+                        @if (isSubmitted && !isValid)
+                        {
+                            <span class="input-group-text text-danger">
+                                <i class="bi bi-x-circle me-2"></i>
+                                <ValidationMessage For="@(() => identificationModel.regionAdmEntreprise)" />
+                            </span>
+                        }
+                        else if (isSubmitted && isValid)
+                        {
+                            <span class="input-group-text text-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                            </span>
+                        }
+                </div>
 
-    <div class="form-group container-fluid">
-        <div class="row">
-            <div class="col-lg-12 col-xl-12">
-                <label for="SiteWeb">Site Internet</label>
-                <InputText @bind-Value="identificationModel.siteWebEntreprise" class="form-control" id="SiteWeb" />
-            </div>
-        </div>
-    </div>
+                <div class="col-lg-12 col-xl-12 py-2">
+                    <label class="bleuFonce fw-bold" for="SiteWeb">Site Internet</label>
+                    <InputText @bind-Value="identificationModel.siteWebEntreprise" class="form-control" id="SiteWeb" />
+                </div>
 
-    <div class="form-group container-fluid">
-        <div class="row">
-            <div class="col-lg-2 col-xl-2">
-                <label for="typeTel">Type</label>
-                <InputSelect class="form-control" id="typeTel" @bind-Value="identificationModel.typeTelEntreprise">
-                    <option value="" disabled selected>Veuillez choisir un type de téléphone</option>
-                    @foreach(string type in listeTypeContact)
-                    {
-                        <option value="@type">@type</option>
-                    }
-                </InputSelect>
+                <div class="py-2 d-flex justify-content-between">
+                    <div class="col-lg-3 col-xl-3">
+                        <label class="bleuFonce fw-bold" for="typeTel">Type</label>
+                        <InputSelect class="form-control" id="typeTel" @bind-Value="identificationModel.typeTelEntreprise">
+                            <option value="" disabled selected>Veuillez choisir un type de téléphone</option>
+                                @foreach(string type in listeTypeContact)
+                                {
+                                    <option value="@type">@type</option>
+                                }
+                        </InputSelect>
                                                                                                                                                                                                                                                         
-                    @if (isSubmitted && !isValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.typeTelEntreprise)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    }
-            </div>
+                            @if (isSubmitted && !isValid)
+                            {
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    <ValidationMessage For="@(() => identificationModel.typeTelEntreprise)" />
+                                </span>
+                            }
+                            else if (isSubmitted && isValid)
+                            {
+                                <span class="input-group-text text-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                </span>
+                            }
+                    </div>
 
-            <div class="col-lg-7 col-xl-7">
-                <label for="NoTel">Numéro de téléphone</label>
-                <InputNumber TValue="long?" @bind-Value="identificationModel.noTelEntreprise" class="form-control" id="NoTel" />
+                    <div class="col-lg-6 col-xl-6 ms-1 me-1">
+                        <label class="bleuFonce fw-bold" for="NoTel">Numéro de téléphone</label>
+                        <InputNumber TValue="long?" @bind-Value="identificationModel.noTelEntreprise" class="form-control" id="NoTel" />
                                                                                                                                                                         
-                    @if (isSubmitted && !isValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.noTelEntreprise)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    }
+                            @if (isSubmitted && !isValid)
+                            {
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    <ValidationMessage For="@(() => identificationModel.noTelEntreprise)" />
+                                </span>
+                            }
+                            else if (isSubmitted && isValid)
+                            {
+                                <span class="input-group-text text-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                </span>
+                            }
+                    </div>
+
+                    <div class="col-lg-3 col-xl-3">
+                        <label class="bleuFonce fw-bold" for="PosteCoordo">Poste</label>
+                        <InputNumber TValue="long?" @bind-Value="identificationModel.posteTelEntreprise" class="form-control" id="PosteCoordo" />
+                    </div>
+                </div>
             </div>
 
-            <div class="col-lg-3 col-xl-3">
-                <label for="PosteCoordo">Poste</label>
-                <InputNumber TValue="long?" @bind-Value="identificationModel.posteTelEntreprise" class="form-control" id="PosteCoordo" />
+@* Contacts *@
+            <div class="card-header py-2 bg-bleuFonce">
+                <h3 class="py-2 p-0 my-0 text-white">Contacts</h3>
             </div>
-        </div>
-    </div>
 
-    <div class="form-group container-fluid">
-    <h3>Contacts</h3>
-        <div class="row">
-            <div class="col-lg-4 col-xl-4">
-                <label for="Prenom">Prénom</label>
-                <InputText @bind-Value="identificationModel.prenomContact" class="form-control" id="Prenom" />
+            <div class="card-body py-1">
+
+                <div class="py-2 d-flex justify-content-between">
+                    <div class="col-lg-4 col-xl-4">
+                        <label class="bleuFonce fw-bold" for="Prenom">Prénom</label>
+                        <InputText @bind-Value="identificationModel.prenomContact" class="form-control" id="Prenom" />
                                                                                                                                                                                         
-                    @if (isSubmitted && !isValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.prenomContact)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    }
-            </div>
+                            @if (isSubmitted && !isValid)
+                            {
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    <ValidationMessage For="@(() => identificationModel.prenomContact)" />
+                                </span>
+                            }
+                            else if (isSubmitted && isValid)
+                            {
+                                <span class="input-group-text text-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                </span>
+                            }
+                    </div>
 
-            <div class="col-lg-4 col-xl-4">
-                <label for="Nom">Nom</label>
-                <InputText @bind-Value="identificationModel.nomContact" class="form-control" id="Nom" />
+                    <div class="col-lg-4 col-xl-4 me-1 ms-1">
+                        <label class="bleuFonce fw-bold" for="Nom">Nom</label>
+                        <InputText @bind-Value="identificationModel.nomContact" class="form-control" id="Nom" />
                                                                                                                                                                                                         
-                    @if (isSubmitted && !isValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.nomContact)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    }
-            </div>
+                            @if (isSubmitted && !isValid)
+                            {
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    <ValidationMessage For="@(() => identificationModel.nomContact)" />
+                                </span>
+                            }
+                            else if (isSubmitted && isValid)
+                            {
+                                <span class="input-group-text text-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                </span>
+                            }
+                    </div>
 
-            <div class="col-lg-4 col-xl-4">
-                <label for="Fonction">Fonction</label>
-                <InputText @bind-Value="identificationModel.fonctionContact" class="form-control" id="Fonction" />
+                    <div class="col-lg-4 col-xl-4">
+                        <label class="bleuFonce fw-bold" for="Fonction">Fonction</label>
+                        <InputText @bind-Value="identificationModel.fonctionContact" class="form-control" id="Fonction" />
                                                                                                                                                                                                                         
-                    @if (isSubmitted && !isValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.fonctionContact)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    }
-            </div>
-        </div>
-    </div>
+                            @if (isSubmitted && !isValid)
+                            {
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    <ValidationMessage For="@(() => identificationModel.fonctionContact)" />
+                                </span>
+                            }
+                            else if (isSubmitted && isValid)
+                            {
+                                <span class="input-group-text text-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                </span>
+                            }
+                    </div>
+                </div>
 
-    <div class="form-group container-fluid">
-        <div class="row">
-            <div class="col-lg-12 col-xl-12">
-                <label for="Courriel">Adresse courriel</label>
-                <InputText @bind-Value="identificationModel.courrielContact" class="form-control" id="Courriel" />
+                <div class="col-lg-12 col-xl-12 py-2">
+                    <label class="bleuFonce fw-bold" for="Courriel">Adresse courriel</label>
+                    <InputText @bind-Value="identificationModel.courrielContact" class="form-control" id="Courriel" />
                                                                                                                                                                                                                                         
-                    @if (isSubmitted && !isValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.courrielContact)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    }
-            </div>
-        </div>
-    </div>
-
-    <div class="form-group container-fluid">
-        <div class="row">
-            <div class="col-lg-2 col-xl-2">
-                <label for="typeTel">Type</label>
-                <InputSelect class="form-control" id="typeTel" @bind-Value="identificationModel.typeTelContact">
-                    <option value="" disabled selected>Veuillez choisir un type de téléphone</option>
-                    @foreach(string type in listeTypeContact)
-                    {
-                        <option value="@type">@type</option>
-                    }
-                </InputSelect>
-                                                                                                                                                                                                                                        
-                    @if (isSubmitted && !isValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.typeTelContact)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    }
-            </div>
-
-            <div class="col-lg-7 col-xl-7">
-                <label for="NoTel">Numéro de téléphone</label>
-                <InputNumber TValue="long?" @bind-Value="identificationModel.noTelContact" class="form-control" id="NoTel" />
+                        @if (isSubmitted && !isValid)
+                        {
+                            <span class="input-group-text text-danger">
+                                <i class="bi bi-x-circle me-2"></i>
+                                <ValidationMessage For="@(() => identificationModel.courrielContact)" />
+                            </span>
+                        }
+                        else if (isSubmitted && isValid)
+                        {
+                            <span class="input-group-text text-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                            </span>
+                        }
+                </div>
+                <div class="py-2 d-flex justify-content-between">
+                    <div class="col-lg-3 col-xl-3">
+                        <label class="bleuFonce fw-bold" for="typeTel">Type</label>
+                        <InputSelect class="form-control" id="typeTel" @bind-Value="identificationModel.typeTelContact">
+                            <option value="" disabled selected>Veuillez choisir un type de téléphone</option>
+                                @foreach(string type in listeTypeContact)
+                                {
+                                    <option value="@type">@type</option>
+                                }
+                        </InputSelect>
                                                                                                                                                                                                                                                         
-                    @if (isSubmitted && !isValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.noTelContact)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    }
+                            @if (isSubmitted && !isValid)
+                            {
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    <ValidationMessage For="@(() => identificationModel.typeTelContact)" />
+                                </span>
+                            }
+                            else if (isSubmitted && isValid)
+                            {
+                                <span class="input-group-text text-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                </span>
+                            }
+                    </div>
+
+                    <div class="col-lg-6 col-xl-6 ms-1 me-1">
+                        <label class="bleuFonce fw-bold" for="NoTel">Numéro de téléphone</label>
+                        <InputNumber TValue="long?" @bind-Value="identificationModel.noTelContact" class="form-control" id="NoTel" />
+                                                                                                                                                                        
+                            @if (isSubmitted && !isValid)
+                            {
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    <ValidationMessage For="@(() => identificationModel.noTelContact)" />
+                                </span>
+                            }
+                            else if (isSubmitted && isValid)
+                            {
+                                <span class="input-group-text text-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                </span>
+                            }
+                    </div>
+
+                    <div class="col-lg-3 col-xl-3">
+                        <label class="bleuFonce fw-bold" for="PosteContact">Poste</label>
+                        <InputNumber TValue="long?" @bind-Value="identificationModel.posteTelContact" class="form-control" id="PosteContact" />
+                            @if (isSubmitted && !isValid && identificationModel.posteTelContact != null)
+                            {
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    <ValidationMessage For="@(() => identificationModel.posteTelContact)" />
+                                </span>
+                            }
+                            else if (isSubmitted && isValid)
+                            {
+                                <span class="input-group-text text-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                </span>
+                            }
+                    </div>
+                </div>
+
+
+
             </div>
 
-            <div class="col-lg-3 col-xl-3">
-                <label for="PosteCoordo">Poste</label>
-                <InputNumber TValue="long?" @bind-Value="identificationModel.posteTelContact" class="form-control" id="PosteCoordo" />
-                                                                                                                                                                                                                                                                    
-                    @if (isSubmitted && !isValid && identificationModel.posteTelContact != null)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <ValidationMessage For="@(() => identificationModel.posteTelContact)" />
-                        </span>
-                    }
-                    else if (isSubmitted && isValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    }
-            </div>
         </div>
     </div>
+</div>
+
+
+
 
 
     <div class="form-group container-fluid">
@@ -518,6 +515,7 @@
     {
         isSubmitted = true;
         isValid = !string.IsNullOrEmpty(identificationModel.nomEntreprise);
+      
     }
 
     public class IdentificationModel

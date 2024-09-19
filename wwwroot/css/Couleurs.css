@@ -1,0 +1,95 @@
+/* Bleu pâle */
+.bleuPale
+{
+    color: rgb(120, 198, 224);
+}
+
+.bg-bleuPale
+{
+    background-color: rgb(120, 198, 224);
+}
+
+.border-bleuPale
+{
+    border: 2px solid rgb(120, 198, 224);
+}
+
+/* Bleu */
+.bleu
+{
+    color: rgb(0, 118, 213);
+}
+
+.bg-bleu
+{
+    background-color: rgb(0, 118, 213);
+}
+
+.border-bleu
+{
+    border: 2px solid rgb(0, 118, 213);
+}
+
+/* Bleu foncé */
+.bleuFonce
+{
+    color: rgb(11, 35, 65);
+}
+
+.bg-bleuFonce
+{
+    background-color: rgb(11, 35, 65);
+}
+
+.border-bleuFonce
+{
+    border: 2px solid rgb(11, 35, 65);
+}
+
+/* Vert pâle */
+.vertPale
+{
+    color: rgb(197, 216, 0);
+}
+
+.bg-vertPale
+{
+    background-color: rgb(197, 216, 0);
+}
+
+.border-vertPale
+{
+    border: 2px solid rgb(197, 216, 0);
+}
+
+/* Vert */
+.vert
+{
+    color: rgb(99, 188, 85);
+}
+
+.bg-vert
+{
+    background-color: rgb(99, 188, 85);
+}
+
+.border-vert
+{
+    border: 2px solid rgb(99, 188, 85);
+}
+
+/* Vert foncé */
+.vertFonce
+{
+    color: rgb(30, 73, 45);
+}
+
+.bg-vertFonce
+{
+    background-color: rgb(30, 73, 45);
+}
+
+.border-vertFonce
+{
+    border: 2px solid rgb(30, 73, 45);
+}
