@@ -19,16 +19,16 @@
             <div class="card-body py-1">
                 <div class="col-xl-12 col-lg-12 py-2">
                     <label class="bleuFonce fw-bold" for="NEQ">NEQ</label>
-                    <InputNumber TValue="long?" @bind-Value="identificationModel.NEQ" class="form-control" id="NEQ" />
+                    <InputNumber TValue="long?" @bind-Value="identificationModel.NEQ" @oninput="ValidateInputs" class="form-control" id="NEQ" />
                                            
-                        @if (isSubmitted && !isValid && identificationModel.NEQ != null)
+                        @if (isSubmitted && !isNEQValid && identificationModel.NEQ.HasValue)
                         {
                             <span class="input-group-text text-danger">
                                 <i class="bi bi-x-circle me-2"></i>
-                                <ValidationMessage For="@(() => identificationModel.NEQ)" />
+                                <span>Maximum 10 caractères</span>
                             </span>
                         }
-                        else if (isSubmitted && isValid)
+                        else if (isSubmitted && isValid && identificationModel.NEQ.HasValue)
                         {
                             <span class="input-group-text text-success">
                                 <i class="bi bi-check-circle me-2"></i>
@@ -474,26 +474,18 @@
                             }
                     </div>
                 </div>
+            </div>
 
-
-
+            <div class="card-footer bg-bleuFonce">
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn bg-bleu text-white fw-bold" @onclick="SubmitForm" style="width: 200px;">Suivant <i class="bi bi-arrow-right-circle"></i></button>
+                </div>
             </div>
 
         </div>
     </div>
 </div>
 
-
-
-
-
-    <div class="form-group container-fluid">
-        <div class="row">
-            <div class="col-lg-12 col-xl-12">
-                <button type="submit" class="btn btn-secondary" @onclick="SubmitForm">Suivant <i class="bi bi-arrow-right-circle"></i></button>
-            </div>
-        </div>
-    </div>
     <DataAnnotationsValidator />
 </EditForm>
 
@@ -501,7 +493,7 @@
     // Modèle pour les informations générales
     private IdentificationModel identificationModel = new IdentificationModel();
 
-    #region Listes
+#region Listes
     private List<string> listeProvinces = new List<string>{"Québec", "Ontario", "Manitoba", "Saskatchewan", "Alberta", "Colombie-Britanique",
         "Île-du-Prince-Édouard", "Nouveau-Brunswick", "Nouvelle-Écosse", "Terre-Neuve-et-Labrador", "Nunavut", "Territoires du Nord-Ouest", 
         "Yukon"};
@@ -510,9 +502,87 @@
         "(11) Gaspésie-Îles-de-la-Madeleine", "(12) Chaudière-Appalaches", "(13) Laval", "(14) Lanaudière", "(15) Laurentides", "(16) Montérégie", 
         "(17) Centre-du-Québec"};
     private List<string> listeTypeContact = new List<string>{"Bureau", "Télécopieur", "Cellulaire"};
-    #endregion
+#endregion
+
+#region Validations
     private bool isSubmitted = false;
     private bool isValid = true;
+    private bool isNEQValid = true;
+    private bool isNomEntrValid = true;
+    private bool isEmailEntrValid = true;
+    private bool isMdpValid = true;
+    private bool isConfMdpValid = true;
+    private bool isNoEntrValid = true;
+    private bool isRueEntrValid = true;
+    private bool isBureauEntrValid = true;
+    private bool isVilleEntrValid = true;
+    private bool isProvinceEntrValid = true;
+    private bool isCPEntrValid = true;
+    private bool isRegionEntrValid = true;
+    private bool isSiteEntrValid = true;
+    private bool isTypeTelEntrValid = true;
+    private bool isNoTelEntrValid = true;
+    private bool isPosteTelEntrValid = true;
+    private bool isPrenomContactValid = true;
+    private bool isNomContactValid = true;
+    private bool isFonctionContactValid = true;
+    private bool isEmailContactValid = true;
+    private bool isTypeTelContactValid = true;
+    private bool isNoTelContactValid = true;
+    private bool isPosteTelContactValid = true;
+#endregion
+    
+        // Validation de chaque champ
+    private void ValidateInputs()
+    {        
+        // NEQ
+        // Si une valeur a été saisie
+        if (identificationModel.NEQ.HasValue)  
+        {
+            // Valide si la valeur est dans la plage
+            if (identificationModel.NEQ >= 1100000000 && identificationModel.NEQ <= 8899999999)
+            {
+                isNEQValid = true;  
+            }
+            // Invalide si hors plage
+            else
+            {
+                isNEQValid = false;  
+            }
+        }
+        // Si pas de valeur saisie, considérée comme valide
+        else
+        {
+            isNEQValid = true;  
+        }
+
+        // Forcer la mise à jour de l'interface utilisateur
+        StateHasChanged();  
+        
+        isNomEntrValid = !string.IsNullOrEmpty(identificationModel.nomEntreprise);
+        isEmailEntrValid = !string.IsNullOrEmpty(identificationModel.courrielEntreprise);
+        isMdpValid = !string.IsNullOrEmpty(identificationModel.MotDePasse);
+        isConfMdpValid = !string.IsNullOrEmpty(identificationModel.ConfirmationMotDePasse);
+        isNoEntrValid = !string.IsNullOrEmpty(identificationModel.noEntreprise);
+        isRueEntrValid = !string.IsNullOrEmpty(identificationModel.rueEntreprise);
+        isBureauEntrValid = !string.IsNullOrEmpty(identificationModel.bureauEntreprise);
+        isVilleEntrValid = !string.IsNullOrEmpty(identificationModel.villeEntreprise);
+        isProvinceEntrValid = !string.IsNullOrEmpty(identificationModel.provinceEntreprise);
+        isCPEntrValid = !string.IsNullOrEmpty(identificationModel.codePostalEntreprise);
+        isRegionEntrValid = !string.IsNullOrEmpty(identificationModel.regionAdmEntreprise);
+        isSiteEntrValid = !string.IsNullOrEmpty(identificationModel.siteWebEntreprise);
+        isTypeTelEntrValid = !string.IsNullOrEmpty(identificationModel.typeTelEntreprise);
+        isNoTelEntrValid = identificationModel.noTelEntreprise != 0;
+        isPosteTelEntrValid = identificationModel.posteTelEntreprise != 0;
+        isPrenomContactValid = !string.IsNullOrEmpty(identificationModel.prenomContact);
+        isNomContactValid = !string.IsNullOrEmpty(identificationModel.nomContact);
+        isFonctionContactValid = !string.IsNullOrEmpty(identificationModel.fonctionContact);
+        isEmailContactValid = !string.IsNullOrEmpty(identificationModel.courrielContact);
+        isTypeTelContactValid = !string.IsNullOrEmpty(identificationModel.typeTelContact);
+        isNoTelContactValid = identificationModel.noTelContact != 0;
+        isPosteTelContactValid = identificationModel.posteTelContact != 0;
+    }
+
     // Sert à gérer le scénario où le formulaire est valide.
     public async void HandleValidSubmit()
     {
@@ -520,10 +590,9 @@
         Console.WriteLine("OnValidSubmit");
     }
 
-    //Appel de l'API des municipalite
+    //Appel de l'API des municipalites
     private async Task getAddressWithNEQ()
     {
-
         var response = await Http.GetAsync($"https://www.donneesquebec.ca/recherche/api/3/action/datastore_search_sql?sql=SELECT%20DISTINCT%20*%20FROM%20%2232f6ec46-85fd-45e9-945b-965d9235840a%22%20WHERE%20%22NEQ%22%20=%20%27{identificationModel.NEQ}%27%20LIMIT%201");
     
         if (response.IsSuccessStatusCode){
@@ -534,14 +603,12 @@
         else{
             Console.WriteLine("Erreur lors de l'appel de l'API");
         }
-
     }
 
     private void SubmitForm()
     {
-        isSubmitted = true;
-        isValid = !string.IsNullOrEmpty(identificationModel.nomEntreprise);
-      
+        isSubmitted = true;      
+        ValidateInputs();
     }
 
     public class IdentificationModel
