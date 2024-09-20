@@ -1,35 +1,134 @@
-@* @page "/files"
+@page "/files"
 @using System.ComponentModel.DataAnnotations
-<EditForm OnValidSubmit="HandleValidSubmit">
-    <InputFile OnChange="HandleFileChange" accept=".jpg"/>
-    <h1></h1>
-    <h1></h1>
-    <button class="btn" type="submit">Save</button>
-</EditForm>
+@using Microsoft.AspNetCore.Components.Forms
+@using System.IO
+<style>
+    ul {
+            list-style-type: none;
+        }
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+</style>
+<div class="container-fluid card justify-content-center p-0 m-0">
+    <div class="col-12">
+        <div class="card-header py-2 bg-bleuFonce"><h3 class="py-2 p-0 my-0 text-white">Carte d'affaires et brochures</h3></div>
+            <EditForm Model="fileModel" OnValidSubmit="HandleValidSubmit">
+                <div class="card-body py-1">
+                <InputFile OnChange="HandleFileChange" multiple accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png"/>
+                </div>
+                <div class="card-header py-2 bg-bleuFonce"><h3 class="py-2 p-0 my-0 text-white">Fichiers téléversés (Total: @GetFormatSize())</h3></div>
+                <div class="card-body">
+                <ul>
+                    @foreach (var file in listFichiers)
+                    {
+                        <div class="row m-0 align-items-center mt-3">
+                        <div class="col-xl p-0">
+                        <li><h5>@file.Name</h5>@GetFormatSizeFile(file.Size)</li>
+                        </div>
+                        <div class="col-auto">
+                            <button class="btn btn-danger" type="button" @onclick="() => RemoveFile(file)">Remove</button>
+                        </div>
+                        </div>
+                    }
+                </ul>
+                </div>
+                <div class="d-flex justify-content-center">
+                <button class="btn btn-primary btn-lg w-50" type="submit">Save</button>
+                </div>
+            </EditForm>
+    </div>
+</div>
 
 @code{
     private List<IBrowserFile> listFichiers = new List<IBrowserFile>();
-    private class FichierModel {  
-        //[FileExtensionsAttribute(png, ErrorMessage = "")]
+    private FichierModel fileModel = new FichierModel();
+    public long sizeTotal { get; set; } = 0;
+    public long MaxSize = 75;
+    
+    private class FichierModel 
+    {  
+        [FileExtensionsAttribute(Extensions = "doc,docx,pdf,xls,xlsx,jpg,jpeg,png", ErrorMessage = "Format de fichier non valide.")]
         public IBrowserFile fichier { get; set; }
-        public string NoLicenceRBQ { get; set; }
-    private class LicenceRBQModel {
-        //Required(ErrorMessage = "Le numéro de licence est requis")]  
+        public string NoLicenceNEQ { get; set; }
+    }
+    public class InfoFichier
+    {
+        private string NomFichier { get; set; }
+        private long SizeFichier { get; set; }
+        private string ExtensionFichier { get; set; }
 
+        public InfoFichier(string nom, long size, string extension)
+        {
+            NomFichier = nom;
+            SizeFichier = size;
+            ExtensionFichier = extension;
+        }
     }
 
+    private string GetFormatSizeFile(long size)
+    {
+        if (size >= 1048576)
+        {
+            return $"{(size / 1048576.0):F2} MB";
+        }
+        else
+        {
+            return $"{(size / 1024.0):F2} KB";
+        }
+    }
+ 
+    private string GetFormatSize()
+    {
+        if (sizeTotal >= 1048576) // 1 MB = 1048576 bytes (1 * 1024 * 1024)
+        {
+            return $"{(sizeTotal / 1048576.0):F2} MB / {MaxSize}MB";
+        }
+        else
+        {
+            return $"{(sizeTotal / 1024.0):F2} KB / {MaxSize}MB";
+        }
+    }
+    private void CalculTotalSize()
+    {
+        sizeTotal = listFichiers.Sum(file => file.Size);
+    }
     private void HandleFileChange(InputFileChangeEventArgs e)
     {
-        var file = e.File;
-        var fileName = Path.GetFileName(file.Name);
-        var fileSize = file.Size;
-        var fileExtension = Path.GetExtension(fileName);
-       // uploadedFileName = $"{fileName}{fileExtension}";
-       // fichier = file;
+        foreach (var file in e.GetMultipleFiles())
+        {
+            if (sizeTotal + file.Size <= MaxSize * 1024 * 1024)
+            {
+                if (!listFichiers.Any(f => f.Name == file.Name && f.Size == file.Size))
+                {
+                    listFichiers.Add(file);
+                }
+            }
+            else
+            {
+                // Mettre le message d'erreur sur le forms
+                Console.WriteLine($"Cannot add {file.Name}: size exceeds the limit.");
+            }
+        }
+        CalculTotalSize();
+    }
+    private void RemoveFile(IBrowserFile file)
+    {
+        listFichiers.Remove(file);
+        CalculTotalSize();
     }
 
     private async Task HandleValidSubmit()
     {
+        foreach(var file in listFichiers)
+        {
+            var fileName = Path.GetFileName(file.Name);
+            var fileSize = file.Size;
+            var fileExtension = Path.GetExtension(fileName);
+            Console.WriteLine($"Le fichier {fileName} a été upload. (Taille:{fileSize})");
+        }
         /*
         // Ensure the folder exists
         var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "{(idPERUser)}");
@@ -62,65 +161,8 @@
             await userService.UpdateUserProfilePicture(username, profilePicturePath);
 */
         }
-    }
-<!--
-@using System.IO
-@using Classes;
-@using System;
-@using System.Threading.Tasks;
-@inject ICookie cookieManager
-
-<EditForm Model="@userData" OnValidSubmit="HandleValidSubmit">
-    <InputFile OnChange="HandleFileChange" accept=".jpg"/>
-    <button type="submit">Save</button>
-</EditForm>
-
-@code {
-    private UserDataModel userData = new UserDataModel();
-
-    private string uploadedFileName;
-    private IBrowserFile fichier;
-
-
-
-
-
-
-
-    public class UserService
-    {
-        private UserDataModel userDataCopy;
-        //Copy de userdata pour test
-        public UserService(UserDataModel userData)
-        {
-            userDataCopy = new UserDataModel
-                {
-                //[ERREUR]
-                ImagePath = userData.ImagePath
-                };
-        }
-
-        public async Task UpdateUserProfilePicture(string username, string profilePicturePath)
-        {
-
-
-            if (userDataCopy != null)
-            {
-                //[ERREUR]
-                userDataCopy.ImagePath = profilePicturePath;
-                //[ERREUR]
-                SingletonAcademate.getInstance().ChangerImagePathUser(username, profilePicturePath);
-            }
-            else
-            {
-                // Handle case where user is not found
-                // You might throw an exception, log an error, or handle it in another appropriate way
-            }
-        }
-
-    }
-
-
+    
+/*
     public class ProfilePictureService
     {
         private readonly string _profilePicturesFolderPath;
@@ -145,7 +187,7 @@
             return relativeFilePath; // Return the path where the file is saved
         }
     }
-
+*/
 
     // path = wwwroot\profilepictures\ (nompicture)
-} --> *@
+}
