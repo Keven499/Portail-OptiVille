@@ -1,7 +1,6 @@
 @page "/rbq"
 @using Microsoft.EntityFrameworkCore
 @using Portail_OptiVille.Data.Models
-@using System.ComponentModel.DataAnnotations
 @using System.Text.Json
 @using System.Text.Json.Serialization
 @inject A2024420517riGr1Eq6Context _context
@@ -24,10 +23,11 @@
     }
     .overflow-auto {
         height: 192px;
-        border: solid rgb(11, 35, 65) 2px;
         padding: 4px;
+        width: 100%;
     }
     .litteStrong {
+        margin-right: 4px;
         font-size: 14px;
     }
     .form-control {
@@ -73,8 +73,10 @@
         height: 0;
     }
     .custom-checkbox {
-        display: inline-block;
+        display: block;
         width: 20px;
+        flex-shrink: 0;
+        margin-right: 3px;
         height: 20px;
         background-color: rgb(120, 198, 224);
         border: 1px solid rgb(11, 35, 65);
@@ -82,6 +84,10 @@
         position: relative;
         cursor: pointer;
         vertical-align: middle;
+    }
+    label {
+        display: flex;
+        margin-bottom: 2px;
     }
     input[type="checkbox"]:checked+.custom-checkbox {
         background-color: rgb(11, 35, 65);
@@ -108,52 +114,35 @@
     .valid {
         outline: 1px solid #26b050;
     }
-    .errorIcon {
-        color: red;
-    }
     .validIcon {
         color: #26b050;
     }
 </style>
 
-<div class="container-fluid">
+<div class="container-fluid card justify-content-center p-0 m-0">
     <div class="col-xl-12 col-12 bg-white">
-        <h1 class="text-center dark-background">Licence RBQ</h1>
-        <EditForm Model="@this" OnValidSubmit="HandleValidSubmit">
-            <div class="row align-items-center mb-2">
+        <div class="card-header py-2 bg-bleuFonce"><h3 class="py-2 p-0 my-0  text-white">Licence RBQ</h3></div>
+        <EditForm Model="@this" OnValidSubmit="HandleValidSubmit" class="card-body py-1">
+            <div class="row mb-2">
                 <div class="col">
-                    <label class="form-label mb-1" for="noLicenceRBQ"><strong>Numéro</strong></label>
-                    <div class="row align-items-center">
-                        <div class="col pe-0">
-                            <InputText class="form-control" type="text" id="noLicenceRBQ"
-                                @bind-Value="noLicenceRBQ"></InputText>
-                        </div>
-                        <div class="col-auto">
-                            @{
-                                if (numErrorBool)
-                                {
-                                    <i class="bi bi-x-circle me-2 errorIcon"></i>
-                                }
-                                if (numGoodBool)
-                                {
-                                    <i class="bi bi-check-circle me-2 validIcon"></i>
-                                }
-                            }
-                        </div>
-                    </div>
-                    @{
-                        if (numErrorBool)
-                        {
+                    <label class="form-label mb-1 bleuFonce fw-bold" for="noLicenceRBQ">Numéro</label>
+                    <input type="text" id="noLicenceRBQ" class="@validityCSS" @bind="noLicenceRBQ" />
+                    @if (numErrorBool) {
+                        <span class="input-group-text text-danger">
+                            <i class="bi bi-x-circle me-2"></i>
                             <div class="validation-message">@numErrorMessage</div>
-                        }
+                        </span>
+                    }
+                    @if (numGoodBool) {
+                         <span class="input-group-text text-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                        </span>
                     }
                 </div>
             </div>
             <div class="row mb-2">
                 <div class="col">
-                    <div class="row">
-                        <label class="form-label mb-1" for="statut"><strong>Statut</strong></label>
-                    </div>
+                    <label class="form-label mb-1 bleuFonce fw-bold" for="statut">Statut</label>
                     <select class="form-select" id="statut" @bind="statutLicence">
                         <option value="1">Valide</option>
                         <option value="2">Valide avec restriction</option>
@@ -161,9 +150,7 @@
                     </select>
                 </div>
                 <div class="col">
-                    <div class="row">
-                        <label class="form-label mb-1" for="licenceType"><strong>Type de licence</strong></label>
-                    </div>
+                    <label class="form-label mb-1 bleuFonce fw-bold" for="licenceType">Type de licence</label>
                     <select class="form-select" id="licenceType" @bind="typeLicence">
                         <option value="1">Entrepreneur</option>
                         <option value="2">Constructeur-Propriétaire</option>
@@ -172,22 +159,10 @@
             </div>
             <div class="row align-items-center">
                 <div class="col">
-                    <label class="form-label m-0"><strong>Entrepeneur général</strong></label>
-                </div>
-                <div class="col-auto">
-                    @{
-                        if (sousCategoError)
-                        {
-                            <i class="bi bi-x-square"></i>
-                        }
-                        if (sousCategoGood)
-                        {
-                            <i class="bi bi-check-square"></i>
-                        }
-                    }
+                    <label class="form-label m-0 bleuFonce fw-bold">Entrepeneur général</label>
                 </div>
             </div>
-            <div class="overflow-auto mb-2">
+            <div class="overflow-auto mb-2 card @validityCategoSelect">
                 @{
                     int i = 0;
                     foreach (var categorie in categorieGeneral)
@@ -199,13 +174,9 @@
                                         checked="@sousCategoSelected[categorie.CodeSousCategorie]"
                                         @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
                                     <span class="custom-checkbox"></span>
+                                    <strong class="litteStrong">@categorie.CodeSousCategorie</strong>
+                                    <strong class="litteStrong">@categorie.Nom</strong>
                                 </label>
-                            </div>
-                            <div class="col-auto ps-1 pe-0">
-                                <strong class="litteStrong">@categorie.CodeSousCategorie</strong>
-                            </div>
-                            <div class="col ps-1">
-                                <strong class="litteStrong">@categorie.Nom</strong>
                             </div>
                         </div>
                         i++;
@@ -214,25 +185,22 @@
             </div>
             <div class="row mb-2">
                 <div class="col">
-                    <label class="form-label m-0"><strong>Entrepeneur spécialisé</strong></label>
-                    <div class="overflow-auto">
+                    <label class="form-label m-0 bleuFonce fw-bold">Entrepeneur spécialisé</label>
+                    <div class="overflow-auto card @validityCategoSelect">
                         @foreach (var categorie in categorieSpecialise)
                         {
                             <div class="row m-0">
                                 <div class="col-auto p-0">
-                                    <label for="categorie@(i)">
+                                    <label>
                                         <input type="checkbox" id="categorie@(i)"
                                             checked="@sousCategoSelected[categorie.CodeSousCategorie]"
                                             @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
                                         <span class="custom-checkbox"></span>
+                                        <strong class="litteStrong">@categorie.CodeSousCategorie</strong>
+                                        <strong class="litteStrong">@categorie.Nom</strong>
                                     </label>
                                 </div>
-                                <div class="col-auto ps-1 pe-0">
-                                    <strong class="litteStrong">@categorie.CodeSousCategorie</strong>
-                                </div>
-                                <div class="col ps-1">
-                                    <strong class="litteStrong">@categorie.Nom</strong>
-                                </div>
+                                
                             </div>
                             i++;
                         }
@@ -240,7 +208,10 @@
                     @{
                         if (sousCategoError)
                         {
-                            <strong class="error">Au moins une catégorie doit être sélectionné</strong>
+                            <span class="input-group-text text-danger">
+                                <i class="bi bi-x-circle me-2"></i>
+                                <div class="validation-message">Au moins une catégorie doit être sélectionné</div>
+                            </span>
                         }
                     }
                 </div>
@@ -259,16 +230,16 @@
     private Dictionary<string, bool> sousCategoSelected = new Dictionary<string, bool>();
     public string? noLicenceRBQ { get; set; }
     private int statutLicence = 1;
-    private string? resultMessage;
+    private string validityCSS = "form-control";
+    private string validityCategoSelect = "";
     private int typeLicence = 1;
+    private string? tempoNoLicence;
     private bool numErrorBool = false;
     private bool numGoodBool = false;
-
     private string? numErrorMessage;
     private bool sousCategoError = false;
     private bool sousCategoGood = false;
 
-    // Dictionary permettant de faire le lien entre la value du champ sélectionné et son texte
     private Dictionary<int, string> statutLicenceText = new Dictionary<int, string>
     {
         { 1, "Valide" },
@@ -276,33 +247,27 @@
         { 3, "Non valide" }
     };
 
-    // Dictionary permettant de faire le lien entre la value du champ sélectionné et son texte
     private Dictionary<int, string> typeLicenceText = new Dictionary<int, string>
     {
         { 1, "Entrepreneur" },
         { 2, "Constructeur-Propriétaire" }
     };
 
-    // Fonction permettant de récupérer les informations dans la base de données
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            // Permet d'aller chercher toutes les catégories
             allCategories = await _context.Categories.ToListAsync();
 
-            // Créer une copie de toutes les catégories pour leur attribuer un bool qui détermine si la catégorie est coché ou non
             sousCategoSelected = allCategories.ToDictionary(
             c => c.CodeSousCategorie,
             c => false
             );
 
-            // Récupère toutes les catégories de type Général
             categorieGeneral = allCategories
             .Where(c => c.NomCategorie == "Général")
             .ToList();
 
-            // Récupère toutes les catégories de type Spécialisé
             categorieSpecialise = allCategories
             .Where(c => c.NomCategorie == "Spécialisé")
             .ToList();
@@ -313,7 +278,6 @@
         }
     }
 
-    // Fonction permettant de récupérer les catégories sélectionné
     private List<Categorie> GetSelectedCategories()
     {
         return allCategories
@@ -321,7 +285,6 @@
         .ToList();
     }
 
-    // Fonction permettant d'indiquer dans la liste qu'une catégorie est sélectionné
     private void OnCheckboxChange(string codeSousCategorie, ChangeEventArgs e)
     {
         if (e.Value is bool isChecked)
@@ -330,13 +293,11 @@
         }
     }
 
-    // Fonction permettant de voir si au moins une catégorie a été sélectionné
     private bool ValidateSelection()
     {
         return sousCategoSelected.Values.Any(isSelected => isSelected);
     }
 
-    // Fonction permettant de formatter la licence
     static string InsertHyphens(string input)
     {
         if (input.Length == 10)
@@ -346,96 +307,100 @@
         return input;
     }
 
-public class ApiResponse
-{
-    public Result? Result { get; set; }
-}
-
-public class Result
-{
-    public List<RBQRecord>? Records { get; set; }
-}
-
-public class RBQRecord
-{
-    [JsonPropertyName("Numero de licence")]
-    public string? NumeroDeLicence { get; set; }
-}
-
-protected async Task<string?> GetNumeroDeLicenceAsync()
-{
-    try
+    public class ApiResponse
     {
-        var response = await Http.GetAsync($"https://www.donneesquebec.ca/recherche/api/3/action/datastore_search_sql?sql=SELECT%20*%20FROM%20%2232f6ec46-85fd-45e9-945b-965d9235840a%22%20WHERE%20%22Numero%20de%20licence%22%20=%20%27{noLicenceRBQ}%27LIMIT%201"); // Replace `url` with your API endpoint
-        if (response.IsSuccessStatusCode)
+        public Result? Result { get; set; }
+    }
+
+    public class Result
+    {
+        public List<RBQRecord>? Records { get; set; }
+    }
+
+    public class RBQRecord
+    {
+        [JsonPropertyName("Numero de licence")]
+        public string? NumeroDeLicence { get; set; }
+    }
+    protected async Task<string?> GetNumeroDeLicenceAsync()
+    {
+        try
         {
-            var json = await response.Content.ReadAsStringAsync();
-            // Deserialize the JSON into the ApiResponse object
-            var apiResponse = JsonSerializer.Deserialize<ApiResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            // Extract the first record's "Numero de licence"
-            var responseNoLicence = apiResponse?.Result?.Records?.FirstOrDefault()?.NumeroDeLicence;
-            Console.WriteLine("API: "+ responseNoLicence);
-            return responseNoLicence;
+            var response = await Http.GetAsync($"https://www.donneesquebec.ca/recherche/api/3/action/datastore_search_sql?sql=SELECT%20*%20FROM%20%2232f6ec46-85fd-45e9-945b-965d9235840a%22%20WHERE%20%22Numero%20de%20licence%22%20=%20%27{noLicenceRBQ}%27LIMIT%201"); // Replace `url` with your API endpoint
+            if (response.IsSuccessStatusCode)
+            {
+                var json = await response.Content.ReadAsStringAsync();
+                var apiResponse = JsonSerializer.Deserialize<ApiResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var responseNoLicence = apiResponse?.Result?.Records?.FirstOrDefault()?.NumeroDeLicence;
+                Console.WriteLine("API: "+ responseNoLicence);
+                return responseNoLicence;
+            }
+            return "0000-0000-00";
         }
-        return "0000-0000-00"; // Return null if the request was not successful
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return null;
+        }
     }
-    catch (Exception ex)
-    {
-        // Handle exceptions (e.g., log the error)
-        Console.WriteLine($"An error occurred: {ex.Message}");
-        return null;
-    }
-}
 
-    // Fonction exécuter au moment de soumettre le Form
     public async Task HandleValidSubmit()
     {
-        #region Regarde si au moins 1 catégorie est sélectionné
         if (!ValidateSelection())
         {
+            validityCategoSelect = "invalid";
             sousCategoError = true;
             sousCategoGood = false;
         }
         else
         {
+             validityCategoSelect = "valid";
             sousCategoError = false;
             sousCategoGood = true;
         }
-        #endregion
 
-        #region Regarde si le no de licence RBQ nest pas vide et valide avec API
         if (!string.IsNullOrEmpty(noLicenceRBQ))
         {
-            noLicenceRBQ = InsertHyphens(noLicenceRBQ);
-            Console.WriteLine("INPUT: " + noLicenceRBQ);
-            var tempoNoLicence = await GetNumeroDeLicenceAsync(); 
+            if (noLicenceRBQ.Length == 10 || noLicenceRBQ.Length == 12) {
+                noLicenceRBQ = InsertHyphens(noLicenceRBQ);
+                tempoNoLicence = await GetNumeroDeLicenceAsync(); 
+            }
+            else {
+                numErrorBool = true;
+                numErrorMessage = "Numéro de licence invalide";
+                validityCSS = "form-control invalid";
+                numGoodBool = false;
+            }
             if (tempoNoLicence != null) {
                 if (tempoNoLicence.Equals(noLicenceRBQ))
                 {
                     numErrorBool = false;
+                   validityCSS = "form-control valid";
                     numGoodBool = true;
                 }
                 else
                 {
                     numErrorMessage = "Numéro de licence invalide";
                     numErrorBool = true;
+                    validityCSS = "form-control invalid";
                     numGoodBool = false;
                 }
             }
             else {
                 numErrorBool = true;
+                numErrorMessage = "Numéro de licence invalide";
+                validityCSS = "form-control invalid";
                 numGoodBool = false;
             }
         }
         else
         {
             numErrorBool = true;
+            validityCSS = "form-control invalid";
             numGoodBool = false;
             numErrorMessage = "Numéro de licence requis";
         }
-        #endregion
 
-        #region Regarde si toutes les informations sont entrées correctement et exécute la requête
         if (!numErrorBool && !sousCategoError)
         {
             Console.WriteLine(noLicenceRBQ);
@@ -454,9 +419,6 @@ protected async Task<string?> GetNumeroDeLicenceAsync()
             //FOURNISSEURLICENCERBQ DEVRA DONC SE FAIRE FORCÉMENT À LA FIN
             // LÀ OÙ NOUS EN SOMMES, NOUS NE POUVONS QUE INSÉRER DANS LES TABLES: CATEGORIE, LICENCERBQ, LICENCERBQCATEGORIE.
             // RESTE À DÉTERMINER SI UNE LICENCE AVEC LE STATUT NON VALIDE DOIT ÊTRE VÉRIFIÉ PAR L'API ET QU'EST-CE QUE LES TRAVAUX PERMIS
-            
-            
         }
-        #endregion
     }
 }
