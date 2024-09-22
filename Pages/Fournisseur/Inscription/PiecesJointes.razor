@@ -133,8 +133,8 @@
     private class FichierModel 
     {  
         [FileExtensionsAttribute(Extensions = "doc,docx,pdf,xls,xlsx,jpg,jpeg,png", ErrorMessage = "Format de fichier non valide.")]
-        public IBrowserFile fichier { get; set; }
-        public string NoLicenceNEQ { get; set; }
+        public IBrowserFile? fichier { get; set; }
+        public string? NoLicenceNEQ { get; set; }
     }
     private string GetFormatSizeFile(long size)
     {
@@ -199,7 +199,7 @@
         CalculTotalSize();
     }
 
-    private async Task HandleValidSubmit()
+    private void HandleValidSubmit()
     {
         errorMessage = "";
         foreach(var file in listFichiers)
