@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Portail_OptiVille.Data.Models;
 
-public partial class Categorie
+public partial class Categorierbq
 {
     public string CodeSousCategorie { get; set; } = null!;
 

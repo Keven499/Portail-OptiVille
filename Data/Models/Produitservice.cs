@@ -9,13 +9,11 @@ public partial class Produitservice
 
     public string Nature { get; set; } = null!;
 
-    public string? CodeCategorie { get; set; }
-
-    public string? Categorie { get; set; }
-
     public string? Description { get; set; }
 
     public string? Details { get; set; }
+
+    public virtual ICollection<Categorieunspsc> Categorieunspscs { get; set; } = new List<Categorieunspsc>();
 
     public virtual ICollection<Fournisseur> IdFournisseurs { get; set; } = new List<Fournisseur>();
 }

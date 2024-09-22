@@ -228,9 +228,9 @@
 </EditForm>
 
 @code {
-    private List<Categorie> categorieGeneral = new List<Categorie>();
-    private List<Categorie> categorieSpecialise = new List<Categorie>();
-    private List<Categorie> allCategories = new List<Categorie>();
+    private List<Categorierbq> categorieGeneral = new List<Categorierbq>();
+    private List<Categorierbq> categorieSpecialise = new List<Categorierbq>();
+    private List<Categorierbq> allCategories = new List<Categorierbq>();
     private Dictionary<string, bool> sousCategoSelected = new Dictionary<string, bool>();
     public string? noLicenceRBQ { get; set; }
     private int statutLicence = 1;
@@ -261,7 +261,7 @@
     {
         try
         {
-            allCategories = await _context.Categories.ToListAsync();
+            allCategories = await _context.Categorierbqs.ToListAsync();
 
             sousCategoSelected = allCategories.ToDictionary(
             c => c.CodeSousCategorie,
@@ -282,7 +282,7 @@
         }
     }
 
-    private List<Categorie> GetSelectedCategories()
+    private List<Categorierbq> GetSelectedCategories()
     {
         return allCategories
         .Where(c => sousCategoSelected[c.CodeSousCategorie])

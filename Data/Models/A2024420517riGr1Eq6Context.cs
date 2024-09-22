@@ -16,7 +16,9 @@ public partial class A2024420517riGr1Eq6Context : DbContext
     {
     }
 
-    public virtual DbSet<Categorie> Categories { get; set; }
+    public virtual DbSet<Categorierbq> Categorierbqs { get; set; }
+
+    public virtual DbSet<Categorieunspsc> Categorieunspscs { get; set; }
 
     public virtual DbSet<Contact> Contacts { get; set; }
 
@@ -44,11 +46,11 @@ public partial class A2024420517riGr1Eq6Context : DbContext
             .UseCollation("latin1_swedish_ci")
             .HasCharSet("latin1");
 
-        modelBuilder.Entity<Categorie>(entity =>
+        modelBuilder.Entity<Categorierbq>(entity =>
         {
             entity.HasKey(e => e.CodeSousCategorie).HasName("PRIMARY");
 
-            entity.ToTable("categorie");
+            entity.ToTable("categorierbq");
 
             entity.Property(e => e.CodeSousCategorie)
                 .HasMaxLength(10)
@@ -66,7 +68,7 @@ public partial class A2024420517riGr1Eq6Context : DbContext
                     r => r.HasOne<Licencerbq>().WithMany()
                         .HasForeignKey("IdLicenceRbq")
                         .HasConstraintName("licencerbqcategorie_ibfk_2"),
-                    l => l.HasOne<Categorie>().WithMany()
+                    l => l.HasOne<Categorierbq>().WithMany()
                         .HasForeignKey("CodeSousCategorie")
                         .HasConstraintName("licencerbqcategorie_ibfk_1"),
                     j =>
@@ -83,6 +85,34 @@ public partial class A2024420517riGr1Eq6Context : DbContext
                             .HasMaxLength(12)
                             .HasColumnName("idLicenceRBQ");
                     });
+        });
+
+        modelBuilder.Entity<Categorieunspsc>(entity =>
+        {
+            entity.HasKey(e => e.CategoUnsid).HasName("PRIMARY");
+
+            entity.ToTable("categorieunspsc");
+
+            entity.HasIndex(e => e.CodeUnspsc, "codeUNSPSC");
+
+            entity.Property(e => e.CategoUnsid)
+                .ValueGeneratedNever()
+                .HasColumnType("int(11)")
+                .HasColumnName("categoUNSID");
+            entity.Property(e => e.Categorie)
+                .HasMaxLength(50)
+                .HasColumnName("categorie");
+            entity.Property(e => e.CodeCategorie)
+                .HasMaxLength(10)
+                .HasColumnName("codeCategorie");
+            entity.Property(e => e.CodeUnspsc)
+                .HasMaxLength(8)
+                .HasColumnName("codeUNSPSC");
+
+            entity.HasOne(d => d.CodeUnspscNavigation).WithMany(p => p.Categorieunspscs)
+                .HasForeignKey(d => d.CodeUnspsc)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("categorieunspsc_ibfk_1");
         });
 
         modelBuilder.Entity<Contact>(entity =>
@@ -362,12 +392,6 @@ public partial class A2024420517riGr1Eq6Context : DbContext
             entity.Property(e => e.CodeUnspsc)
                 .HasMaxLength(8)
                 .HasColumnName("codeUNSPSC");
-            entity.Property(e => e.Categorie)
-                .HasMaxLength(50)
-                .HasColumnName("categorie");
-            entity.Property(e => e.CodeCategorie)
-                .HasMaxLength(10)
-                .HasColumnName("codeCategorie");
             entity.Property(e => e.Description)
                 .HasMaxLength(255)
                 .HasColumnName("description");
