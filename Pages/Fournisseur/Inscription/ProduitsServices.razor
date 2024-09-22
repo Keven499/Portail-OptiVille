@@ -1,4 +1,8 @@
 @page "/productService"
+@using Microsoft.EntityFrameworkCore
+@using Portail_OptiVille.Data.Models
+@using System.ComponentModel.DataAnnotations
+@inject A2024420517riGr1Eq6Context _context
 
 <PageTitle>Produits et services</PageTitle>
 
@@ -69,7 +73,8 @@
     }
 </style>
 
-<EditForm Model="@this" OnValidSubmit="HandleValidSubmit">
+<EditForm Model="@formModel" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
 <div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
     <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
         <div class="card w-75 h-75 d-flex justify-content-center p-0 m-0">
@@ -91,7 +96,10 @@
                     <div class="col py-2">
                         <label class="form-label fw-bold" for="statut">Catégorie</label>
                         <select class="form-select">
-                            <option value="">Exemple</option>
+                            @foreach (var categorie in categorieUNSPSC) {
+                                <option >@categorie.Categorie</option>
+                            }
+                           
                             <!-- 
                                 LISTER LES CATÉGORIES DEPUIS FICHIER association_categorie_codes_final.xls PREMIER ONGLET "Liste des catégories"
                             -->
@@ -121,9 +129,10 @@
                 </div>
                 <div class="row">
                     <div class="col py-2">
-                        <label for="details" class="form-label fw-bold">Détails et spécifications</label>
-                        <textarea class="form-control" id="details" rows="6" maxlength="500" placeholder="Entrez les détails ici..." style="resize: none;"></textarea>
-                        <small class="form-text text-danger">Le message d'erreur apparaîtrait ici...</small>
+                        <label for="details" class="form-label fw-bold" form="message">Détails et spécifications</label>
+                        <InputTextArea id="message" oninput="countCharacters(this)" class="form-control" rows="6" placeholder="Entrez les détails ici..." style="resize: none;" @bind-Value="formModel.Message" />
+                        <ValidationMessage For="@(() => formModel.Message)" />
+                        <span style="display:none;" id="charCount">500 caractères restant</span>
                     </div>
                 </div>
             </div>
@@ -140,7 +149,45 @@
 </div>
 </EditForm>
 
+<script>
+    function countCharacters(textarea) {
+        const maxLength = 500;
+        const currentLength = textarea.value.length;
+        const remaining = maxLength - currentLength;
+        const charCountElement = document.getElementById("charCount");
+        if (currentLength > 0) {
+            charCountElement.style.display = "block";
+            charCountElement.innerText = remaining < 0 
+                ? "Limite dépassée de " + Math.abs(remaining) + " caractères" 
+                : remaining + " caractères restants";
+        } else {
+            charCountElement.style.display = "none";
+        }
+    }
+</script>
+
 @code{
+    private ModelValidation formModel = new ModelValidation();
+    private List<Categorieunspsc> categorieUNSPSC = new List<Categorieunspsc>();
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            categorieUNSPSC = await _context.Categorieunspscs.ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors de la récupération des personnes: {ex.Message}");
+        }
+    }
+
+    public class ModelValidation
+    {
+        [Required(ErrorMessage = "Détails et spécifications requis")]
+        [MaxLength(500, ErrorMessage = "Limite de 500 caractères maximum")]
+        public string? Message { get; set; }
+    }
+
      public void HandleValidSubmit() {
 
      }

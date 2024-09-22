@@ -11,8 +11,6 @@ public partial class Produitservice
 
     public string? Description { get; set; }
 
-    public string? Details { get; set; }
-
     public int? CategoUnsid { get; set; }
 
     public virtual Categorieunspsc? CategoUns { get; set; }

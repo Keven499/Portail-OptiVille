@@ -41,6 +41,8 @@ public partial class Fournisseur
 
     public string Devise { get; set; } = null!;
 
+    public string? Details { get; set; }
+
     public string ModeCommunication { get; set; } = null!;
 
     public DateTime? DateCreation { get; set; }

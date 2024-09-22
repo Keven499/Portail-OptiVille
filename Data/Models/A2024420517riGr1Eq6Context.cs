@@ -233,6 +233,9 @@ public partial class A2024420517riGr1Eq6Context : DbContext
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("datetime")
                 .HasColumnName("dateLastChanged");
+            entity.Property(e => e.Details)
+                .HasMaxLength(500)
+                .HasColumnName("details");
             entity.Property(e => e.Devise)
                 .HasColumnType("enum('CAD','USD')")
                 .HasColumnName("devise");
@@ -390,11 +393,8 @@ public partial class A2024420517riGr1Eq6Context : DbContext
             entity.Property(e => e.Description)
                 .HasMaxLength(255)
                 .HasColumnName("description");
-            entity.Property(e => e.Details)
-                .HasMaxLength(500)
-                .HasColumnName("details");
             entity.Property(e => e.Nature)
-                .HasColumnType("enum('Approvisionnement','Services','Travaux de construction','Autres natures de contrat')")
+                .HasColumnType("enum('Approvisionnement','Services','Travaux de construction','Concession','Autres natures de contrat')")
                 .HasColumnName("nature");
 
             entity.HasOne(d => d.CategoUns).WithMany(p => p.Produitservices)
