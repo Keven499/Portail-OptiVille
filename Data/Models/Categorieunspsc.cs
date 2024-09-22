@@ -11,7 +11,5 @@ public partial class Categorieunspsc
 
     public string? Categorie { get; set; }
 
-    public string? CodeUnspsc { get; set; }
-
-    public virtual Produitservice? CodeUnspscNavigation { get; set; }
+    public virtual ICollection<Produitservice> Produitservices { get; set; } = new List<Produitservice>();
 }

@@ -93,8 +93,6 @@ public partial class A2024420517riGr1Eq6Context : DbContext
 
             entity.ToTable("categorieunspsc");
 
-            entity.HasIndex(e => e.CodeUnspsc, "codeUNSPSC");
-
             entity.Property(e => e.CategoUnsid)
                 .ValueGeneratedNever()
                 .HasColumnType("int(11)")
@@ -105,14 +103,6 @@ public partial class A2024420517riGr1Eq6Context : DbContext
             entity.Property(e => e.CodeCategorie)
                 .HasMaxLength(10)
                 .HasColumnName("codeCategorie");
-            entity.Property(e => e.CodeUnspsc)
-                .HasMaxLength(8)
-                .HasColumnName("codeUNSPSC");
-
-            entity.HasOne(d => d.CodeUnspscNavigation).WithMany(p => p.Categorieunspscs)
-                .HasForeignKey(d => d.CodeUnspsc)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("categorieunspsc_ibfk_1");
         });
 
         modelBuilder.Entity<Contact>(entity =>
@@ -389,9 +379,14 @@ public partial class A2024420517riGr1Eq6Context : DbContext
 
             entity.ToTable("produitservice");
 
+            entity.HasIndex(e => e.CategoUnsid, "categoUNSID");
+
             entity.Property(e => e.CodeUnspsc)
                 .HasMaxLength(8)
                 .HasColumnName("codeUNSPSC");
+            entity.Property(e => e.CategoUnsid)
+                .HasColumnType("int(11)")
+                .HasColumnName("categoUNSID");
             entity.Property(e => e.Description)
                 .HasMaxLength(255)
                 .HasColumnName("description");
@@ -401,6 +396,11 @@ public partial class A2024420517riGr1Eq6Context : DbContext
             entity.Property(e => e.Nature)
                 .HasColumnType("enum('Approvisionnement','Services','Travaux de construction','Autres natures de contrat')")
                 .HasColumnName("nature");
+
+            entity.HasOne(d => d.CategoUns).WithMany(p => p.Produitservices)
+                .HasForeignKey(d => d.CategoUnsid)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("produitservice_ibfk_1");
         });
 
         modelBuilder.Entity<Telephone>(entity =>
