@@ -53,36 +53,39 @@
         border-radius: 10px;
     }
 </style>
-<div class="container-fluid card justify-content-center p-0 m-0">
-    <div class="col-12">
-        <div class="card-header py-2 bg-bleuFonce">
-            <h3 class="py-2 p-0 my-0 text-white">Carte d'affaires et brochures</h3>
-        </div>
-        <EditForm Model="fileModel" OnValidSubmit="HandleValidSubmit">
-            <div class="card-body py-1 d-flex justify-content-center">
-                <div id="dropArea" class="drag-drop-area">
-                    <label for="fileInput">
-                    <h4>Faites glisser et déposez les fichiers ici</h4>
-                    <p>ou cliquez pour sélectionner les fichiers</p>
-                    </label>
+
+<EditForm Model="fileModel" OnValidSubmit="HandleValidSubmit">
+<div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
+    <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
+        <div class="card w-75 h-75 d-flex justify-content-center p-0 m-0">
+            <div class="col-12">
+                <div class="card-header py-2 bg-bleuFonce">
+                    <h3 class="py-2 p-0 my-0 text-white">Carte d'affaires et brochures</h3>
                 </div>
-                <InputFile id="fileInput" OnChange="HandleFileChange" multiple 
-                           accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" 
-                           style="display: none;" />
-            </div>
-                        @if (!string.IsNullOrEmpty(errorMessage))
-                        {
-                            <div class="d-flex justify-content-center">
-                                <div class="col-xl-6 alert alert-danger alert-dismissible fade show m-1" role="alert">
-                                    @errorMessage
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                </div>
-                            </div>
-                        }
-            <div class="card-header py-2 bg-bleuFonce">
-                <h3 class="py-2 p-0 my-0 text-white">Fichiers téléversés (Total: @GetFormatSize())</h3>
-            </div>
-            <div class="card-body">
+                <div class="card-body py-2 d-flex justify-content-center">
+                    <div id="dropArea" class="drag-drop-area">
+                        <label for="fileInput">
+                            <h4>Faites glisser et déposez les fichiers ici</h4>
+                            <p>ou cliquez pour sélectionner les fichiers</p>
+                        </label>
+                    </div>
+                    <InputFile id="fileInput" OnChange="HandleFileChange" multiple 
+                            accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" 
+                            style="display: none;" />
+                </div>
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="d-flex justify-content-center">
+                        <div class="col-xl-6 alert alert-danger alert-dismissible fade show m-1" role="alert">
+                            @errorMessage
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </div>
+                }
+                <div class="card-header py-2 bg-bleuFonce">
+                    <h3 class="py-2 p-0 my-0 text-white">Fichiers téléversés (Total: @GetFormatSize())</h3>
+                </div>
+                <div class="card-body">
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -104,13 +107,20 @@
                             }
                         </tbody>
                     </table>
-                    <div class="d-flex justify-content-center mt-3">
-                        <button class="btn btn-primary btn-lg w-50" type="submit">Save</button>
+                </div>
+                <div class="card-footer bg-bleuFonce">
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn bg-bleu text-white fw-bold" style="width: 200px;">
+                            Enregistrer 
+                            <i class="bi bi-arrow-right-circle"></i>
+                        </button>
                     </div>
+                </div>
             </div>
-        </EditForm>
+        </div>
     </div>
 </div>
+</EditForm>
 
 <script src="js/dragdrop.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
