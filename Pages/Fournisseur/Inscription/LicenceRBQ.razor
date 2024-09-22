@@ -41,15 +41,6 @@
     .valid.modified:not([type=checkbox]) {
         outline: none;
     }
-    .btn {
-        color: white;
-        background-color: rgb(120, 198, 224);
-        border-bottom: solid rgb(11, 35, 65) 3px;
-    }
-    .btn:hover {
-        background-color: rgb(11, 35, 65);
-        color: white;
-    }
     .error {
         color: red;
     }
@@ -119,109 +110,122 @@
     }
 </style>
 
-<div class="container-fluid card justify-content-center p-0 m-0">
-    <div class="col-xl-12 col-12 bg-white">
-        <div class="card-header py-2 bg-bleuFonce"><h3 class="py-2 p-0 my-0  text-white">Licence RBQ</h3></div>
-        <EditForm Model="@this" OnValidSubmit="HandleValidSubmit" class="card-body py-1">
-            <div class="row mb-2">
-                <div class="col">
-                    <label class="form-label mb-1 bleuFonce fw-bold" for="noLicenceRBQ">Numéro</label>
-                    <input type="text" id="noLicenceRBQ" class="@validityCSS" @bind="noLicenceRBQ" />
-                    @if (numErrorBool) {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <div class="validation-message">@numErrorMessage</div>
-                        </span>
-                    }
-                    @if (numGoodBool) {
-                         <span class="input-group-text text-success">
-                                <i class="bi bi-check-circle me-2"></i>
-                        </span>
-                    }
-                </div>
+<EditForm Model="@this" OnValidSubmit="HandleValidSubmit">
+<div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
+    <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
+        <div class="card w-75 h-75 d-flex justify-content-center p-0 m-0">
+            <div class="card-header py-2 bg-bleuFonce">
+                <h3 class="py-2 p-0 my-0  text-white">Licence RBQ</h3>
             </div>
-            <div class="row mb-2">
-                <div class="col">
-                    <label class="form-label mb-1 bleuFonce fw-bold" for="statut">Statut</label>
-                    <select class="form-select" id="statut" @bind="statutLicence">
-                        <option value="1">Valide</option>
-                        <option value="2">Valide avec restriction</option>
-                        <option value="3">Non valide</option>
-                    </select>
-                </div>
-                <div class="col">
-                    <label class="form-label mb-1 bleuFonce fw-bold" for="licenceType">Type de licence</label>
-                    <select class="form-select" id="licenceType" @bind="typeLicence">
-                        <option value="1">Entrepreneur</option>
-                        <option value="2">Constructeur-Propriétaire</option>
-                    </select>
-                </div>
-            </div>
-            <div class="row align-items-center">
-                <div class="col">
-                    <label class="form-label m-0 bleuFonce fw-bold">Entrepeneur général</label>
-                </div>
-            </div>
-            <div class="overflow-auto mb-2 card @validityCategoSelect">
-                @{
-                    int i = 0;
-                    foreach (var categorie in categorieGeneral)
-                    {
-                        <div class="row m-0">
-                            <div class="col-auto p-0">
-                                <label for="categorie@(i)">
-                                    <input type="checkbox" id="categorie@(i)"
-                                        checked="@sousCategoSelected[categorie.CodeSousCategorie]"
-                                        @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
-                                    <span class="custom-checkbox"></span>
-                                    <strong class="litteStrong">@categorie.CodeSousCategorie</strong>
-                                    <strong class="litteStrong">@categorie.Nom</strong>
-                                </label>
-                            </div>
+            <div class="card-body py-1">
+                <div class="col-xl-12 col-12 bg-white">
+                    <div class="row mb-2">
+                        <div class="col">
+                            <label class="form-label mb-1 bleuFonce fw-bold" for="noLicenceRBQ">Numéro</label>
+                            <input type="text" id="noLicenceRBQ" class="@validityCSS" @bind="noLicenceRBQ" />
+                            @if (numErrorBool) {
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    <div class="validation-message">@numErrorMessage</div>
+                                </span>
+                            }
+                            @if (numGoodBool) {
+                                <span class="input-group-text text-success">
+                                        <i class="bi bi-check-circle me-2"></i>
+                                </span>
+                            }
                         </div>
-                        i++;
-                    }
-                }
-            </div>
-            <div class="row mb-2">
-                <div class="col">
-                    <label class="form-label m-0 bleuFonce fw-bold">Entrepeneur spécialisé</label>
-                    <div class="overflow-auto card @validityCategoSelect">
-                        @foreach (var categorie in categorieSpecialise)
-                        {
-                            <div class="row m-0">
-                                <div class="col-auto p-0">
-                                    <label>
-                                        <input type="checkbox" id="categorie@(i)"
-                                            checked="@sousCategoSelected[categorie.CodeSousCategorie]"
-                                            @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
-                                        <span class="custom-checkbox"></span>
-                                        <strong class="litteStrong">@categorie.CodeSousCategorie</strong>
-                                        <strong class="litteStrong">@categorie.Nom</strong>
-                                    </label>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col">
+                            <label class="form-label mb-1 bleuFonce fw-bold" for="statut">Statut</label>
+                            <select class="form-select" id="statut" @bind="statutLicence">
+                                <option value="1">Valide</option>
+                                <option value="2">Valide avec restriction</option>
+                                <option value="3">Non valide</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label class="form-label mb-1 bleuFonce fw-bold" for="licenceType">Type de licence</label>
+                            <select class="form-select" id="licenceType" @bind="typeLicence">
+                                <option value="1">Entrepreneur</option>
+                                <option value="2">Constructeur-Propriétaire</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <label class="form-label m-0 bleuFonce fw-bold">Entrepeneur général</label>
+                        </div>
+                    </div>
+                    <div class="overflow-auto mb-2 card @validityCategoSelect">
+                        @{
+                            int i = 0;
+                            foreach (var categorie in categorieGeneral)
+                            {
+                                <div class="row m-0">
+                                    <div class="col-auto p-0">
+                                        <label for="categorie@(i)">
+                                            <input type="checkbox" id="categorie@(i)"
+                                                checked="@sousCategoSelected[categorie.CodeSousCategorie]"
+                                                @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
+                                            <span class="custom-checkbox"></span>
+                                            <strong class="litteStrong">@categorie.CodeSousCategorie</strong>
+                                            <strong class="litteStrong">@categorie.Nom</strong>
+                                        </label>
+                                    </div>
                                 </div>
-                                
-                            </div>
-                            i++;
+                                i++;
+                            }
                         }
                     </div>
-                    @{
-                        if (sousCategoError)
-                        {
-                            <span class="input-group-text text-danger">
-                                <i class="bi bi-x-circle me-2"></i>
-                                <div class="validation-message">Au moins une catégorie doit être sélectionné</div>
-                            </span>
-                        }
-                    }
+                    <div class="row mb-2">
+                        <div class="col">
+                            <label class="form-label m-0 bleuFonce fw-bold">Entrepeneur spécialisé</label>
+                            <div class="overflow-auto card @validityCategoSelect">
+                                @foreach (var categorie in categorieSpecialise)
+                                {
+                                    <div class="row m-0">
+                                        <div class="col-auto p-0">
+                                            <label>
+                                                <input type="checkbox" id="categorie@(i)"
+                                                    checked="@sousCategoSelected[categorie.CodeSousCategorie]"
+                                                    @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
+                                                <span class="custom-checkbox"></span>
+                                                <strong class="litteStrong">@categorie.CodeSousCategorie</strong>
+                                                <strong class="litteStrong">@categorie.Nom</strong>
+                                            </label>
+                                        </div>
+                                        
+                                    </div>
+                                    i++;
+                                }
+                            </div>
+                            @{
+                                if (sousCategoError)
+                                {
+                                    <span class="input-group-text text-danger">
+                                        <i class="bi bi-x-circle me-2"></i>
+                                        <div class="validation-message">Au moins une catégorie doit être sélectionné</div>
+                                    </span>
+                                }
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="d-grid gap-2">
-                <button class="btn" type="submit">Soumettre</button>
+            <div class="card-footer bg-bleuFonce">
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn bg-bleu text-white fw-bold" style="width: 200px;">
+                        Suivant 
+                        <i class="bi bi-arrow-right-circle"></i>
+                    </button>
+                </div>
             </div>
-        </EditForm>
+        </div>
     </div>
 </div>
+</EditForm>
 
 @code {
     private List<Categorie> categorieGeneral = new List<Categorie>();
