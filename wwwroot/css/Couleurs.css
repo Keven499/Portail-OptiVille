@@ -1,3 +1,37 @@
+@font-face {
+    font-family: 'Alumni Extra Bold';
+    src: url('/fonts/AlumniSans-ExtraBold.ttf');
+}
+
+@font-face {
+    font-family: 'Alumni Medium';
+    src: url('/fonts/AlumniSans-Medium.ttf');
+}
+
+@font-face {
+    font-family: 'TT Hoves Light';
+    src: url('/fonts/TT Hoves Pro Trial Light.ttf');
+}
+
+@font-face {
+    font-family: 'TT Hoves Medium';
+    src: url('/fonts/TT Hoves Pro Trial Medium.ttf');
+}
+
+@font-face {
+    font-family: 'TT Hoves Bold';
+    src: url('/fonts/TT Hoves Pro Trial Bold.ttf');
+}
+
+body 
+{
+    background-image: url('/images/bg-infos.jpg');         
+    background-size: cover; 
+    background-position: center;        
+    background-repeat: no-repeat; 
+    background-attachment: fixed;
+}
+
 /* Bleu pâle */
 .bleuPale
 {
@@ -28,6 +62,12 @@
 .border-bleu
 {
     border: 2px solid rgb(0, 118, 213);
+}
+
+.input-bleu
+{
+    background-color: rgb(0, 118, 213, 0.2);
+    border-bottom: 2px solid rgb(11, 35, 65);
 }
 
 /* Bleu foncé */
@@ -92,4 +132,30 @@
 .border-vertFonce
 {
     border: 2px solid rgb(30, 73, 45);
+}
+
+/* Fonts */
+.titre-bold
+{
+    font-family: 'Alumni Extra Bold';
+}
+
+.titre-medium
+{
+    font-family: 'Alumni Medium';
+}
+
+.texte-light
+{
+    font-family: 'TT Hoves Light';
+}
+
+.texte-medium
+{
+    font-family: 'TT Hoves Medium';
+}
+
+.texte-bold
+{
+    font-family: 'TT Hoves Bold';
 }
