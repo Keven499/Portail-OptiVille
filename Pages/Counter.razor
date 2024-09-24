@@ -1,6 +1,9 @@
 ﻿@page "/counter"
 @using Portail_OptiVille.Data.Utilities
-@using System.IO.Compression
+@using System.IO;
+@using System.Collections.Generic;
+@using System;
+
 @inject MailManager _mailManager
 @inject DownloadService DownloadService
 <PageTitle>Counter</PageTitle>
@@ -26,7 +29,7 @@
 
     private async Task ProcessZipFile()
     {
-        // 1. Télécharger le fichier ZIP
+        @* // 1. Télécharger le fichier ZIP
         string url = "https://www.registreentreprises.gouv.qc.ca/RQAnonymeGR/GR/GR03/GR03A2_22A_PIU_RecupDonnPub_PC/FichierDonneesOuvertes.aspx";
         string outputPath = Path.Combine("Data", "entreprises.zip");
 
@@ -56,20 +59,80 @@
         File.Delete("Data\\Downloads\\DomaineValeur.csv");
         File.Delete("Data\\Downloads\\Etablissements.csv");
         File.Delete("Data\\Downloads\\FusionScissions.csv");
-        File.Delete("Data\\Downloads\\Nom.csv");
+        File.Delete("Data\\Downloads\\Nom.csv"); *@
+        //File.Delete("Data\\JeuDonnees.zip");
 
-        // 4. Convertir les fichiers CSV en SQLite
+        // 4. Trier le fichier CSV et effectuer une recherche binaire
+        
 
-        string csvFilePath = "Data\\Downloads\\Entreprise.csv";
-        string sqliteFilePath = "Data\\Utilities\\Fichier.sqlite";
-        string[] requiredColumns = { "NEQ", "ADR_DOMCL_LIGN1_ADR","ADR_DOMCL_LIGN2_ADR","ADR_DOMCL_LIGN3_ADR","ADR_DOMCL_LIGN4_ADR" };
 
-        CsvToSqliteConverter converter = new CsvToSqliteConverter();
-        converter.ConvertCsvToSqlite(csvFilePath, sqliteFilePath, requiredColumns);
+                string inputFilePath = "Data\\Downloads\\Entreprise.csv"; // Chemin de ton fichier CSV
+        string outputFilePath = "Data\\Downloads\\Entreprise.csv"; // Chemin de sortie pour le fichier trié
 
+        //SortCsvFile(inputFilePath, outputFilePath);
+
+            string csvFilePath = "Data\\Downloads\\Entreprise.csv";
+            string targetNEQ = "2247328729"; // Le NEQ que tu cherches
+            
+            // Charger les données CSV (sans tri, car déjà trié)
+        List<string[]> csvData = CsvBinarySearch.LoadAndSortCsv(csvFilePath);
+
+        // Effectuer la recherche binaire
+        int resultIndex = CsvBinarySearch.BinarySearch(csvData, targetNEQ);
+
+        if (resultIndex != -1)
+        {
+            // Récupérer les colonnes nécessaires si le NEQ est trouvé
+            var resultRow = csvData[resultIndex];
+            Console.WriteLine("NEQ trouvé !");
+            Console.WriteLine("ADR_DOMCL_LIGN1_ADR: " + resultRow[1]);
+            Console.WriteLine("ADR_DOMCL_LIGN2_ADR: " + resultRow[2]);
+            Console.WriteLine("ADR_DOMCL_LIGN3_ADR: " + resultRow[3]);
+            Console.WriteLine("ADR_DOMCL_LIGN4_ADR: " + resultRow[4]);
+        }
+        else
+        {
+            Console.WriteLine("NEQ non trouvé.");
+        }
 
         // 5. Optionnel : Supprimer le fichier ZIP après traitement
-        File.Delete(outputPath);
+       // File.Delete(outputPath);
 
+    }
+
+    public static void SortCsvFile(string inputFilePath, string outputFilePath)
+    {
+        // Liste pour stocker les lignes du fichier CSV
+        List<string> csvLines = new List<string>();
+
+        // Lire le fichier CSV
+        using (StreamReader sr = new StreamReader(inputFilePath))
+        {
+            string line;
+            while ((line = sr.ReadLine()) != null)
+            {
+                csvLines.Add(line);
+            }
+        }
+
+        // Séparer et trier à partir de la colonne NEQ (la première colonne)
+        csvLines.Sort((line1, line2) =>
+        {
+            string[] data1 = line1.Split(',');
+            string[] data2 = line2.Split(',');
+
+            return string.Compare(data1[0], data2[0], StringComparison.Ordinal);
+        });
+
+        // Sauvegarder le fichier trié
+        using (StreamWriter sw = new StreamWriter(outputFilePath))
+        {
+            foreach (var line in csvLines)
+            {
+                sw.WriteLine(line);
+            }
+        }
+
+        Console.WriteLine("Fichier CSV trié et sauvegardé avec succès.");
     }
 }
