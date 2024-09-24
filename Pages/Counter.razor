@@ -1,6 +1,8 @@
 ﻿@page "/counter"
 @using Portail_OptiVille.Data.Utilities
+@using System.IO.Compression
 @inject MailManager _mailManager
+@inject DownloadService DownloadService
 <PageTitle>Counter</PageTitle>
 
 <h1>Test pour voir si on peut envoyer des mails</h1>
@@ -8,6 +10,7 @@
 <p role="status">Current count: @currentCount</p>
 
 <button class="btn btn-primary" @onclick="SendMail">Click me</button>
+<button @onclick="ProcessZipFile">DL le zip</button>
 
 @code {
     private int currentCount = 0;
@@ -19,5 +22,54 @@
     private void SendMail()
     {
         _mailManager.SendMail("kevenmichel721@gmail.com", "Test", "Test");
+    }
+
+    private async Task ProcessZipFile()
+    {
+        // 1. Télécharger le fichier ZIP
+        string url = "https://www.registreentreprises.gouv.qc.ca/RQAnonymeGR/GR/GR03/GR03A2_22A_PIU_RecupDonnPub_PC/FichierDonneesOuvertes.aspx";
+        string outputPath = Path.Combine("Data", "entreprises.zip");
+
+        await DownloadService.DownloadFileAsync(url, outputPath);
+
+
+        // 2. Décompresser le fichier ZIP
+        if(!Directory.Exists(Path.Combine("Data", "Downloads")))
+        {
+            Directory.CreateDirectory(Path.Combine("Data", "Downloads"));
+        }
+
+        // Supprimer le fichier Entreprise.csv s'il existe
+        File.Delete("Data\\Downloads\\Entreprise.csv");
+        // Décompresser le fichier ZIP
+        ZipFile.ExtractToDirectory(outputPath, Path.Combine("Data", "Downloads"));
+            
+        
+
+
+
+        FileManager fileManager = new FileManager();
+        
+        // 3. Supprimer les fichiers inutiles
+
+        File.Delete("Data\\Downloads\\ContinuationsTransformations.csv");
+        File.Delete("Data\\Downloads\\DomaineValeur.csv");
+        File.Delete("Data\\Downloads\\Etablissements.csv");
+        File.Delete("Data\\Downloads\\FusionScissions.csv");
+        File.Delete("Data\\Downloads\\Nom.csv");
+
+        // 4. Convertir les fichiers CSV en SQLite
+
+        string csvFilePath = "Data\\Downloads\\Entreprise.csv";
+        string sqliteFilePath = "Data\\Utilities\\Fichier.sqlite";
+        string[] requiredColumns = { "NEQ", "ADR_DOMCL_LIGN1_ADR","ADR_DOMCL_LIGN2_ADR","ADR_DOMCL_LIGN3_ADR","ADR_DOMCL_LIGN4_ADR" };
+
+        CsvToSqliteConverter converter = new CsvToSqliteConverter();
+        converter.ConvertCsvToSqlite(csvFilePath, sqliteFilePath, requiredColumns);
+
+
+        // 5. Optionnel : Supprimer le fichier ZIP après traitement
+        File.Delete(outputPath);
+
     }
 }

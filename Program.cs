@@ -30,6 +30,8 @@ builder.Services.AddDbContext<A2024420517riGr1Eq6Context>(options =>
 );
 #endregion
 builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<DownloadService>();
+
 #region Load Config from Setting.json
 // Path to the Setting.json in the wwwroot folder
 var configFilePath = Path.Combine(builder.Environment.WebRootPath, "Setting.json");
@@ -38,6 +40,9 @@ var configFilePath = Path.Combine(builder.Environment.WebRootPath, "Setting.json
 var config = await Config.LoadFromJsonAsync(configFilePath);
 builder.Services.AddSingleton(config);
 #endregion
+
+//builder.Services.AddHttpClient();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
