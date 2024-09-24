@@ -1,29 +1,74 @@
 @page "/modele"
 @using System.Text.Json
 @inject List<Portail_OptiVille.Data.Utilities.Modele> listModele
+@*@inject Portail_OptiVille.Data.Utilities.Modele modeleClass*@
 @inject IHostEnvironment hostEnvironment // Inject IHostEnvironment to access the web root path
+<head>
+    <!-- Other head content -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+
 <div class="card">
     <div class="card-header">
         <h3>Configuration Settings</h3>
     </div>
     <div class="card-body">
-        @foreach(var modele in listModele){
             <div class="mb-2">
-                <p><strong>@modele.Id</strong></p>
-                <p><strong>Nom</strong></p>
-                <InputText @bind-Value="modele.Nom" type="text" class="form-control" 
-                        readonly="@(!isEditing)" />
+                <p><strong></strong></p>
+                <div class="form-group">
+                    <label for="exampleFormControlSelect1"><strong>Choix du modèle</strong></label>
+                    <select @onchange="OnModeleChanged" class="custom-select form-control" id="exampleFormControlSelect1">
+                        @if (selectedId == 0)
+                            {
+                                <option selected hidden>Choisir un modèle</option>
+                            }
+                        @foreach(var modele in listModele)
+                        {
+                            <option value="@modele.Id">@modele.Nom</option>
+                        }
+                    </select>
+                </div>
+                @if(selectedNom == null && selectedObjet == null && selectedMessage == null)
+                {
 
+                }
+                else
+                {
                 <p><strong>Objet</strong></p>
-                <InputText @bind-Value="modele.Objet" type="text" class="form-control" 
-                            readonly="@(!isEditing)" />
+                <InputText @bind-Value="selectedObjet" type="text" class="form-control" readonly="@(!isEditing)" />
 
                 <p><strong>Message</strong></p>
-                <InputText @bind-Value="modele.Message" type="text-area" class="form-control" 
-                        readonly="@(!isEditing)" />
+                <InputTextArea @bind-Value="selectedMessage" type="text-area" class="form-control" rows="6" style="resize: none;" readonly="@(!isEditing)" />
+                
+                }
             </div>
-        }
+        
         <div class="mt-3">
+            @if(!isCreating)
+            {
+                <button class="btn btn-info me-1" data-toggle="modal" data-target="#exampleModalCenter" @onclick="() => CreateModele(true)">Ajouter</button>
+            }
+            else
+            {
+            }
+                <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                    </div>
+                    <div class="modal-body">
+                        <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => CreateModele(false)">Close</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="SaveCreateModele">Save changes</button>
+                    </div>
+                    </div>
+                </div>
+                </div>
+
             @if (!isEditing)
             {
                 <button class="btn btn-primary" @onclick="EditConfig">Modifier</button>
@@ -43,15 +88,73 @@
 @code {
     private bool isEditing = false;
     private bool saveSuccess = false;
+    private bool isCreating = false;
 
+    private string? newNom;
+    private string? newObjet;
+    private string? newMessage;
+
+    private string? selectedNom;
+    private string? selectedObjet;
+    private string? selectedMessage;
+    private int selectedId =0;
+    private void CreateModele(bool variable)
+    {
+        if(variable)
+        {
+        isCreating = true;
+        }
+        else
+        {
+        isCreating = false;
+        }
+    }
     private void EditConfig()
     {
         isEditing = true;
         saveSuccess = false; 
     }
 
+    private void OnModeleChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value.ToString(), out selectedId))
+        {
+            GetDataList(selectedId);
+        }
+    }
+    private void GetDataList(int id)
+    {
+        var index = listModele.FindIndex(modele => modele.Id == id);
+        selectedNom = listModele[index].Nom;
+        selectedObjet = listModele[index].Objet;
+        selectedMessage = listModele[index].Message;
+    }
+
+    private async Task SaveCreateModele()
+    {
+        isCreating = false;
+        Console.WriteLine("Saved");
+    }
+/*
+    private void SaveCreateModele(string newNom, string newObjet, string newMessage)
+    {
+        var newModele = new Portail_OptiVille.Data.Utilities.Modele(listModele.Count+1,newNom,newObjet,newMessage);
+        modeleClass.AddListModele(newModele);
+    }
+*/
+    private void ShowModal()
+    {
+        // Invoke JavaScript to show the modal
+        JS.InvokeVoidAsync("$('#exampleModalCenter').modal', 'show'");
+    }
+
+    [Inject]
+    private IJSRuntime? JS { get; set; }
     private async Task SaveConfig()
     {
+        listModele[selectedId-1].Nom = selectedNom!;
+        listModele[selectedId-1].Objet = selectedObjet!;
+        listModele[selectedId-1].Message = selectedMessage!;
         var filePath = Path.Combine(hostEnvironment.ContentRootPath, "wwwroot", "Modele.json");
         var json = JsonSerializer.Serialize(listModele, new JsonSerializerOptions { WriteIndented = true });
 

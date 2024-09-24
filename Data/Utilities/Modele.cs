@@ -31,11 +31,6 @@ namespace Portail_OptiVille.Data.Utilities
             ListModele.Remove(modele);
         }
 
-        public List<Modele> GetListModele()
-        {
-            return ListModele;
-        }
-
         public static async Task<List<Modele>> LoadFromJsonAsync(string filePath)
         {
             if (File.Exists(filePath))
