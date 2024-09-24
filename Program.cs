@@ -41,6 +41,15 @@ var config = await Config.LoadFromJsonAsync(configFilePath);
 builder.Services.AddSingleton(config);
 #endregion
 
+#region Load Modele from Modele.json
+// Path to the Modele.json in the wwwroot folder
+var modeleFilePath = Path.Combine(builder.Environment.WebRootPath, "Modele.json");
+
+// Load the modele asynchronously and register it as a singleton
+var modeles = await Modele.LoadFromJsonAsync(modeleFilePath);
+builder.Services.AddSingleton(modeles);
+#endregion
+
 //builder.Services.AddHttpClient();
 
 var app = builder.Build();

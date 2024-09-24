@@ -1,0 +1,20 @@
+[
+  {
+    "Id": 1,
+    "Nom": "Accus\u00E9",
+    "Objet": "",
+    "Message": ""
+  },
+  {
+    "Id": 2,
+    "Nom": "Refus",
+    "Objet": "",
+    "Message": ""
+  },
+  {
+    "Id": 3,
+    "Nom": "Accept\u00E9",
+    "Objet": "",
+    "Message": ""
+  }
+]
