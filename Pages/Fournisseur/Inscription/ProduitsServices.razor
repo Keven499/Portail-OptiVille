@@ -85,8 +85,8 @@
                 <div class="row">
                     <div class="col py-2">
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search...">
-                            <button class="btn btn-outline-secondary" type="button">
+                            <input @bind="searchBarValue" type="text" class="form-control" placeholder="Search...">
+                            <button class="btn btn-outline-secondary" type="button" @onclick="OnSearch">
                                 <i class="bi bi-search"></i>
                             </button>
                         </div>
@@ -95,14 +95,11 @@
                 <div class="row">
                     <div class="col py-2">
                         <label class="form-label fw-bold" for="statut">Catégorie</label>
-                        <select class="form-select">
+                        <select class="form-select" @onchange="OnCategorieChange">
+                            <option>Toutes les catégories</option>
                             @foreach (var categorie in categorieUNSPSC) {
-                                <option >@categorie.Categorie</option>
+                                <option>@categorie.CodeCategorie - @categorie.Categorie</option>
                             }
-                           
-                            <!-- 
-                                LISTER LES CATÉGORIES DEPUIS FICHIER association_categorie_codes_final.xls PREMIER ONGLET "Liste des catégories"
-                            -->
                         </select>
                     </div>
                 </div>
@@ -112,17 +109,21 @@
                             <!-- 
                                 CECI EST EN GUISE DE TEST
                             -->
-                            @for (int i = 0; i < 10; i++) {
+                            @foreach (var produitServiceLine in produitServiceCatego)
+                            {
                                 <div class="row m-0 mb-1">
                                     <div class="col-auto p-0">
-                                        <label for="" class="d-flex">
-                                            <input type="checkbox"/>
+                                        <label for="categorie@(i)" class="d-flex">
+                                            <input type="checkbox" id="categorie@(i)"
+                                                checked="@produitSelected[produitServiceLine.CodeUnspsc]" 
+                                                @onchange="(e) => OnCheckboxChange(produitServiceLine.CodeUnspsc, e)" />
                                             <span class="custom-checkbox" />
-                                            <strong class="litteStrong">Test</strong>
-                                            <strong class="litteStrong">Test</strong>
-                                    </label>
+                                            <strong class="litteStrong">@produitServiceLine.CodeUnspsc</strong>
+                                            <strong class="litteStrong">@produitServiceLine.Description</strong>
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
+                                i++;
                             }
                         </div>
                     </div>
@@ -169,15 +170,93 @@
 @code{
     private ModelValidation formModel = new ModelValidation();
     private List<Categorieunspsc> categorieUNSPSC = new List<Categorieunspsc>();
+    private List<Produitservice> produitServiceCatego = new List<Produitservice>();
+    private List<Produitservice> allProduitService = new List<Produitservice>();
+    private Dictionary<string, bool> produitSelected = new Dictionary<string, bool>();
+    private string? searchBarValue;
+    int i = 0;
+    private string? selectedCategorie = "Toutes les catégories"; 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             categorieUNSPSC = await _context.Categorieunspscs.ToListAsync();
+            allProduitService = await _context.Produitservices.ToListAsync();
+            produitSelected = allProduitService.ToDictionary(
+            c => c.CodeUnspsc,
+            c => false
+            );
+            produitServiceCatego = allProduitService.Take(500).ToList();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Erreur lors de la récupération des personnes: {ex.Message}");
+        }
+    }
+
+    private List<Produitservice> GetSelectedCategories()
+    {
+        return allProduitService
+        .Where(c => produitSelected[c.CodeUnspsc])
+        .ToList();
+    }
+    
+    private void OnCheckboxChange(string codeUNSPSC, ChangeEventArgs e)
+    {
+        if (e.Value is bool isChecked)
+        {
+            produitSelected[codeUNSPSC] = isChecked;
+        }
+    }
+
+    private bool ValidateSelection()
+    {
+        return produitSelected.Values.Any(isSelected => isSelected);
+    }
+
+    private void OnCategorieChange(ChangeEventArgs e) {
+        if (e.Value != null) {
+            selectedCategorie = e.Value.ToString();
+        }
+        if (selectedCategorie != null && !selectedCategorie.Equals("Toutes les catégories")) {
+            produitServiceCatego = allProduitService
+                .Where(c => c.CodeCategorie == selectedCategorie.Substring(0, selectedCategorie.IndexOf(" - ")))
+                .ToList();
+        }
+        else {
+            produitServiceCatego = allProduitService.Take(500).ToList();
+        }
+    }
+
+    private void OnSearch() {
+        Console.WriteLine($"Search input: {searchBarValue}");
+        Console.WriteLine($"Category input: {selectedCategorie}");
+        if (!string.IsNullOrEmpty(searchBarValue) && char.IsDigit(searchBarValue[0]) && selectedCategorie != null)
+        {
+            if (!selectedCategorie.Equals("Toutes les catégories")) {
+                produitServiceCatego = produitServiceCatego
+                    .Where(c => c.CodeUnspsc != null && c.CodeUnspsc.Contains(searchBarValue))
+                    .ToList();
+            }   
+            else {
+                produitServiceCatego = allProduitService
+                    .Where(c => c.CodeUnspsc != null && c.CodeUnspsc.Contains(searchBarValue))
+                    .ToList();
+            }
+        }
+        else {
+            if (!string.IsNullOrEmpty(searchBarValue) &&selectedCategorie != null) {
+                if (!selectedCategorie.Equals("Toutes les catégories")) {
+                    produitServiceCatego = produitServiceCatego
+                        .Where(c => c.Description != null && c.Description.Contains(searchBarValue))
+                        .ToList();
+                }
+                else {
+                    produitServiceCatego = allProduitService
+                        .Where(c => c.Description != null && c.Description.Contains(searchBarValue))
+                        .ToList();
+                }
+            }
         }
     }
 
@@ -188,7 +267,11 @@
         public string? Message { get; set; }
     }
 
-     public void HandleValidSubmit() {
-
-     }
+    public void HandleValidSubmit() {
+        var selectedProduitService = GetSelectedCategories();
+            foreach (var produitService in selectedProduitService)
+            {
+                Console.WriteLine($"{produitService.CodeUnspsc} - {produitService.Description}");
+            }
+    }
 }
