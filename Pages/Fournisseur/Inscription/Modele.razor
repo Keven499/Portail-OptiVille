@@ -4,12 +4,9 @@
 @inject List<Portail_OptiVille.Data.Utilities.Modele> listModele
 @inject IJSRuntime JSRuntime
 @*@inject Portail_OptiVille.Data.Utilities.Modele modeleClass*@
-@inject IHostEnvironment hostEnvironment // Inject IHostEnvironment to access the web root path
-<head>
-    <!-- Other head content -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
-</head>
+@inject IHostEnvironment hostEnvironment
+
+
 
 <div class="card">
     <div class="card-header">
@@ -17,10 +14,9 @@
     </div>
     <div class="card-body">
             <div class="mb-2">
-                <p><strong></strong></p>
                 <div class="form-group">
                     <label for="exampleFormControlSelect1"><strong>Choix du modèle</strong></label>
-                    <select @onchange="OnModeleChanged" class="custom-select form-control" id="exampleFormControlSelect1">
+                    <select @onchange="OnModeleChanged" class="form-select form-control" id="exampleFormControlSelect1">
                         @if (selectedId == 0)
                             {
                                 <option selected hidden>Choisir un modèle</option>
@@ -51,7 +47,7 @@
             {
                 <button class="btn btn-info me-1" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" @onclick="() => CreateModele(true)">Ajouter</button>
             }
-                <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                     <div class="modal-header justify-content-center">
@@ -105,6 +101,8 @@
         }
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/modal.js"></script>
 @code {
     private bool isEditing = false;
     private bool saveSuccess = false;
@@ -130,6 +128,7 @@
         if(save)
         {
         isCreating = true;
+        AjouteModel = new ModeleAjouteModel();
         }
         else
         {
@@ -139,29 +138,31 @@
     private void EditConfig()
     {
         isEditing = true;
-        saveSuccess = false; 
     }
-
     private void OnModeleChanged(ChangeEventArgs e)
     {
-        if (int.TryParse(e.Value.ToString(), out selectedId))
+        if (e.Value != null && int.TryParse(e.Value.ToString(), out selectedId))
         {
-            GetDataList(selectedId);
+            var index = listModele.FindIndex(modele => modele.Id == selectedId);
+            selectedNom = listModele[index].Nom;
+            selectedObjet = listModele[index].Objet;
+            selectedMessage = listModele[index].Message;
         }
     }
-    private void GetDataList(int id)
-    {
-        var index = listModele.FindIndex(modele => modele.Id == id);
-        selectedNom = listModele[index].Nom;
-        selectedObjet = listModele[index].Objet;
-        selectedMessage = listModele[index].Message;
-    }
-
     private async Task SaveCreateModele()
     {
         isCreating = false;
-        var newModele = new Portail_OptiVille.Data.Utilities.Modele(listModele.Count+1,AjouteModel.NomNewModele,AjouteModel.ObjetNewModele,AjouteModel.MessageNewModele);
+        var newModele = new Portail_OptiVille.Data.Utilities.Modele(listModele.Count+1,AjouteModel.NomNewModele!,AjouteModel.ObjetNewModele!,AjouteModel.MessageNewModele!);
         listModele.Add(newModele);
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("hideMyModal");
+        }
+        catch (JSDisconnectedException)
+        {
+            Console.WriteLine("JavaScript interop call failed due to disconnection.");
+        }
+        
         await SaveOnJson(); 
     }
 
@@ -170,6 +171,11 @@
         isCreating = false;
         var index = listModele.FindIndex(modele => modele.Id == selectedId);
         listModele.RemoveAt(index);
+        selectedId = 0;
+        selectedNom = null;
+        selectedObjet = null;
+        selectedMessage = null;
+        StateHasChanged();
         await SaveOnJson(); 
     }
 
@@ -180,10 +186,12 @@
 
         await File.WriteAllTextAsync(filePath, json);
 
-        saveSuccess = true; 
         isEditing = false; 
-        await Task.Delay(4000); 
-        saveSuccess = false; 
+        saveSuccess = true;
+        StateHasChanged();
+        await Task.Delay(4000);
+        saveSuccess = false;
+        StateHasChanged();
     }
     private async Task SaveConfig()
     {
