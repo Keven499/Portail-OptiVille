@@ -130,6 +130,7 @@
     {
         if (firstRender)
         {
+            await Task.Delay(100);
             await _jsRuntime.InvokeVoidAsync("dragAndDrop.initialize", "dropArea", "fileInput");
         }
     }
