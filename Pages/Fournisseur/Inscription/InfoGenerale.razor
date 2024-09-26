@@ -2,6 +2,7 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Text.Json
 @using System.Text.Json.Serialization
+@using System.Text.RegularExpressions
 @inject HttpClient Http
 <PageTitle>Informations générales</PageTitle>
 
@@ -69,7 +70,7 @@
                     <label class="bleuFonce texte-bold" for="courrielEntreprise"><i class="bi bi-braces-asterisk text-danger"></i> Courriel de l'entreprise</label>
                     <InputText type="email" id="courrielEntreprise" @oninput="ValidateInputs" @bind-Value="identificationModel.courrielEntreprise" class="form-control input-bleu texte-light" />
                            
-                        @if (isSubmitted && !isEmailEntrValid)
+                        @if (isSubmitted && !isEmailEntrValid )
                         {
                            <span class="input-group-text text-danger">
                                 <i class="bi bi-x-circle me-2"></i>
@@ -80,6 +81,10 @@
                                 else if (identificationModel.courrielEntreprise.Length > 64)
                                 {
                                     <span class="texte-medium">Maximum 64 caractères.</span>
+                                }
+                                else
+                                {
+                                    <span class="texte-medium">Courriel invalide</span>
                                 }
                             </span>
                         }
@@ -172,10 +177,20 @@
                             }
                             else if (isSubmitted && isNoEntrValid)
                             {
-                                <span class="input-group-text text-success">
-                                    <i class="bi bi-check-circle me-2"></i>
-                                    <span class="texte-medium">Valide</span>
-                                </span>
+                                if(identificationModel.noEntreprise.ToString().Length > 10)
+                                {
+                                    <span class="input-group-text text-danger">
+                                        <i class="bi bi-x-circle me-2"></i>
+                                        <span class="texte-medium">Maximum 8 caractères</span>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="input-group-text text-success">
+                                        <i class="bi bi-check-circle me-2"></i>
+                                        <span class="texte-medium">Valide</span>
+                                    </span>
+                                }
                             }               
                     </div> 
 
@@ -332,10 +347,9 @@
                             </span>
                         }
                 </div>
-
                 <div class="col-lg-12 col-xl-12 py-2">
                     <label class="bleuFonce texte-bold" for="SiteWeb"><i class="bi bi-braces text-success"></i> Site Internet</label>
-                    <InputText @oninput="ValidateInputs" @bind-Value="identificationModel.siteWebEntreprise" class="form-control input-bleu texte-light" id="SiteWeb" />
+                    <InputText type="" @oninput="ValidateInputs" @bind-Value="identificationModel.siteWebEntreprise" class="form-control input-bleu texte-light" id="SiteWeb" />
                         @if (isSubmitted && !isSiteEntrValid && !string.IsNullOrEmpty(identificationModel.siteWebEntreprise))
                         {
                             <span class="input-group-text text-danger">
@@ -391,9 +405,9 @@
                                     {
                                         <span class="texte-medium">Téléphone requis</span>
                                     }
-                                    else if (identificationModel.noTelEntreprise != 9)
+                                    else if (identificationModel.noTelEntreprise != 10)
                                     {
-                                        <span class="texte-medium">Doit contenir 9 numéros</span>
+                                        <span class="texte-medium">Doit contenir 10 numéros</span>
                                     }
                                 </span>
                             }
@@ -543,6 +557,10 @@
                                 {
                                     <span class="texte-medium">Maximum 64 caractères.</span>
                                 }
+                                else
+                                {
+                                    <span class="texte-medium">Courriel invalide</span>
+                                }
                             </span>
                         }
                         else if (isSubmitted && isEmail1Valid)
@@ -592,9 +610,9 @@
                                     {
                                         <span class="texte-medium">Téléphone requis</span>
                                     }
-                                    else if (identificationModel.noTel1Contact != 9)
+                                    else if (identificationModel.noTel1Contact.ToString().Length != 10)
                                     {
-                                        <span class="texte-medium">Doit contenir 9 numéros</span>
+                                        <span class="texte-medium">Doit contenir 10 numéros</span>
                                     }
                                 </span>
                             }
@@ -760,14 +778,11 @@
                         <label class="bleuFonce texte-bold" for="NoTel2">Numéro de téléphone</label>
                         <InputNumber TValue="long?" @oninput="ValidateInputs" @bind-Value="identificationModel.noTel2Contact" class="form-control input-bleu texte-light" id="NoTel2" />
                                                                                                                                                                         
-                            @if (isSubmitted && !isTel2Valid && identificationModel.noTel2Contact.HasValue)
+                            @if (isSubmitted && !isTel2Valid && identificationModel.noTel2Contact.HasValue && identificationModel.noTel2Contact.ToString().Length != 10)
                             {
                                 <span class="input-group-text text-danger">
                                     <i class="bi bi-x-circle me-2"></i>
-                                    @if (identificationModel.noTel2Contact < 100000000 || identificationModel.noTel2Contact > 9999999999)
-                                    {
                                         <span class="texte-medium">Numéro de téléphone invalide</span>
-                                    }
                                 </span>
                             }
                             else if (isSubmitted && isTel2Valid && identificationModel.noTel2Contact.HasValue)
@@ -932,14 +947,11 @@
                         <label class="bleuFonce texte-bold" for="NoTel3">Numéro de téléphone</label>
                         <InputNumber TValue="long?" @oninput="ValidateInputs" @bind-Value="identificationModel.noTel3Contact" class="form-control input-bleu texte-light" id="NoTel3" />
                                                                                                                                                                         
-                            @if (isSubmitted && !isTel3Valid && identificationModel.noTel3Contact.HasValue)
+                            @if (isSubmitted && !isTel3Valid && identificationModel.noTel3Contact.HasValue && identificationModel.noTel3Contact.ToString().Length != 10)
                             {
                                 <span class="input-group-text text-danger">
                                     <i class="bi bi-x-circle me-2"></i>
-                                    @if (identificationModel.noTel3Contact < 100000000 || identificationModel.noTel3Contact > 9999999999)
-                                    {
                                         <span class="texte-medium">Numéro de téléphone invalide</span>
-                                    }
                                 </span>
                             }
                             else if (isSubmitted && isTel3Valid && identificationModel.noTel3Contact.HasValue)
@@ -1077,7 +1089,7 @@
         }
 
         // Courriel Entreprise
-        if (!string.IsNullOrEmpty(identificationModel.courrielEntreprise) && identificationModel.courrielEntreprise.Length <= 64)
+        if (!string.IsNullOrEmpty(identificationModel.courrielEntreprise) && identificationModel.courrielEntreprise.Length <= 64 && Regex.IsMatch(identificationModel.courrielEntreprise,@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
         {
             isEmailEntrValid = true;
         }
@@ -1126,7 +1138,7 @@
         }
 
         // Numéro adresse
-        if (!string.IsNullOrEmpty(identificationModel.noEntreprise) && identificationModel.noEntreprise.Length <= 8)
+        if (!string.IsNullOrEmpty(identificationModel.noEntreprise) && identificationModel.noEntreprise.Length <= 8 && Regex.IsMatch(identificationModel.noEntreprise, @"^[0-9]+$"))
         {
             isNoEntrValid = true;
         }
@@ -1187,7 +1199,7 @@
             isCPEntrValid = false;  
         }
         // Code postal ne respecte pas les exigences
-        else if (!System.Text.RegularExpressions.Regex.IsMatch(identificationModel.codePostalEntreprise, "^(?!.*[DFIOQU])[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9]$"))
+        else if (Regex.IsMatch(identificationModel.codePostalEntreprise, @"^[A-z]{1}[\d]{1}[A-z]{1}[\d]{1}[A-z]{1}[\d]{1}$"))
         {
             isCPEntrValid = true;  
         }
@@ -1348,7 +1360,7 @@
         }
 
         // Courriel Contact 1
-        if (!string.IsNullOrEmpty(identificationModel.email1Contact) && identificationModel.email1Contact.Length <= 64)
+        if (!string.IsNullOrEmpty(identificationModel.email1Contact) && identificationModel.email1Contact.Length <= 64 && EmailValidator(identificationModel.email1Contact))
         {
             isEmail1Valid = true;
         }
@@ -1470,14 +1482,7 @@
     // Courriel Contact 2
     if (!string.IsNullOrEmpty(identificationModel.courriel2Contact))
     {
-        if (identificationModel.courriel2Contact.Length > 64)
-        {
-            isEmail2Valid = false;  // Courriel trop long
-        }
-        else
-        {
-            isEmail2Valid = true;  // Courriel valide
-        }
+            isEmail2Valid = EmailValidator(identificationModel.courriel2Contact);
     }
     else
     {
@@ -1599,14 +1604,7 @@
     // Courriel Contact 3
     if (!string.IsNullOrEmpty(identificationModel.courriel3Contact))
     {
-        if (identificationModel.courriel3Contact.Length > 64)
-        {
-            isEmail3Valid = false;  // Courriel trop long
-        }
-        else
-        {
-            isEmail3Valid = true;  // Courriel valide
-        }
+        isEmail3Valid = EmailValidator(identificationModel.courriel3Contact);
     }
     else
     {
@@ -1665,25 +1663,14 @@
 #endregion
 
     // Sert à gérer le scénario où le formulaire est valide.
-    public async void HandleValidSubmit()
+    public void HandleValidSubmit()
     {
-        await getAddressWithNEQ();
         Console.WriteLine("OnValidSubmit");
     }
 
-    //Appel de l'API des municipalites
-    private async Task getAddressWithNEQ()
+    private bool EmailValidator(string email)
     {
-        var response = await Http.GetAsync($"https://www.donneesquebec.ca/recherche/api/3/action/datastore_search_sql?sql=SELECT%20DISTINCT%20*%20FROM%20%2232f6ec46-85fd-45e9-945b-965d9235840a%22%20WHERE%20%22NEQ%22%20=%20%27{identificationModel.NEQ}%27%20LIMIT%201");
-    
-        if (response.IsSuccessStatusCode){
-            // Récupération des données
-            var data = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(data);
-        }
-        else{
-            Console.WriteLine("Erreur lors de l'appel de l'API");
-        }
+        return Regex.IsMatch(email, @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$") && email.Length <= 64 && !string.IsNullOrEmpty(email);
     }
 
     private void SubmitForm()
@@ -1696,12 +1683,14 @@
     {
     #region identification
 
+            [RegularExpression(@"^\d{10}$")]
              public long? NEQ { get; set; }
             
             [Required]
             public string? nomEntreprise { get; set; }
 
             [Required]
+            [EmailAddress]
             public string? courrielEntreprise { get; set; }
 
             [Required]
@@ -1718,6 +1707,7 @@
             [Required]
             public string? rueEntreprise { get; set; }
 
+            [RegularExpression(@"^\d$")]
             public string? bureauEntreprise { get; set; }
 
             [Required]
@@ -1727,6 +1717,7 @@
             public string? provinceEntreprise { get; set; }
 
             [Required]
+            [RegularExpression(@"^[A-z]{1}[\d]{1}[A-z]{1}[\d]{1}[A-z]{1}[\d]{1}$")]
             public string? codePostalEntreprise { get; set; }
 
             [Required]
@@ -1786,21 +1777,4 @@
     #endregion 
     }
 
-public class ApiResponse
-{
-    public Result? Result { get; set; }
-}
-
-public class Result
-{
-    public List<NEQRecord>? Records { get; set; }
-}
-
-public class NEQRecord
-{
-    [JsonPropertyName("NEQ")]
-    public string? NEQ { get; set; }
-    [JsonPropertyName("Adresse")]
-    public string? Adresse { get; set; }
-}
 }
