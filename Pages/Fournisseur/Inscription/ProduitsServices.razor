@@ -114,7 +114,9 @@
                                 <div class="row m-0 mb-1">
                                     <div class="col-auto p-0">
                                         <label for="categorie@(i)" class="d-flex">
-                                            <input type="checkbox" id="categorie@(i)"/>
+                                            <input type="checkbox" id="categorie@(i)"
+                                                checked="@produitSelected[produitServiceLine.CodeUnspsc]" 
+                                                @onchange="(e) => OnCheckboxChange(produitServiceLine.CodeUnspsc, e)" />
                                             <span class="custom-checkbox" />
                                             <strong class="litteStrong">@produitServiceLine.CodeUnspsc</strong>
                                             <strong class="litteStrong">@produitServiceLine.Description</strong>
@@ -170,6 +172,7 @@
     private List<Categorieunspsc> categorieUNSPSC = new List<Categorieunspsc>();
     private List<Produitservice> produitServiceCatego = new List<Produitservice>();
     private List<Produitservice> allProduitService = new List<Produitservice>();
+    private Dictionary<string, bool> produitSelected = new Dictionary<string, bool>();
     private string? searchBarValue;
     int i = 0;
     private string? selectedCategorie = "Toutes les catégories"; 
@@ -179,12 +182,36 @@
         {
             categorieUNSPSC = await _context.Categorieunspscs.ToListAsync();
             allProduitService = await _context.Produitservices.ToListAsync();
+            produitSelected = allProduitService.ToDictionary(
+            c => c.CodeUnspsc,
+            c => false
+            );
             produitServiceCatego = allProduitService.Take(500).ToList();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Erreur lors de la récupération des personnes: {ex.Message}");
         }
+    }
+
+    private List<Produitservice> GetSelectedCategories()
+    {
+        return allProduitService
+        .Where(c => produitSelected[c.CodeUnspsc])
+        .ToList();
+    }
+    
+    private void OnCheckboxChange(string codeUNSPSC, ChangeEventArgs e)
+    {
+        if (e.Value is bool isChecked)
+        {
+            produitSelected[codeUNSPSC] = isChecked;
+        }
+    }
+
+    private bool ValidateSelection()
+    {
+        return produitSelected.Values.Any(isSelected => isSelected);
     }
 
     private void OnCategorieChange(ChangeEventArgs e) {
@@ -240,7 +267,11 @@
         public string? Message { get; set; }
     }
 
-     public void HandleValidSubmit() {
-
-     }
+    public void HandleValidSubmit() {
+        var selectedProduitService = GetSelectedCategories();
+            foreach (var produitService in selectedProduitService)
+            {
+                Console.WriteLine($"{produitService.CodeUnspsc} - {produitService.Description}");
+            }
+    }
 }
