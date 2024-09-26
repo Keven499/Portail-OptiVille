@@ -15,6 +15,18 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddSingleton<NEQManager>();
 
+#region Load Config from Setting.json
+var configFilePath = Path.Combine(builder.Environment.WebRootPath, "Setting.json");
+var config = await Config.LoadFromJsonAsync(configFilePath);
+builder.Services.AddSingleton(config);
+#endregion
+
+#region Load Modele from Modele.json
+var modeleFilePath = Path.Combine(builder.Environment.WebRootPath, "Modele.json");
+var modeles = await Modele.LoadFromJsonAsync(modeleFilePath);
+builder.Services.AddSingleton(modeles);
+#endregion
+
 #region Mail
 //Envoie de mail
 builder.Services.Configure<DefaultMail>(builder.Configuration.GetSection("DefaultMail"));
@@ -32,24 +44,6 @@ builder.Services.AddDbContext<A2024420517riGr1Eq6Context>(options =>
 #endregion
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<DownloadService>();
-
-#region Load Config from Setting.json
-// Path to the Setting.json in the wwwroot folder
-var configFilePath = Path.Combine(builder.Environment.WebRootPath, "Setting.json");
-
-// Load the config asynchronously and register it as a singleton
-var config = await Config.LoadFromJsonAsync(configFilePath);
-builder.Services.AddSingleton(config);
-#endregion
-
-#region Load Modele from Modele.json
-// Path to the Modele.json in the wwwroot folder
-var modeleFilePath = Path.Combine(builder.Environment.WebRootPath, "Modele.json");
-
-// Load the modele asynchronously and register it as a singleton
-var modeles = await Modele.LoadFromJsonAsync(modeleFilePath);
-builder.Services.AddSingleton(modeles);
-#endregion
 
 //builder.Services.AddHttpClient();
 

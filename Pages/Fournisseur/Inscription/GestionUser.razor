@@ -1,0 +1,38 @@
+@page "/gestionUser"
+<div class="card">
+    <div class="card-header">
+        <h3>Gestion des utilisateurs</h3>
+    </div>
+    <div class="card-body">
+        <table class="table table-borderless">
+            <thead>
+                <tr>
+                    <th scope="col">Utilisateur</th>
+                    <th scope="col" class="col-3">Role</th>
+                    <th scope="col" class="col-1"></th>
+                </tr>
+            </thead>
+            <tbody>
+                    <tr>
+                        <th scope="row">Nom</th>
+                        <td>
+                            <select class="form-select" aria-label="Default select example">
+                            <option value="1">Administrateur</option>
+                            <option value="2">Responsable</option>
+                            <option value="3">Commis</option>
+                            </select>
+                        </td>
+                        <td><button type="button" class="btn btn-link">Supprimer</button></td>
+                    </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <button type="button" class="btn btn-primary">Ajouter un utilisateur</button>
+    </div>
+</div>
+
+@code{
+
+}
