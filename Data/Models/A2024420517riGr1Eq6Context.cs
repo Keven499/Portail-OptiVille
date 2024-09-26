@@ -89,20 +89,16 @@ public partial class A2024420517riGr1Eq6Context : DbContext
 
         modelBuilder.Entity<Categorieunspsc>(entity =>
         {
-            entity.HasKey(e => e.CategoUnsid).HasName("PRIMARY");
+            entity.HasKey(e => e.CodeCategorie).HasName("PRIMARY");
 
             entity.ToTable("categorieunspsc");
 
-            entity.Property(e => e.CategoUnsid)
-                .ValueGeneratedNever()
-                .HasColumnType("int(11)")
-                .HasColumnName("categoUNSID");
-            entity.Property(e => e.Categorie)
-                .HasMaxLength(50)
-                .HasColumnName("categorie");
             entity.Property(e => e.CodeCategorie)
                 .HasMaxLength(10)
                 .HasColumnName("codeCategorie");
+            entity.Property(e => e.Categorie)
+                .HasMaxLength(50)
+                .HasColumnName("categorie");
         });
 
         modelBuilder.Entity<Contact>(entity =>
@@ -382,23 +378,23 @@ public partial class A2024420517riGr1Eq6Context : DbContext
 
             entity.ToTable("produitservice");
 
-            entity.HasIndex(e => e.CategoUnsid, "categoUNSID");
+            entity.HasIndex(e => e.CodeCategorie, "codeCategorie");
 
             entity.Property(e => e.CodeUnspsc)
                 .HasMaxLength(8)
                 .HasColumnName("codeUNSPSC");
-            entity.Property(e => e.CategoUnsid)
-                .HasColumnType("int(11)")
-                .HasColumnName("categoUNSID");
+            entity.Property(e => e.CodeCategorie)
+                .HasMaxLength(10)
+                .HasColumnName("codeCategorie");
             entity.Property(e => e.Description)
                 .HasMaxLength(255)
                 .HasColumnName("description");
             entity.Property(e => e.Nature)
-                .HasColumnType("enum('Approvisionnement','Services','Travaux de construction','Concession','Autres natures de contrat')")
+                .HasColumnType("enum('Approvisionnement','Services','Travaux de construction','Autres natures de contrat','Concession','Vente de biens immeubles','Indéterminée')")
                 .HasColumnName("nature");
 
-            entity.HasOne(d => d.CategoUns).WithMany(p => p.Produitservices)
-                .HasForeignKey(d => d.CategoUnsid)
+            entity.HasOne(d => d.CodeCategorieNavigation).WithMany(p => p.Produitservices)
+                .HasForeignKey(d => d.CodeCategorie)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("produitservice_ibfk_1");
         });
