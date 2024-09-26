@@ -71,6 +71,9 @@
         margin-right: 4px;
         font-size: 14px;
     }
+    .atLeastOneProduct {
+        outline: 1px solid red;
+    }
 </style>
 
 <EditForm Model="@formModel" OnValidSubmit="HandleValidSubmit">
@@ -105,7 +108,7 @@
                 </div>
                 <div class="row">
                     <div class="col py-2">
-                        <div class="overflow-auto card">
+                        <div class="overflow-auto card @validProduct">
                             <!-- 
                                 CECI EST EN GUISE DE TEST
                             -->
@@ -174,6 +177,7 @@
     private List<Produitservice> allProduitService = new List<Produitservice>();
     private Dictionary<string, bool> produitSelected = new Dictionary<string, bool>();
     private string? searchBarValue;
+    private string validProduct = "";
     int i = 0;
     private string? selectedCategorie = "Toutes les catégories"; 
     protected override async Task OnInitializedAsync()
@@ -268,10 +272,19 @@
     }
 
     public void HandleValidSubmit() {
-        var selectedProduitService = GetSelectedCategories();
+        if (!ValidateSelection())
+        {
+            Console.WriteLine("I have not selected at least one product");
+            validProduct = "atLeastOneProduct";
+        }
+        else
+        {
+            Console.WriteLine("I have not selected at least one product");
+            var selectedProduitService = GetSelectedCategories();
             foreach (var produitService in selectedProduitService)
             {
                 Console.WriteLine($"{produitService.CodeUnspsc} - {produitService.Description}");
             }
+        }
     }
 }
