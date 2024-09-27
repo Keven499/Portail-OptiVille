@@ -25,7 +25,7 @@
 
 body 
 {
-    background-image: url('/images/bg-infos.jpg');         
+    background-image: url('/images/LavioletteAbstract3.jpg');         
     background-size: cover; 
     background-position: center;        
     background-repeat: no-repeat; 
@@ -68,6 +68,43 @@ body
 {
     background-color: rgb(0, 118, 213, 0.2);
     border-bottom: 2px solid rgb(11, 35, 65);
+}
+
+.box-bleu
+{
+    background-color: rgb(0, 118, 213, 0.2);
+    border: 2px solid rgb(11, 35, 65);
+}
+
+.check-blanc
+{
+    background-color: white;
+    border: 1px solid rgb(11, 35, 65);
+    display: block;
+    width: 20px;
+    flex-shrink: 0;
+    margin-right: 3px;
+    height: 20px;
+    border-radius: 3px;
+    position: relative;
+    cursor: pointer;
+}
+
+.check-blanc:before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 12px;
+    border: 1px solid rgb(11, 35, 65);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    opacity: 0;
+}
+
+input[type="checkbox"]:checked+.check-blanc:before {
+    opacity: 1;
 }
 
 /* Bleu foncé */
@@ -158,4 +195,10 @@ body
 .texte-bold
 {
     font-family: 'TT Hoves Bold';
+}
+
+.texte-14bold
+{
+    font-family: 'TT Hoves Bold';
+    font-size: 14px;
 }

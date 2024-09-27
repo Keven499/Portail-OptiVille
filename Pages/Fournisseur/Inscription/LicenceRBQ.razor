@@ -6,6 +6,9 @@
 @inject A2024420517riGr1Eq6Context _context
 @inject IJSRuntime JS
 @inject HttpClient Http
+@using System.ComponentModel.DataAnnotations
+@using System.Text.RegularExpressions
+@inject HttpClient Http
 <PageTitle>LicenceRBQComponent</PageTitle>
 
 <style>
@@ -26,44 +29,36 @@
         padding: 4px;
         width: 100%;
     }
-    .litteStrong {
+    @* .litteStrong {
         margin-right: 4px;
         font-size: 14px;
-    }
-    .form-control {
-        background-color: rgb(120, 198, 224);
-        border-bottom: solid rgb(11, 35, 65) 3px;
-    }
-    .form-select {
-        background-color: rgb(120, 198, 224);
-        border-bottom: solid rgb(11, 35, 65) 3px;
-    }
+    } *@
     .valid.modified:not([type=checkbox]) {
         outline: none;
     }
     .error {
         color: red;
     }
-    .dark-background {
+    @* .dark-background {
         background-color: rgb(11, 35, 65);
-    }
-    h1 {
+    } *@
+    @* h1 {
         color: white;
         padding: 15px;
-    }
+    } *@
+    @* input[type="checkbox"] {
+        opacity: 0;
+        position: absolute;
+        width: 0;
+        height: 0;
+    } *@
     input[type="checkbox"] {
         opacity: 0;
         position: absolute;
         width: 0;
         height: 0;
     }
-    input[type="checkbox"] {
-        opacity: 0;
-        position: absolute;
-        width: 0;
-        height: 0;
-    }
-    .custom-checkbox {
+    @* .custom-checkbox {
         display: block;
         width: 20px;
         flex-shrink: 0;
@@ -75,16 +70,16 @@
         position: relative;
         cursor: pointer;
         vertical-align: middle;
-    }
+    } *@
     label {
         display: flex;
         margin-bottom: 2px;
     }
-    input[type="checkbox"]:checked+.custom-checkbox {
+    @* input[type="checkbox"]:checked+.custom-checkbox {
         background-color: rgb(11, 35, 65);
-    }
-
-    .custom-checkbox:before {
+    } *@
+    @* .custom-checkbox:before {
+    using System.ComponentModel.DataAnnotations;
         content: '';
         position: absolute;
         left: 6px;
@@ -95,10 +90,10 @@
         border-width: 0 2px 2px 0;
         transform: rotate(45deg);
         opacity: 0;
-    }
-    input[type="checkbox"]:checked+.custom-checkbox:before {
+    } *@
+    @* input[type="checkbox"]:checked+.custom-checkbox:before {
         opacity: 1;
-    }
+    } *@
     .invalid {
         outline: 1px solid red;
     }
@@ -114,51 +109,51 @@
 <div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
     <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
         <div class="card w-75 h-75 d-flex justify-content-center p-0 m-0">
+            
             <div class="card-header py-2 bg-bleuFonce">
-                <h3 class="py-2 p-0 my-0  text-white">Licence RBQ</h3>
+                <h3 class="py-2 p-0 my-0 text-white titre-bold">Licence RBQ</h3>
             </div>
-            <div class="card-body py-1">
-                <div class="col-xl-12 col-12 bg-white">
-                    <div class="row mb-2">
-                        <div class="col">
-                            <label class="form-label mb-1 bleuFonce fw-bold" for="noLicenceRBQ">Numéro</label>
-                            <input type="text" id="noLicenceRBQ" class="@validityCSS" @bind="noLicenceRBQ" />
-                            @if (numErrorBool) {
-                                <span class="input-group-text text-danger">
-                                    <i class="bi bi-x-circle me-2"></i>
-                                    <div class="validation-message">@numErrorMessage</div>
-                                </span>
-                            }
-                            @if (numGoodBool) {
-                                <span class="input-group-text text-success">
-                                    <i class="bi bi-check-circle me-2"></i>
-                                </span>
-                            }
-                        </div>
+
+            <div class="card-body border-bleuFonce py-1">
+                <div class="col-xl-12 col-lg-12 py-2">
+                    <label class="bleuFonce texte-bold" for="noLicenceRBQ"><i class="bi bi-braces text-success"></i> Numéro</label>
+                    <input type="text" id="noLicenceRBQ" class="@validityCSS input-bleu texte-light" @bind="noLicenceRBQ" />
+                        @if (numErrorBool) {
+                            <span class="input-group-text text-danger">
+                                <i class="bi bi-x-circle me-2"></i>
+                                <div class="validation-message texte-medium">@numErrorMessage</div>
+                            </span>
+                        }
+                        @if (numGoodBool) {
+                            <span class="input-group-text text-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                                <span class="texte-medium">Valide</span>
+                            </span>
+                        }
+                </div>
+
+                <div class="row">
+                    <div class="col-xl-6 col-lg-6 py-2">
+                        <label class="bleuFonce texte-bold" for="statut"><i class="bi bi-braces text-success"></i> Statut</label>
+                        <select class="form-select input-bleu texte-light" id="statut" @bind="statutLicence">
+                            <option value="1">Valide</option>
+                            <option value="2">Valide avec restriction</option>
+                            <option value="3">Non valide</option>
+                        </select>                                        
                     </div>
-                    <div class="row mb-2">
-                        <div class="col">
-                            <label class="form-label mb-1 bleuFonce fw-bold" for="statut">Statut</label>
-                            <select class="form-select" id="statut" @bind="statutLicence">
-                                <option value="1">Valide</option>
-                                <option value="2">Valide avec restriction</option>
-                                <option value="3">Non valide</option>
-                            </select>
-                        </div>
-                        <div class="col">
-                            <label class="form-label mb-1 bleuFonce fw-bold" for="licenceType">Type de licence</label>
-                            <select class="form-select" id="licenceType" @bind="typeLicence">
-                                <option value="1">Entrepreneur</option>
-                                <option value="2">Constructeur-Propriétaire</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row align-items-center">
-                        <div class="col">
-                            <label class="form-label m-0 bleuFonce fw-bold">Entrepeneur général</label>
-                        </div>
-                    </div>
-                    <div class="overflow-auto mb-2 card @validityCategoSelect">
+
+                    <div class="col-xl-6 col-lg-6 py-2">
+                        <label class="bleuFonce texte-bold" for="licenceType"><i class="bi bi-braces text-success"></i> Type de licence</label>
+                        <select class="form-select input-bleu texte-light" id="licenceType" @bind="typeLicence">
+                            <option value="1">Entrepreneur</option>
+                            <option value="2">Constructeur-Propriétaire</option>
+                        </select>
+                    </div>                    
+                </div>
+
+                <div class="col-xl-12 col-lg-12 py-2">
+                    <label class="texte-bold"><i class="bi bi-braces text-success"></i> Entrepeneur général</label>               
+                    <div class="overflow-auto box-bleu card @validityCategoSelect">
                         @{
                             int i = 0;
                             foreach (var categorie in categorieGeneral)
@@ -169,9 +164,8 @@
                                             <input type="checkbox" id="categorie@(i)"
                                                 checked="@sousCategoSelected[categorie.CodeSousCategorie]"
                                                 @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
-                                            <span class="custom-checkbox"></span>
-                                            <strong class="litteStrong">@categorie.CodeSousCategorie</strong>
-                                            <strong class="litteStrong">@categorie.Nom</strong>
+                                            <span class="check-blanc"></span>
+                                            <span class="texte-14bold">@categorie.CodeSousCategorie - @categorie.Nom</span>
                                         </label>
                                     </div>
                                 </div>
@@ -179,44 +173,45 @@
                             }
                         }
                     </div>
-                    <div class="row mb-2">
-                        <div class="col">
-                            <label class="form-label m-0 bleuFonce fw-bold">Entrepeneur spécialisé</label>
-                            <div class="overflow-auto card @validityCategoSelect">
-                                @foreach (var categorie in categorieSpecialise)
-                                {
-                                    <div class="row m-0">
-                                        <div class="col-auto p-0">
-                                            <label>
-                                                <input type="checkbox" id="categorie@(i)"
-                                                    checked="@sousCategoSelected[categorie.CodeSousCategorie]"
-                                                    @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
-                                                <span class="custom-checkbox"></span>
-                                                <strong class="litteStrong">@categorie.CodeSousCategorie</strong>
-                                                <strong class="litteStrong">@categorie.Nom</strong>
-                                            </label>
-                                        </div>
-                                        
-                                    </div>
-                                    i++;
-                                }
+                </div>    
+
+                <div class="col-xl-12 col-lg-12 py-2">
+                    <label class="texte-bold"><i class="bi bi-braces text-success"></i> Entrepeneur spécialisé</label>
+                    <div class="overflow-auto box-bleu card @validityCategoSelect">
+                        @foreach (var categorie in categorieSpecialise)
+                        {
+                            <div class="row m-0">
+                                <div class="col-auto p-0">
+                                    <label>
+                                        <input type="checkbox" id="categorie@(i)"
+                                            checked="@sousCategoSelected[categorie.CodeSousCategorie]"
+                                            @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
+                                        <span class="check-blanc"></span>
+                                        <span class="texte-14bold">@categorie.CodeSousCategorie - @categorie.Nom</span>
+                                    </label>
+                                </div>
+                                
                             </div>
-                            @{
-                                if (sousCategoError)
-                                {
-                                    <span class="input-group-text text-danger">
-                                        <i class="bi bi-x-circle me-2"></i>
-                                        <div class="validation-message">Au moins une catégorie doit être sélectionné</div>
-                                    </span>
-                                }
-                            }
-                        </div>
+                            i++;
+                        }
                     </div>
+                    @{
+                        if (sousCategoError)
+                        {
+                            <span class="input-group-text text-danger">
+                                <i class="bi bi-x-circle me-2"></i>
+                                <div class="validation-message texte-medium">Sélectionnez au moins une catégorie</div>
+                            </span>
+                        }
+                    }
                 </div>
+
+
             </div>
+            
             <div class="card-footer bg-bleuFonce">
                 <div class="d-flex justify-content-center">
-                    <button type="submit" class="btn bg-bleu text-white fw-bold" style="width: 200px;">
+                    <button type="submit" class="btn bg-bleu text-white texte-bold" style="width: 200px;">
                         Suivant 
                         <i class="bi bi-arrow-right-circle"></i>
                     </button>
@@ -243,6 +238,7 @@
     private string? numErrorMessage;
     private bool sousCategoError = false;
     private bool sousCategoGood = false;
+    private bool isSubmitted = false;
 
     private Dictionary<int, string> statutLicenceText = new Dictionary<int, string>
     {
@@ -347,7 +343,6 @@
             return null;
         }
     }
-
     public async Task HandleValidSubmit()
     {
         if (!ValidateSelection())

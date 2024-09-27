@@ -81,68 +81,67 @@
 <div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
     <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
         <div class="card w-75 h-75 d-flex justify-content-center p-0 m-0">
+            
             <div class="card-header py-2 bg-bleuFonce">
-                <h3 class="py-2 p-0 my-0  text-white">Produits et services</h3>
+                <h3 class="py-2 p-0 my-0 text-white titre-bold">Produits et services</h3>
             </div>
-            <div class="card-body py-1">
-                <div class="row">
-                    <div class="col py-2">
-                        <div class="input-group">
-                            <input @bind="searchBarValue" type="text" class="form-control" placeholder="Search...">
-                            <button class="btn btn-outline-secondary" type="button" @onclick="OnSearch">
-                                <i class="bi bi-search"></i>
-                            </button>
-                        </div>
+            
+            <div class="card-body border-bleuFonce py-1">
+
+                <div class="col-xl-12 col-lg-12 py-2">
+                    <div class="input-group">
+                        <input @bind="searchBarValue" type="text" class="form-control input-bleu texte-light" placeholder="Recherchez">
+                        <button class="btn bg-bleu text-white" type="button" @onclick="OnSearch">
+                            <i class="bi bi-search"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col py-2">
-                        <label class="form-label fw-bold" for="statut">Catégorie</label>
-                        <select class="form-select" @onchange="OnCategorieChange">
-                            <option>Toutes les catégories</option>
+
+                <div class="col-xl-12 col-lg-12 py-2">
+                    <label class="texte-bold" for="statut"><i class="bi bi-braces text-success"></i> Catégorie</label>
+                    <select class="form-select input-bleu texte-light" @onchange="OnCategorieChange">
+                        <option>Toutes les catégories</option>
                             @foreach (var categorie in categorieUNSPSC) {
                                 <option>@categorie.CodeCategorie - @categorie.Categorie</option>
                             }
-                        </select>
-                    </div>
+                    </select>
                 </div>
-                <div class="row">
-                    <div class="col py-2">
-                        <div class="overflow-auto card @validProduct">
-                            <!-- 
-                                CECI EST EN GUISE DE TEST
-                            -->
-                            @foreach (var produitServiceLine in produitServiceCatego)
-                            {
-                                <div class="row m-0 mb-1">
-                                    <div class="col-auto p-0">
-                                        <label for="categorie@(i)" class="d-flex">
-                                            <input type="checkbox" id="categorie@(i)"
-                                                checked="@produitSelected[produitServiceLine.CodeUnspsc]" 
-                                                @onchange="(e) => OnCheckboxChange(produitServiceLine.CodeUnspsc, e)" />
-                                            <span class="custom-checkbox" />
-                                            <strong class="litteStrong">@produitServiceLine.CodeUnspsc</strong>
-                                            <strong class="litteStrong">@produitServiceLine.Description</strong>
-                                        </label>
-                                    </div>
+
+                <div class="col-xl-12 col-lg-12 py-2">
+                    <div class="overflow-auto box-bleu card @validProduct">
+                        <!-- 
+                            CECI EST EN GUISE DE TEST
+                        -->
+                        @foreach (var produitServiceLine in produitServiceCatego)
+                        {
+                            <div class="row m-0 mb-1">
+                                <div class="col-auto p-0">
+                                    <label for="categorie@(i)" class="d-flex">
+                                        <input type="checkbox" id="categorie@(i)"
+                                            checked="@produitSelected[produitServiceLine.CodeUnspsc]" 
+                                            @onchange="(e) => OnCheckboxChange(produitServiceLine.CodeUnspsc, e)" />
+                                        <span class="check-blanc" />
+                                        <span class="texte-14bold">@produitServiceLine.CodeUnspsc - @produitServiceLine.Description</span>
+                                    </label>
                                 </div>
-                                i++;
-                            }
-                        </div>
+                            </div>
+                            i++;
+                        }
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col py-2">
-                        <label for="details" class="form-label fw-bold" form="message">Détails et spécifications</label>
-                        <InputTextArea id="message" oninput="countCharacters(this)" class="form-control" rows="6" placeholder="Entrez les détails ici..." style="resize: none;" @bind-Value="formModel.Message" />
-                        <ValidationMessage For="@(() => formModel.Message)" />
-                        <span style="display:none;" id="charCount">500 caractères restant</span>
-                    </div>
+
+                
+                <div class="col-xl-12 col-lg-12 py-2">
+                    <label for="details" class="texte-bold" form="message"><i class="bi bi-braces text-success"></i> Détails et spécifications</label>
+                    <InputTextArea id="message" oninput="countCharacters(this)" class="form-control texte-light box-bleu" rows="6" placeholder="Entrez les détails ici" style="resize: none;" @bind-Value="formModel.Message" />
+                    <ValidationMessage For="@(() => formModel.Message)" />
+                    <span style="display:none;" id="charCount">500 caractères restant</span>
                 </div>
+                
             </div>
             <div class="card-footer bg-bleuFonce">
                 <div class="d-flex justify-content-center">
-                    <button type="submit" class="btn bg-bleu text-white fw-bold" style="width: 200px;">
+                    <button type="submit" class="btn bg-bleu text-white texte-bold" style="width: 200px;">
                         Suivant 
                         <i class="bi bi-arrow-right-circle"></i>
                     </button>
