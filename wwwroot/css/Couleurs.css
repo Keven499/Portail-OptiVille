@@ -70,9 +70,15 @@ body
     border-bottom: 2px solid rgb(11, 35, 65);
 }
 
-.box-bleu
+.box-bleu 
 {
-    background-color: rgb(0, 118, 213, 0.2);
+    background-color: rgb(0, 118, 213, 0.2); 
+    border: 2px solid rgb(11, 35, 65);
+}
+
+.table-bleu
+{
+    background-color: rgb(0, 118, 213, 0.2) !important; 
     border: 2px solid rgb(11, 35, 65);
 }
 
