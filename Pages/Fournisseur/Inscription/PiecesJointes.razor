@@ -58,15 +58,16 @@
 <div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
     <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
         <div class="card w-75 h-75 d-flex justify-content-center p-0 m-0">
-            <div class="col-12">
-                <div class="card-header py-2 bg-bleuFonce">
-                    <h3 class="py-2 p-0 my-0 text-white">Carte d'affaires et brochures</h3>
-                </div>
-                <div class="card-body py-2 d-flex justify-content-center">
+            
+            <div class="card-header py-2 bg-bleuFonce">
+                <h3 class="py-2 p-0 my-0 text-white titre-bold">Carte d'affaires et brochures</h3>
+            </div>
+
+                <div class="card-body py-1 border-bleuFonce d-flex justify-content-center">
                     <div id="dropArea" class="drag-drop-area">
                         <label for="fileInput">
-                            <h4>Faites glisser et déposez les fichiers ici</h4>
-                            <p>ou cliquez pour sélectionner les fichiers</p>
+                            <h4 class="texte-medium">Faites glisser et déposez les fichiers ici</h4>
+                            <p class="texte-light">ou cliquez pour sélectionner les fichiers</p>
                         </label>
                     </div>
                     <InputFile id="fileInput" OnChange="HandleFileChange" multiple 
@@ -116,7 +117,7 @@
                         </button>
                     </div>
                 </div>
-            </div>
+            
         </div>
     </div>
 </div>
