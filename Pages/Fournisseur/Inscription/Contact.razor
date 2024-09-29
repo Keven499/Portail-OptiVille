@@ -192,14 +192,10 @@
                 }
             </div>
         </div>
-    </div>
-    <!--
-    <div class="card-footer bg-bleuFonce">
-        <div class="d-flex justify-content-center">
-            <button type="submit" class="btn bg-bleu text-white texte-bold" @onclick="SubmitForm" style="width: 200px;">Suivant <i class="bi bi-arrow-right-circle"></i></button>
+        <div>
+            <button type="submit" class="btn bg-bleu text-white texte-bold w-100" @onclick="SubmitForm">Valider le contact</button>
         </div>
     </div>
-    -->
     <DataAnnotationsValidator />
 </EditForm>
 
@@ -219,7 +215,7 @@
 
     public void HandleValidSubmit()
     {
-        
+        Console.WriteLine($"Child form #{ContactNumber} is valid");
     }
 
     private void SubmitForm()

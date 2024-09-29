@@ -416,13 +416,14 @@
             </div>
 
             <Contact ContactNumber="1" />
-            @for (int i = 1; i <= 3; i++)
+            @foreach (var contactNumber in contactList)
             {
-                //<Contact ContactNumber="@i" />
+                <Contact ContactNumber="@contactNumber" />
             }
             <div class="card-footer bg-bleuFonce">
                 <div class="d-flex justify-content-center">
-                    <button class="btn bg-bleuPale text-white texte-bold" @onclick="SubmitForm" style="width: 200px;"><i class="bi bi-plus-circle"></i> Ajout contact</button>
+                    <button type="button" class="btn bg-bleuPale text-white texte-bold me-2" @onclick="AddContact" style="width: 200px;"><i class="bi bi-plus-circle"></i> Ajout contact</button>
+                    <button type="button" class="btn bg-bleuPale text-white texte-bold" @onclick="RemoveContact" style="width: 200px;" disabled="@(!contactList.Any())"><i class="bi bi-plus-circle"></i> Retirer contact</button>
                 </div>
             </div>
             
@@ -441,6 +442,8 @@
 @code {
     // Modèle pour les informations générales
     private IdentificationModel identificationModel = new IdentificationModel();
+    private List<int> contactList = new List<int>();
+    private int contactCounter = 1;
 
 #region Listes
     private List<string> listeProvinces = new List<string>{"Québec", "Ontario", "Manitoba", "Saskatchewan", "Alberta", "Colombie-Britanique",
@@ -495,6 +498,21 @@
     private bool isPoste3Valid = true;
 
 #endregion
+
+    private void AddContact()
+    {
+        contactCounter++;
+        contactList.Add(contactCounter);
+    }
+
+    private void RemoveContact()
+    {
+        if (contactList.Any())
+        {
+            contactList.RemoveAt(contactList.Count - 1);
+            contactCounter--;
+        }
+    }
     
 #region Validation des champs    
     // Validation de chaque champ
