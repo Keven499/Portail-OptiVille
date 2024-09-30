@@ -432,7 +432,9 @@
     private void AddContact()
     {
         contactCounter++;
-        contactList.Add(contactCounter);
+        if (contactCounter <= 5) {
+            contactList.Add(contactCounter);
+        }
     }
 
     private void RemoveContact()
@@ -447,7 +449,9 @@
     private void AddTelephone()
     {
         telephoneCounter++;
-        telephoneList.Add(telephoneCounter);
+        if (telephoneCounter <= 5) {
+            telephoneList.Add(telephoneCounter);
+        }
     }
 
     private void RemoveTelephone()
