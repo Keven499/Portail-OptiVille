@@ -1,9 +1,8 @@
-@page "/contact"
 @using System.ComponentModel.DataAnnotations
 @using System.Text.RegularExpressions
 
 <EditForm Model="@contactIdentification" OnValidSubmit="HandleValidSubmit">
-    <div class="card-body border-bleuFonce bg-blanc py-1">
+    <div class="card-body border-bleuFonce bg-blanc py-2">
         <h4 class="col-lg-12 col-xl-12 titre-bold"><i class="bi bi-braces-asterisk text-danger"></i> Contact @ContactNumber</h4>
         <div class="d-flex justify-content-between">
             <div class="col-lg-4 col-xl-4">
@@ -341,6 +340,7 @@
         {
             isPosteValid = true;  
         }
+        StateHasChanged();
     }
 
     public class ContactIdentification
