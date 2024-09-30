@@ -7,96 +7,96 @@
 <PageTitle>Informations générales</PageTitle>
 
 <EditForm Model="@identificationModel" OnValidSubmit="HandleValidSubmit">
-<!-- OnValidSubmit="HandleValidSubmit" -->
-<div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
-    <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
-        <div class="card w-75 h-75 d-flex justify-content-center p-0 m-0">
+    <!-- OnValidSubmit="HandleValidSubmit" -->
+    <div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
+        <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
+            <div class="card w-75 h-75 d-flex justify-content-center p-0 m-0">
 
-            @* Identification *@
-            <div class="card-header py-2 bg-bleuFonce">
-                <h3 class="py-2 p-0 my-0 text-white titre-bold">Identification</h3>
-            </div>
-            <div class="card-body border-bleuFonce py-1" >
-                <div class="col-xl-12 col-lg-12 py-2">
-                    <label class="bleuFonce texte-bold" for="NEQ"><i class="bi bi-braces text-success"></i> NEQ</label>
-                    <InputNumber TValue="long?" @bind-Value="identificationModel.NEQ" @oninput="ValidateInputs" class="form-control input-bleu texte-light" id="NEQ" />
-                    @if (isSubmitted && identificationModel.NEQ.HasValue && !isNEQValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <span class="texte-medium">Le NEQ doit contenir exactement 10 chiffres</span>
-                        </span>
-                    }
-                    else if (isSubmitted && isNEQValid && identificationModel.NEQ.HasValue)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                            <span class="texte-medium">Valide</span>
-                        </span>
-                    }
+                @* Identification *@
+                <div class="card-header py-2 bg-bleuFonce">
+                    <h3 class="py-2 p-0 my-0 text-white titre-bold">Identification</h3>
                 </div>
-                <div class="col-xl-12 col-lg-12 py-2">
-                    <label class="bleuFonce texte-bold" for="nomEntreprise"><i class="bi bi-braces-asterisk text-danger"></i> Nom de l'entreprise</label>
-                    <InputText id="nomEntreprise" class="form-control input-bleu texte-light" @oninput="ValidateInputs" @bind-Value="identificationModel.nomEntreprise"/>
-                    @if (isSubmitted && !isNomEntrValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            @if (string.IsNullOrEmpty(identificationModel.nomEntreprise))
-                            {
-                                <span class="texte-medium">Nom requis</span>
-                            }
-                            else if (identificationModel.nomEntreprise.Length >= 64)
-                            {
-                                <span class="texte-medium">Maximum 64 caractères.</span>
-                            }
-                        </span>
-                    }
-                    else if (isSubmitted && isNomEntrValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                            <span class="texte-medium">Valide</span>
-                        </span>
-                    }    
-                </div>
-                <div class="col-xl-12 col-lg-12 py-2">
-                    <label class="bleuFonce texte-bold" for="courrielEntreprise"><i class="bi bi-braces-asterisk text-danger"></i> Courriel de l'entreprise</label>
-                    <InputText type="email" id="courrielEntreprise" @oninput="ValidateInputs" @bind-Value="identificationModel.courrielEntreprise" class="form-control input-bleu texte-light" />   
-                    @if (isSubmitted && !isEmailEntrValid )
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            @if (string.IsNullOrEmpty(identificationModel.courrielEntreprise))
-                            {
-                                <span class="texte-medium">Courriel requis</span>
-                            }
-                            else if (identificationModel.courrielEntreprise.Length > 64)
-                            {
-                                <span class="texte-medium">Maximum 64 caractères.</span>
-                            }
-                            else
-                            {
-                                <span class="texte-medium">Courriel invalide</span>
-                            }
-                        </span>
-                    }
-                    else if (isSubmitted && isEmailEntrValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                            <span class="texte-medium">Valide</span>
-                        </span>
-                    }   
-                </div>
-                <div class="col-xl-12 col-lg-12 py-2">
-                    <label class="bleuFonce texte-bold" for="MotDePasse"><i class="bi bi-braces-asterisk text-danger"></i> Mot de passe</label>
-                    <InputText type="password" id="MotDePasse" @oninput="ValidateInputs" @bind-Value="identificationModel.MotDePasse" class="form-control input-bleu texte-light" />                   
-                    @if (isSubmitted && !isMdpValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            @if (string.IsNullOrEmpty(identificationModel.MotDePasse))
+                <div class="card-body border-bleuFonce py-1">
+                    <div class="col-xl-12 col-lg-12 py-2">
+                        <label class="bleuFonce texte-bold" for="NEQ"><i class="bi bi-braces text-success"></i> NEQ</label>
+                        <InputNumber TValue="long?" @bind-Value="identificationModel.NEQ" @oninput="ValidateInputs" class="form-control input-bleu texte-light" id="NEQ" />
+                        @if (isSubmitted && identificationModel.NEQ.HasValue && !isNEQValid)
+                        {
+                            <span class="input-group-text text-danger">
+                                <i class="bi bi-x-circle me-2"></i>
+                                <span class="texte-medium">Le NEQ doit contenir exactement 10 chiffres</span>
+                            </span>
+                        }
+                        else if (isSubmitted && isNEQValid && identificationModel.NEQ.HasValue)
+                        {
+                            <span class="input-group-text text-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                                <span class="texte-medium">Valide</span>
+                            </span>
+                        }
+                    </div>
+                    <div class="col-xl-12 col-lg-12 py-2">
+                        <label class="bleuFonce texte-bold" for="nomEntreprise"><i class="bi bi-braces-asterisk text-danger"></i> Nom de l'entreprise</label>
+                        <InputText id="nomEntreprise" class="form-control input-bleu texte-light" @oninput="ValidateInputs" @bind-Value="identificationModel.nomEntreprise" />
+                        @if (isSubmitted && !isNomEntrValid)
+                        {
+                            <span class="input-group-text text-danger">
+                                <i class="bi bi-x-circle me-2"></i>
+                                @if (string.IsNullOrEmpty(identificationModel.nomEntreprise))
+                                {
+                                    <span class="texte-medium">Nom requis</span>
+                                }
+                                else if (identificationModel.nomEntreprise.Length >= 64)
+                                {
+                                    <span class="texte-medium">Maximum 64 caractères.</span>
+                                }
+                            </span>
+                        }
+                        else if (isSubmitted && isNomEntrValid)
+                        {
+                            <span class="input-group-text text-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                                <span class="texte-medium">Valide</span>
+                            </span>
+                        }
+                    </div>
+                    <div class="col-xl-12 col-lg-12 py-2">
+                        <label class="bleuFonce texte-bold" for="courrielEntreprise"><i class="bi bi-braces-asterisk text-danger"></i> Courriel de l'entreprise</label>
+                        <InputText type="email" id="courrielEntreprise" @oninput="ValidateInputs" @bind-Value="identificationModel.courrielEntreprise" class="form-control input-bleu texte-light" />
+                        @if (isSubmitted && !isEmailEntrValid)
+                        {
+                            <span class="input-group-text text-danger">
+                                <i class="bi bi-x-circle me-2"></i>
+                                @if (string.IsNullOrEmpty(identificationModel.courrielEntreprise))
+                                {
+                                    <span class="texte-medium">Courriel requis</span>
+                                }
+                                else if (identificationModel.courrielEntreprise.Length > 64)
+                                {
+                                    <span class="texte-medium">Maximum 64 caractères.</span>
+                                }
+                                else
+                                {
+                                    <span class="texte-medium">Courriel invalide</span>
+                                }
+                            </span>
+                        }
+                        else if (isSubmitted && isEmailEntrValid)
+                        {
+                            <span class="input-group-text text-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                                <span class="texte-medium">Valide</span>
+                            </span>
+                        }
+                    </div>
+                    <div class="col-xl-12 col-lg-12 py-2">
+                        <label class="bleuFonce texte-bold" for="MotDePasse"><i class="bi bi-braces-asterisk text-danger"></i> Mot de passe</label>
+                        <InputText type="password" id="MotDePasse" @oninput="ValidateInputs" @bind-Value="identificationModel.MotDePasse" class="form-control input-bleu texte-light" />
+                        @if (isSubmitted && !isMdpValid)
+                        {
+                            <span class="input-group-text text-danger">
+                                <i class="bi bi-x-circle me-2"></i>
+                                @if (string.IsNullOrEmpty(identificationModel.MotDePasse))
                                 {
                                     <span class="texte-medium">Mot de passe requis</span>
                                 }
@@ -108,106 +108,145 @@
                                 {
                                     <span class="texte-medium">Doit contenir une majuscule, une minuscule, un chiffre et un caractère spécial (&commat;$!%*?&)</span>
                                 }
-                        </span>
-                    }
-                    else if (isSubmitted && isMdpValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                            <span class="texte-medium">Valide</span>
-                        </span>
-                    }  
-                </div>
-                <div class="col-xl-12 col-lg-12 py-2">
-                    <label class="bleuFonce texte-bold" for="ConfirmationMotDePasse"><i class="bi bi-braces-asterisk text-danger"></i> Confirmation du mot de passe</label>
-                    <InputText type="password" id="ConfirmationMotDePasse" @oninput="ValidateInputs" @bind-Value="identificationModel.ConfirmationMotDePasse" class="form-control input-bleu texte-light" />                                               
-                    @if (isSubmitted && !isConfMdpValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            @if (string.IsNullOrEmpty(identificationModel.ConfirmationMotDePasse))
-                            {
-                                <span class="texte-medium">Confirmation requise</span>
-                            }
-                            else if(identificationModel.MotDePasse != identificationModel.ConfirmationMotDePasse)
-                            {
-                                <span class="texte-medium">Les mots de passe ne correspondent pas</span>
-                            }
-                        </span>
-                    }
-                    else if (isSubmitted && isConfMdpValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                            <span class="texte-medium">Valide</span>
-                        </span>
-                    } 
-                </div>
-            </div>
-
-            @* Coordonnées *@
-            <div class="card-header py-2 bg-bleuFonce">
-                <h3 class="py-2 p-0 my-0 text-white titre-bold">Coordonnées de l'entreprise</h3>
-            </div>
-            <div class="card-body border-bleuFonce bg-blanc py-1">
-                <div class="py-2 d-flex justify-content-between">     
-                    <div class="col-xl-3 col-lg-3">
-                        <label class="bleuFonce texte-bold" for="No"><i class="bi bi-braces-asterisk text-danger"></i> No</label>
-                        <InputText @oninput="ValidateInputs" @bind-Value="identificationModel.noEntreprise" class="form-control input-bleu texte-light" id="No" />                                                               
-                        @if (isSubmitted && !isNoEntrValid)
+                            </span>
+                        }
+                        else if (isSubmitted && isMdpValid)
+                        {
+                            <span class="input-group-text text-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                                <span class="texte-medium">Valide</span>
+                            </span>
+                        }
+                    </div>
+                    <div class="col-xl-12 col-lg-12 py-2">
+                        <label class="bleuFonce texte-bold" for="ConfirmationMotDePasse"><i class="bi bi-braces-asterisk text-danger"></i> Confirmation du mot de passe</label>
+                        <InputText type="password" id="ConfirmationMotDePasse" @oninput="ValidateInputs" @bind-Value="identificationModel.ConfirmationMotDePasse" class="form-control input-bleu texte-light" />
+                        @if (isSubmitted && !isConfMdpValid)
                         {
                             <span class="input-group-text text-danger">
                                 <i class="bi bi-x-circle me-2"></i>
-                                <span class="texte-medium">Numéro requis</span>
+                                @if (string.IsNullOrEmpty(identificationModel.ConfirmationMotDePasse))
+                                {
+                                    <span class="texte-medium">Confirmation requise</span>
+                                }
+                                else if (identificationModel.MotDePasse != identificationModel.ConfirmationMotDePasse)
+                                {
+                                    <span class="texte-medium">Les mots de passe ne correspondent pas</span>
+                                }
                             </span>
                         }
-                        else if (isSubmitted && isNoEntrValid)
+                        else if (isSubmitted && isConfMdpValid)
                         {
-                            if(identificationModel.noEntreprise.ToString().Length > 10)
+                            <span class="input-group-text text-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                                <span class="texte-medium">Valide</span>
+                            </span>
+                        }
+                    </div>
+                </div>
+
+                @* Coordonnées *@
+                <div class="card-header py-2 bg-bleuFonce">
+                    <h3 class="py-2 p-0 my-0 text-white titre-bold">Coordonnées de l'entreprise</h3>
+                </div>
+                <div class="card-body border-bleuFonce bg-blanc py-1">
+                    <div class="py-2 d-flex justify-content-between">
+                        <div class="col-xl-3 col-lg-3">
+                            <label class="bleuFonce texte-bold" for="No"><i class="bi bi-braces-asterisk text-danger"></i> No</label>
+                            <InputText @oninput="ValidateInputs" @bind-Value="identificationModel.noEntreprise" class="form-control input-bleu texte-light" id="No" />
+                            @if (isSubmitted && !isNoEntrValid)
+                            {
+                                if (string.IsNullOrEmpty(identificationModel.noEntreprise))
+                                {
+                                    <span class="input-group-text text-danger">
+                                        <i class="bi bi-x-circle me-2"></i>
+                                        <span class="texte-medium">Numéro requis</span>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="input-group-text text-danger">
+
+                                        <i class="bi bi-x-circle me-2"></i>
+
+                                        <span class="texte-medium">Numéro non conforme</span>
+                                    </span>
+                                }
+                            }
+                            else if (isSubmitted && isNoEntrValid)
+                            {
+                                if (identificationModel.noEntreprise?.ToString().Length > 10)
+                                {
+                                    <span class="input-group-text text-danger">
+                                        <i class="bi bi-x-circle me-2"></i>
+                                        <span class="texte-medium">Maximum 8 caractères</span>
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="input-group-text text-success">
+                                        <i class="bi bi-check-circle me-2"></i>
+                                        <span class="texte-medium">Valide</span>
+                                    </span>
+                                }
+                            }
+
+                        </div>
+                        <div class="col-xl-6 col-lg-6 ms-1 me-1">
+                            <label class="bleuFonce texte-bold" for="Rue"><i class="bi bi-braces-asterisk text-danger"></i> Rue</label>
+                            <InputText @oninput="ValidateInputs" @bind-Value="identificationModel.rueEntreprise" class="form-control input-bleu texte-light" id="Rue" />
+                            @if (isSubmitted && !isRueEntrValid)
                             {
                                 <span class="input-group-text text-danger">
                                     <i class="bi bi-x-circle me-2"></i>
-                                    <span class="texte-medium">Maximum 8 caractères</span>
+                                    <span class="texte-medium">Rue requise</span>
                                 </span>
                             }
-                            else
+                            else if (isSubmitted && isRueEntrValid)
                             {
                                 <span class="input-group-text text-success">
                                     <i class="bi bi-check-circle me-2"></i>
                                     <span class="texte-medium">Valide</span>
                                 </span>
                             }
-                        }               
-                    </div> 
-                    <div class="col-xl-6 col-lg-6 ms-1 me-1">
-                        <label class="bleuFonce texte-bold" for="Rue"><i class="bi bi-braces-asterisk text-danger"></i> Rue</label>
-                        <InputText @oninput="ValidateInputs" @bind-Value="identificationModel.rueEntreprise" class="form-control input-bleu texte-light" id="Rue"/>                                                                                       
-                        @if (isSubmitted && !isRueEntrValid)
+                        </div>
+                        <div class="col-xl-3 col-lg-3">
+                            <label class="bleuFonce texte-bold" for="Bureau"><i class="bi bi-braces text-success"></i> Bureau</label>
+                            <InputText @oninput="ValidateInputs" @bind-Value="identificationModel.bureauEntreprise" class="form-control input-bleu texte-light" id="Bureau" />
+                            @if (isSubmitted && !isBureauEntrValid && identificationModel.bureauEntreprise != null)
+                            {
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    <span class="texte-medium">Maximum 8 caractères</span>
+                                </span>
+                            }
+                            else if (isSubmitted && isBureauEntrValid && identificationModel.bureauEntreprise != null)
+                            {
+                                <span class="input-group-text text-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    <span class="texte-medium">Valide</span>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-xl-12 col-lg-12 py-2">
+                        <label class="bleuFonce texte-bold" for="Ville"><i class="bi bi-braces-asterisk text-danger"></i> Ville</label>
+                        <InputText @oninput="ValidateInputs" @bind-Value="identificationModel.villeEntreprise" class="form-control input-bleu texte-light" id="Ville" />
+                        @if (isSubmitted && !isVilleEntrValid)
                         {
                             <span class="input-group-text text-danger">
                                 <i class="bi bi-x-circle me-2"></i>
-                                <span class="texte-medium">Rue requise</span>
+                                @if (string.IsNullOrEmpty(identificationModel.villeEntreprise))
+                                {
+                                    <span class="texte-medium">Ville requise</span>
+                                }
+                                else if (identificationModel.villeEntreprise.Length > 64)
+                                {
+                                    <span class="texte-medium">Maximum 64 caractères</span>
+                                }
                             </span>
                         }
-                        else if (isSubmitted && isRueEntrValid)
-                        {
-                            <span class="input-group-text text-success">
-                                <i class="bi bi-check-circle me-2"></i>
-                                <span class="texte-medium">Valide</span>
-                            </span>
-                        }                         
-                    </div>                  
-                    <div class="col-xl-3 col-lg-3">
-                        <label class="bleuFonce texte-bold" for="Bureau"><i class="bi bi-braces text-success"></i> Bureau</label>
-                        <InputText @oninput="ValidateInputs" @bind-Value="identificationModel.bureauEntreprise" class="form-control input-bleu texte-light" id="Bureau" />                                                                                                 
-                        @if (isSubmitted && !isBureauEntrValid && identificationModel.bureauEntreprise != null)
-                        {
-                            <span class="input-group-text text-danger">
-                                <i class="bi bi-x-circle me-2"></i>
-                                <span class="texte-medium">Maximum 8 caractères</span>
-                            </span>
-                        }
-                        else if (isSubmitted && isBureauEntrValid && identificationModel.bureauEntreprise != null)
+                        else if (isSubmitted && isVilleEntrValid)
                         {
                             <span class="input-group-text text-success">
                                 <i class="bi bi-check-circle me-2"></i>
@@ -215,79 +254,97 @@
                             </span>
                         }
                     </div>
-                </div>
-                <div class="col-xl-12 col-lg-12 py-2">
-                    <label class="bleuFonce texte-bold" for="Ville"><i class="bi bi-braces-asterisk text-danger"></i> Ville</label>
-                    <InputText @oninput="ValidateInputs" @bind-Value="identificationModel.villeEntreprise" class="form-control input-bleu texte-light" id="Ville" />                                                                                             
-                    @if (isSubmitted && !isVilleEntrValid)
-                    {
-                        <span class="input-group-text text-danger">
-                        <i class="bi bi-x-circle me-2"></i>
-                            @if (string.IsNullOrEmpty(identificationModel.villeEntreprise))
+                    <div class="py-2 d-flex justify-content-between">
+                        <div class="col-xl-6 col-lg-6">
+                            <label class="bleuFonce texte-bold" for="Province"><i class="bi bi-braces-asterisk text-danger"></i> Province</label>
+                            <InputSelect class="form-control input-bleu texte-light" id="Province" @oninput="ValidateInputs" @bind-Value="identificationModel.provinceEntreprise">
+                                <option value="" disabled selected>Veuillez choisir une province</option>
+                                @foreach (string province in listeProvinces)
+                                {
+                                    <option value="@province">@province</option>
+                                }
+                            </InputSelect>
+                            @if (isSubmitted && !isProvinceEntrValid)
                             {
-                                <span class="texte-medium">Ville requise</span>
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    <span class="texte-medium">Province requise</span>
+                                </span>
                             }
-                            else if (identificationModel.villeEntreprise.Length > 64)
+                            else if (isSubmitted && isProvinceEntrValid)
                             {
+                                <span class="input-group-text text-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    <span class="texte-medium">Valide</span>
+                                </span>
+                            }
+                        </div>
+                        <div class="col-xl-6 col-lg-6 ms-1">
+                            <label class="bleuFonce texte-bold" for="CodePostal"><i class="bi bi-braces-asterisk text-danger"></i> Code Postal</label>
+                            <InputText @oninput="ValidateInputs" @bind-Value="identificationModel.codePostalEntreprise" class="form-control input-bleu texte-light" id="CodePostal" />
+                            @if (isSubmitted && !isCPEntrValid)
+                            {
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    @if (string.IsNullOrEmpty(identificationModel.codePostalEntreprise))
+                                    {
+                                        <span class="texte-medium">Code postal requis</span>
+                                    }
+                                    else if (identificationModel.codePostalEntreprise.Length != 6)
+                                    {
+                                        <span class="texte-medium">Doit contenir 6 caractères</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="texte-medium">Code postal invalide</span>
+                                    }
+                                </span>
+                            }
+                            else if (isSubmitted && isCPEntrValid)
+                            {
+                                <span class="input-group-text text-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    <span class="texte-medium">Valide</span>
+                                </span>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-xl-12 py-2">
+                        <label class="bleuFonce texte-bold" for="RegionAdm"><i class="bi bi-braces-asterisk text-danger"></i> Région Admnistrative</label>
+                        <InputSelect id="RegionAdm" @oninput="ValidateInputs" @bind-Value="identificationModel.regionAdmEntreprise" class="form-control input-bleu texte-light">
+                            <!--Il faut créer un option qui n'a aucune valeur en selected et en disabled pour éviter que lorsqu'on soumet que la valeur soit nulle-->
+                            <option value="" disabled selected>Veuillez choisir une région administrative</option>
+                            @foreach (string region in listeRegionADM)
+                            {
+                                <option value="@region">@region</option>
+                            }
+                        </InputSelect>
+                        @if (isSubmitted && !isRegionEntrValid)
+                        {
+                            <span class="input-group-text text-danger">
+                                <i class="bi bi-x-circle me-2"></i>
+                                <span class="texte-medium">Région requise</span>
+                            </span>
+                        }
+                        else if (isSubmitted && isRegionEntrValid)
+                        {
+                            <span class="input-group-text text-success">
+                                <i class="bi bi-check-circle me-2"></i>
+                                <span class="texte-medium">Valide</span>
+                            </span>
+                        }
+                    </div>
+                    <div class="col-lg-12 col-xl-12 py-2">
+                        <label class="bleuFonce texte-bold" for="SiteWeb"><i class="bi bi-braces text-success"></i> Site Internet</label>
+                        <InputText type="" @oninput="ValidateInputs" @bind-Value="identificationModel.siteWebEntreprise" class="form-control input-bleu texte-light" id="SiteWeb" />
+                        @if (isSubmitted && !isSiteEntrValid && !string.IsNullOrEmpty(identificationModel.siteWebEntreprise))
+                        {
+                            <span class="input-group-text text-danger">
+                                <i class="bi bi-x-circle me-2"></i>
                                 <span class="texte-medium">Maximum 64 caractères</span>
-                            }
-                        </span>
-                    }
-                    else if (isSubmitted && isVilleEntrValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                            <span class="texte-medium">Valide</span>
-                        </span>
-                    } 
-                </div>
-                <div class="py-2 d-flex justify-content-between">
-                    <div class="col-xl-6 col-lg-6">
-                        <label class="bleuFonce texte-bold" for="Province"><i class="bi bi-braces-asterisk text-danger"></i> Province</label>
-                        <InputSelect class="form-control input-bleu texte-light" id="Province" @oninput="ValidateInputs" @bind-Value="identificationModel.provinceEntreprise">
-                            <option value="" disabled selected>Veuillez choisir une province</option>
-                            @foreach(string province in listeProvinces)
-                            {
-                                <option value="@province">@province</option>
-                            }
-                        </InputSelect>                                                                                                                   
-                        @if (isSubmitted && !isProvinceEntrValid)
-                        {
-                            <span class="input-group-text text-danger">
-                                <i class="bi bi-x-circle me-2"></i>
-                                <span class="texte-medium">Province requise</span>
                             </span>
                         }
-                        else if (isSubmitted && isProvinceEntrValid)
-                        {
-                            <span class="input-group-text text-success">
-                                <i class="bi bi-check-circle me-2"></i>
-                                <span class="texte-medium">Valide</span>
-                            </span>
-                        } 
-                    </div>
-                    <div class="col-xl-6 col-lg-6 ms-1">
-                        <label class="bleuFonce texte-bold" for="CodePostal"><i class="bi bi-braces-asterisk text-danger"></i> Code Postal</label>
-                        <InputText @oninput="ValidateInputs" @bind-Value="identificationModel.codePostalEntreprise" class="form-control input-bleu texte-light" id="CodePostal" />                                                                                                          
-                        @if (isSubmitted && !isCPEntrValid)
-                        {
-                            <span class="input-group-text text-danger">
-                                <i class="bi bi-x-circle me-2"></i>
-                                @if (string.IsNullOrEmpty(identificationModel.codePostalEntreprise))
-                                {
-                                    <span class="texte-medium">Code postal requis</span>
-                                }
-                                else if (identificationModel.codePostalEntreprise.Length != 6)
-                                {
-                                    <span class="texte-medium">Doit contenir 6 caractères</span>
-                                }
-                                else
-                                {
-                                    <span class="texte-medium">Code postal invalide</span>
-                                }
-                            </span>
-                        }
-                        else if (isSubmitted && isCPEntrValid)
+                        else if (isSubmitted && isSiteEntrValid && !string.IsNullOrEmpty(identificationModel.siteWebEntreprise))
                         {
                             <span class="input-group-text text-success">
                                 <i class="bi bi-check-circle me-2"></i>
@@ -295,146 +352,102 @@
                             </span>
                         }
                     </div>
-                </div>
-                <div class="col-lg-12 col-xl-12 py-2">
-                    <label class="bleuFonce texte-bold" for="RegionAdm"><i class="bi bi-braces-asterisk text-danger"></i> Région Admnistrative</label>
-                    <InputSelect id="RegionAdm" @oninput="ValidateInputs" @bind-Value="identificationModel.regionAdmEntreprise" class="form-control input-bleu texte-light">
-                        <!--Il faut créer un option qui n'a aucune valeur en selected et en disabled pour éviter que lorsqu'on soumet que la valeur soit nulle-->
-                        <option value="" disabled selected>Veuillez choisir une région administrative</option>
-                        @foreach(string region in listeRegionADM)
-                        {
-                            <option value="@region">@region</option>
-                        }
-                    </InputSelect>                                                                                                                            
-                    @if (isSubmitted && !isRegionEntrValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <span class="texte-medium">Région requise</span>
-                        </span>
-                    }
-                    else if (isSubmitted && isRegionEntrValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                            <span class="texte-medium">Valide</span>
-                        </span>
-                    }
-                </div>
-                <div class="col-lg-12 col-xl-12 py-2">
-                    <label class="bleuFonce texte-bold" for="SiteWeb"><i class="bi bi-braces text-success"></i> Site Internet</label>
-                    <InputText type="" @oninput="ValidateInputs" @bind-Value="identificationModel.siteWebEntreprise" class="form-control input-bleu texte-light" id="SiteWeb" />
-                    @if (isSubmitted && !isSiteEntrValid && !string.IsNullOrEmpty(identificationModel.siteWebEntreprise))
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <span class="texte-medium">Maximum 64 caractères</span>
-                        </span>
-                    }
-                    else if (isSubmitted && isSiteEntrValid && !string.IsNullOrEmpty(identificationModel.siteWebEntreprise))
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                            <span class="texte-medium">Valide</span>
-                        </span>
-                    }
-                </div>
-                <div class="py-2 d-flex justify-content-between">
-                    <div class="col-lg-3 col-xl-3">
-                        <label class="bleuFonce texte-bold" for="typeTel"><i class="bi bi-braces-asterisk text-danger"></i> Type</label>
-                        <InputSelect class="form-control input-bleu texte-light" id="typeTel" @oninput="ValidateInputs" @bind-Value="identificationModel.typeTelEntreprise">
-                            <option value="" disabled selected>Veuillez choisir un type</option>
-                                @foreach(string type in listeTypeContact)
+                    <div class="py-2 d-flex justify-content-between">
+                        <div class="col-lg-3 col-xl-3">
+                            <label class="bleuFonce texte-bold" for="typeTel"><i class="bi bi-braces-asterisk text-danger"></i> Type</label>
+                            <InputSelect class="form-control input-bleu texte-light" id="typeTel" @oninput="ValidateInputs" @bind-Value="identificationModel.typeTelEntreprise">
+                                <option value="" disabled selected>Veuillez choisir un type</option>
+                                @foreach (string type in listeTypeContact)
                                 {
                                     <option value="@type">@type</option>
                                 }
-                        </InputSelect>                                                                                                                                                                                                                            
-                        @if (isSubmitted && !isTypeTelEntrValid)
-                        {
-                            <span class="input-group-text text-danger">
-                                <i class="bi bi-x-circle me-2"></i>
-                                <span class="texte-medium">Type requis</span>
-                            </span>
-                        }
-                        else if (isSubmitted && isTypeTelEntrValid)
-                        {
-                            <span class="input-group-text text-success">
-                                <i class="bi bi-check-circle me-2"></i>
-                                <span class="texte-medium">Valide</span>
-                            </span>
-                        }
-                    </div>
-                    <div class="col-lg-6 col-xl-6 ms-1 me-1">
-                        <label class="bleuFonce texte-bold" for="NoTel"><i class="bi bi-braces-asterisk text-danger"></i> Numéro de téléphone</label>
-                        <InputNumber TValue="long?" @oninput="ValidateInputs" @bind-Value="identificationModel.noTelEntreprise" class="form-control input-bleu texte-light" id="NoTel" />                                                                                                                                        
-                        @if (isSubmitted && !isNoTelEntrValid)
-                        {
-                            <span class="input-group-text text-danger">
-                                <i class="bi bi-x-circle me-2"></i>
-                                @if (!(identificationModel.noTelEntreprise.HasValue))
-                                {
-                                    <span class="texte-medium">Téléphone requis</span>
-                                }
-                                else if (identificationModel.noTelEntreprise != 10)
-                                {
-                                    <span class="texte-medium">Doit contenir 10 numéros</span>
-                                }
-                            </span>
-                        }
-                        else if (isSubmitted && isNoTelEntrValid)
-                        {
-                            <span class="input-group-text text-success">
-                                <i class="bi bi-check-circle me-2"></i>
-                                <span class="texte-medium">Valide</span>
-                            </span>
-                        }
-                    </div>
-                    <div class="col-lg-3 col-xl-3">
-                        <label class="bleuFonce texte-bold" for="PosteCoordo"><i class="bi bi-braces text-success"></i> Poste</label>
-                        <InputNumber TValue="long?" @oninput="ValidateInputs" @bind-Value="identificationModel.posteTelEntreprise" class="form-control input-bleu texte-light" id="PosteCoordo" />                                                                                                                                                                     
-                        @if (isSubmitted && !isPosteTelEntrValid && identificationModel.posteTelEntreprise.HasValue)
-                        {
-                            <span class="input-group-text text-danger">
-                                <i class="bi bi-x-circle me-2"></i>
-                                <span class="texte-medium">Doit contenir 6 numéros</span>                                    
-                            </span>
-                        }
-                        else if (isSubmitted && isPosteTelEntrValid && identificationModel.posteTelEntreprise.HasValue)
-                        {
-                            <span class="input-group-text text-success">
-                                <i class="bi bi-check-circle me-2"></i>
-                                <span class="texte-medium">Valide</span>
-                            </span>
-                        }
+                            </InputSelect>
+                            @if (isSubmitted && !isTypeTelEntrValid)
+                            {
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    <span class="texte-medium">Type requis</span>
+                                </span>
+                            }
+                            else if (isSubmitted && isTypeTelEntrValid)
+                            {
+                                <span class="input-group-text text-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    <span class="texte-medium">Valide</span>
+                                </span>
+                            }
+                        </div>
+                        <div class="col-lg-6 col-xl-6 ms-1 me-1">
+                            <label class="bleuFonce texte-bold" for="NoTel"><i class="bi bi-braces-asterisk text-danger"></i> Numéro de téléphone</label>
+                            <InputNumber TValue="long?" @oninput="ValidateInputs" @bind-Value="identificationModel.noTelEntreprise" class="form-control input-bleu texte-light" id="NoTel" />
+                            @if (isSubmitted && !isNoTelEntrValid)
+                            {
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    @if (!(identificationModel.noTelEntreprise.HasValue))
+                                    {
+                                        <span class="texte-medium">Téléphone requis</span>
+                                    }
+                                    else if (identificationModel.noTelEntreprise != 10)
+                                    {
+                                        <span class="texte-medium">Doit contenir 10 numéros</span>
+                                    }
+                                </span>
+                            }
+                            else if (isSubmitted && isNoTelEntrValid)
+                            {
+                                <span class="input-group-text text-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    <span class="texte-medium">Valide</span>
+                                </span>
+                            }
+                        </div>
+                        <div class="col-lg-3 col-xl-3">
+                            <label class="bleuFonce texte-bold" for="PosteCoordo"><i class="bi bi-braces text-success"></i> Poste</label>
+                            <InputNumber TValue="long?" @oninput="ValidateInputs" @bind-Value="identificationModel.posteTelEntreprise" class="form-control input-bleu texte-light" id="PosteCoordo" />
+                            @if (isSubmitted && !isPosteTelEntrValid && identificationModel.posteTelEntreprise.HasValue)
+                            {
+                                <span class="input-group-text text-danger">
+                                    <i class="bi bi-x-circle me-2"></i>
+                                    <span class="texte-medium">Doit contenir 6 numéros</span>
+                                </span>
+                            }
+                            else if (isSubmitted && isPosteTelEntrValid && identificationModel.posteTelEntreprise.HasValue)
+                            {
+                                <span class="input-group-text text-success">
+                                    <i class="bi bi-check-circle me-2"></i>
+                                    <span class="texte-medium">Valide</span>
+                                </span>
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            @* Contacts *@
-            <div class="card-header py-2 bg-bleuFonce">
-                <h3 class="py-2 p-0 my-0 text-white titre-bold">Contacts</h3>
-            </div>
-
-            <Contact ContactNumber="1" />
-            @foreach (var contactNumber in contactList)
-            {
-                <Contact ContactNumber="@contactNumber" />
-            }
-            <div class="card-footer bg-bleuFonce">
-                <div class="d-flex justify-content-center">
-                    <button type="button" class="btn bg-bleuPale text-white texte-bold me-2" @onclick="AddContact" style="width: 200px;"><i class="bi bi-plus-circle"></i> Ajout contact</button>
-                    <button type="button" class="btn bg-bleuPale text-white texte-bold" @onclick="RemoveContact" style="width: 200px;" disabled="@(!contactList.Any())"><i class="bi bi-plus-circle"></i> Retirer contact</button>
+                @* Contacts *@
+                <div class="card-header py-2 bg-bleuFonce">
+                    <h3 class="py-2 p-0 my-0 text-white titre-bold">Contacts</h3>
                 </div>
-            </div>
-            
-            <div class="card-footer bg-bleuFonce">
-                <div class="d-flex justify-content-center">
-                    <button type="submit" class="btn bg-bleu text-white texte-bold" @onclick="SubmitForm" style="width: 200px;">Suivant <i class="bi bi-arrow-right-circle"></i></button>
+
+                <Contact ContactNumber="1" />
+                @foreach (var contactNumber in contactList)
+                {
+                    <Contact ContactNumber="@contactNumber" />
+                }
+                <div class="card-footer bg-bleuFonce">
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn bg-bleuPale text-white texte-bold me-2" @onclick="AddContact" style="width: 200px;"><i class="bi bi-plus-circle"></i> Ajout contact</button>
+                        <button type="button" class="btn bg-bleuPale text-white texte-bold" @onclick="RemoveContact" style="width: 200px;" disabled="@(!contactList.Any())"><i class="bi bi-plus-circle"></i> Retirer contact</button>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-bleuFonce">
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn bg-bleu text-white texte-bold" @onclick="SubmitForm" style="width: 200px;">Suivant <i class="bi bi-arrow-right-circle"></i></button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
     <DataAnnotationsValidator />
 </EditForm>
@@ -445,18 +458,18 @@
     private List<int> contactList = new List<int>();
     private int contactCounter = 1;
 
-#region Listes
+    #region Listes
     private List<string> listeProvinces = new List<string>{"Québec", "Ontario", "Manitoba", "Saskatchewan", "Alberta", "Colombie-Britanique",
-        "Île-du-Prince-Édouard", "Nouveau-Brunswick", "Nouvelle-Écosse", "Terre-Neuve-et-Labrador", "Nunavut", "Territoires du Nord-Ouest", 
+        "Île-du-Prince-Édouard", "Nouveau-Brunswick", "Nouvelle-Écosse", "Terre-Neuve-et-Labrador", "Nunavut", "Territoires du Nord-Ouest",
         "Yukon"};
-    private List<string> listeRegionADM = new List<string>{"(01) Bas-Saint-Laurent", "(02) Saguenay-Lac-Saint-Jean", "(03) Capitale-Nationale", 
-        "(04) Mauricie", "(05) Estrie", "(06) Montréal", "(07) Outaouais", "(08) Abitibi-Témiscamingue", "(09) Côte-Nord", "(10) Nord-du-Québec", 
-        "(11) Gaspésie-Îles-de-la-Madeleine", "(12) Chaudière-Appalaches", "(13) Laval", "(14) Lanaudière", "(15) Laurentides", "(16) Montérégie", 
+    private List<string> listeRegionADM = new List<string>{"(01) Bas-Saint-Laurent", "(02) Saguenay-Lac-Saint-Jean", "(03) Capitale-Nationale",
+        "(04) Mauricie", "(05) Estrie", "(06) Montréal", "(07) Outaouais", "(08) Abitibi-Témiscamingue", "(09) Côte-Nord", "(10) Nord-du-Québec",
+        "(11) Gaspésie-Îles-de-la-Madeleine", "(12) Chaudière-Appalaches", "(13) Laval", "(14) Lanaudière", "(15) Laurentides", "(16) Montérégie",
         "(17) Centre-du-Québec"};
-    private List<string> listeTypeContact = new List<string>{"Bureau", "Télécopieur", "Cellulaire"};
-#endregion
+    private List<string> listeTypeContact = new List<string> { "Bureau", "Télécopieur", "Cellulaire" };
+    #endregion
 
-#region Validations
+    #region Validations
     private bool isSubmitted = false;
     private bool isValid = true;
     private bool isNEQValid = true;
@@ -475,29 +488,10 @@
     private bool isTypeTelEntrValid = true;
     private bool isNoTelEntrValid = true;
     private bool isPosteTelEntrValid = true;
-    private bool isPrenom1Valid = true;
-    private bool isNom1Valid = true;
-    private bool isFonction1Valid = true;
-    private bool isEmail1Valid = true;
-    private bool isType1Valid = true;
-    private bool isTel1Valid = true;
-    private bool isPoste1Valid = true;
-    private bool isPrenom2Valid = true;
-    private bool isNom2Valid = true;
-    private bool isFonction2Valid = true;
-    private bool isEmail2Valid = true;
-    private bool isType2Valid = true;
-    private bool isTel2Valid = true;
-    private bool isPoste2Valid = true;
-    private bool isPrenom3Valid = true;
-    private bool isNom3Valid = true;
-    private bool isFonction3Valid = true;
-    private bool isEmail3Valid = true;
-    private bool isType3Valid = true;
-    private bool isTel3Valid = true;
-    private bool isPoste3Valid = true;
 
-#endregion
+
+
+    #endregion
 
     private void AddContact()
     {
@@ -513,11 +507,11 @@
             contactCounter--;
         }
     }
-    
-#region Validation des champs    
+
+    #region Validation des champs
     // Validation de chaque champ
     private void ValidateInputs()
-    {        
+    {
         // NEQ: Validation si une valeur a été saisie
         if (identificationModel.NEQ.HasValue)
         {
@@ -548,7 +542,7 @@
         }
 
         // Courriel Entreprise
-        if (!string.IsNullOrEmpty(identificationModel.courrielEntreprise) && identificationModel.courrielEntreprise.Length <= 64 && Regex.IsMatch(identificationModel.courrielEntreprise,@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
+        if (!string.IsNullOrEmpty(identificationModel.courrielEntreprise) && identificationModel.courrielEntreprise.Length <= 64 && Regex.IsMatch(identificationModel.courrielEntreprise, @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
         {
             isEmailEntrValid = true;
         }
@@ -561,17 +555,17 @@
         // Mot de passe vide
         if (string.IsNullOrEmpty(identificationModel.MotDePasse))
         {
-            isMdpValid = false;  
+            isMdpValid = false;
         }
         // Longueur invalide
         else if (identificationModel.MotDePasse.Length < 7 || identificationModel.MotDePasse.Length > 12)
         {
-            isMdpValid = false;  
+            isMdpValid = false;
         }
         // Mot de passe ne respecte pas les exigences
         else if (!System.Text.RegularExpressions.Regex.IsMatch(identificationModel.MotDePasse, "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).+$"))
         {
-            isMdpValid = false;  
+            isMdpValid = false;
         }
         else
         {
@@ -597,7 +591,7 @@
         }
 
         // Numéro adresse
-        if (!string.IsNullOrEmpty(identificationModel.noEntreprise) && identificationModel.noEntreprise.Length <= 8 && Regex.IsMatch(identificationModel.noEntreprise, @"^[0-9]+$"))
+        if (!string.IsNullOrEmpty(identificationModel.noEntreprise) && identificationModel.noEntreprise.Length <= 8 && Regex.IsMatch(identificationModel.noEntreprise, @"^(\d{1,5}[A-Z]?)\s*(½?)$"))
         {
             isNoEntrValid = true;
         }
@@ -650,23 +644,23 @@
         // Code postal vide
         if (string.IsNullOrEmpty(identificationModel.codePostalEntreprise))
         {
-            isCPEntrValid = false;  
+            isCPEntrValid = false;
         }
         // Longueur invalide
         else if (identificationModel.codePostalEntreprise.Length != 6)
         {
-            isCPEntrValid = false;  
+            isCPEntrValid = false;
         }
         // Code postal ne respecte pas les exigences
         else if (Regex.IsMatch(identificationModel.codePostalEntreprise, @"^[A-z]{1}[\d]{1}[A-z]{1}[\d]{1}[A-z]{1}[\d]{1}$"))
         {
-            isCPEntrValid = true;  
+            isCPEntrValid = true;
         }
         else
         {
             isCPEntrValid = true;
         }
-        
+
         // Région adresse
         if (!string.IsNullOrEmpty(identificationModel.regionAdmEntreprise))
         {
@@ -677,14 +671,14 @@
             isRegionEntrValid = false;
         }
 
-        // Site internet 
+        // Site internet
         // Si une valeur a été saisie
-        if (!string.IsNullOrEmpty(identificationModel.siteWebEntreprise))  
+        if (!string.IsNullOrEmpty(identificationModel.siteWebEntreprise))
         {
-            // longueur 
+            // longueur
             if (identificationModel.siteWebEntreprise.Length > 64)
             {
-                isSiteEntrValid = false;  
+                isSiteEntrValid = false;
             }
             else
             {
@@ -694,9 +688,9 @@
         // Si pas de valeur saisie, considérée comme valide
         else
         {
-            isSiteEntrValid = true;  
+            isSiteEntrValid = true;
         }
-                
+
         // Type tel adresse
         if (!string.IsNullOrEmpty(identificationModel.typeTelEntreprise))
         {
@@ -709,417 +703,43 @@
 
         // Numéro tel
         // Vide
-        if (!identificationModel.noTelEntreprise.HasValue)        
+        if (!identificationModel.noTelEntreprise.HasValue)
         {
-            isNoTelEntrValid = false;  
+            isNoTelEntrValid = false;
         }
         // Invalide si hors plage
         else if (!(identificationModel.noTelEntreprise >= 1100000000 && identificationModel.noTelEntreprise <= 8899999999))
         {
-            isNoTelEntrValid = false;  
+            isNoTelEntrValid = false;
         }
         else
         {
-            isNoTelEntrValid = true;  
+            isNoTelEntrValid = true;
         }
 
         // Poste tel
         // Vide
-        if (!identificationModel.posteTelEntreprise.HasValue)        
+        if (!identificationModel.posteTelEntreprise.HasValue)
         {
-            isPosteTelEntrValid = false;  
+            isPosteTelEntrValid = false;
         }
         // Invalide si hors plage
         else if (!(identificationModel.posteTelEntreprise >= 000000 && identificationModel.posteTelEntreprise <= 999999))
         {
-            isPosteTelEntrValid = false;  
+            isPosteTelEntrValid = false;
         }
         else
         {
-            isPosteTelEntrValid = true;  
+            isPosteTelEntrValid = true;
         }
 
-        // Prénom Contact 1
-        // Vide
-        if (string.IsNullOrEmpty(identificationModel.prenom1Contact))
-        {
-            isPrenom1Valid = false;
-        }
-        else if (!string.IsNullOrEmpty(identificationModel.prenom1Contact))
-        {
-        // Longueur
-            if(identificationModel.prenom1Contact.Length > 32)
-            {
-                isPrenom1Valid = false;  
-            }
-        // Exigences
-            else if (!System.Text.RegularExpressions.Regex.IsMatch(identificationModel.prenom1Contact, "^[a-zA-Z'-]+$"))
-            {
-                isPrenom1Valid = false;
-            }
-            else 
-            {
-                isPrenom1Valid = true;
-            }
-        }    
-        else
-        {
-            isPrenom1Valid = true;
-        }
 
-        // Nom Contact 1
-        // Vide
-        if (string.IsNullOrEmpty(identificationModel.nom1Contact))
-        {
-            isNom1Valid = false;
-        }
-        else if (!string.IsNullOrEmpty(identificationModel.nom1Contact))
-        {
-        // Longueur
-            if(identificationModel.nom1Contact.Length > 32)
-            {
-                isNom1Valid = false;  
-            }
-        // Exigences
-            else if (!System.Text.RegularExpressions.Regex.IsMatch(identificationModel.nom1Contact, "^[a-zA-Z'-]+$"))
-            {
-                isNom1Valid = false;
-            }
-            else 
-            {
-                isNom1Valid = true;
-            }
-        }    
-        else
-        {
-            isNom1Valid = true;
-        }
 
-        // Fonction Contact 1
-        // Vide
-        if (string.IsNullOrEmpty(identificationModel.fonction1Contact))
-        {
-            isFonction1Valid = false;
-        }
-        else if (!string.IsNullOrEmpty(identificationModel.fonction1Contact))
-        {
-        // Longueur
-            if(identificationModel.fonction1Contact.Length > 32)
-            {
-                isFonction1Valid = false;  
-            }
-            else 
-            {
-                isFonction1Valid = true;
-            }
-        }    
-        else
-        {
-            isFonction1Valid = true;
-        }
-
-        // Courriel Contact 1
-        if (!string.IsNullOrEmpty(identificationModel.email1Contact) && identificationModel.email1Contact.Length <= 64 && EmailValidator(identificationModel.email1Contact))
-        {
-            isEmail1Valid = true;
-        }
-        else
-        {
-            isEmail1Valid = false;
-        }
-
-        // Type tel contact
-        if (!string.IsNullOrEmpty(identificationModel.typeTel1Contact))
-        {
-            isType1Valid = true;
-        }
-        else
-        {
-            isType1Valid = false;
-        }
-
-        // Numéro tel Contact 1
-        // Vide
-        if (!identificationModel.noTel1Contact.HasValue)        
-        {
-            isTel1Valid = false;  
-        }
-        // Invalide si hors plage
-        else if (!(identificationModel.noTel1Contact >= 1100000000 && identificationModel.noTel1Contact <= 8899999999))
-        {
-            isTel1Valid = false;  
-        }
-        else
-        {
-            isTel1Valid = true;  
-        }
-
-        // Poste tel Contact 1
-        // Vide
-        if (!identificationModel.posteTel1Contact.HasValue)        
-        {
-            isPoste1Valid = false;  
-        }
-        // Invalide si hors plage
-        else if (!(identificationModel.posteTel1Contact >= 000000 && identificationModel.posteTel1Contact <= 999999))
-        {
-            isPoste1Valid = false;  
-        }
-        else
-        {
-            isPoste1Valid = true;  
-        }
-
-    // Contact 2 (facultatif)
-
-    // Prénom Contact 2
-    if (!string.IsNullOrEmpty(identificationModel.prenom2Contact))
-    {
-        // Longueur
-        if (identificationModel.prenom2Contact.Length > 32)
-        {
-            isPrenom2Valid = false;  
-        }
-        // Exigences
-        else if (!System.Text.RegularExpressions.Regex.IsMatch(identificationModel.prenom2Contact, "^[a-zA-Z'-]+$"))
-        {
-            isPrenom2Valid = false;
-        }
-        else 
-        {
-            isPrenom2Valid = true;
-        }
-    }
-    else
-    {
-        // Si c'est vide, comme le contact 2 est facultatif, on considère que c'est valide
-        isPrenom2Valid = true;
-    }
-
-    // Nom Contact 2
-    if (!string.IsNullOrEmpty(identificationModel.nom2Contact))
-    {
-        // Longueur
-        if (identificationModel.nom2Contact.Length > 32)
-        {
-            isNom2Valid = false;  
-        }
-        // Exigences
-        else if (!System.Text.RegularExpressions.Regex.IsMatch(identificationModel.nom2Contact, "^[a-zA-Z'-]+$"))
-        {
-            isNom2Valid = false;
-        }
-        else 
-        {
-            isNom2Valid = true;
-        }
-    }
-    else
-    {
-        // Si c'est vide, c'est valide (facultatif)
-        isNom2Valid = true;
-    }
-
-    // Fonction Contact 2
-    if (!string.IsNullOrEmpty(identificationModel.fonction2Contact))
-    {
-        // Longueur
-        if (identificationModel.fonction2Contact.Length > 32)
-        {
-            isFonction2Valid = false;  
-        }
-        else 
-        {
-            isFonction2Valid = true;
-        }
-    }
-    else
-    {
-        isFonction2Valid = true;
-    }
-
-    // Courriel Contact 2
-    if (!string.IsNullOrEmpty(identificationModel.courriel2Contact))
-    {
-            isEmail2Valid = EmailValidator(identificationModel.courriel2Contact);
-    }
-    else
-    {
-        isEmail2Valid = true;  // Champ facultatif donc valide si vide
-    }
-
-    // Type tel contact 2
-    if (!string.IsNullOrEmpty(identificationModel.typeTel2Contact))
-    {
-        isType2Valid = true;
-    }
-    else
-    {
-        isType2Valid = true; // C'est valide car facultatif
-    }
-
-    // Numéro tel Contact 2
-    if (identificationModel.noTel2Contact.HasValue)
-    {
-        // Invalide si hors plage
-        if (!(identificationModel.noTel2Contact >= 1100000000 && identificationModel.noTel2Contact <= 8899999999))
-        {
-            isTel2Valid = false;  
-        }
-        else
-        {
-            isTel2Valid = true;  
-        }
-    }
-    else
-    {
-        isTel2Valid = true; // Facultatif donc valide si non renseigné
-    }
-
-    // Poste tel Contact 2
-    if (identificationModel.posteTel2Contact.HasValue)
-    {
-        // Invalide si hors plage
-        if (!(identificationModel.posteTel2Contact >= 000000 && identificationModel.posteTel2Contact <= 999999))
-        {
-            isPoste2Valid = false;  
-        }
-        else
-        {
-            isPoste2Valid = true;  
-        }
-    }
-    else
-    {
-        isPoste2Valid = true; // Facultatif donc valide si non renseigné
-    }
-    // Contact 3 (facultatif)
-    // Prénom Contact 3
-    if (!string.IsNullOrEmpty(identificationModel.prenom3Contact))
-    {
-        // Longueur
-        if (identificationModel.prenom3Contact.Length > 32)
-        {
-            isPrenom3Valid = false;  
-        }
-        // Exigences
-        else if (!System.Text.RegularExpressions.Regex.IsMatch(identificationModel.prenom3Contact, "^[a-zA-Z'-]+$"))
-        {
-            isPrenom3Valid = false;
-        }
-        else 
-        {
-            isPrenom3Valid = true;
-        }
-    }
-    else
-    {
-        // Si c'est vide, comme le contact 2 est facultatif, on considère que c'est valide
-        isPrenom3Valid = true;
-    }
-
-    // Nom Contact 3
-    if (!string.IsNullOrEmpty(identificationModel.nom3Contact))
-    {
-        // Longueur
-        if (identificationModel.nom3Contact.Length > 32)
-        {
-            isNom3Valid = false;  
-        }
-        // Exigences
-        else if (!System.Text.RegularExpressions.Regex.IsMatch(identificationModel.nom3Contact, "^[a-zA-Z'-]+$"))
-        {
-            isNom3Valid = false;
-        }
-        else 
-        {
-            isNom3Valid = true;
-        }
-    }
-    else
-    {
-        // Si c'est vide, c'est valide (facultatif)
-        isNom3Valid = true;
-    }
-
-    // Fonction Contact 3
-    if (!string.IsNullOrEmpty(identificationModel.fonction3Contact))
-    {
-        // Longueur
-        if (identificationModel.fonction3Contact.Length > 32)
-        {
-            isFonction3Valid = false;  
-        }
-        else 
-        {
-            isFonction3Valid = true;
-        }
-    }
-    else
-    {
-        isFonction3Valid = true;
-    }
-
-    // Courriel Contact 3
-    if (!string.IsNullOrEmpty(identificationModel.courriel3Contact))
-    {
-        isEmail3Valid = EmailValidator(identificationModel.courriel3Contact);
-    }
-    else
-    {
-        isEmail3Valid = true;  // Champ facultatif donc valide si vide
-    }
-
-    // Type tel contact 3
-    if (!string.IsNullOrEmpty(identificationModel.typeTel3Contact))
-    {
-        isType3Valid = true;
-    }
-    else
-    {
-        isType3Valid = true; // C'est valide car facultatif
-    }
-
-    // Numéro tel Contact 3
-    if (identificationModel.noTel3Contact.HasValue)
-    {
-        // Invalide si hors plage
-        if (!(identificationModel.noTel3Contact >= 1100000000 && identificationModel.noTel3Contact <= 8899999999))
-        {
-            isTel3Valid = false;  
-        }
-        else
-        {
-            isTel3Valid = true;  
-        }
-    }
-    else
-    {
-        isTel3Valid = true; // Facultatif donc valide si non renseigné
-    }
-
-    // Poste tel Contact 3
-    if (identificationModel.posteTel3Contact.HasValue)
-    {
-        // Invalide si hors plage
-        if (!(identificationModel.posteTel3Contact >= 000000 && identificationModel.posteTel3Contact <= 999999))
-        {
-            isPoste3Valid = false;  
-        }
-        else
-        {
-            isPoste3Valid = true;  
-        }
-    }
-    else
-    {
-        isPoste3Valid = true; // Facultatif donc valide si non renseigné
-    }
 
         // Forcer la mise à jour de l'interface utilisateur
-        StateHasChanged();         
+        StateHasChanged();
     }
-#endregion
+    #endregion
 
     // Sert à gérer le scénario où le formulaire est valide.
     public void HandleValidSubmit()
@@ -1134,106 +754,74 @@
 
     private void SubmitForm()
     {
-        isSubmitted = true;      
+        isSubmitted = true;
         ValidateInputs();
     }
 
     public class IdentificationModel
     {
-    #region identification
+        #region identification
 
-            [RegularExpression(@"^\d{10}$")]
-             public long? NEQ { get; set; }
-            
-            [Required]
-            public string? nomEntreprise { get; set; }
-
-            [Required]
-            [EmailAddress]
-            public string? courrielEntreprise { get; set; }
-
-            [Required]
-            public string? MotDePasse { get; set; }
-
-            [Required]
-            [Compare(nameof(MotDePasse), ErrorMessage = "Les mots de passe ne correspondent pas")]
-            public string? ConfirmationMotDePasse { get; set; }
-    #endregion
-    #region coordonnees
-            [Required]
-            public string? noEntreprise { get; set; }
-
-            [Required]
-            public string? rueEntreprise { get; set; }
-
-            [RegularExpression(@"^\d$")]
-            public string? bureauEntreprise { get; set; }
-
-            [Required]
-            public string? villeEntreprise { get; set; }
-
-            [Required]
-            public string? provinceEntreprise { get; set; }
-
-            [Required]
-            [RegularExpression(@"^[A-z]{1}[\d]{1}[A-z]{1}[\d]{1}[A-z]{1}[\d]{1}$")]
-            public string? codePostalEntreprise { get; set; }
-
-            [Required]
-            public int? codeAdmEntreprise { get; set; }
-
-            [Required]
-            public string? regionAdmEntreprise { get; set; }
-
-            public string? siteWebEntreprise { get; set; }
-
-            [Required]
-            public string? typeTelEntreprise { get; set; }
-
-            [Required]
-            public long? noTelEntreprise { get; set; }
-
-            public long? posteTelEntreprise { get; set; }
-    #endregion
-    #region contact 1
-        [Required]
-        public string? prenom1Contact { get; set; }
+        [RegularExpression(@"^\d{10}$")]
+        public long? NEQ { get; set; }
 
         [Required]
-        public string? nom1Contact { get; set; }
+        public string? nomEntreprise { get; set; }
 
         [Required]
-        public string? fonction1Contact { get; set; }
+        [EmailAddress]
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")]
+        public string? courrielEntreprise { get; set; }
 
         [Required]
-        public string? email1Contact { get; set; }
+        [RegularExpression(@"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{7,12}$")]
+        public string? MotDePasse { get; set; }
 
         [Required]
-        public string? typeTel1Contact { get; set; }
+        [Compare(nameof(MotDePasse), ErrorMessage = "Les mots de passe ne correspondent pas")]
+        public string? ConfirmationMotDePasse { get; set; }
+        #endregion
+        #region coordonnees
+        [Required]
+        [RegularExpression(@"^(\d{1,5}[A-Z]?)\s*(½?)$")]
+        public string? noEntreprise { get; set; }
 
         [Required]
-        public long? noTel1Contact { get; set; }
+        public string? rueEntreprise { get; set; }
 
-        public long? posteTel1Contact { get; set; }
-    #endregion
-    #region contact 2
-        public string? prenom2Contact { get; set; }
-         public string? nom2Contact { get; set; }
-        public string? fonction2Contact { get; set; }
-        public string? courriel2Contact { get; set; }
-        public string? typeTel2Contact { get; set; }
-        public long? noTel2Contact { get; set; }
-        public long? posteTel2Contact { get; set; }
-    #endregion 
-    #region contact 3
-        public string? prenom3Contact { get; set; }
-         public string? nom3Contact { get; set; }
-        public string? fonction3Contact { get; set; }
-        public string? courriel3Contact { get; set; }
-        public string? typeTel3Contact { get; set; }
-        public long? noTel3Contact { get; set; }
-        public long? posteTel3Contact { get; set; }
-    #endregion 
+        [RegularExpression(@"^\d$")]
+        public string? bureauEntreprise { get; set; }
+
+        [Required]
+        public string? villeEntreprise { get; set; }
+
+        [Required]
+        public string? provinceEntreprise { get; set; }
+
+        [Required]
+        [RegularExpression(@"^[A-z]{1}[\d]{1}[A-z]{1}[\d]{1}[A-z]{1}[\d]{1}$")]
+        public string? codePostalEntreprise { get; set; }
+
+        [Required]
+        public int? codeAdmEntreprise { get; set; }
+
+        [Required]
+        public string? regionAdmEntreprise { get; set; }
+
+        public string? siteWebEntreprise { get; set; }
+
+        [Required]
+        public string? typeTelEntreprise { get; set; }
+
+        [Required]
+        [RegularExpression(@"^\d{10}$")]
+        public long? noTelEntreprise { get; set; }
+
+        [RegularExpression(@"^\d{6}$")]
+        public long? posteTelEntreprise { get; set; }
+        #endregion
+
+
     }
 
 }
