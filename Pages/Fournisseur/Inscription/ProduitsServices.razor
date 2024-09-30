@@ -74,6 +74,9 @@
     .atLeastOneProduct {
         outline: 1px solid red;
     }
+    .greenOutline {
+        outline: 1px solid green;
+    }
 </style>
 
 <EditForm Model="@formModel" OnValidSubmit="HandleValidSubmit">
@@ -108,6 +111,7 @@
                 </div>
 
                 <div class="col-xl-12 col-lg-12 py-2">
+                    <label class="texte-bold"><i class="bi bi-braces-asterisk text-danger"></i></label>
                     <div class="overflow-auto box-bleu card @validProduct">
                         <!-- 
                             CECI EST EN GUISE DE TEST
@@ -132,10 +136,10 @@
 
                 
                 <div class="col-xl-12 col-lg-12 py-2">
-                    <label for="details" class="texte-bold" form="message"><i class="bi bi-braces text-success"></i> Détails et spécifications</label>
+                    <label for="details" class="texte-bold" form="message"><i class="bi bi-braces-asterisk text-danger"></i> Détails et spécifications</label>
                     <InputTextArea id="message" oninput="countCharacters(this)" class="form-control texte-light box-bleu" rows="6" placeholder="Entrez les détails ici" style="resize: none;" @bind-Value="formModel.Message" />
                     <ValidationMessage For="@(() => formModel.Message)" />
-                    <span style="display:none;" id="charCount">500 caractères restant</span>
+                    <span style="display:none;" class="texte-bold" id="charCount">500 caractères restant.</span>
                 </div>
                 
             </div>
@@ -162,7 +166,7 @@
             charCountElement.style.display = "block";
             charCountElement.innerText = remaining < 0 
                 ? "Limite dépassée de " + Math.abs(remaining) + " caractères" 
-                : remaining + " caractères restants";
+                : remaining + " caractères restants.";
         } else {
             charCountElement.style.display = "none";
         }
@@ -278,7 +282,7 @@
         }
         else
         {
-            Console.WriteLine("I have not selected at least one product");
+            validProduct = "greenOutline";
             var selectedProduitService = GetSelectedCategories();
             foreach (var produitService in selectedProduitService)
             {

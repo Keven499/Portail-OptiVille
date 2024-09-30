@@ -29,71 +29,22 @@
         padding: 4px;
         width: 100%;
     }
-    @* .litteStrong {
-        margin-right: 4px;
-        font-size: 14px;
-    } *@
     .valid.modified:not([type=checkbox]) {
         outline: none;
     }
     .error {
         color: red;
     }
-    @* .dark-background {
-        background-color: rgb(11, 35, 65);
-    } *@
-    @* h1 {
-        color: white;
-        padding: 15px;
-    } *@
-    @* input[type="checkbox"] {
-        opacity: 0;
-        position: absolute;
-        width: 0;
-        height: 0;
-    } *@
     input[type="checkbox"] {
         opacity: 0;
         position: absolute;
         width: 0;
         height: 0;
     }
-    @* .custom-checkbox {
-        display: block;
-        width: 20px;
-        flex-shrink: 0;
-        margin-right: 3px;
-        height: 20px;
-        background-color: rgb(120, 198, 224);
-        border: 1px solid rgb(11, 35, 65);
-        border-radius: 3px;
-        position: relative;
-        cursor: pointer;
-        vertical-align: middle;
-    } *@
     label {
         display: flex;
         margin-bottom: 2px;
     }
-    @* input[type="checkbox"]:checked+.custom-checkbox {
-        background-color: rgb(11, 35, 65);
-    } *@
-    @* .custom-checkbox:before {
-    using System.ComponentModel.DataAnnotations;
-        content: '';
-        position: absolute;
-        left: 6px;
-        top: 2px;
-        width: 6px;
-        height: 12px;
-        border: solid white;
-        border-width: 0 2px 2px 0;
-        transform: rotate(45deg);
-        opacity: 0;
-    } *@
-    @* input[type="checkbox"]:checked+.custom-checkbox:before {
-        opacity: 1;
-    } *@
     .invalid {
         outline: 1px solid red;
     }
@@ -109,80 +60,53 @@
 <div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
     <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
         <div class="card w-75 h-75 d-flex justify-content-center p-0 m-0">
-            
             <div class="card-header py-2 bg-bleuFonce">
                 <h3 class="py-2 p-0 my-0 text-white titre-bold">Licence RBQ</h3>
             </div>
-
             <div class="card-body border-bleuFonce py-1">
                 <div class="col-xl-12 col-lg-12 py-2">
-                    <label class="bleuFonce texte-bold" for="noLicenceRBQ"><i class="bi bi-braces text-success"></i> Numéro</label>
+                    <label class="bleuFonce texte-bold" for="noLicenceRBQ"><i class="bi bi-braces-asterisk text-danger me-1"></i> Numéro</label>
                     <input type="text" id="noLicenceRBQ" class="@validityCSS input-bleu texte-light" @bind="noLicenceRBQ" />
-                        @if (numErrorBool) {
-                            <span class="input-group-text text-danger">
-                                <i class="bi bi-x-circle me-2"></i>
-                                <div class="validation-message texte-medium">@numErrorMessage</div>
-                            </span>
-                        }
-                        @if (numGoodBool) {
-                            <span class="input-group-text text-success">
-                                <i class="bi bi-check-circle me-2"></i>
-                                <span class="texte-medium">Valide</span>
-                            </span>
-                        }
+                    @if (numErrorBool) {
+                        <span class="input-group-text text-danger">
+                            <i class="bi bi-x-circle me-2"></i>
+                            <div class="validation-message texte-medium">@numErrorMessage</div>
+                        </span>
+                    }
+                    @if (numGoodBool) {
+                        <span class="input-group-text text-success">
+                            <i class="bi bi-check-circle me-2"></i>
+                            <span class="texte-medium">Valide</span>
+                        </span>
+                    }
                 </div>
-
                 <div class="row">
                     <div class="col-xl-6 col-lg-6 py-2">
-                        <label class="bleuFonce texte-bold" for="statut"><i class="bi bi-braces text-success"></i> Statut</label>
+                        <label class="bleuFonce texte-bold" for="statut"><i class="bi bi-braces text-success me-1"></i> Statut</label>
                         <select class="form-select input-bleu texte-light" id="statut" @bind="statutLicence">
                             <option value="1">Valide</option>
                             <option value="2">Valide avec restriction</option>
                             <option value="3">Non valide</option>
                         </select>                                        
                     </div>
-
                     <div class="col-xl-6 col-lg-6 py-2">
-                        <label class="bleuFonce texte-bold" for="licenceType"><i class="bi bi-braces text-success"></i> Type de licence</label>
+                        <label class="bleuFonce texte-bold" for="licenceType"><i class="bi bi-braces text-success me-1"></i> Type de licence</label>
                         <select class="form-select input-bleu texte-light" id="licenceType" @bind="typeLicence">
                             <option value="1">Entrepreneur</option>
                             <option value="2">Constructeur-Propriétaire</option>
                         </select>
                     </div>                    
                 </div>
-
                 <div class="col-xl-12 col-lg-12 py-2">
-                    <label class="texte-bold"><i class="bi bi-braces text-success"></i> Entrepeneur général</label>               
+                    <label class="texte-bold"><i class="bi bi-braces-asterisk text-danger me-1"></i> Entrepeneur général</label>               
                     <div class="overflow-auto box-bleu card @validityCategoSelect">
-                        @{
-                            int i = 0;
-                            foreach (var categorie in categorieGeneral)
-                            {
-                                <div class="row m-0">
-                                    <div class="col-auto p-0">
-                                        <label for="categorie@(i)">
-                                            <input type="checkbox" id="categorie@(i)"
-                                                checked="@sousCategoSelected[categorie.CodeSousCategorie]"
-                                                @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
-                                            <span class="check-blanc"></span>
-                                            <span class="texte-14bold">@categorie.CodeSousCategorie - @categorie.Nom</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                i++;
-                            }
-                        }
-                    </div>
-                </div>    
-
-                <div class="col-xl-12 col-lg-12 py-2">
-                    <label class="texte-bold"><i class="bi bi-braces text-success"></i> Entrepeneur spécialisé</label>
-                    <div class="overflow-auto box-bleu card @validityCategoSelect">
-                        @foreach (var categorie in categorieSpecialise)
+                    @{
+                        int i = 0;
+                        foreach (var categorie in categorieGeneral)
                         {
                             <div class="row m-0">
                                 <div class="col-auto p-0">
-                                    <label>
+                                    <label for="categorie@(i)">
                                         <input type="checkbox" id="categorie@(i)"
                                             checked="@sousCategoSelected[categorie.CodeSousCategorie]"
                                             @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
@@ -190,25 +114,41 @@
                                         <span class="texte-14bold">@categorie.CodeSousCategorie - @categorie.Nom</span>
                                     </label>
                                 </div>
-                                
                             </div>
                             i++;
                         }
+                    }
                     </div>
-                    @{
-                        if (sousCategoError)
-                        {
-                            <span class="input-group-text text-danger">
-                                <i class="bi bi-x-circle me-2"></i>
-                                <div class="validation-message texte-medium">Sélectionnez au moins une catégorie</div>
-                            </span>
-                        }
+                </div>    
+                <div class="col-xl-12 col-lg-12 py-2">
+                    <label class="texte-bold"><i class="bi bi-braces-asterisk text-danger me-1"></i> Entrepeneur spécialisé</label>
+                    <div class="overflow-auto box-bleu card @validityCategoSelect">
+                    @foreach (var categorie in categorieSpecialise)
+                    {
+                        <div class="row m-0">
+                            <div class="col-auto p-0">
+                                <label>
+                                    <input type="checkbox" id="categorie@(i)"
+                                        checked="@sousCategoSelected[categorie.CodeSousCategorie]"
+                                        @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
+                                    <span class="check-blanc"></span>
+                                    <span class="texte-14bold">@categorie.CodeSousCategorie - @categorie.Nom</span>
+                                </label>
+                            </div>
+                            
+                        </div>
+                        i++;
+                    }
+                    </div>
+                    @if (sousCategoError)
+                    {
+                        <span class="input-group-text text-danger">
+                            <i class="bi bi-x-circle me-2"></i>
+                            <div class="validation-message texte-medium">Sélectionnez au moins une catégorie</div>
+                        </span>
                     }
                 </div>
-
-
             </div>
-            
             <div class="card-footer bg-bleuFonce">
                 <div class="d-flex justify-content-center">
                     <button type="submit" class="btn bg-bleu text-white texte-bold" style="width: 200px;">
