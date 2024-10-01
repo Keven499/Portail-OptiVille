@@ -1,4 +1,8 @@
 @page "/affichage"
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.EntityFrameworkCore
+@using Portail_OptiVille.Data.Models
+@inject A2024420517riGr1Eq6Context _context
 <div class="container-fluid card p-0 m-0">
     <div class="card-header py-2 bg-bleuFonce">
         <h3 class="py-2 p-0 my-0 text-white">Demande</h3>
@@ -16,7 +20,7 @@
     <div class="card-body">
         <div class="row">
             <div class="col-xl-6 p-1">
-                <label for="inputEmail4">Email</label>
+                <label for="inputEmail4">@selectedFournisseurs.FirstOrDefault()?.Neq</label>
                 <input type="email" class="form-control" id="inputEmail4" placeholder="Email">
             </div>
             <div class="col-xl-6 p-1">
@@ -106,4 +110,32 @@
 
 @code{
     private DateTime date = DateTime.UtcNow;
+    List<Categorierbq> Categorierbqs = new List<Categorierbq>();
+
+    List<Categorieunspsc> Categorieunspscs = new List<Categorieunspsc>();
+
+    List<Contact> Contacts = new List<Contact>();
+
+    List<Fichier> Fichiers = new List<Fichier>();
+
+    List<Fournisseur> selectedFournisseurs = new List<Fournisseur>();
+
+    List<Historique> Historiques = new List<Historique>();
+
+    List<Licencerbq> Licencerbqs = new List<Licencerbq>();
+
+    List<Produitservice> Produitservices = new List<Produitservice>();
+
+    List<Telephone> Telephones = new List<Telephone>();
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            selectedFournisseurs = await _context.Fournisseurs.ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors de la récupération des personnes: {ex.Message}");
+        }
+    }
 }
