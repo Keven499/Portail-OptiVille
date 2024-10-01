@@ -4,8 +4,8 @@
 @using Portail_OptiVille.Data.Models
 @inject A2024420517riGr1Eq6Context _context
 <div class="card">
-    <div class="card-header">
-        <h3>Gestion des utilisateurs</h3>
+    <div class="card-header py-2 bg-bleuFonce">
+        <h3 class="py-2 p-0 my-0 text-white titre-bold">Carte d'affaires et brochures</h3>
     </div>
     <div class="card-body">
         <table class="table table-borderless">
@@ -180,6 +180,7 @@
             {
                 Console.WriteLine($"Employe: {employe.Courriel}, Role: {employe.Role}");
             }
+            _context.Employes.Add(new Employe { Courriel = "test25@test.com", Role = "Administrateur" });
         }
         else
         {

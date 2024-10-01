@@ -3,24 +3,24 @@
 @inject Portail_OptiVille.Data.Utilities.Config config
 @inject IHostEnvironment hostEnvironment // Inject IHostEnvironment to access the web root path
 <div class="card">
-    <div class="card-header">
-        <h3>Configuration Settings</h3>
+    <div class="card-header py-2 bg-bleuFonce">
+        <h3 class="py-2 p-0 my-0 text-white titre-bold">Carte d'affaires et brochures</h3>
     </div>
     <div class="card-body">
-        <p><strong>Courriel de l'Appro.</strong></p>
-        <InputText @bind-Value="config.CourrielAppro" type="email" class="form-control" 
+        <label for="CourrielAppro" class="texte-bold">Courriel de l'Appro.</label>
+        <InputText @bind-Value="config.CourrielAppro" type="email" class="form-control" id="CourrielAppro"
                    readonly="@(!isEditing)" />
 
-        <p><strong>Délai avant la révision (mois)</strong></p>
-        <InputNumber @bind-Value="config.DelaiRevision" TValue="int" class="form-control" 
+        <label for="DelaiRevision" class="texte-bold">Délai avant la révision (mois)</label>
+        <InputNumber @bind-Value="config.DelaiRevision" TValue="int" class="form-control" id="DelaiRevision"
+                     readonly="@(!isEditing)" />
+    
+        <label for="TailleMaxFichiers" class="texte-bold">Taille maximale des fichiers joints (Mo)</label>
+        <InputNumber @bind-Value="config.TailleMaxFichiers" TValue="int" class="form-control" id="TailleMaxFichiers"
                      readonly="@(!isEditing)" />
 
-        <p><strong>Taille maximale des fichiers joints (Mo)</strong></p>
-        <InputNumber @bind-Value="config.TailleMaxFichiers" TValue="int" class="form-control" 
-                     readonly="@(!isEditing)" />
-
-        <p><strong>Courriel des finances</strong></p>
-        <InputText @bind-Value="config.CourrielFinance" type="email" class="form-control" 
+        <label for="CourrielFinance" class="texte-bold">Courriel des finances</label>
+        <InputText @bind-Value="config.CourrielFinance" type="email" class="form-control" id="CourrielFinance"
                    readonly="@(!isEditing)" />
 
         <div class="mt-3">
