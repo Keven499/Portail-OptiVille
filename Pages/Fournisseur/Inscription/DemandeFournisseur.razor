@@ -1,0 +1,64 @@
+@page "/demandeFournisseur"
+@using Portail_OptiVille.Data.Utilities
+
+<PageTitle>Demande fournisseur</PageTitle>
+
+<div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
+    <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
+        <div class="mb-1">
+            @Components[currentIndex]
+        </div>
+        <div class="d-flex justify-content-end">
+
+            <!-- TROUVER UN MOYEN D'EFFECTUER LA VALIDATION DU COMPOSANT ENFANT À PARTIR DE CE BOUTON -->
+            <button type="button" @onclick="ShowPrevious" disabled="@isFirstComponent" class="btn bg-bleu text-white texte-bold" style="width: 200px;">Précédent 
+                    <i class="bi bi-arrow-left-circle"></i>
+            </button>
+            <button type="submit" @onclick="ShowNext" class="btn bg-bleu text-white texte-bold ms-2" style="width: 200px;">Suivant 
+                    <i class="bi bi-arrow-right-circle"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private FormModel formModel = new FormModel();
+    private List<RenderFragment> Components { get; set; }
+    private bool isFirstComponent => currentIndex == 0;
+    private int currentIndex = 0;
+
+    protected override void OnInitialized()
+    {
+        Components = new List<RenderFragment>
+        {
+            builder =>
+            {
+                builder.OpenComponent(0, typeof(LicenceRBQ));
+                builder.AddAttribute(1, "FormModel", formModel);
+                builder.CloseComponent();
+            },
+            builder =>
+            {
+                builder.OpenComponent(1, typeof(Contact));
+                builder.CloseComponent();
+            }
+        };
+    }
+
+    private void ShowNext()
+    {
+        if (currentIndex < Components.Count - 1)
+        {
+            currentIndex++;
+        }
+    }
+
+    private void ShowPrevious()
+    {
+        if (currentIndex > 0)
+        {
+            currentIndex--;
+        }
+    }
+}
+<!-- JE SUIS EN TRAIN DE METTRE LA STRUCTURE EN PLACE PETIT À PETIT -->

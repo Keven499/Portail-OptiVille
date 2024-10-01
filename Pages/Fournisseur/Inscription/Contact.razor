@@ -2,9 +2,7 @@
 @using System.Text.RegularExpressions
 
 <EditForm Model="@contactIdentification" OnValidSubmit="HandleValidSubmit">
-    
         <h4 class="col-lg-12 col-xl-12 titre-bold">Contact @ContactNumber <i class="bi bi-braces-asterisk text-danger"></i></h4>
-        
         <div class="d-flex justify-content-between">
             <div class="col-lg-6 col-xl-6 col-6 col-sm-6">
                 <label class="bleuFonce texte-bold" for="Prenom">Prénom <i class="bi bi-braces-asterisk text-danger"></i></label>
@@ -35,121 +33,114 @@
                     </span>
                 }
             </div>
-
             <div class="col-lg-6 col-xl-6 col-6 col-sm-6 me-1 ms-1">
                 <label class="bleuFonce texte-bold" for="Nom">Nom <i class="bi bi-braces-asterisk text-danger"></i></label>
-                <InputText @oninput="ValidateInputs" @bind-Value="contactIdentification.nomContact" class="form-control input-bleu texte-light" id="Nom" />
-                                                                                                                                                                                
-                    @if (isSubmitted && !isNomValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            @if (string.IsNullOrEmpty(contactIdentification.nomContact))
-                            {
-                                <span class="texte-medium">Nom requis</span>
-                            }
-                            else if (contactIdentification.nomContact.Length > 32)
-                            {
-                                <span class="texte-medium">Maximum 32 caractères</span>
-                            }
-                            else 
-                            {
-                                <span class="texte-medium">Nom invalide</span>                                        
-                            }
-                        </span>
-                    }
-                    else if (isSubmitted && isNomValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                            <span class="texte-medium">Valide</span>
-                        </span>
-                    }
-            </div>            
-        </div>
-
-            <div class="col-lg-6 col-xl-6 col-6 col-sm-6 py-2">
-                <label class="bleuFonce texte-bold" for="Fonction1">Fonction <i class="bi bi-braces-asterisk text-danger"></i></label>
-                <InputText @oninput="ValidateInputs" @bind-Value="contactIdentification.fonctionContact" class="form-control input-bleu texte-light" id="Fonction1" />                                                                                                                                                                                                                        
-                                                                                                                                                                                
-                    @if (isSubmitted && !isFonctionValid)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            @if (string.IsNullOrEmpty(contactIdentification.fonctionContact))
-                            {
-                                <span class="texte-medium">Fonction requise</span>
-                            }
-                            else if (contactIdentification.fonctionContact.Length > 32)
-                            {
-                                <span class="texte-medium">Maximum 32 caractères</span>
-                            }
-                        </span>
-                    }
-                    else if (isSubmitted && isFonctionValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                            <span class="texte-medium">Valide</span>
-                        </span>
-                    }
-            </div>
-
-        <div class="col-lg-12 col-xl-12 col-12 col-sm-12 py-2">
-            <label class="bleuFonce texte-bold" for="Courriel">Courriel du contact <i class="bi bi-braces-asterisk text-danger"></i></label>
-            <InputText @oninput="ValidateInputs" @bind-Value="contactIdentification.emailContact" class="form-control input-bleu texte-light" id="Courriel" />                                                                                                                                                                                                                                      
-                    
-                @if (isSubmitted && !isEmailValid)
+                <InputText @oninput="ValidateInputs" @bind-Value="contactIdentification.nomContact" class="form-control input-bleu texte-light" id="Nom" />                                                                                                                                                         
+                @if (isSubmitted && !isNomValid)
                 {
                     <span class="input-group-text text-danger">
                         <i class="bi bi-x-circle me-2"></i>
-                        @if (string.IsNullOrEmpty(contactIdentification.emailContact))
+                        @if (string.IsNullOrEmpty(contactIdentification.nomContact))
                         {
-                            <span class="texte-medium">Courriel requis</span>
+                            <span class="texte-medium">Nom requis</span>
                         }
-                        else if (contactIdentification.emailContact.Length > 64)
+                        else if (contactIdentification.nomContact.Length > 32)
                         {
-                            <span class="texte-medium">Maximum 64 caractères.</span>
+                            <span class="texte-medium">Maximum 32 caractères</span>
                         }
-                        else
+                        else 
                         {
-                            <span class="texte-medium">Courriel invalide</span>
+                            <span class="texte-medium">Nom invalide</span>                                        
                         }
                     </span>
                 }
-                else if (isSubmitted && isEmailValid)
+                else if (isSubmitted && isNomValid)
                 {
                     <span class="input-group-text text-success">
                         <i class="bi bi-check-circle me-2"></i>
                         <span class="texte-medium">Valide</span>
                     </span>
-                } 
+                }
+            </div>            
+        </div>
+            <div class="col-lg-6 col-xl-6 col-6 col-sm-6 py-2">
+                <label class="bleuFonce texte-bold" for="Fonction1">Fonction <i class="bi bi-braces-asterisk text-danger"></i></label>
+                <InputText @oninput="ValidateInputs" @bind-Value="contactIdentification.fonctionContact" class="form-control input-bleu texte-light" id="Fonction1" />                                                                                                                                                                                                                                                                                                                                                                              
+                @if (isSubmitted && !isFonctionValid)
+                {
+                    <span class="input-group-text text-danger">
+                        <i class="bi bi-x-circle me-2"></i>
+                        @if (string.IsNullOrEmpty(contactIdentification.fonctionContact))
+                        {
+                            <span class="texte-medium">Fonction requise</span>
+                        }
+                        else if (contactIdentification.fonctionContact.Length > 32)
+                        {
+                            <span class="texte-medium">Maximum 32 caractères</span>
+                        }
+                    </span>
+                }
+                else if (isSubmitted && isFonctionValid)
+                {
+                    <span class="input-group-text text-success">
+                        <i class="bi bi-check-circle me-2"></i>
+                        <span class="texte-medium">Valide</span>
+                    </span>
+                }
+            </div>
+        <div class="col-lg-12 col-xl-12 col-12 col-sm-12 py-2">
+            <label class="bleuFonce texte-bold" for="Courriel">Courriel du contact <i class="bi bi-braces-asterisk text-danger"></i></label>
+            <InputText @oninput="ValidateInputs" @bind-Value="contactIdentification.emailContact" class="form-control input-bleu texte-light" id="Courriel" />                                                                                                                                                                                                                                        
+            @if (isSubmitted && !isEmailValid)
+            {
+                <span class="input-group-text text-danger">
+                    <i class="bi bi-x-circle me-2"></i>
+                    @if (string.IsNullOrEmpty(contactIdentification.emailContact))
+                    {
+                        <span class="texte-medium">Courriel requis</span>
+                    }
+                    else if (contactIdentification.emailContact.Length > 64)
+                    {
+                        <span class="texte-medium">Maximum 64 caractères.</span>
+                    }
+                    else
+                    {
+                        <span class="texte-medium">Courriel invalide</span>
+                    }
+                </span>
+            }
+            else if (isSubmitted && isEmailValid)
+            {
+                <span class="input-group-text text-success">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <span class="texte-medium">Valide</span>
+                </span>
+            } 
         </div>
         <div class="py-2 d-flex justify-content-between">
             <div class="col-lg-3 col-xl-3 col-3 col-sm-3">
                 <label class="bleuFonce texte-bold" for="typeTel1">Type <i class="bi bi-braces-asterisk text-danger"></i></label>
                 <InputSelect class="form-control input-bleu texte-light" id="typeTel1" @oninput="ValidateInputs" @bind-Value="contactIdentification.typeTelContact">
                     <option value="" disabled selected>Veuillez choisir un type</option>
-                        @foreach(string type in listeTypeContact)
-                        {
-                            <option value="@type">@type</option>
-                        }
-                </InputSelect>
-                                                                                                                                                                                                                                                
-                    @if (isSubmitted && !isTypeValid)
+                    @foreach(string type in listeTypeContact)
                     {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <span class="texte-medium">Type requis</span>
-                        </span>
+                        <option value="@type">@type</option>
                     }
-                    else if (isSubmitted && isTypeValid)
-                    {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                            <span class="texte-medium">Valide</span>
-                        </span>
-                    }
+                </InputSelect>                                                                                                                                                                                                                         
+                @if (isSubmitted && !isTypeValid)
+                {
+                    <span class="input-group-text text-danger">
+                        <i class="bi bi-x-circle me-2"></i>
+                        <span class="texte-medium">Type requis</span>
+                    </span>
+                }
+                else if (isSubmitted && isTypeValid)
+                {
+                    <span class="input-group-text text-success">
+                        <i class="bi bi-check-circle me-2"></i>
+                        <span class="texte-medium">Valide</span>
+                    </span>
+                }
             </div>
             <div class="col-lg-6 col-xl-6 col-6 col-sm-6 ms-1 me-1">
                 <label class="bleuFonce texte-bold" for="NoTel1">Numéro <i class="bi bi-braces-asterisk text-danger"></i></label>

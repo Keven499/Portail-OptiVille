@@ -1,4 +1,5 @@
 @page "/rbq"
+@using Portail_OptiVille.Data.Utilities
 @using Microsoft.EntityFrameworkCore
 @using Portail_OptiVille.Data.Models
 @using System.Text.Json
@@ -9,125 +10,57 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Text.RegularExpressions
 @inject HttpClient Http
+
 <PageTitle>LicenceRBQComponent</PageTitle>
-
-<style>
-    ::-webkit-scrollbar {
-        width: 6px;
-    }
-    ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
-    ::-webkit-scrollbar-thumb {
-        background: rgb(120, 198, 224);
-    }
-    ::-webkit-scrollbar-thumb:hover {
-        background: rgb(11, 35, 65);
-    }
-    .overflow-auto {
-        height: 192px;
-        padding: 4px;
-        width: 100%;
-    }
-    .valid.modified:not([type=checkbox]) {
-        outline: none;
-    }
-    .error {
-        color: red;
-    }
-    input[type="checkbox"] {
-        opacity: 0;
-        position: absolute;
-        width: 0;
-        height: 0;
-    }
-    label {
-        display: flex;
-        margin-bottom: 2px;
-    }
-    .invalid {
-        outline: 1px solid red;
-    }
-    .valid {
-        outline: 1px solid #26b050;
-    }
-    .validIcon {
-        color: #26b050;
-    }
-</style>
-
 <EditForm Model="@this" OnValidSubmit="HandleValidSubmit">
-<div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
-    <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
-        <div class="card w-80 h-80 d-flex justify-content-center p-0 m-0">
-            <div class="card-header py-2 bg-bleuFonce">
-                <h3 class="py-2 p-0 my-0 text-white titre-bold">Licence RBQ</h3>
+    <div class="card w-80 h-80 d-flex justify-content-center p-0 m-0">
+        <div class="card-header py-2 bg-bleuFonce">
+            <h3 class="py-2 p-0 my-0 text-white titre-bold">Licence RBQ</h3>
+        </div>
+        <div class="card-body border-bleuFonce py-1">
+            <div class="col-xl-3 col-lg-3 col-6 col-sm-6 py-2">
+                <label class="bleuFonce texte-bold" for="noLicenceRBQ">Numéro<i class="bi bi-braces-asterisk text-danger ms-1"></i></label>
+                <input type="text" id="noLicenceRBQ" class="@validityCSS input-bleu texte-light" @bind="FormModel.LicenceRBQInfo" />
+                @if (numErrorBool) {
+                    <span class="input-group-text text-danger">
+                        <i class="bi bi-x-circle me-2"></i>
+                        <div class="validation-message texte-medium">@numErrorMessage</div>
+                    </span>
+                }
+                @if (numGoodBool) {
+                    <span class="input-group-text text-success">
+                        <i class="bi bi-check-circle me-2"></i>
+                        <span class="texte-medium">Valide</span>
+                    </span>
+                }
             </div>
-            <div class="card-body border-bleuFonce py-1">
-                <div class="col-xl-3 col-lg-3 col-6 col-sm-6 py-2">
-                    <label class="bleuFonce texte-bold" for="noLicenceRBQ">Numéro<i class="bi bi-braces-asterisk text-danger ms-1"></i></label>
-                    <input type="text" id="noLicenceRBQ" class="@validityCSS input-bleu texte-light" @bind="noLicenceRBQ" />
-                    @if (numErrorBool) {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <div class="validation-message texte-medium">@numErrorMessage</div>
-                        </span>
-                    }
-                    @if (numGoodBool) {
-                        <span class="input-group-text text-success">
-                            <i class="bi bi-check-circle me-2"></i>
-                            <span class="texte-medium">Valide</span>
-                        </span>
-                    }
+            <div class="row">
+                <div class="col-xl-6 col-lg-6 py-2">
+                    <label class="bleuFonce texte-bold" for="statut">Statut<i class="bi bi-braces text-success"></i></label>
+                    <select class="form-select input-bleu texte-light" id="statut" @bind="statutLicence">
+                        <option value="1">Valide</option>
+                        <option value="2">Valide avec restriction</option>
+                        <option value="3">Non valide</option>
+                    </select>                                        
                 </div>
-                <div class="row">
-                    <div class="col-xl-6 col-lg-6 py-2">
-                        <label class="bleuFonce texte-bold" for="statut">Statut<i class="bi bi-braces text-success"></i></label>
-                        <select class="form-select input-bleu texte-light" id="statut" @bind="statutLicence">
-                            <option value="1">Valide</option>
-                            <option value="2">Valide avec restriction</option>
-                            <option value="3">Non valide</option>
-                        </select>                                        
-                    </div>
-                    <div class="col-xl-6 col-lg-6 py-2">
-                        <label class="bleuFonce texte-bold" for="licenceType"><i class="bi bi-braces text-success me-1"></i> Type de licence</label>
-                        <select class="form-select input-bleu texte-light" id="licenceType" @bind="typeLicence">
-                            <option value="1">Entrepreneur</option>
-                            <option value="2">Constructeur-Propriétaire</option>
-                        </select>
-                    </div>                    
-                </div>
-                <div class="col-xl-12 col-lg-12 py-2">
-                    <label class="texte-bold"><i class="bi bi-braces-asterisk text-danger me-1"></i> Entrepeneur général</label>               
-                    <div class="overflow-auto box-bleu card @validityCategoSelect">
-                    @{
-                        int i = 0;
-                        foreach (var categorie in categorieGeneral)
-                        {
-                            <div class="row m-0">
-                                <div class="col-auto p-0">
-                                    <label for="categorie@(i)">
-                                        <input type="checkbox" id="categorie@(i)"
-                                            checked="@sousCategoSelected[categorie.CodeSousCategorie]"
-                                            @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
-                                        <span class="check-blanc"></span>
-                                        <span class="texte-14bold">@categorie.CodeSousCategorie - @categorie.Nom</span>
-                                    </label>
-                                </div>
-                            </div>
-                            i++;
-                        }
-                    }
-                    </div>
-                </div>    
-                <div class="col-xl-12 col-lg-12 py-2">
-                    <label class="texte-bold"><i class="bi bi-braces-asterisk text-danger me-1"></i> Entrepeneur spécialisé</label>
-                    <div class="overflow-auto box-bleu card @validityCategoSelect">
-                    @foreach (var categorie in categorieSpecialise)
+                <div class="col-xl-6 col-lg-6 py-2">
+                    <label class="bleuFonce texte-bold" for="licenceType"><i class="bi bi-braces text-success me-1"></i> Type de licence</label>
+                    <select class="form-select input-bleu texte-light" id="licenceType" @bind="typeLicence">
+                        <option value="1">Entrepreneur</option>
+                        <option value="2">Constructeur-Propriétaire</option>
+                    </select>
+                </div>                    
+            </div>
+            <div class="col-xl-12 col-lg-12 py-2">
+                <label class="texte-bold"><i class="bi bi-braces-asterisk text-danger me-1"></i> Entrepeneur général</label>               
+                <div class="overflow-auto box-bleu card @validityCategoSelect">
+                @{
+                    int i = 0;
+                    foreach (var categorie in categorieGeneral)
                     {
                         <div class="row m-0">
                             <div class="col-auto p-0">
-                                <label>
+                                <label for="categorie@(i)">
                                     <input type="checkbox" id="categorie@(i)"
                                         checked="@sousCategoSelected[categorie.CodeSousCategorie]"
                                         @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
@@ -135,34 +68,56 @@
                                     <span class="texte-14bold">@categorie.CodeSousCategorie - @categorie.Nom</span>
                                 </label>
                             </div>
-                            
                         </div>
                         i++;
                     }
+                }
+                </div>
+            </div>    
+            <div class="col-xl-12 col-lg-12 py-2">
+                <label class="texte-bold"><i class="bi bi-braces-asterisk text-danger me-1"></i> Entrepeneur spécialisé</label>
+                <div class="overflow-auto box-bleu card @validityCategoSelect">
+                @foreach (var categorie in categorieSpecialise)
+                {
+                    <div class="row m-0">
+                        <div class="col-auto p-0">
+                            <label>
+                                <input type="checkbox" id="categorie@(i)"
+                                    checked="@sousCategoSelected[categorie.CodeSousCategorie]"
+                                    @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
+                                <span class="check-blanc"></span>
+                                <span class="texte-14bold">@categorie.CodeSousCategorie - @categorie.Nom</span>
+                            </label>
+                        </div>
+                        
                     </div>
-                    @if (sousCategoError)
-                    {
-                        <span class="input-group-text text-danger">
-                            <i class="bi bi-x-circle me-2"></i>
-                            <div class="validation-message texte-medium">Sélectionnez au moins une catégorie</div>
-                        </span>
-                    }
+                    i++;
+                }
                 </div>
-            </div>
-            <div class="card-footer bg-bleuFonce">
-                <div class="d-flex justify-content-center">
-                    <button type="submit" class="btn bg-bleu text-white texte-bold" style="width: 200px;">
-                        Suivant 
-                        <i class="bi bi-arrow-right-circle"></i>
-                    </button>
-                </div>
+                @if (sousCategoError)
+                {
+                    <span class="input-group-text text-danger">
+                        <i class="bi bi-x-circle me-2"></i>
+                        <div class="validation-message texte-medium">Sélectionnez au moins une catégorie</div>
+                    </span>
+                }
             </div>
         </div>
+        <div class="card-footer bg-bleuFonce">
+            <!-- JE SUIS EN TRAIN DE METTRE EN PLACE LA STRUCTURE DES FORMULAIRES ET LA LOGIQUE, NE PAS TOUCHEZ S'IL VOUS PLAÎT
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn bg-bleu text-white texte-bold" style="width: 200px;">Suivant 
+                    <i class="bi bi-arrow-right-circle"></i>
+                </button>
+            </div>
+            -->
+        </div>
     </div>
-</div>
 </EditForm>
 
 @code {
+    [Parameter]
+    public FormModel FormModel { get; set; }
     private List<Categorierbq> categorieGeneral = new List<Categorierbq>();
     private List<Categorierbq> categorieSpecialise = new List<Categorierbq>();
     private List<Categorierbq> allCategories = new List<Categorierbq>();
@@ -306,7 +261,7 @@
             }
             else {
                 numErrorBool = true;
-                numErrorMessage = "Numéro de licence invalide";
+                numErrorMessage = "Aucune correspondance";
                 validityCSS = "form-control invalid";
                 numGoodBool = false;
             }
@@ -350,14 +305,6 @@
             {
                 Console.WriteLine($"Selected: {category.CodeSousCategorie} - {category.Nom}");
             }
-            // IL FAUT MAINTENANT FAIRE LES REQUÊTES POUR INSÉRER TOUTES LES LICENCES DE FAÇONS APPROPRIÉES
-            // CELA INCLUS ÉNORMÉMENT DE CHOSES
-            // NOUS ALLONS DEVOIR TOUCHER AUX TABLES SUIVANTES (DANS L'ORDRE D'INSERTION): CATEGORIE, LICENCERBQ,
-            // LICENCERBQCATEGORIE, FOURNISSEURLICENCERBQ ??
-            // À CE POINT DANS LA DEMANDE, L'ID DU FOURNISSEUR N'EXISTE TECHNIQUEMENT PAS ENCORE, L'INSERTION DANS LA TABLE
-            //FOURNISSEURLICENCERBQ DEVRA DONC SE FAIRE FORCÉMENT À LA FIN
-            // LÀ OÙ NOUS EN SOMMES, NOUS NE POUVONS QUE INSÉRER DANS LES TABLES: CATEGORIE, LICENCERBQ, LICENCERBQCATEGORIE.
-            // RESTE À DÉTERMINER SI UNE LICENCE AVEC LE STATUT NON VALIDE DOIT ÊTRE VÉRIFIÉ PAR L'API ET QU'EST-CE QUE LES TRAVAUX PERMIS
         }
     }
 }
