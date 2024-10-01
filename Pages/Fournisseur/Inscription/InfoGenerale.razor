@@ -358,8 +358,8 @@
                         <Telephone TelephoneNumber="@telephoneNumber" />
                     }
                     <div class="d-flex justify-content-center py-2">
-                        <button type="button" class="btn bg-bleuPale text-white texte-bold me-2" @onclick="AddTelephone" style="width: 200px;"><i class="bi bi-plus-circle"></i> Ajout téléphone</button>
-                        <button type="button" class="btn bg-bleuPale text-white texte-bold" @onclick="RemoveTelephone" style="width: 200px;" disabled="@(!telephoneList.Any())"><i class="bi bi-plus-circle"></i> Retirer téléphone</button>
+                        <button type="button" class="btn bg-success text-white texte-bold me-2" @onclick="AddTelephone" style="width: 200px;"><i class="bi bi-plus-circle"></i> Ajout téléphone</button>
+                        <button type="button" class="btn bg-danger text-white texte-bold" @onclick="RemoveTelephone" style="width: 200px;" disabled="@(!telephoneList.Any())"><i class="bi bi-trash"></i> Retirer téléphone</button>
                     </div>
                 </div>
 
@@ -375,8 +375,8 @@
                 }
                 <div class="card-footer bg-bleuFonce">
                     <div class="d-flex justify-content-center">
-                        <button type="button" class="btn bg-bleuPale text-white texte-bold me-2" @onclick="AddContact" style="width: 200px;"><i class="bi bi-plus-circle"></i> Ajout contact</button>
-                        <button type="button" class="btn bg-bleuPale text-white texte-bold" @onclick="RemoveContact" style="width: 200px;" disabled="@(!contactList.Any())"><i class="bi bi-plus-circle"></i> Retirer contact</button>
+                        <button type="button" class="btn bg-success text-white texte-bold me-2" @onclick="AddContact" style="width: 200px;"><i class="bi bi-plus-circle"></i> Ajout contact</button>
+                        <button type="button" class="btn bg-danger text-white texte-bold" @onclick="RemoveContact" style="width: 200px;" disabled="@(!contactList.Any())"><i class="bi bi-trash"></i> Retirer contact</button>
                     </div>
                 </div>
 
