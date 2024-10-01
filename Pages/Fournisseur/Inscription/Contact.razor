@@ -2,12 +2,13 @@
 @using System.Text.RegularExpressions
 
 <EditForm Model="@contactIdentification" OnValidSubmit="HandleValidSubmit">
-    <div class="card-body border-bleuFonce bg-blanc py-2">
-        <h4 class="col-lg-12 col-xl-12 titre-bold"><i class="bi bi-braces-asterisk text-danger"></i> Contact @ContactNumber</h4>
+    
+        <h4 class="col-lg-12 col-xl-12 titre-bold">Contact @ContactNumber <i class="bi bi-braces-asterisk text-danger"></i></h4>
+        
         <div class="d-flex justify-content-between">
-            <div class="col-lg-4 col-xl-4">
-                <label class="bleuFonce texte-bold" for="Prenom1"><i class="bi bi-braces-asterisk text-danger"></i> Prénom</label>
-                <InputText @oninput="ValidateInputs" @bind-Value="contactIdentification.prenomContact" class="form-control input-bleu texte-light" id="Prenom1" />                                                                                                                                                                 
+            <div class="col-lg-6 col-xl-6 col-6 col-sm-6">
+                <label class="bleuFonce texte-bold" for="Prenom">Prénom <i class="bi bi-braces-asterisk text-danger"></i></label>
+                <InputText @oninput="ValidateInputs" @bind-Value="contactIdentification.prenomContact" class="form-control input-bleu texte-light" id="Prenom" />                                                                                                                                                                 
                 @if (isSubmitted && !isPrenomValid)
                 {
                     <span class="input-group-text text-danger">
@@ -34,9 +35,10 @@
                     </span>
                 }
             </div>
-            <div class="col-lg-4 col-xl-4 me-1 ms-1">
-                <label class="bleuFonce texte-bold" for="Nom1"><i class="bi bi-braces-asterisk text-danger"></i> Nom</label>
-                <InputText @oninput="ValidateInputs" @bind-Value="contactIdentification.nomContact" class="form-control input-bleu texte-light" id="Nom1" />
+
+            <div class="col-lg-6 col-xl-6 col-6 col-sm-6 me-1 ms-1">
+                <label class="bleuFonce texte-bold" for="Nom">Nom <i class="bi bi-braces-asterisk text-danger"></i></label>
+                <InputText @oninput="ValidateInputs" @bind-Value="contactIdentification.nomContact" class="form-control input-bleu texte-light" id="Nom" />
                                                                                                                                                                                 
                     @if (isSubmitted && !isNomValid)
                     {
@@ -63,9 +65,11 @@
                             <span class="texte-medium">Valide</span>
                         </span>
                     }
-            </div>
-            <div class="col-lg-4 col-xl-4">
-                <label class="bleuFonce texte-bold" for="Fonction1"><i class="bi bi-braces-asterisk text-danger"></i> Fonction</label>
+            </div>            
+        </div>
+
+            <div class="col-lg-6 col-xl-6 col-6 col-sm-6 py-2">
+                <label class="bleuFonce texte-bold" for="Fonction1">Fonction <i class="bi bi-braces-asterisk text-danger"></i></label>
                 <InputText @oninput="ValidateInputs" @bind-Value="contactIdentification.fonctionContact" class="form-control input-bleu texte-light" id="Fonction1" />                                                                                                                                                                                                                        
                                                                                                                                                                                 
                     @if (isSubmitted && !isFonctionValid)
@@ -90,10 +94,10 @@
                         </span>
                     }
             </div>
-        </div>
-        <div class="col-lg-12 col-xl-12 py-2">
-            <label class="bleuFonce texte-bold" for="Courriel1"><i class="bi bi-braces-asterisk text-danger"></i> Courriel du contact</label>
-            <InputText @oninput="ValidateInputs" @bind-Value="contactIdentification.emailContact" class="form-control input-bleu texte-light" id="Courriel1" />                                                                                                                                                                                                                                      
+
+        <div class="col-lg-12 col-xl-12 col-12 col-sm-12 py-2">
+            <label class="bleuFonce texte-bold" for="Courriel">Courriel du contact <i class="bi bi-braces-asterisk text-danger"></i></label>
+            <InputText @oninput="ValidateInputs" @bind-Value="contactIdentification.emailContact" class="form-control input-bleu texte-light" id="Courriel" />                                                                                                                                                                                                                                      
                     
                 @if (isSubmitted && !isEmailValid)
                 {
@@ -122,8 +126,8 @@
                 } 
         </div>
         <div class="py-2 d-flex justify-content-between">
-            <div class="col-lg-3 col-xl-3">
-                <label class="bleuFonce texte-bold" for="typeTel1"><i class="bi bi-braces-asterisk text-danger"></i> Type</label>
+            <div class="col-lg-3 col-xl-3 col-3 col-sm-3">
+                <label class="bleuFonce texte-bold" for="typeTel1">Type <i class="bi bi-braces-asterisk text-danger"></i></label>
                 <InputSelect class="form-control input-bleu texte-light" id="typeTel1" @oninput="ValidateInputs" @bind-Value="contactIdentification.typeTelContact">
                     <option value="" disabled selected>Veuillez choisir un type</option>
                         @foreach(string type in listeTypeContact)
@@ -147,8 +151,8 @@
                         </span>
                     }
             </div>
-            <div class="col-lg-6 col-xl-6 ms-1 me-1">
-                <label class="bleuFonce texte-bold" for="NoTel1"><i class="bi bi-braces-asterisk text-danger"></i> Numéro de téléphone</label>
+            <div class="col-lg-6 col-xl-6 col-6 col-sm-6 ms-1 me-1">
+                <label class="bleuFonce texte-bold" for="NoTel1">Numéro <i class="bi bi-braces-asterisk text-danger"></i></label>
                 <InputNumber TValue="long?" @oninput="ValidateInputs" @bind-Value="contactIdentification.noTelContact" class="form-control input-bleu texte-light" id="NoTel1" />                                                                                                                    
                 @if (isSubmitted && !isTelValid)
                 {
@@ -172,8 +176,8 @@
                     </span>
                 }
             </div>
-            <div class="col-lg-3 col-xl-3">
-                <label class="bleuFonce texte-bold" for="Poste1Contact"><i class="bi bi-braces text-success"></i> Poste</label>
+            <div class="col-lg-3 col-xl-3 col-3 col-sm-3">
+                <label class="bleuFonce texte-bold" for="Poste1Contact">Poste <i class="bi bi-braces text-success"></i></label>
                 <InputNumber TValue="long?" @oninput="ValidateInputs" @bind-Value="contactIdentification.posteTelContact" class="form-control input-bleu texte-light" id="Poste1Contact" />
                 @if (isSubmitted && !isPosteValid && contactIdentification.posteTelContact.HasValue)
                 {
@@ -194,7 +198,7 @@
         <div>
             <button type="submit" class="btn bg-bleu text-white texte-bold w-100" @onclick="SubmitForm">Valider le contact</button>
         </div>
-    </div>
+    
     <DataAnnotationsValidator />
 </EditForm>
 
