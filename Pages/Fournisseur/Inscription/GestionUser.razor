@@ -1,4 +1,8 @@
 @page "/gestionUser"
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.EntityFrameworkCore
+@using Portail_OptiVille.Data.Models
+@inject A2024420517riGr1Eq6Context _context
 <div class="card">
     <div class="card-header">
         <h3>Gestion des utilisateurs</h3>
@@ -13,26 +17,173 @@
                 </tr>
             </thead>
             <tbody>
+                @foreach (var employe in allEmployes)
+                {
                     <tr>
-                        <th scope="row">Nom</th>
+                        <th scope="row">@employe.Courriel</th>
                         <td>
-                            <select class="form-select" aria-label="Default select example">
-                            <option value="1">Administrateur</option>
-                            <option value="2">Responsable</option>
-                            <option value="3">Commis</option>
+                            <select class="form-select" @onchange="(e) => OnRoleChange(employe, e.Value!.ToString()!)">
+                                @foreach (var value in Roles)
+                                {
+                                    <option value="@value" selected="@((employe.Role == value))">@value</option>
+                                }
                             </select>
                         </td>
-                        <td><button type="button" class="btn btn-link">Supprimer</button></td>
+                        <td>
+                            <button type="button" class="btn btn-link" @onclick="() => OnDeleteUser(employe)">Supprimer</button>
+                        </td>
                     </tr>
-
+                }
             </tbody>
         </table>
+        <div class="">
+        @if (!formAjouter)
+        {
+            <div class="row justify-content-center">
+                <div class="col-xl-6 text-center">
+                    <button type="submit" class="btn btn-primary" @onclick="ShowForm">Ajouter un utilisateur</button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <EditForm Model="@userModel" OnValidSubmit="@AjoutUtilisateur">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="row mb-3 justify-content-center">
+                    <div class="col-xl-12">
+                        <label for="emailNewUser">Email:</label>
+                        <InputText class="form-control" id="emailNewUser" @bind-Value="userModel.email" />
+                        <ValidationMessage For="@(() => userModel.email)" />
+                    </div>
+                </div>
+
+                <div class="row mb-3 justify-content-center">
+                    <div class="col-xl-12">
+                        <label for="roleNewUser">Role:</label>
+                        <select class="form-select" @bind="userModel.role" id="roleNewUser">
+                            @foreach (var value in Roles)
+                            {
+                                <option value="@value">@value</option>
+                            }
+                        </select>
+                        <ValidationMessage For="@(() => userModel.role)" />
+                    </div>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-xl-6 text-center">
+                        <button type="submit" class="btn btn-primary">Ajouter un utilisateur</button>
+                    </div>
+                </div>
+            </EditForm>
+        }
+        </div>
     </div>
     <div class="card-footer">
-        <button type="button" class="btn btn-primary">Ajouter un utilisateur</button>
+        @if (!string.IsNullOrEmpty(validationError))
+        {
+            <div class="d-flex justify-content-center">
+                <div class="col-xl-6 alert alert-danger alert-dismissible fade show m-1 text-center" role="alert">
+                    @((MarkupString)validationError)
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        }
+        <button type="submit" class="btn btn-success w-100" @onclick="SubmitChanges">Submit</button>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 @code{
+    private UserModele userModel = new UserModele();
+    private bool formAjouter = false;
+    private string? validationError = null;
+    List<string> Roles = new() { "Administrateur", "Responsable", "Commis" };
+    private List<Employe> allEmployes = new List<Employe>();
+    public class UserModele
+    {
+        [Required(ErrorMessage = "Veuillez mettre un courriel")]
+        public string? email { get; set; }
+        [Required(ErrorMessage = "Veuillez mettre un role")]
+        public string? role { get; set; }
+    }
+    private void OnRoleChange(Employe employe, string selectedRole)
+    {
+        employe.Role = selectedRole;
+    }
 
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            allEmployes = await _context.Employes.ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors de la récupération des personnes: {ex.Message}");
+        }
+    }
+
+    private List<string> validationErrors = new List<string>();
+
+    private bool ValidateRoles()
+    {
+        validationError = string.Empty;
+
+        int adminCount = allEmployes.Count(e => e.Role == "Administrateur");
+        int responsableCount = allEmployes.Count(e => e.Role == "Responsable");
+
+        if (adminCount != 2)
+        {
+            validationError += "Vous devez avoir 2 Administrateurs.<br />";
+        }
+
+        if (responsableCount < 1)
+        {
+            validationError += "Vous devez avoir au moins 1 Responsable.<br />";
+        }
+
+        return string.IsNullOrEmpty(validationError);
+    }
+
+
+
+    private void OnDeleteUser(Employe employe)
+    {
+        Console.WriteLine($"User: {userModel.email} Role: {userModel.role} (retiré)");
+        allEmployes.Remove(employe);
+    }
+
+    private void ShowForm()
+    {
+        formAjouter = !formAjouter;
+    }
+
+    private void AjoutUtilisateur()
+    {
+        allEmployes.Add(new Employe { Courriel = userModel.email!, Role = userModel.role! });
+
+        Console.WriteLine($"User: {userModel.email} Role: {userModel.role} (ajouté)");
+        
+        userModel = new UserModele();
+        formAjouter = false;
+    }
+
+
+    private void SubmitChanges()
+    {
+        if(ValidateRoles())
+        {
+            foreach(var employe in allEmployes)
+            {
+                Console.WriteLine($"Employe: {employe.Courriel}, Role: {employe.Role}");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Error role validation");
+        }
+    }
 }
