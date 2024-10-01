@@ -59,13 +59,13 @@
 <EditForm Model="@this" OnValidSubmit="HandleValidSubmit">
 <div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
     <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
-        <div class="card w-75 h-75 d-flex justify-content-center p-0 m-0">
+        <div class="card w-80 h-80 d-flex justify-content-center p-0 m-0">
             <div class="card-header py-2 bg-bleuFonce">
                 <h3 class="py-2 p-0 my-0 text-white titre-bold">Licence RBQ</h3>
             </div>
             <div class="card-body border-bleuFonce py-1">
-                <div class="col-xl-12 col-lg-12 py-2">
-                    <label class="bleuFonce texte-bold" for="noLicenceRBQ"><i class="bi bi-braces-asterisk text-danger me-1"></i> Numéro</label>
+                <div class="col-xl-3 col-lg-3 col-6 col-sm-6 py-2">
+                    <label class="bleuFonce texte-bold" for="noLicenceRBQ">Numéro<i class="bi bi-braces-asterisk text-danger ms-1"></i></label>
                     <input type="text" id="noLicenceRBQ" class="@validityCSS input-bleu texte-light" @bind="noLicenceRBQ" />
                     @if (numErrorBool) {
                         <span class="input-group-text text-danger">
@@ -82,7 +82,7 @@
                 </div>
                 <div class="row">
                     <div class="col-xl-6 col-lg-6 py-2">
-                        <label class="bleuFonce texte-bold" for="statut"><i class="bi bi-braces text-success me-1"></i> Statut</label>
+                        <label class="bleuFonce texte-bold" for="statut">Statut<i class="bi bi-braces text-success"></i></label>
                         <select class="form-select input-bleu texte-light" id="statut" @bind="statutLicence">
                             <option value="1">Valide</option>
                             <option value="2">Valide avec restriction</option>
