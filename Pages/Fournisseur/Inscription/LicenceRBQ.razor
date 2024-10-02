@@ -1,5 +1,4 @@
-@page "/rbq"
-@using Portail_OptiVille.Data.Utilities
+@using Portail_OptiVille.Data.FormModels
 @using Microsoft.EntityFrameworkCore
 @using Portail_OptiVille.Data.Models
 @using System.Text.Json
@@ -20,7 +19,7 @@
         <div class="card-body border-bleuFonce py-1">
             <div class="col-xl-3 col-lg-3 col-6 col-sm-6 py-2">
                 <label class="bleuFonce texte-bold" for="noLicenceRBQ">Numéro<i class="bi bi-braces-asterisk text-danger ms-1"></i></label>
-                <input type="text" id="noLicenceRBQ" class="@validityCSS input-bleu texte-light" @bind="FormModel.LicenceRBQInfo" />
+                <input type="text" id="noLicenceRBQ" class="@validityCSS input-bleu texte-light" @bind="LicenceRBQFormModel.NumeroLicence" />
                 @if (numErrorBool) {
                     <span class="input-group-text text-danger">
                         <i class="bi bi-x-circle me-2"></i>
@@ -37,7 +36,7 @@
             <div class="row">
                 <div class="col-xl-6 col-lg-6 py-2">
                     <label class="bleuFonce texte-bold" for="statut">Statut<i class="bi bi-braces text-success"></i></label>
-                    <select class="form-select input-bleu texte-light" id="statut" @bind="statutLicence">
+                    <select class="form-select input-bleu texte-light" id="statut" @bind="LicenceRBQFormModel.StatutLicence">
                         <option value="1">Valide</option>
                         <option value="2">Valide avec restriction</option>
                         <option value="3">Non valide</option>
@@ -45,7 +44,7 @@
                 </div>
                 <div class="col-xl-6 col-lg-6 py-2">
                     <label class="bleuFonce texte-bold" for="licenceType"><i class="bi bi-braces text-success me-1"></i> Type de licence</label>
-                    <select class="form-select input-bleu texte-light" id="licenceType" @bind="typeLicence">
+                    <select class="form-select input-bleu texte-light" id="licenceType" @bind="LicenceRBQFormModel.TypeLicence">
                         <option value="1">Entrepreneur</option>
                         <option value="2">Constructeur-Propriétaire</option>
                     </select>
@@ -62,7 +61,7 @@
                             <div class="col-auto p-0">
                                 <label for="categorie@(i)">
                                     <input type="checkbox" id="categorie@(i)"
-                                        checked="@sousCategoSelected[categorie.CodeSousCategorie]"
+                                        checked="@LicenceRBQFormModel.SousCategoSelected[categorie.CodeSousCategorie]"
                                         @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
                                     <span class="check-blanc"></span>
                                     <span class="texte-14bold">@categorie.CodeSousCategorie - @categorie.Nom</span>
@@ -83,7 +82,7 @@
                         <div class="col-auto p-0">
                             <label>
                                 <input type="checkbox" id="categorie@(i)"
-                                    checked="@sousCategoSelected[categorie.CodeSousCategorie]"
+                                    checked="@LicenceRBQFormModel.SousCategoSelected[categorie.CodeSousCategorie]"
                                     @onchange="(e) => OnCheckboxChange(categorie.CodeSousCategorie, e)" />
                                 <span class="check-blanc"></span>
                                 <span class="texte-14bold">@categorie.CodeSousCategorie - @categorie.Nom</span>
@@ -117,10 +116,11 @@
 
 @code {
     [Parameter]
-    public FormModel FormModel { get; set; }
+    public LicenceRBQFormModel LicenceRBQFormModel { get; set; }
+    [Parameter]
+    public List<Categorierbq> AllCategories { get; set; }
     private List<Categorierbq> categorieGeneral = new List<Categorierbq>();
     private List<Categorierbq> categorieSpecialise = new List<Categorierbq>();
-    private List<Categorierbq> allCategories = new List<Categorierbq>();
     private Dictionary<string, bool> sousCategoSelected = new Dictionary<string, bool>();
     public string? noLicenceRBQ { get; set; }
     private int statutLicence = 1;
@@ -152,18 +152,11 @@
     {
         try
         {
-            allCategories = await _context.Categorierbqs.ToListAsync();
-
-            sousCategoSelected = allCategories.ToDictionary(
-            c => c.CodeSousCategorie,
-            c => false
-            );
-
-            categorieGeneral = allCategories
+            categorieGeneral = AllCategories
             .Where(c => c.NomCategorie == "Général")
             .ToList();
 
-            categorieSpecialise = allCategories
+            categorieSpecialise = AllCategories
             .Where(c => c.NomCategorie == "Spécialisé")
             .ToList();
         }
@@ -173,24 +166,17 @@
         }
     }
 
-    private List<Categorierbq> GetSelectedCategories()
-    {
-        return allCategories
-        .Where(c => sousCategoSelected[c.CodeSousCategorie])
-        .ToList();
-    }
-
     private void OnCheckboxChange(string codeSousCategorie, ChangeEventArgs e)
     {
         if (e.Value is bool isChecked)
         {
-            sousCategoSelected[codeSousCategorie] = isChecked;
+            LicenceRBQFormModel.SousCategoSelected[codeSousCategorie] = (bool)e.Value;
         }
     }
 
     private bool ValidateSelection()
     {
-        return sousCategoSelected.Values.Any(isSelected => isSelected);
+        return LicenceRBQFormModel.SousCategoSelected.Values.Any(isSelected => isSelected);
     }
 
     static string InsertHyphens(string input)
@@ -297,14 +283,7 @@
 
         if (!numErrorBool && !sousCategoError)
         {
-            Console.WriteLine(noLicenceRBQ);
-            Console.WriteLine(statutLicenceText[statutLicence]);
-            Console.WriteLine(typeLicenceText[typeLicence]);
-            var selectedSousCatego = GetSelectedCategories();
-            foreach (var category in selectedSousCatego)
-            {
-                Console.WriteLine($"Selected: {category.CodeSousCategorie} - {category.Nom}");
-            }
+            Console.WriteLine("Formulaire LicenceRBQ valide");
         }
     }
 }
