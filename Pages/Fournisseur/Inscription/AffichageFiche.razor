@@ -9,9 +9,9 @@
     </div>
     <div class="card-body">
         <ul>
-            <li>État @date</li>
-            <li>Création @date</li>
-            <li>Modification @date</li>
+            @*<li>État @(selectedHistoriques.FirstOrDefault().DateEtatChanged.HasValue ? selectedHistoriques.FirstOrDefault().DateEtatChanged.Value.ToString("yyyy-MM-dd") : "N/A")</li>*@
+            <li>Création @(selectedFournisseur.DateCreation.HasValue ? selectedFournisseur.DateCreation.Value.ToString("yyyy-MM-dd") : "N/A")</li>
+            <li>Modification @(selectedFournisseur.DateLastChanged.HasValue ? selectedFournisseur.DateLastChanged.Value.ToString("yyyy-MM-dd") : "N/A")</li>
         </ul>
     </div>
     <div class="card-header py-2 bg-bleuFonce">
@@ -20,32 +20,32 @@
     <div class="card-body">
         <div class="row">
             <div class="col-xl-6 p-1">
-                <label for="inputEmail4">@selectedFournisseurs.FirstOrDefault()?.Neq</label>
-                <input type="email" class="form-control" id="inputEmail4" placeholder="Email">
+                <label for="inputEmail4">NEQ</label>
+                <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.Neq">
             </div>
             <div class="col-xl-6 p-1">
-                <label for="inputPassword4">Password</label>
-                <input type="password" class="form-control" id="inputPassword4" placeholder="Password">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xl-6 p-1">
-                <label for="inputEmail4">Email</label>
-                <input type="email" class="form-control" id="inputEmail4" placeholder="Email">
-            </div>
-            <div class="col-xl-6 p-1">
-                <label for="inputPassword4">Password</label>
-                <input type="password" class="form-control" id="inputPassword4" placeholder="Password">
+                <label for="inputPassword4">Adresse</label>
+                <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.NoCivique, @selectedFournisseur.Rue, @selectedFournisseur.Bureau">
             </div>
         </div>
         <div class="row">
             <div class="col-xl-6 p-1">
-                <label for="inputEmail4">Email</label>
-                <input type="email" class="form-control" id="inputEmail4" placeholder="Email">
+                <label for="inputEmail4">Nom de l'entreprise</label>
+                <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.NomEntreprise">
             </div>
             <div class="col-xl-6 p-1">
-                <label for="inputPassword4">Password</label>
-                <input type="password" class="form-control" id="inputPassword4" placeholder="Password">
+                <label for="inputPassword4"></label>
+                <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.Ville, @selectedFournisseur.Province, @selectedFournisseur.CodePostal">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-6 p-1">
+                <label for="inputEmail4">Adresse courriel</label>
+                <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.AdresseCourriel">
+            </div>
+            <div class="col-xl-6 p-1">
+                <label for="inputPassword4">Site Web</label>
+                <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.SiteInternet">
             </div>
         </div>
     </div>
@@ -53,46 +53,29 @@
         <h3 class="py-2 p-0 my-0 text-white">Contacts</h3>
     </div>
     <div class="card-body">
+        @foreach(var contact in selectedContacts)
+        {
         <div class="row">
             <div class="col-xl-6 p-1">
-                <label for="inputEmail4">Email</label>
-                <input type="email" class="form-control" id="inputEmail4" placeholder="Email">
+                <label for="inputEmail4">Nom, Prénom</label>
+                <input type="text" class="form-control" id="inputEmail4" value="@contact.Nom, @contact.Prenom">
             </div>
             <div class="col-xl-6 p-1">
-                <label for="inputPassword4">Password</label>
-                <input type="password" class="form-control" id="inputPassword4" placeholder="Password">
+                <label for="inputPassword4">Fonction</label>
+                <input type="text" class="form-control" id="inputPassword4" value="@contact.Fonction">
             </div>
         </div>
         <div class="row">
             <div class="col-xl-6 p-1">
-                <label for="inputEmail4">Email</label>
-                <input type="email" class="form-control" id="inputEmail4" placeholder="Email">
+                <label for="inputEmail4">Adresse courriel</label>
+                <input type="text" class="form-control" id="inputEmail4" value="@contact.AdresseCourriel">
             </div>
             <div class="col-xl-6 p-1">
-                <label for="inputPassword4">Password</label>
-                <input type="password" class="form-control" id="inputPassword4" placeholder="Password">
+                <label for="inputPassword4">Numéro de téléphone (@contact.TypeTelephone)</label>
+                <input type="text" class="form-control" id="inputPassword4" value="@contact.Telephone #@contact.Poste">
             </div>
         </div>
-        <div class="row">
-            <div class="col-xl-6 p-1">
-                <label for="inputEmail4">Email</label>
-                <input type="email" class="form-control" id="inputEmail4" placeholder="Email">
-            </div>
-            <div class="col-xl-6 p-1">
-                <label for="inputPassword4">Password</label>
-                <input type="password" class="form-control" id="inputPassword4" placeholder="Password">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xl-6 p-1">
-                <label for="inputEmail4">Email</label>
-                <input type="email" class="form-control" id="inputEmail4" placeholder="Email">
-            </div>
-            <div class="col-xl-6 p-1">
-                <label for="inputPassword4">Password</label>
-                <input type="password" class="form-control" id="inputPassword4" placeholder="Password">
-            </div>
-        </div>
+        }
     </div>
     <div class="card-header py-2 bg-bleuFonce">
         <h3 class="py-2 p-0 my-0 text-white">Produits et services</h3>
@@ -106,36 +89,129 @@
     <div class="card-body">
         
     </div>
+    <div class="card-header py-2 bg-bleuFonce">
+        <h3 class="py-2 p-0 my-0 text-white">Brochures et cartes d'affaire (Total: @GetFormatSize())</h3>
+    </div>
+    <div class="card-body">
+                    <table class="table border-bleuFonce table-bordered my-0">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="col-1 texte-bold">Fichier</th>
+                                <th scope="col" class="texte-bold">Nom</th>
+                                <th scope="col" class="col-1 texte-bold">Taille</th>
+                                <th scope="col" class="col-2 texte-bold">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var file in selectedFichiers)
+                            {
+                                <tr>
+                                    <th scope="row" class="texte-bold">@(selectedFichiers.IndexOf(file)+1)</th>
+                                    <td class="texte-light">@file.Nom@file.Type</td>
+                                    <td class="texte-light">@GetFormatSizeFile((long)file.Taille)</td>
+                                    <td><button class="btn btn-danger texte-bold disabled" type="button"><i class="bi bi-trash"></i> Effacer</button></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+    <div class="card-header py-2 bg-bleuFonce">
+        <h3 class="py-2 p-0 my-0 text-white">Finances</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-xl-6 p-1">
+                <label for="inputEmail4">TPS</label>
+                <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.NumeroTps">
+            </div>
+            <div class="col-xl-6 p-1">
+                <label for="inputPassword4">TVQ</label>
+                <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.NumeroTvq">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-6 p-1">
+                <label for="inputEmail4">Conditions de paiement</label>
+                <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.ConditionPaiement">
+            </div>
+            <div class="col-xl-6 p-1">
+                <label for="inputPassword4">Devise</label>
+                <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.Devise">
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-xl-6 p-1">
+                <label for="inputEmail4">Mode de communication</label>
+                <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.ModeCommunication">
+            </div>
+            
+        </div>
+    </div>
 </div>
 
 @code{
+    public long sizeTotal { get; set; } = 0;
+    public long MaxSize = 75;
     private DateTime date = DateTime.UtcNow;
     List<Categorierbq> Categorierbqs = new List<Categorierbq>();
 
     List<Categorieunspsc> Categorieunspscs = new List<Categorieunspsc>();
 
-    List<Contact> Contacts = new List<Contact>();
+    List<Portail_OptiVille.Data.Models.Contact> selectedContacts = new List<Portail_OptiVille.Data.Models.Contact>();
 
-    List<Fichier> Fichiers = new List<Fichier>();
+    List<Fichier> selectedFichiers = new List<Fichier>();
 
     List<Fournisseur> selectedFournisseurs = new List<Fournisseur>();
 
-    List<Historique> Historiques = new List<Historique>();
+    List<Historique> selectedHistoriques = new List<Historique>();
 
     List<Licencerbq> Licencerbqs = new List<Licencerbq>();
 
     List<Produitservice> Produitservices = new List<Produitservice>();
 
     List<Telephone> Telephones = new List<Telephone>();
+
+    Fournisseur selectedFournisseur = new Fournisseur();
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            selectedFournisseurs = await _context.Fournisseurs.ToListAsync();
+            selectedFournisseurs = await _context.Fournisseurs.Where(c => c.IdFournisseur == 1).ToListAsync();
+            selectedContacts = await _context.Contacts.Where(c => c.IdFournisseur == 1).ToListAsync();
+            selectedHistoriques = await _context.Historiques.Where(c => c.IdFournisseur == 1).ToListAsync();
+            selectedFichiers = await _context.Fichiers.Where(c => c.IdFournisseur == 1).ToListAsync();
+            selectedFournisseur = selectedFournisseurs[0];
+
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Erreur lors de la récupération des personnes: {ex.Message}");
+        }
+    }
+
+    private string GetFormatSizeFile(long size)
+    {
+        if (size >= 1048576)
+        {
+            return $"{(size / 1048576.0):F2} MB";
+        }
+        else
+        {
+            return $"{(size / 1024.0):F2} KB";
+        }
+    }
+ 
+    private string GetFormatSize()
+    {
+        sizeTotal = selectedFichiers.Sum(file => (long)(file.Taille));
+        if (sizeTotal >= 1048576) // 1 MB = 1048576 bytes (1 * 1024 * 1024)
+        {
+            return $"{(sizeTotal / 1048576.0):F2} MB / {MaxSize}MB";
+        }
+        else
+        {
+            return $"{(sizeTotal / 1024.0):F2} KB / {MaxSize}MB";
         }
     }
 }
