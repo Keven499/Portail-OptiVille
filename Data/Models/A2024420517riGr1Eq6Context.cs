@@ -296,30 +296,6 @@ public partial class A2024420517riGr1Eq6Context : DbContext
                             .HasMaxLength(8)
                             .HasColumnName("codeUNSPSC");
                     });
-
-            entity.HasMany(d => d.IdLicenceRbqs).WithMany(p => p.IdFournisseurs)
-                .UsingEntity<Dictionary<string, object>>(
-                    "Fournisseurlicencerbq",
-                    r => r.HasOne<Licencerbq>().WithMany()
-                        .HasForeignKey("IdLicenceRbq")
-                        .HasConstraintName("fournisseurlicencerbq_ibfk_2"),
-                    l => l.HasOne<Fournisseur>().WithMany()
-                        .HasForeignKey("IdFournisseur")
-                        .HasConstraintName("fournisseurlicencerbq_ibfk_1"),
-                    j =>
-                    {
-                        j.HasKey("IdFournisseur", "IdLicenceRbq")
-                            .HasName("PRIMARY")
-                            .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
-                        j.ToTable("fournisseurlicencerbq");
-                        j.HasIndex(new[] { "IdLicenceRbq" }, "idLicenceRBQ");
-                        j.IndexerProperty<int>("IdFournisseur")
-                            .HasColumnType("int(11)")
-                            .HasColumnName("idFournisseur");
-                        j.IndexerProperty<string>("IdLicenceRbq")
-                            .HasMaxLength(12)
-                            .HasColumnName("idLicenceRBQ");
-                    });
         });
 
         modelBuilder.Entity<Historique>(entity =>
@@ -358,9 +334,14 @@ public partial class A2024420517riGr1Eq6Context : DbContext
 
             entity.ToTable("licencerbq");
 
+            entity.HasIndex(e => e.IdFournisseur, "idFournisseur");
+
             entity.Property(e => e.IdLicenceRbq)
                 .HasMaxLength(10)
                 .HasColumnName("idLicenceRBQ");
+            entity.Property(e => e.IdFournisseur)
+                .HasColumnType("int(11)")
+                .HasColumnName("idFournisseur");
             entity.Property(e => e.Statut)
                 .HasColumnType("enum('Valide','Valide avec restriction','Non valide')")
                 .HasColumnName("statut");
@@ -370,6 +351,11 @@ public partial class A2024420517riGr1Eq6Context : DbContext
             entity.Property(e => e.Type)
                 .HasMaxLength(50)
                 .HasColumnName("type");
+
+            entity.HasOne(d => d.IdFournisseurNavigation).WithMany(p => p.Licencerbqs)
+                .HasForeignKey(d => d.IdFournisseur)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("licencerbq_ibfk_1");
         });
 
         modelBuilder.Entity<Produitservice>(entity =>
