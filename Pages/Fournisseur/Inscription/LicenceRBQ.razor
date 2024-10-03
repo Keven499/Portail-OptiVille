@@ -11,7 +11,7 @@
 @inject HttpClient Http
 
 <PageTitle>LicenceRBQComponent</PageTitle>
-<EditForm Model="@this" OnValidSubmit="HandleValidSubmit">
+<EditForm Model="@LicenceRBQFormModel">
     <div class="card w-80 h-80 d-flex justify-content-center p-0 m-0">
         <div class="card-header py-2 bg-bleuFonce">
             <h3 class="py-2 p-0 my-0 text-white titre-bold">Licence RBQ</h3>
@@ -116,12 +116,14 @@
 
 @code {
     [Parameter]
-    public LicenceRBQFormModel LicenceRBQFormModel { get; set; }
+    public Action<LicenceRBQ> AssignReference { get; set; }
     [Parameter]
     public List<Categorierbq> AllCategories { get; set; }
+    [Parameter]
+    public LicenceRBQFormModel LicenceRBQFormModel { get; set; }
+   
     private List<Categorierbq> categorieGeneral = new List<Categorierbq>();
     private List<Categorierbq> categorieSpecialise = new List<Categorierbq>();
-    private Dictionary<string, bool> sousCategoSelected = new Dictionary<string, bool>();
     public string? noLicenceRBQ { get; set; }
     private int statutLicence = 1;
     private string validityCSS = "form-control";
@@ -133,7 +135,6 @@
     private string? numErrorMessage;
     private bool sousCategoError = false;
     private bool sousCategoGood = false;
-    private bool isSubmitted = false;
 
     private Dictionary<int, string> statutLicenceText = new Dictionary<int, string>
     {
@@ -148,8 +149,10 @@
         { 2, "Constructeur-Propriétaire" }
     };
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
+        AssignReference?.Invoke(this);
+
         try
         {
             categorieGeneral = AllCategories
@@ -176,8 +179,15 @@
 
     private bool ValidateSelection()
     {
+        if (LicenceRBQFormModel == null || LicenceRBQFormModel.SousCategoSelected == null)
+        {
+            return false;
+        }
+
         return LicenceRBQFormModel.SousCategoSelected.Values.Any(isSelected => isSelected);
     }
+
+
 
     static string InsertHyphens(string input)
     {
@@ -224,13 +234,16 @@
             return null;
         }
     }
-    public async Task HandleValidSubmit()
+
+    public async Task<bool> ValidateForm()
     {
+        bool isValid = true;
         if (!ValidateSelection())
         {
             validityCategoSelect = "invalid";
             sousCategoError = true;
             sousCategoGood = false;
+            isValid = false;
         }
         else
         {
@@ -239,51 +252,52 @@
             sousCategoGood = true;
         }
 
-        if (!string.IsNullOrEmpty(noLicenceRBQ))
+        if (!string.IsNullOrEmpty(LicenceRBQFormModel.NumeroLicence))
         {
-            if (noLicenceRBQ.Length == 10 || noLicenceRBQ.Length == 12) {
-                noLicenceRBQ = InsertHyphens(noLicenceRBQ);
+            if (LicenceRBQFormModel.NumeroLicence.Length == 10 || LicenceRBQFormModel.NumeroLicence.Length == 12) {
+                noLicenceRBQ = InsertHyphens(LicenceRBQFormModel.NumeroLicence);
                 tempoNoLicence = await GetNumeroDeLicenceAsync(); 
             }
             else {
+                isValid = false;
                 numErrorBool = true;
                 numErrorMessage = "Aucune correspondance";
                 validityCSS = "form-control invalid";
                 numGoodBool = false;
             }
             if (tempoNoLicence != null) {
-                if (tempoNoLicence.Equals(noLicenceRBQ))
+                if (tempoNoLicence.Equals(LicenceRBQFormModel.NumeroLicence))
                 {
                     numErrorBool = false;
-                   validityCSS = "form-control valid";
+                    validityCSS = "form-control valid";
                     numGoodBool = true;
                 }
                 else
                 {
-                    numErrorMessage = "Numéro de licence invalide";
+                    isValid = false;
+                    numErrorMessage = "Aucune correspondance";
                     numErrorBool = true;
                     validityCSS = "form-control invalid";
                     numGoodBool = false;
                 }
             }
             else {
+                isValid = false;
                 numErrorBool = true;
-                numErrorMessage = "Numéro de licence invalide";
+                numErrorMessage = "Aucune correspondance";
                 validityCSS = "form-control invalid";
                 numGoodBool = false;
             }
         }
         else
         {
+            isValid = false;
             numErrorBool = true;
             validityCSS = "form-control invalid";
             numGoodBool = false;
             numErrorMessage = "Numéro de licence requis";
         }
 
-        if (!numErrorBool && !sousCategoError)
-        {
-            Console.WriteLine("Formulaire LicenceRBQ valide");
-        }
+        return isValid;
     }
 }
