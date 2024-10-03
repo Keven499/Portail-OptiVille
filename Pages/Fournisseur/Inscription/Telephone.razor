@@ -1,0 +1,151 @@
+@using System.ComponentModel.DataAnnotations
+
+<EditForm Model="@telephoneFormModel">
+    <div class="py-2 col-lg-12 col-xl-12 titre-bold fs-4">Téléphone @TelephoneNumber <i class="bi bi-braces-asterisk text-danger"></i></div>
+    <div class="pb-2 d-flex justify-content-between">
+        <div class="col-lg-3 col-xl-3 col-3 col-sm-3">
+            <label class="bleuFonce texte-bold" for="typeTel">Type <i class="bi bi-braces-asterisk text-danger"></i></label>
+            <select class="form-control @(isErrorTypeTel ? "invalid" : (isGoodTypeTel ? "valid" : "")) input-bleu texte-light" id="typeTel" @bind="telephoneFormModel.TypeTelEntreprise">
+                <option value="" disabled selected>Veuillez choisir un type</option>
+                @foreach (string type in listeTypeContact)
+                {
+                    <option value="@type">@type</option>
+                }
+            </select>
+            @if (isErrorTypeTel)
+            {
+                <span class="input-group-text text-danger">
+                    <i class="bi bi-x-circle me-2"></i>
+                    <span class="texte-medium">@TypeTelErrorMessaage</span>
+                </span>
+            }
+            @if (isGoodTypeTel)
+            {
+                <span class="input-group-text text-success">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <span class="texte-medium">Valide</span>
+                </span>
+            }
+        </div>
+        <div class="col-lg-6 col-xl-6 col-6 col-sm-6 ms-1 me-1">
+            <label class="bleuFonce texte-bold" for="NoTel">Numéro <i class="bi bi-braces-asterisk text-danger"></i></label>
+            <input type="text" @bind="telephoneFormModel.NoTelEntreprise" class="form-control @(isErrorNoTel ? "invalid" : (isGoodNoTel ? "valid" : "")) input-bleu texte-light" id="NoTel" />
+            @if (isErrorNoTel)
+            {
+                <span class="input-group-text text-danger">
+                    <i class="bi bi-x-circle me-2"></i>
+                    <span class="texte-medium">@NoTelErrorMessage</span>
+                </span>
+            }
+            @if (isGoodNoTel)
+            {
+                <span class="input-group-text text-success">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <span class="texte-medium">Valide</span>
+                </span>
+            }
+        </div>
+        <div class="col-lg-3 col-xl-3 col-3 col-sm-3">
+            <label class="bleuFonce texte-bold" for="PosteCoordo">Poste <i class="bi bi-braces text-success"></i></label>
+            <input type="text" @bind="telephoneFormModel.PosteTelEntreprise" class="form-control @(isErrorPosteTel ? "invalid" : (isGoodPosteTel ? "valid" : "")) input-bleu texte-light" id="PosteCoordo" />
+            @if (isErrorPosteTel)
+            {
+                <span class="input-group-text text-danger">
+                    <i class="bi bi-x-circle me-2"></i>
+                    <span class="texte-medium">@PosteTelErrorMessage</span>
+                </span>
+            }
+            @if (isGoodPosteTel)
+            {
+                <span class="input-group-text text-success">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <span class="texte-medium">Valide</span>
+                </span>
+            }
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int TelephoneNumber { get; set; } = 1;
+    private string? TypeTelErrorMessaage;
+    private string? NoTelErrorMessage;
+    private string? PosteTelErrorMessage;
+    private bool isErrorTypeTel = false;
+    private bool isGoodTypeTel = false;
+    private bool isErrorNoTel = false;
+    private bool isGoodNoTel = false;
+    private bool isErrorPosteTel = false;
+    private bool isGoodPosteTel = false;
+    private TelephoneFormModel telephoneFormModel = new TelephoneFormModel();
+    private List<string> listeTypeContact = new List<string> { "Bureau", "Télécopieur", "Cellulaire" };
+
+    public Task<bool> ValidatePhone()
+    {
+        bool isValid = true;
+        if (!string.IsNullOrEmpty(telephoneFormModel.TypeTelEntreprise))
+        {
+            isGoodTypeTel = true;
+            isErrorTypeTel = false;
+        }
+        else
+        {
+           isErrorTypeTel = true;
+           isGoodTypeTel = false;
+           TypeTelErrorMessaage = "Type requis";
+           isValid = false;
+        }
+
+        if (!string.IsNullOrEmpty(telephoneFormModel.NoTelEntreprise))
+        {
+            if (telephoneFormModel.NoTelEntreprise.Length != 10) {
+                isErrorNoTel = true;
+                isGoodNoTel = false;
+                NoTelErrorMessage = "Doit être de 10 caractères";
+                isValid = false;
+            }
+            else {
+                isGoodNoTel = true;
+                isErrorNoTel = false;
+            }
+        }
+        else {
+            isErrorNoTel = true;
+            isGoodNoTel = false;
+            NoTelErrorMessage = "Numéro requis";
+            isValid = false;
+        }
+
+        if (!string.IsNullOrEmpty(telephoneFormModel.PosteTelEntreprise))
+        {
+            if (telephoneFormModel.PosteTelEntreprise.Length != 6) {
+                isErrorPosteTel = true;
+                isGoodPosteTel = false;
+                PosteTelErrorMessage = "Doit être de 6 caractères";
+                isValid = false;
+            }
+            else {
+                isGoodPosteTel = true;
+                isErrorPosteTel = false;
+            }
+        }
+        else {
+            isErrorPosteTel = true;
+            isGoodPosteTel = false;
+            PosteTelErrorMessage = "Poste requis";
+            isValid = false;
+        }
+
+        return Task.FromResult(isValid);
+    }
+
+    public class TelephoneFormModel
+    {
+        public string? TypeTelEntreprise { get; set; }
+
+        public string? NoTelEntreprise { get; set; }
+
+        public string? PosteTelEntreprise { get; set; }
+    }
+}

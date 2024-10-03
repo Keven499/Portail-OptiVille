@@ -3,43 +3,57 @@
 @using Portail_OptiVille.Data.Models
 @using Microsoft.EntityFrameworkCore;
 @inject A2024420517riGr1Eq6Context _context
+@using Microsoft.AspNetCore.Components.Web
 
 <PageTitle>Demande fournisseur</PageTitle>
-<div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
-    <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
+<div class="form-group container-fluid d-flex justify-content-center">
+    <div class="row h-100 w-100">
         @if (isLoading)
         {
             <p>Chargement de la page en cours...</p>
         }
         else
         {
-            <div class="progress mb-2 texte-bold">
+            <div class="progress mb-2 texte-bold p-0">
                 <div class="progress-bar progress-bar-striped bleuFonce rounded titre-bold text-white" role="progressbar" 
                     style="width: @ProgressPercentage%;" aria-valuenow="@ProgressPercentage" aria-valuemin="0" aria-valuemax="100">
                     Étape @currentStep sur @totalSteps
                 </div>
             </div>
-            <div class="mb-1">
+             <div class="card p-0 m-0">
                 @Components[currentIndex]
-            </div>
-            <div class="d-flex justify-content-end">
-                <button @onclick="ShowPrevious" disabled="@isFirstComponent" class="btn bg-bleu text-white texte-bold" style="width: 200px;">Précédent 
-                    <i class="bi bi-arrow-left-circle"></i>
-                </button>
-                <button @onclick="ShowNext" class="btn bg-bleu text-white texte-bold ms-2" style="width: 200px;">Suivant 
-                    <i class="bi bi-arrow-right-circle"></i>
-                </button>
+                <div class="card-footer bg-bleuFonce d-flex justify-content-center">
+                    <button @onclick="ShowPrevious" disabled="@isFirstComponent" class="btn bg-bleu text-white texte-bold" style="width: 200px;">Précédent 
+                        <i class="bi bi-arrow-left-circle"></i>
+                    </button>
+                    <button @onclick="ShowNext" class="btn bg-bleu text-white texte-bold ms-2" style="width: 200px;">Suivant 
+                        <i class="bi bi-arrow-right-circle"></i>
+                    </button>
+                </div>
             </div>
         }
     </div>
 </div>
 
 @code {
+    private bool isLoading = true;
+
     private LicenceRBQFormModel licenceRBQFormModel = new LicenceRBQFormModel();
     private LicenceRBQ? licenceRBQRef;
-    private List<RenderFragment> Components { get; set; } = new List<RenderFragment>();
-    private bool isLoading = true;
     private List<Categorierbq> allCategories = new List<Categorierbq>();
+        
+    private IdenticationFormModel identicationFormModel = new IdenticationFormModel();
+    private IdentificationForm? identificationRef;
+
+    private CoordonneeFormModel coordonneeFormModel = new CoordonneeFormModel();
+    private CoordonneeForm? coordoneeRef;
+
+    private ProduitServiceFormModel produitServiceFormModel = new ProduitServiceFormModel();
+    private ProduitsServices? produitServiceRef;
+    private List<Produitservice> allProduitService = new List<Produitservice>();
+    private List<Categorieunspsc> categorieUNSPSC = new List<Categorieunspsc>();
+
+    private List<RenderFragment> Components { get; set; } = new List<RenderFragment>();
     private bool isFirstComponent => currentIndex == 0;
     private int currentIndex = 0;
     private int currentStep => currentIndex + 1;
@@ -55,6 +69,13 @@
             {
                 licenceRBQFormModel.SousCategoSelected = allCategories.ToDictionary(c => c.CodeSousCategorie, c => false);
             }
+
+            allProduitService = await _context.Produitservices.ToListAsync();
+            if (allProduitService != null && allProduitService.Any())
+            {
+                produitServiceFormModel.SousProduitSelected = allProduitService.ToDictionary(c => c.CodeUnspsc, c => false);
+            }
+            categorieUNSPSC = await _context.Categorieunspscs.ToListAsync();
         }
         catch (Exception ex)
         {
@@ -64,34 +85,90 @@
         Components = new List<RenderFragment>
         {
             // FORMULAIRE IDENTIFICATION 1
-            // FORMULAIRE COORDONNÉES 2
-            // FORMULAIRE CONTACT 3
-            // FORMULAIRE PRODUITS ET SERVICES 4
-            // FORMULAIRE LICENCE RBQ 5
-            // FORMULAIRE PIÈCES JOINTES 6
             builder =>
             {
-                builder.OpenComponent<LicenceRBQ>(0);
-                builder.AddAttribute(1, "AssignReference", (Action<LicenceRBQ>)(licenceRBQ => licenceRBQRef = licenceRBQ));
-                builder.AddAttribute(2, "AllCategories", allCategories); 
-                builder.AddAttribute(3, "LicenceRBQFormModel", licenceRBQFormModel);
+                builder.OpenComponent<IdentificationForm>(0);
+                builder.AddAttribute(1, "AssignReference", (Action<IdentificationForm>)(identificationForm => identificationRef = identificationForm));
+                builder.AddAttribute(2, "IdenticationFormModel", identicationFormModel);
                 builder.CloseComponent();
             },
-            
+            // FORMULAIRE COORDONNÉES 2
             builder =>
             {
-                builder.OpenComponent(1, typeof(Contact));
+                builder.OpenComponent<CoordonneeForm>(1);
+                builder.AddAttribute(1, "AssignReference", (Action<CoordonneeForm>)(coordonneeForm => coordoneeRef = coordonneeForm));
+                builder.AddAttribute(2, "CoordonneeFormModel", coordonneeFormModel);
                 builder.CloseComponent();
-            }
+            },
+            // FORMULAIRE CONTACT 3
+
+
+            // FORMULAIRE PRODUITS ET SERVICES 4
+            builder =>
+            {
+                builder.OpenComponent<ProduitsServices>(2);
+                builder.AddAttribute(1, "AssignReference", (Action<ProduitsServices>)(produitsServices => produitServiceRef = produitsServices));
+                builder.AddAttribute(2, "AllProduitServices", allProduitService); 
+                builder.AddAttribute(3, "ProduitServiceFormModel", produitServiceFormModel);
+                builder.AddAttribute(4, "CategorieUNSPSC", categorieUNSPSC);
+                builder.CloseComponent();
+            },
+            // FORMULAIRE LICENCE RBQ 5
+            builder =>
+                {
+                    builder.OpenComponent<LicenceRBQ>(3);
+                    builder.AddAttribute(1, "AssignReference", (Action<LicenceRBQ>)(licenceRBQ => licenceRBQRef = licenceRBQ));
+                    builder.AddAttribute(2, "AllCategories", allCategories); 
+                    builder.AddAttribute(3, "LicenceRBQFormModel", licenceRBQFormModel);
+                    builder.CloseComponent();
+                }
+            // FORMULAIRE PIÈCES JOINTES 6
+            
         };
 
+        identificationRef = new IdentificationForm();
+        coordoneeRef = new CoordonneeForm();
+        produitServiceRef = new ProduitsServices();
         licenceRBQRef = new LicenceRBQ();
         isLoading = false;
     }
 
     private async Task ShowNext()
     {
-        if (currentIndex == 0 && licenceRBQRef != null)
+        // CASE IDENTIFICATION VALIDATION 1
+        if (currentIndex == 0 && identificationRef != null)
+        {
+            bool isValid = identificationRef.ValidateForm();
+            if (!isValid)
+            {
+                return;
+            }
+        }
+
+        // CASE COORDONNEE VALIDATION 2
+        if (currentIndex == 1 && coordoneeRef != null)
+        {
+            bool isValid = coordoneeRef.ValidateForm();
+            if (!isValid)
+            {
+                return;
+            }
+        }
+
+        // CASE CONTACT VALIDATION 3
+
+        // CASE PRODUITS ET SERVICES 4
+         if (currentIndex == 2 && produitServiceRef != null)
+        {
+            bool isValid = produitServiceRef.ValidateForm();
+            if (!isValid)
+            {
+                return;
+            }
+        }
+
+        // CASE LICENCE RBQ VALIDATION 5
+        if (currentIndex == 3 && licenceRBQRef != null)
         {
             bool isValid = await licenceRBQRef.ValidateForm();
             if (!isValid)
@@ -99,11 +176,9 @@
                 return;
             }
         }
-        else {
-            Console.WriteLine("La référence du composant est nulle");
-        }
 
-        // Incrémente l'index pour afficher le composant suivant
+        // CASE PIÈCES JOINTES 5
+
         if (currentIndex < Components.Count - 1)
         {
             currentIndex++;
@@ -116,10 +191,5 @@
         {
             currentIndex--;
         }
-    }
-
-    private void AssignReferences(LicenceRBQ licenceRBQ)
-    {
-        licenceRBQRef = licenceRBQ;
     }
 }

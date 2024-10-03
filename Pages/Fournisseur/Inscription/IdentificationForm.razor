@@ -1,0 +1,236 @@
+@using Portail_OptiVille.Data.FormModels
+@using System.Text.RegularExpressions
+
+<style>
+    .invalid {
+        outline: 1px solid red;
+    }
+    .valid {
+        outline: 1px solid #26b050;
+    }
+</style>
+
+<PageTitle>Identification</PageTitle>
+<EditForm Model="@IdenticationFormModel">
+    <div class="card-header py-2 bg-bleuFonce">
+        <h3 class="py-2 p-0 my-0 text-white titre-bold">Identification</h3>
+    </div>
+    <div class="card-body border-bleuFonce py-1">
+        <div class="col-xl-3 col-lg-3 col-6 col-sm-6 py-2">
+            <label class="bleuFonce texte-bold" for="NEQ">NEQ <i class="bi bi-braces text-success"></i></label>
+            <input type="text" @bind="IdenticationFormModel.NEQ" class="form-control @(isErrorNEQ ? "invalid" : (isGoodNEQ ? "valid" : "")) input-bleu texte-light" id="NEQ" />
+            @if (isErrorNEQ)
+            {
+                <span class="input-group-text text-danger">
+                    <i class="bi bi-x-circle me-2"></i>
+                    <span class="texte-medium">@NEQErrorMessage</span>
+                </span>
+            }
+            @if (isGoodNEQ)
+            {
+                <span class="input-group-text text-success">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <span class="texte-medium">Valide</span>
+                </span>
+            }
+        </div>
+        <div class="col-xl-12 col-lg-12 col-12 col-sm-12 py-2">
+            <label class="bleuFonce texte-bold" for="nomEntreprise">Nom de l'entreprise <i class="bi bi-braces-asterisk text-danger"></i></label>
+            <input type="text" id="nomEntreprise" maxlength="64" class="form-control @(isErrorNomEntreprise ? "invalid" : (isGoodNomEntreprise ? "valid" : "")) input-bleu texte-light" @bind="IdenticationFormModel.NomEntreprise" />
+            @if (isErrorNomEntreprise) {
+                <span class="input-group-text text-danger">
+                    <i class="bi bi-x-circle me-2"></i>
+                    <div class="validation-message texte-medium">@NomEntrepriseErrorMessage</div>
+                </span>
+            }
+            @if (isGoodNomEntreprise) {
+                <span class="input-group-text text-success">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <span class="texte-medium">Valide</span>
+                </span>
+            }
+        </div>
+        <div class="col-xl-12 col-lg-12 col-12 col-sm-12 py-2">
+            <label class="bleuFonce texte-bold" for="courrielEntreprise">Courriel de l'entreprise <i class="bi bi-braces-asterisk text-danger"></i></label>
+            <input type="email" id="courrielEntreprise" maxlength="64" @bind="IdenticationFormModel.CourrielEntreprise" class="form-control @(isErrorCourriel ? "invalid" : (isGoodCourriel ? "valid" : "")) input-bleu texte-light" />
+            @if (isErrorCourriel) {
+                <span class="input-group-text text-danger">
+                    <i class="bi bi-x-circle me-2"></i>
+                    <div class="validation-message texte-medium">@CourrielErrorMessage</div>
+                </span>
+            }
+            @if (isGoodCourriel) {
+                <span class="input-group-text text-success">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <span class="texte-medium">Valide</span>
+                </span>
+            }
+        </div>
+        <div class="col-xl-12 col-lg-12 col-12 col-sm-12 py-2">
+            <label class="bleuFonce texte-bold" for="MotDePasse">Mot de passe  <i class="bi bi-braces-asterisk text-danger"></i></label>
+            <input type="password" id="MotDePasse" @bind="IdenticationFormModel.MotDePasse" class="form-control @(isErrorMDP ? "invalid" : (isGoodMDP ? "valid" : "")) input-bleu texte-light" />
+            @if (isErrorMDP) {
+                <span class="input-group-text text-danger">
+                    <i class="bi bi-x-circle me-2"></i>
+                    <div class="validation-message texte-medium">@MDPErrorMessage</div>
+                </span>
+            }
+            @if (isGoodMDP) {
+                <span class="input-group-text text-success">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <span class="texte-medium">Valide</span>
+                </span>
+            }
+        </div>
+        <div class="col-xl-12 col-lg-12 col-12 col-sm-12 py-2">
+            <label class="bleuFonce texte-bold" for="ConfirmationMotDePasse">Confirmation du mot de passe <i class="bi bi-braces-asterisk text-danger"></i></label>
+            <input type="password" id="ConfirmationMotDePasse" @bind="IdenticationFormModel.ConfirmationMotDePasse" class="form-control @(isErrorMDPConf ? "invalid" : (isGoodMDPConf ? "valid" : "")) input-bleu texte-light" />
+            @if (isErrorMDPConf) {
+                <span class="input-group-text text-danger">
+                    <i class="bi bi-x-circle me-2"></i>
+                    <div class="validation-message texte-medium">@MDPConfErrorMessage</div>
+                </span>
+            }
+            @if (isGoodMDPConf) {
+                <span class="input-group-text text-success">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <span class="texte-medium">Valide</span>
+                </span>
+            }
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public Action<IdentificationForm> AssignReference { get; set; }
+    [Parameter]
+    public IdenticationFormModel IdenticationFormModel { get; set; }
+    private bool isValid = true;
+    private string? NEQErrorMessage;
+    private string? NomEntrepriseErrorMessage;
+    private string? CourrielErrorMessage;
+    private string? MDPErrorMessage;
+    private string? MDPConfErrorMessage;
+    private bool isGoodNEQ = false;
+    private bool isErrorNEQ = false;
+    private bool isGoodNomEntreprise = false;
+    private bool isErrorNomEntreprise = false;
+    private bool isGoodCourriel = false;
+    private bool isErrorCourriel = false;
+    private bool isGoodMDP = false;
+    private bool isErrorMDP = false;
+    private bool isGoodMDPConf = false;
+    private bool isErrorMDPConf = false;
+    protected override void OnInitialized()
+    {
+        AssignReference?.Invoke(this);
+    }
+
+    public bool ValidateForm()
+    {
+        bool isValid = true;
+        if (!string.IsNullOrEmpty(IdenticationFormModel.NEQ))
+        {
+            if (IdenticationFormModel.NEQ.Length == 10)
+            {
+                isGoodNEQ = true;
+                isErrorNEQ = false;
+            }
+            else
+            {
+                NEQErrorMessage = "Doit contenir exactement 10 chiffres";
+                isErrorNEQ = true;
+                isGoodNEQ = false;
+                isValid = false;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(IdenticationFormModel.NomEntreprise))
+        {
+            isGoodNomEntreprise = true;
+            isErrorNomEntreprise = false;  
+        }
+        else
+        {
+            isGoodNomEntreprise = false;
+            isErrorNomEntreprise = true;
+            NomEntrepriseErrorMessage = "Nom de l'entreprise requis";
+            isValid = false;
+        }
+
+        if (!string.IsNullOrEmpty(IdenticationFormModel.CourrielEntreprise))
+        {
+            if (!Regex.IsMatch(IdenticationFormModel.CourrielEntreprise, @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")) {
+                isGoodCourriel = false;
+                isErrorCourriel = true;
+                CourrielErrorMessage = "Mauvais format";
+                isValid = false;
+            }
+            else {
+                isGoodCourriel = true;
+                isErrorCourriel = false;
+            }
+            
+        }
+        else
+        {
+            isGoodCourriel = false;
+            isErrorCourriel = true;
+            CourrielErrorMessage = "Courriel requis";
+            isValid = false;
+        }
+
+        if (!string.IsNullOrEmpty(IdenticationFormModel.MotDePasse))
+        {
+            if (!(IdenticationFormModel.MotDePasse.Length >= 7 && IdenticationFormModel.MotDePasse.Length <= 12)) {
+                isGoodMDP = false;
+                isErrorMDP = true;
+                MDPErrorMessage = "Doit être entre 7 et 12 caractères";
+                isValid = false;
+            }
+            else {
+                if (!Regex.IsMatch(IdenticationFormModel.MotDePasse, "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).+$")) {
+                    isGoodMDP = false;
+                    isErrorMDP = true;
+                    MDPErrorMessage = "Mot de passe pas assez sécurisé";
+                    isValid = false;
+                }
+                else {
+                    isGoodMDP = true;
+                    isErrorMDP = false;
+                }
+            }
+        }
+        else {
+            isGoodMDP = false;
+            isErrorMDP = true;
+            MDPErrorMessage = "Mot de passe requis";
+            isValid = false;
+        }
+
+        if (!string.IsNullOrEmpty(IdenticationFormModel.ConfirmationMotDePasse) )
+        {
+            if (!string.IsNullOrEmpty(IdenticationFormModel.MotDePasse)) {
+                if (IdenticationFormModel.MotDePasse.Equals(IdenticationFormModel.ConfirmationMotDePasse)) {
+                    isGoodMDPConf = true;
+                    isErrorMDPConf = false;
+                }
+                else {
+                    isGoodMDPConf = false;
+                    isErrorMDPConf = true;
+                    MDPConfErrorMessage = "Ne correspond pas";
+                    isValid = false;
+                }
+            }
+        }
+        else {
+            isGoodMDPConf = false;
+            isErrorMDPConf = true;
+            MDPConfErrorMessage = "Confirmation requise";
+            isValid = false;
+        }
+
+        return isValid;
+    }
+}

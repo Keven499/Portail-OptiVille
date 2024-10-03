@@ -1,159 +1,76 @@
-@page "/productService"
 @using Microsoft.EntityFrameworkCore
 @using Portail_OptiVille.Data.Models
-@using System.ComponentModel.DataAnnotations
+@using Portail_OptiVille.Data.FormModels
 @inject A2024420517riGr1Eq6Context _context
 
 <PageTitle>Produits et services</PageTitle>
-
-<style>
-    ::-webkit-scrollbar {
-        width: 6px;
-    }
-    ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
-    ::-webkit-scrollbar-thumb {
-        background: rgb(120, 198, 224);
-    }
-    ::-webkit-scrollbar-thumb:hover {
-        background: rgb(11, 35, 65);
-    }
-    .custom-checkbox:before {
-        content: '';
-        position: absolute;
-        left: 6px;
-        top: 2px;
-        width: 6px;
-        height: 12px;
-        border: solid white;
-        border-width: 0 2px 2px 0;
-        transform: rotate(45deg);
-        opacity: 0;
-    }
-    input[type="checkbox"]:checked+.custom-checkbox:before {
-        opacity: 1;
-    }
-    input[type="checkbox"]:checked+.custom-checkbox {
-        background-color: rgb(11, 35, 65);
-    }
-    .custom-checkbox {
-        display: block;
-        width: 20px;
-        flex-shrink: 0;
-        margin-right: 3px;
-        height: 20px;
-        background-color: rgb(120, 198, 224);
-        border: 1px solid rgb(11, 35, 65);
-        border-radius: 3px;
-        position: relative;
-        cursor: pointer;
-        vertical-align: middle;
-    }
-    input[type="checkbox"] {
-        opacity: 0;
-        position: absolute;
-        width: 0;
-        height: 0;
-    }
-    input[type="checkbox"] {
-        opacity: 0;
-        position: absolute;
-        width: 0;
-        height: 0;
-    }
-    .overflow-auto {
-        height: 192px;
-        padding: 4px;
-        width: 100%;
-    }
-    .litteStrong {
-        margin-right: 4px;
-        font-size: 14px;
-    }
-    .atLeastOneProduct {
-        outline: 1px solid red;
-    }
-    .greenOutline {
-        outline: 1px solid green;
-    }
-</style>
-
-<EditForm Model="@formModel" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator />
-<div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
-    <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
-        <div class="card w-75 h-75 d-flex justify-content-center p-0 m-0">
-            
-            <div class="card-header py-2 bg-bleuFonce">
-                <h3 class="py-2 p-0 my-0 text-white titre-bold">Produits et services</h3>
-            </div>
-            
-            <div class="card-body border-bleuFonce py-1">
-
-                <div class="col-xl-12 col-lg-12 py-2">
-                    <div class="input-group">
-                        <input @bind="searchBarValue" type="text" class="form-control input-bleu texte-light" placeholder="Recherchez">
-                        <button class="btn bg-bleu text-white" type="button" @onclick="OnSearch">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="col-xl-12 col-lg-12 py-2">
-                    <label class="texte-bold" for="statut"><i class="bi bi-braces text-success"></i> Catégorie</label>
-                    <select class="form-select input-bleu texte-light" @onchange="OnCategorieChange">
-                        <option>Toutes les catégories</option>
-                            @foreach (var categorie in categorieUNSPSC) {
-                                <option>@categorie.CodeCategorie - @categorie.Categorie</option>
-                            }
-                    </select>
-                </div>
-
-                <div class="col-xl-12 col-lg-12 py-2">
-                    <label class="texte-bold"><i class="bi bi-braces-asterisk text-danger"></i></label>
-                    <div class="overflow-auto box-bleu card @validProduct">
-                        <!-- 
-                            CECI EST EN GUISE DE TEST
-                        -->
-                        @foreach (var produitServiceLine in produitServiceCatego)
-                        {
-                            <div class="row m-0 mb-1">
-                                <div class="col-auto p-0">
-                                    <label for="categorie@(i)" class="d-flex">
-                                        <input type="checkbox" id="categorie@(i)"
-                                            checked="@produitSelected[produitServiceLine.CodeUnspsc]" 
-                                            @onchange="(e) => OnCheckboxChange(produitServiceLine.CodeUnspsc, e)" />
-                                        <span class="check-blanc" />
-                                        <span class="texte-14bold">@produitServiceLine.CodeUnspsc - @produitServiceLine.Description</span>
-                                    </label>
-                                </div>
-                            </div>
-                            i++;
-                        }
-                    </div>
-                </div>
-
-                
-                <div class="col-xl-12 col-lg-12 py-2">
-                    <label for="details" class="texte-bold" form="message"><i class="bi bi-braces-asterisk text-danger"></i> Détails et spécifications</label>
-                    <InputTextArea id="message" oninput="countCharacters(this)" class="form-control texte-light box-bleu" rows="6" placeholder="Entrez les détails ici" style="resize: none;" @bind-Value="formModel.Message" />
-                    <ValidationMessage For="@(() => formModel.Message)" />
-                    <span style="display:none;" class="texte-bold" id="charCount">500 caractères restant.</span>
-                </div>
-                
-            </div>
-            <div class="card-footer bg-bleuFonce">
-                <div class="d-flex justify-content-center">
-                    <button type="submit" class="btn bg-bleu text-white texte-bold" style="width: 200px;">
-                        Suivant 
-                        <i class="bi bi-arrow-right-circle"></i>
-                    </button>
-                </div>
+<EditForm Model="@ProduitServiceFormModel">
+    <div class="card-header py-2 bg-bleuFonce">
+        <h3 class="py-2 p-0 my-0 text-white titre-bold">Produits et services</h3>
+    </div>
+    <div class="card-body border-bleuFonce py-1">
+        <div class="col-xl-12 col-lg-12 py-2">
+            <div class="input-group">
+                <input @bind="searchBarValue" type="text" class="form-control input-bleu texte-light" placeholder="Recherchez">
+                <button class="btn bg-bleu text-white" type="button" @onclick="OnSearch">
+                    <i class="bi bi-search"></i>
+                </button>
             </div>
         </div>
+        <div class="col-xl-12 col-lg-12 py-2">
+            <label class="texte-bold" for="statut"><i class="bi bi-braces text-success"></i> Catégorie</label>
+            <select class="form-select input-bleu texte-light" @onchange="OnCategorieChange">
+                <option>Toutes les catégories</option>
+                    @foreach (var categorie in CategorieUNSPSC) {
+                        <option>@categorie.CodeCategorie - @categorie.Categorie</option>
+                    }
+            </select>
+        </div>
+        <div class="col-xl-12 col-lg-12 py-2">
+            <label class="texte-bold"><i class="bi bi-braces-asterisk text-danger"></i></label>
+            <div class="@(isErrorSousProduit ? "invalid" : (isGoodSousProduit ? "valid" : "")) overflow-auto box-bleu card">
+                @foreach (var produitServiceLine in produitServiceCatego)
+                {
+                    <div class="row m-0 mb-1">
+                        <div class="col-auto p-0">
+                            <label for="categorie@(i)" class="d-flex">
+                                <input type="checkbox" id="categorie@(i)"
+                                    checked="@ProduitServiceFormModel.SousProduitSelected[produitServiceLine.CodeUnspsc]" 
+                                    @onchange="(e) => OnCheckboxChange(produitServiceLine.CodeUnspsc, e)" />
+                                <span class="check-blanc" />
+                                <span class="texte-14bold">@produitServiceLine.CodeUnspsc - @produitServiceLine.Description</span>
+                            </label>
+                        </div>
+                    </div>
+                    i++;
+                }
+            </div>
+            @if (isErrorSousProduit)
+            {
+                <span class="input-group-text text-danger">
+                    <i class="bi bi-x-circle me-2"></i>
+                    <div class="validation-message texte-medium">Sélectionnez au moins un produit ou service</div>
+                </span>
+            }
+        </div>
+        <div class="col-xl-12 col-lg-12 py-2">
+            <label for="details" class="texte-bold" form="message"><i class="bi bi-braces-asterisk text-danger"></i> Détails et spécifications</label>
+            <textarea id="message" oninput="countCharacters(this)" class="form-control @(isErrorDetail ? "invalid" : (isGoodDetail ? "valid" : "")) texte-light box-bleu" rows="6" placeholder="Entrez les détails ici" style="resize: none;" @bind="ProduitServiceFormModel.Message" />
+            @if (isErrorDetail) {
+                <span class="input-group-text text-danger">
+                    <i class="bi bi-x-circle me-2"></i>
+                    <div class="validation-message texte-medium">@detailErrorMessage</div>
+                </span>
+            }
+            @if (isGoodDetail) {
+                <span class="input-group-text text-success">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <span class="texte-medium">Valide</span>
+                </span>
+            }
+            <span style="display:none;" class="texte-bold" id="charCount">500 caractères restant.</span>
+        </div>
     </div>
-</div>
 </EditForm>
 
 <script>
@@ -174,51 +91,53 @@
 </script>
 
 @code{
-    private ModelValidation formModel = new ModelValidation();
-    private List<Categorieunspsc> categorieUNSPSC = new List<Categorieunspsc>();
+    [Parameter]
+    public Action<ProduitsServices> AssignReference { get; set; }
+    [Parameter]
+    public List<Produitservice> AllProduitServices { get; set; }
+    [Parameter]
+    public ProduitServiceFormModel ProduitServiceFormModel { get; set; }
+    [Parameter]
+    public List<Categorieunspsc> CategorieUNSPSC { get; set; }
     private List<Produitservice> produitServiceCatego = new List<Produitservice>();
-    private List<Produitservice> allProduitService = new List<Produitservice>();
-    private Dictionary<string, bool> produitSelected = new Dictionary<string, bool>();
     private string? searchBarValue;
-    private string validProduct = "";
+    private bool isErrorDetail = false;
+    private bool isGoodDetail = false;
+    private string? detailErrorMessage;
+    private bool isErrorSousProduit = false;
+    private bool isGoodSousProduit = false;
+    private string? sousProduitErrorMessage;
     int i = 0;
     private string? selectedCategorie = "Toutes les catégories"; 
     protected override async Task OnInitializedAsync()
     {
+        AssignReference?.Invoke(this);
         try
         {
-            categorieUNSPSC = await _context.Categorieunspscs.ToListAsync();
-            allProduitService = await _context.Produitservices.ToListAsync();
-            produitSelected = allProduitService.ToDictionary(
-            c => c.CodeUnspsc,
-            c => false
-            );
-            produitServiceCatego = allProduitService.Take(500).ToList();
+            produitServiceCatego = AllProduitServices.Take(500).ToList();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Erreur lors de la récupération des personnes: {ex.Message}");
         }
     }
-
-    private List<Produitservice> GetSelectedCategories()
-    {
-        return allProduitService
-        .Where(c => produitSelected[c.CodeUnspsc])
-        .ToList();
-    }
     
     private void OnCheckboxChange(string codeUNSPSC, ChangeEventArgs e)
     {
         if (e.Value is bool isChecked)
         {
-            produitSelected[codeUNSPSC] = isChecked;
+            ProduitServiceFormModel.SousProduitSelected[codeUNSPSC] = (bool)e.Value;
         }
     }
 
     private bool ValidateSelection()
     {
-        return produitSelected.Values.Any(isSelected => isSelected);
+        if (ProduitServiceFormModel == null || ProduitServiceFormModel.SousProduitSelected == null)
+        {
+            return false;
+        }
+
+        return ProduitServiceFormModel.SousProduitSelected.Values.Any(isSelected => isSelected);
     }
 
     private void OnCategorieChange(ChangeEventArgs e) {
@@ -226,12 +145,12 @@
             selectedCategorie = e.Value.ToString();
         }
         if (selectedCategorie != null && !selectedCategorie.Equals("Toutes les catégories")) {
-            produitServiceCatego = allProduitService
+            produitServiceCatego = AllProduitServices
                 .Where(c => c.CodeCategorie == selectedCategorie.Substring(0, selectedCategorie.IndexOf(" - ")))
                 .ToList();
         }
         else {
-            produitServiceCatego = allProduitService.Take(500).ToList();
+            produitServiceCatego = AllProduitServices.Take(500).ToList();
         }
     }
 
@@ -246,20 +165,20 @@
                     .ToList();
             }   
             else {
-                produitServiceCatego = allProduitService
+                produitServiceCatego = AllProduitServices
                     .Where(c => c.CodeUnspsc != null && c.CodeUnspsc.Contains(searchBarValue))
                     .ToList();
             }
         }
         else {
-            if (!string.IsNullOrEmpty(searchBarValue) &&selectedCategorie != null) {
+            if (!string.IsNullOrEmpty(searchBarValue) && selectedCategorie != null) {
                 if (!selectedCategorie.Equals("Toutes les catégories")) {
                     produitServiceCatego = produitServiceCatego
                         .Where(c => c.Description != null && c.Description.Contains(searchBarValue))
                         .ToList();
                 }
                 else {
-                    produitServiceCatego = allProduitService
+                    produitServiceCatego = AllProduitServices
                         .Where(c => c.Description != null && c.Description.Contains(searchBarValue))
                         .ToList();
                 }
@@ -267,27 +186,33 @@
         }
     }
 
-    public class ModelValidation
-    {
-        [Required(ErrorMessage = "Détails et spécifications requis")]
-        [MaxLength(500, ErrorMessage = "Limite de 500 caractères maximum")]
-        public string? Message { get; set; }
-    }
-
-    public void HandleValidSubmit() {
+    public bool ValidateForm() {
+        bool isValid = true;
         if (!ValidateSelection())
         {
-            Console.WriteLine("I have not selected at least one product");
-            validProduct = "atLeastOneProduct";
+            isErrorSousProduit = true;
+            isGoodSousProduit = false;
+            sousProduitErrorMessage = "Au moins une catégorie doit être sélectionné";
+            isValid = false;
         }
         else
         {
-            validProduct = "greenOutline";
-            var selectedProduitService = GetSelectedCategories();
-            foreach (var produitService in selectedProduitService)
-            {
-                Console.WriteLine($"{produitService.CodeUnspsc} - {produitService.Description}");
-            }
+            isErrorSousProduit = false;
+            isGoodSousProduit = true;
         }
+
+        if (!string.IsNullOrEmpty(ProduitServiceFormModel.Message)) {
+            isGoodDetail = true;
+            isErrorDetail = false;
+        }
+        else {
+            isGoodDetail = false;
+            isErrorDetail = true;
+            detailErrorMessage = "Détails et spécifications requis";
+            isValid = false;
+        }
+
+        return isValid;
     }
+        
 }
