@@ -71,6 +71,7 @@
                 <input type="text" class="form-control" id="inputEmail4" value="@contact.AdresseCourriel">
             </div>
             <div class="col-xl-6 p-1">
+    using System.Data.Common;
                 <label for="inputPassword4">Numéro de téléphone (@contact.TypeTelephone)</label>
                 <input type="text" class="form-control" id="inputPassword4" value="@contact.Telephone #@contact.Poste">
             </div>
@@ -131,6 +132,39 @@
     </div>
     <div class="card-body">
         
+        @foreach(var Licencerbq in selectedLicencerbqs)
+        {
+        <div class="row">
+            <div class="col-xl-4">@Licencerbq.Statut</div>
+            <div class="col-xl-4"><input type="text" class="form-control" id="inputEmail4" value="@Licencerbq.IdLicenceRbq"></div>
+            <div class="col-xl-4"><input type="text" class="form-control" id="inputEmail4" value="@Licencerbq.Type"></div>
+        </div>
+        }
+
+        @if (selectedLicencerbqs != null)
+        {
+            var groupedCategories = GroupCategoriesByType();
+            
+            foreach (var group in groupedCategories)
+            {
+                <div class="row d-flex">
+                    <div class="col-xl-6">
+                        <h3>Type: @group.Key</h3>
+                        <ul>
+                            @foreach (var categorie in group.Value)
+                            {
+                                <li>Catégorie: @categorie.Nom</li>
+                            }
+                        </ul>
+                    </div> 
+                </div>
+            }
+        }
+        else
+        {
+            <p>Chargement...</p>
+        }
+
     </div>
     <div class="card-header py-2 bg-bleuFonce">
         <h3 class="py-2 p-0 my-0 text-white">Brochures et cartes d'affaire (Total: @GetFormatSize())</h3>
@@ -208,7 +242,7 @@
 
     List<Historique> selectedHistoriques = new List<Historique>();
 
-    List<Licencerbq> Licencerbqs = new List<Licencerbq>();
+    List<Licencerbq> selectedLicencerbqs = new List<Licencerbq>();
 
     List<Produitservice> selectedProduitservices = new List<Produitservice>();
 
@@ -237,6 +271,26 @@
             return HashCode.Combine(CodeCategorie, Nature);
         }
     }
+
+    private Dictionary<string, List<Categorierbq>> GroupCategoriesByType()
+    {
+        var groupedCategories = new Dictionary<string, List<Categorierbq>>();
+
+        foreach (var licence in selectedLicencerbqs)
+        {
+            foreach (var categorie in licence.CodeSousCategories)
+            {
+                if (!groupedCategories.ContainsKey(categorie.NomCategorie))
+                {
+                    groupedCategories[categorie.NomCategorie] = new List<Categorierbq>();
+                }
+                groupedCategories[categorie.NomCategorie].Add(categorie);
+            }
+        }
+
+        return groupedCategories;
+    }
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -247,16 +301,20 @@
             selectedFichiers = await _context.Fichiers.Where(c => c.IdFournisseur == 1).ToListAsync();
             selectedProduitservices = await _context.Produitservices.Where(p => p.IdFournisseurs.Any(f => f.IdFournisseur == 1)).ToListAsync();
             selectedFournisseur = selectedFournisseurs[0];
-            //var distinctProduitservices = selectedProduitservices.Distinct(new ProduitserviceComparer()).ToList();
+            //selectedLicencerbqs = await _context.Licencerbqs.Where(c => c.IdFournisseur == 1).ToListAsync();
+            selectedLicencerbqs = await _context.Licencerbqs
+        .Include(l => l.CodeSousCategories) // Assurez-vous que cette propriété existe
+        .Where(c => c.IdFournisseur == 1)
+        .ToListAsync();
         
-            // Group the selected services
+
         groupedServices = selectedProduitservices
     .GroupBy(p => new GroupKey 
     { 
         CodeCategorie = p.CodeCategorie, 
         Nature = p.Nature 
     })
-    .ToList(); // This creates a List<IGrouping<GroupKey, Produitservice>>
+    .ToList(); 
 
 
 
