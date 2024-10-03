@@ -1,6 +1,14 @@
 @page "/Connexion"
 @using System.ComponentModel.DataAnnotations
-<EditForm Model="@logInModel" OnValidSubmit="HandleValidSubmit">
+@using Portail_OptiVille.Data.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using Konscious.Security.Cryptography;
+@using System.Text;
+@inject NavigationManager NavigationManager
+@inject A2024420517riGr1Eq6Context _context
+@inject IJSRuntime JsRuntime
+
+<EditForm Model="@logInModel" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="ValidateInput">
     <!-- OnValidSubmit="HandleValidSubmit" -->
     <div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
         <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
@@ -13,7 +21,7 @@
                 <div class="card-body border-bleuFonce py-1">
                     <div class="col-xl-12 col-lg-12 py-2">
                         <label class="bleuFonce texte-bold" for="Courriel">
-                            <i class="bi @GetEmailIcon()"></i> Courriel
+                            <i class="bi @GetEmailIcon()"></i> Courriel <i class="bi bi-braces text-success"></i>
                         </label>
                         <InputText type="Email" class="form-control" id="Courriel" @bind-Value="logInModel.Courriel" />
                         @*Affichage de l'erreur*@
@@ -21,27 +29,18 @@
                     </div>
 
                     <div class="col-xl-12 col-lg-12 py-2">
-                        <label class="bleuFonce texte-bold" for="MotDePasse"><i class="bi bi-key text-success"></i> Mot de passe</label>
+                        <label class="bleuFonce texte-bold" for="MotDePasse">
+                            <i class="bi @passwordIconClass"></i> Mot de passe
+                            <i class="bi bi-braces text-success"></i>
+                        </label>
                         <InputText type="password" class="form-control" id="MotDePasse" @bind-Value="logInModel.MotDePasse" />
-                        @* @if (isSubmitted && identificationModel.MotDePasse.Length < 8)
-                        {
-                            <span class="input-group-text text-danger">
-                                <i class="bi bi-x-circle me-2"></i>
-                                <span class="texte-medium">Le mot de passe doit contenir au moins 8 caractères</span>
-                            </span>
-                        }
-                        else if (isSubmitted && identificationModel.MotDePasse.Length >= 8)
-                        {
-                            <span class="input-group-text text-success">
-                                <i class="bi bi-check-circle me-2"></i>
-                                <span class="texte-medium">Valide</span>
-                            </span>
-                        } *@
+                        @*Affichage de l'erreur*@
+                        <ValidationMessage For="@(() => logInModel.MotDePasse)" />
                     </div>
                 </div>
 
                 <div class="card-footer py-2 bg-bleuFonce">
-                    <button type="submit" class="btn btn-success w-100">Connexion</button>
+                    <button type="submit" class="btn btn-success w-100" >Connexion</button>
                 </div>
             </div>
         </div>
@@ -52,14 +51,71 @@
 
     private LogInModel logInModel = new LogInModel();
 
-    private void HandleValidSubmit()
+    private async void HandleValidSubmit()
     {
-        Console.WriteLine("Soumis");
+        // Récupérer le fournisseur qui a l'adresse courriel
+        Fournisseur? fournisseur = _context.Fournisseurs.ToList().Find(f => f.AdresseCourriel == logInModel.Courriel);
+
+        if (fournisseur != null)
+        {
+            // Vérification du mot de passe
+            Console.WriteLine(HashPassword(logInModel.MotDePasse));
+            if (VerifyPassword(logInModel.MotDePasse, fournisseur.MotDePasse))
+            {
+                // Redirection si les informations sont correctes
+                NavigationManager.NavigateTo("/", true);
+            }
+            else
+            {
+                // Réinitialisation du mot de passe si incorrect
+                logInModel.MotDePasse = ""; 
+                await JsRuntime.InvokeVoidAsync("alert", "Adresse Courriel ou mot de passe incorrect!"); 
+            }
+        }
+        else
+        {
+            // Cas où le fournisseur n'est pas trouvé
+            await JsRuntime.InvokeVoidAsync("alert", "Adresse Courriel ou mot de passe incorrect!"); 
+        }
     }
 
-    private string emailIconClass = "bi-braces text-success"; // Par défaut
 
-    private void ValidateEmail(ChangeEventArgs e)
+public string HashPassword(string password)
+{
+    // Définir les paramètres de hachage
+    int iterations = 4; // Nombre d'itérations
+    int memorySize = 65536; // Taille de la mémoire (en Ko)
+    int degreeOfParallelism = 8; // Niveau de parallélisme
+
+    // Convertir le mot de passe en bytes
+    byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+    
+    using (var hasher = new Argon2id(passwordBytes))
+    {
+        hasher.Iterations = iterations;
+        hasher.MemorySize = memorySize / 1024; // Convertir en Mo
+        hasher.DegreeOfParallelism = degreeOfParallelism;
+
+        // Hachage du mot de passe
+        byte[] hashBytes = hasher.GetBytes(32); // Taille du hachage
+        return Convert.ToBase64String(hashBytes); // Convertir en base64 pour le stockage
+    }
+}
+
+public bool VerifyPassword(string password, string hashedPassword)
+{
+    // Hacher le mot de passe saisi
+    string newHash = HashPassword(password);
+    return newHash == hashedPassword;
+}
+
+
+
+
+    private string emailIconClass = ""; // Par défaut
+    private string passwordIconClass = ""; // Par défaut
+
+    private void ValidateInput()
     {
         if (IsValidEmail(logInModel.Courriel))
         {
@@ -68,6 +124,15 @@
         else
         {
             emailIconClass = "bi-x-circle text-danger"; // Invalide
+        }
+
+        if(string.IsNullOrEmpty(logInModel.MotDePasse))
+        {
+            passwordIconClass = "bi-x-circle text-danger"; // Invalide
+        }
+        else
+        {
+            passwordIconClass = "bi-check-circle text-success"; // Valide
         }
     }
 
