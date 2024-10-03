@@ -81,6 +81,49 @@
         <h3 class="py-2 p-0 my-0 text-white">Produits et services</h3>
     </div>
     <div class="card-body">
+        <div class="row">
+            <div class="col-xl-6">
+@if (groupedServices != null && groupedServices.Count > 0)
+{
+    string currentCategory = null;
+    string currentNature = null;
+
+    foreach (var group in groupedServices)
+    {
+        // Only print the category and nature if they have changed
+        if (currentCategory != group.Key.CodeCategorie || currentNature != group.Key.Nature)
+        {
+            // If it's not the first group, add a horizontal rule
+            if (currentCategory != null)
+            {
+                <hr />
+            }
+
+            // Print the new category and nature
+            <div>
+                <strong>@group.Key.CodeCategorie - @group.Key.Nature</strong>
+            </div>
+
+            // Update the current category and nature
+            currentCategory = group.Key.CodeCategorie;
+            currentNature = group.Key.Nature;
+        }
+
+        // List each produitservice under the current group
+        foreach (var produitservice in group)
+        {
+            <p>@produitservice.CodeUnspsc - @produitservice.Description</p>
+        }
+    }
+}
+
+
+            </div>
+            <div class="col-xl-6">
+                <label for="TextAreaProduitService" class="form-label">Détails et spécifications</label>
+                <textarea class="form-control" id="TextAreaProduitService" rows="6" style="resize: none;">@selectedFournisseur.Details</textarea>
+            </div>
+        </div>
         
     </div>
     <div class="card-header py-2 bg-bleuFonce">
@@ -167,12 +210,33 @@
 
     List<Licencerbq> Licencerbqs = new List<Licencerbq>();
 
-    List<Produitservice> Produitservices = new List<Produitservice>();
+    List<Produitservice> selectedProduitservices = new List<Produitservice>();
 
     List<Telephone> Telephones = new List<Telephone>();
 
     Fournisseur selectedFournisseur = new Fournisseur();
+    
+    List<IGrouping<GroupKey, Produitservice>> groupedServices;
 
+    public class GroupKey
+    {
+        public string CodeCategorie { get; set; }
+        public string Nature { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is GroupKey other)
+            {
+                return CodeCategorie == other.CodeCategorie && Nature == other.Nature;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(CodeCategorie, Nature);
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
         try
@@ -181,7 +245,20 @@
             selectedContacts = await _context.Contacts.Where(c => c.IdFournisseur == 1).ToListAsync();
             selectedHistoriques = await _context.Historiques.Where(c => c.IdFournisseur == 1).ToListAsync();
             selectedFichiers = await _context.Fichiers.Where(c => c.IdFournisseur == 1).ToListAsync();
+            selectedProduitservices = await _context.Produitservices.Where(p => p.IdFournisseurs.Any(f => f.IdFournisseur == 1)).ToListAsync();
             selectedFournisseur = selectedFournisseurs[0];
+            //var distinctProduitservices = selectedProduitservices.Distinct(new ProduitserviceComparer()).ToList();
+        
+            // Group the selected services
+        groupedServices = selectedProduitservices
+    .GroupBy(p => new GroupKey 
+    { 
+        CodeCategorie = p.CodeCategorie, 
+        Nature = p.Nature 
+    })
+    .ToList(); // This creates a List<IGrouping<GroupKey, Produitservice>>
+
+
 
         }
         catch (Exception ex)
@@ -190,6 +267,22 @@
         }
     }
 
+@*
+    public class ProduitserviceComparer : IEqualityComparer<Produitservice>
+    {
+        public bool Equals(Produitservice x, Produitservice y)
+        {
+            if (x == null || y == null)
+                return false;
+
+            return x.CodeCategorie == y.CodeCategorie && x.Nature == y.Nature;
+        }
+
+        public int GetHashCode(Produitservice obj)
+        {
+            return (obj.CodeCategorie + obj.Nature).GetHashCode();
+        }
+    }*@
     private string GetFormatSizeFile(long size)
     {
         if (size >= 1048576)

@@ -55,9 +55,9 @@ public partial class Fournisseur
 
     public virtual ICollection<Historique> Historiques { get; set; } = new List<Historique>();
 
+    public virtual ICollection<Licencerbq> Licencerbqs { get; set; } = new List<Licencerbq>();
+
     public virtual ICollection<Telephone> Telephones { get; set; } = new List<Telephone>();
 
     public virtual ICollection<Produitservice> CodeUnspscs { get; set; } = new List<Produitservice>();
-
-    public virtual ICollection<Licencerbq> IdLicenceRbqs { get; set; } = new List<Licencerbq>();
 }
