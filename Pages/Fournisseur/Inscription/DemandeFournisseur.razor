@@ -63,7 +63,12 @@
 
         Components = new List<RenderFragment>
         {
-            // FORMULAIRE LICENCE RBQ 1
+            // FORMULAIRE IDENTIFICATION 1
+            // FORMULAIRE COORDONNÉES 2
+            // FORMULAIRE CONTACT 3
+            // FORMULAIRE PRODUITS ET SERVICES 4
+            // FORMULAIRE LICENCE RBQ 5
+            // FORMULAIRE PIÈCES JOINTES 6
             builder =>
             {
                 builder.OpenComponent<LicenceRBQ>(0);
@@ -72,16 +77,12 @@
                 builder.AddAttribute(3, "LicenceRBQFormModel", licenceRBQFormModel);
                 builder.CloseComponent();
             },
-            // FORMULAIRE IDENTIFICATION 2
+            
             builder =>
             {
                 builder.OpenComponent(1, typeof(Contact));
                 builder.CloseComponent();
             }
-            // FORMULAIRE COORDONNÉES 3
-            // FORMULAIRE CONTACT 4
-            // FORMULAIRE PIÈCES JOINTES 5
-            // FORMULAIRE PRODUITS ET SERVICES 6
         };
 
         licenceRBQRef = new LicenceRBQ();
