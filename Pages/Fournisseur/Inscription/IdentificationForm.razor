@@ -10,7 +10,7 @@
     }
 </style>
 
-<PageTitle>Identification</PageTitle>
+<PageTitle>Étape 1 Identification</PageTitle>
 <EditForm Model="@IdenticationFormModel">
     <div class="card-header py-2 bg-bleuFonce">
         <h3 class="py-2 p-0 my-0 text-white titre-bold">Identification</h3>
@@ -103,7 +103,7 @@
 
 @code {
     [Parameter]
-    public Action<IdentificationForm> AssignReference { get; set; }
+    public Action<IdentificationForm>? AssignReference { get; set; }
     [Parameter]
     public IdenticationFormModel IdenticationFormModel { get; set; }
     private bool isValid = true;

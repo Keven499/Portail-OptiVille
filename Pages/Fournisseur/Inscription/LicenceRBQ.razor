@@ -10,7 +10,7 @@
 @using System.Text.RegularExpressions
 @inject HttpClient Http
 
-<PageTitle>Licence RBQ</PageTitle>
+<PageTitle>Étape 5 Licence RBQ</PageTitle>
 <EditForm Model="@LicenceRBQFormModel">
     <div class="card-header py-2 bg-bleuFonce">
         <h3 class="py-2 p-0 my-0 text-white titre-bold">Licence RBQ</h3>
@@ -105,7 +105,7 @@
 
 @code {
     [Parameter]
-    public Action<LicenceRBQ> AssignReference { get; set; }
+    public Action<LicenceRBQ>? AssignReference { get; set; }
     [Parameter]
     public List<Categorierbq> AllCategories { get; set; }
     [Parameter]

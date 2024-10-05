@@ -1,0 +1,53 @@
+@using Portail_OptiVille.Data.FormModels
+
+<PageTitle>Étape 3 Contacts</PageTitle>
+<div class="card-header py-2 bg-bleuFonce">
+    <h3 class="py-2 p-0 my-0 text-white titre-bold">Contacts</h3>
+</div>
+<div class="card-body border-bleuFonce bg-blanc py-1">
+    <Contact ContactNumber="1" />
+    @foreach (var contactNumber in contactList)
+    {
+        <Contact ContactNumber="@contactNumber" />
+    }
+    <div class="d-flex justify-content-center py-2">
+        <button type="button" class="btn bg-success text-white texte-bold me-2" @onclick="AddContact" style="width: 200px;"><i class="bi bi-plus-circle"></i> Ajout contact</button>
+        <button type="button" class="btn bg-danger text-white texte-bold" @onclick="RemoveContact" style="width: 200px;" disabled="@(!contactList.Any())"><i class="bi bi-trash"></i> Retirer contact</button>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Action<ContactFormHoster>? AssignReference { get; set; }
+    [Parameter]
+    public ContactHosterFormModel ContactHosterFormModel { get; set; }
+    private List<int> contactList = new List<int>();
+    private int contactCounter = 1;
+
+    protected override void OnInitialized()
+    {
+        AssignReference?.Invoke(this);
+    }
+
+    private void AddContact()
+    {
+        contactCounter++;
+        if (contactCounter <= 5) {
+            contactList.Add(contactCounter);
+        }
+    }
+
+    private void RemoveContact()
+    {
+        if (contactList.Any())
+        {
+            contactList.RemoveAt(contactList.Count - 1);
+            contactCounter--;
+        }
+    }
+
+    public bool ValidateAllContact() {
+        bool isValid = true;
+        return isValid;
+    }
+}

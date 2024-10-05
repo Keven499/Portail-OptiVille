@@ -1,8 +1,8 @@
-@page "/files"
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Components.Forms
 @using System.IO
 @inject IJSRuntime _jsRuntime
+
 <style>
     ul 
     {
@@ -39,96 +39,83 @@
     {
         background-color: rgba(11, 35, 65, 0.132);
     }
-    @* .drag-drop-area h4 
-    {
-        color: rgb(11, 35, 65);
-        font-weight: bold;
-    } *@
     .dragging {
         background-color: #e9f5e9;
         border-color: #4CAF50;
     }
-    @* .table-bordered{
-        border:5px rgba(11, 35, 65, 0.206);
-        border-radius: 10px;
-    } *@
 </style>
 
-<EditForm Model="fileModel" OnValidSubmit="HandleValidSubmit">
-<div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
-    <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
-        <div class="card w-75 h-75 d-flex justify-content-center p-0 m-0">
-            
-            <div class="card-header py-2 bg-bleuFonce">
-                <h3 class="py-2 p-0 my-0 text-white titre-bold">Carte d'affaires et brochures</h3>
-            </div>
-
-                <div class="card-body py-1 border-bleuFonce d-flex justify-content-center">
-                    <div id="dropArea" class="drag-drop-area">
-                        <label for="fileInput">
-                            <h4 class="texte-bold">Faites glisser et déposez les fichiers ici</h4>
-                            <p class="texte-medium">ou cliquez pour sélectionner les fichiers</p>
-                        </label>
-                    </div>
-                    <InputFile id="fileInput" OnChange="HandleFileChange" multiple 
-                            accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" 
-                            style="display: none;" />
-                </div>
-                @if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    <div class="d-flex justify-content-center">
-                        <div class="col-xl-6 alert alert-danger alert-dismissible fade show m-1" role="alert">
-                            @errorMessage
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    </div>
-                }
-
-                <div class="card-header py-2 bg-bleuFonce titre-bold">
-                    <h3 class="py-2 p-0 my-0 text-white">Fichiers téléversés (Total: @GetFormatSize())</h3>
-                </div>
-
-                <div class="card-body table-bleu">
-                    <table class="table border-bleuFonce table-bordered my-0">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="col-1 texte-bold">Fichier</th>
-                                <th scope="col" class="texte-bold">Nom</th>
-                                <th scope="col" class="col-1 texte-bold">Taille</th>
-                                <th scope="col" class="col-2 texte-bold">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var file in listFichiers)
-                            {
-                                <tr>
-                                    <th scope="row" class="texte-bold">@(listFichiers.IndexOf(file)+1)</th>
-                                    <td class="texte-light">@file.Name</td>
-                                    <td class="texte-light">@GetFormatSizeFile(file.Size)</td>
-                                    <td><button class="btn btn-danger texte-bold" type="button" @onclick="() => RemoveFile(file)"><i class="bi bi-trash"></i> Effacer</button></td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="card-footer bg-bleuFonce">
-                    <div class="d-flex justify-content-center">
-                        <button type="submit" class="btn bg-bleu text-white texte-bold" style="width: 200px;">
-                            Enregistrer 
-                            <i class="bi bi-check2-circle"></i>
-                        </button>
-                    </div>
-                </div>
-            
-        </div>
+<PageTitle>Étape 6 Pièces jointes</PageTitle>
+<EditForm Model="fileModel">
+    <div class="card-header py-2 bg-bleuFonce">
+        <h3 class="py-2 p-0 my-0 text-white titre-bold">Carte d'affaires et brochures</h3>
     </div>
-</div>
-</EditForm>
+        <div class="card-body py-1 border-bleuFonce d-flex justify-content-center">
+            <div id="dropArea" class="drag-drop-area">
+                <label for="fileInput">
+                    <h4 class="texte-bold">Faites glisser et déposez les fichiers ici</h4>
+                    <p class="texte-medium">ou cliquez pour sélectionner les fichiers</p>
+                </label>
+            </div>
+            <InputFile id="fileInput" OnChange="HandleFileChange" multiple 
+                    accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" 
+                    style="display: none;" />
+        </div>
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="d-flex justify-content-center">
+                <div class="col-xl-6 alert alert-danger alert-dismissible fade show m-1" role="alert">
+                    @errorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        }
 
+        <div class="card-header py-2 bg-bleuFonce titre-bold">
+            <h3 class="py-2 p-0 my-0 text-white">Fichiers téléversés (Total: @GetFormatSize())</h3>
+        </div>
+
+        <div class="card-body table-bleu">
+            <table class="table border-bleuFonce table-bordered my-0 mb-2">
+                <thead>
+                    <tr>
+                        <th scope="col" class="col-1 texte-bold">Fichier</th>
+                        <th scope="col" class="texte-bold">Nom</th>
+                        <th scope="col" class="col-1 texte-bold">Taille</th>
+                        <th scope="col" class="col-2 texte-bold">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var file in listFichiers)
+                    {
+                        <tr>
+                            <th scope="row" class="texte-bold">@(listFichiers.IndexOf(file)+1)</th>
+                            <td class="texte-light">@file.Name</td>
+                            <td class="texte-light">@GetFormatSizeFile(file.Size)</td>
+                            <td><button class="btn btn-danger texte-bold" type="button" @onclick="() => RemoveFile(file)"><i class="bi bi-trash"></i> Effacer</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-center">
+                <button type="submit" class="btn bg-bleu text-white texte-bold" style="width: 200px;">
+                    Enregistrer 
+                    <i class="bi bi-check2-circle"></i>
+                </button>
+            </div>
+        </div>
+</EditForm>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/dragdrop.js"></script>
+
 @code{
+    [Parameter]
+    public Action<PiecesJointes>? AssignReference { get; set; }
+
+    protected override void OnInitialized()
+    {
+        AssignReference?.Invoke(this);
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -214,8 +201,9 @@
         CalculTotalSize();
     }
 
-    private void HandleValidSubmit()
+    public bool ValidatePieceJointe()
     {
+        bool isValid = true;
         errorMessage = "";
         foreach(var file in listFichiers)
         {
@@ -255,7 +243,8 @@
             // Now you can update the user's profile in the database with the new profile picture path
             await userService.UpdateUserProfilePicture(username, profilePicturePath);
 */
-        }
+        return isValid;
+    }
     
 /*
     public class ProfilePictureService

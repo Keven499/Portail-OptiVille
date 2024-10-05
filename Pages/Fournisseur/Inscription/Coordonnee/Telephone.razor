@@ -1,5 +1,3 @@
-@using System.ComponentModel.DataAnnotations
-
 <EditForm Model="@telephoneFormModel">
     <div class="py-2 col-lg-12 col-xl-12 titre-bold fs-4">Téléphone @TelephoneNumber <i class="bi bi-braces-asterisk text-danger"></i></div>
     <div class="pb-2 d-flex justify-content-between">
@@ -16,7 +14,7 @@
             {
                 <span class="input-group-text text-danger">
                     <i class="bi bi-x-circle me-2"></i>
-                    <span class="texte-medium">@TypeTelErrorMessaage</span>
+                    <span class="texte-medium">@TypeTelErrorMessage</span>
                 </span>
             }
             @if (isGoodTypeTel)
@@ -69,7 +67,7 @@
 @code {
     [Parameter]
     public int TelephoneNumber { get; set; } = 1;
-    private string? TypeTelErrorMessaage;
+    private string? TypeTelErrorMessage;
     private string? NoTelErrorMessage;
     private string? PosteTelErrorMessage;
     private bool isErrorTypeTel = false;
@@ -93,7 +91,7 @@
         {
            isErrorTypeTel = true;
            isGoodTypeTel = false;
-           TypeTelErrorMessaage = "Type requis";
+           TypeTelErrorMessage = "Type requis";
            isValid = false;
         }
 

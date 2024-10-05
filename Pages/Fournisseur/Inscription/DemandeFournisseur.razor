@@ -1,5 +1,8 @@
 @page "/demandeFournisseur"
 @using Portail_OptiVille.Data.FormModels
+@using Portail_OptiVille.Pages.Fournisseur.Inscription.Contact
+@using Portail_OptiVille.Pages.Fournisseur.Inscription.Coordonnee
+@using Portail_OptiVille.Pages.Fournisseur.Inscription
 @using Portail_OptiVille.Data.Models
 @using Microsoft.EntityFrameworkCore;
 @inject A2024420517riGr1Eq6Context _context
@@ -10,12 +13,15 @@
     <div class="row h-100 w-100">
         @if (isLoading)
         {
-            <p>Chargement de la page en cours...</p>
+            <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                <div class="spinner-border text-primary me-2" role="status"></div>
+                <span class="titre-medium fs-3">Chargement en cours..</span>
+            </div>
         }
         else
         {
             <div class="progress mb-2 texte-bold p-0">
-                <div class="progress-bar progress-bar-striped bleuFonce rounded titre-bold text-white" role="progressbar" 
+                <div class="bg-bleuFonce progress-bar progress-bar-striped rounded text-white texte-medium" role="progressbar" 
                     style="width: @ProgressPercentage%;" aria-valuenow="@ProgressPercentage" aria-valuemin="0" aria-valuemax="100">
                     Étape @currentStep sur @totalSteps
                 </div>
@@ -48,8 +54,14 @@
     private CoordonneeFormModel coordonneeFormModel = new CoordonneeFormModel();
     private CoordonneeForm? coordoneeRef;
 
+    private ContactHosterFormModel contactHosterFormModel = new ContactHosterFormModel();
+    private ContactFormHoster? contactHosterRef;
+
     private ProduitServiceFormModel produitServiceFormModel = new ProduitServiceFormModel();
     private ProduitsServices? produitServiceRef;
+
+    private PiecesJointes? piecesJointesRef;
+
     private List<Produitservice> allProduitService = new List<Produitservice>();
     private List<Categorieunspsc> categorieUNSPSC = new List<Categorieunspsc>();
 
@@ -101,12 +113,17 @@
                 builder.CloseComponent();
             },
             // FORMULAIRE CONTACT 3
-
-
+            builder =>
+            {
+                builder.OpenComponent<ContactFormHoster>(2);
+                builder.AddAttribute(1, "AssignReference", (Action<ContactFormHoster>)(contactFormHoster =>  contactHosterRef = contactFormHoster));
+                builder.AddAttribute(2, "ContactHosterFormModel", contactHosterFormModel);
+                builder.CloseComponent();
+            },
             // FORMULAIRE PRODUITS ET SERVICES 4
             builder =>
             {
-                builder.OpenComponent<ProduitsServices>(2);
+                builder.OpenComponent<ProduitsServices>(3);
                 builder.AddAttribute(1, "AssignReference", (Action<ProduitsServices>)(produitsServices => produitServiceRef = produitsServices));
                 builder.AddAttribute(2, "AllProduitServices", allProduitService); 
                 builder.AddAttribute(3, "ProduitServiceFormModel", produitServiceFormModel);
@@ -115,21 +132,28 @@
             },
             // FORMULAIRE LICENCE RBQ 5
             builder =>
-                {
-                    builder.OpenComponent<LicenceRBQ>(3);
-                    builder.AddAttribute(1, "AssignReference", (Action<LicenceRBQ>)(licenceRBQ => licenceRBQRef = licenceRBQ));
-                    builder.AddAttribute(2, "AllCategories", allCategories); 
-                    builder.AddAttribute(3, "LicenceRBQFormModel", licenceRBQFormModel);
-                    builder.CloseComponent();
-                }
+            {
+                builder.OpenComponent<LicenceRBQ>(4);
+                builder.AddAttribute(1, "AssignReference", (Action<LicenceRBQ>)(licenceRBQ => licenceRBQRef = licenceRBQ));
+                builder.AddAttribute(2, "AllCategories", allCategories); 
+                builder.AddAttribute(3, "LicenceRBQFormModel", licenceRBQFormModel);
+                builder.CloseComponent();
+            },
             // FORMULAIRE PIÈCES JOINTES 6
-            
+            builder =>
+            {
+                builder.OpenComponent<PiecesJointes>(5);
+                builder.AddAttribute(1, "AssignReference", (Action<PiecesJointes>)(piecesJointes => piecesJointesRef = piecesJointes));
+                builder.CloseComponent();
+            }
         };
 
         identificationRef = new IdentificationForm();
         coordoneeRef = new CoordonneeForm();
+        contactHosterRef = new ContactFormHoster();
         produitServiceRef = new ProduitsServices();
         licenceRBQRef = new LicenceRBQ();
+        piecesJointesRef = new PiecesJointes();
         isLoading = false;
     }
 
@@ -156,9 +180,17 @@
         }
 
         // CASE CONTACT VALIDATION 3
+         if (currentIndex == 2 && contactHosterRef != null)
+        {
+            bool isValid = contactHosterRef.ValidateAllContact();
+            if (!isValid)
+            {
+                return;
+            }
+        }
 
         // CASE PRODUITS ET SERVICES 4
-         if (currentIndex == 2 && produitServiceRef != null)
+         if (currentIndex == 3 && produitServiceRef != null)
         {
             bool isValid = produitServiceRef.ValidateForm();
             if (!isValid)
@@ -168,7 +200,7 @@
         }
 
         // CASE LICENCE RBQ VALIDATION 5
-        if (currentIndex == 3 && licenceRBQRef != null)
+        if (currentIndex == 4 && licenceRBQRef != null)
         {
             bool isValid = await licenceRBQRef.ValidateForm();
             if (!isValid)
@@ -178,6 +210,14 @@
         }
 
         // CASE PIÈCES JOINTES 5
+        if (currentIndex == 5 && piecesJointesRef != null)
+        {
+            bool isValid = piecesJointesRef.ValidatePieceJointe();
+            if (!isValid)
+            {
+                return;
+            }
+        }
 
         if (currentIndex < Components.Count - 1)
         {

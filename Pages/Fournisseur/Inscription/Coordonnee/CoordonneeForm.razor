@@ -10,7 +10,7 @@
     }
 </style>
 
-<PageTitle>Coordonnées</PageTitle>
+<PageTitle>Étape 2 Coordonnées</PageTitle>
 <EditForm Model="@CoordonneeFormModel">
     <div class="card-header py-2 bg-bleuFonce">
         <h3 class="py-2 p-0 my-0 text-white titre-bold">Coordonnées de l'entreprise</h3>
@@ -177,7 +177,7 @@
             <Telephone TelephoneNumber="1" />
             @foreach (var telephoneNumber in telephoneList)
             {
-                <Telephone TelephoneNumber="@telephoneNumber" />
+                <Telephone TelephoneNumber="@telephoneNumber" />                
             }
             <div class="d-flex justify-content-center py-2">
                 <button type="button" class="btn bg-success text-white texte-bold me-2" @onclick="AddTelephone" style="width: 200px;"><i class="bi bi-plus-circle"></i> Ajout téléphone</button>
@@ -188,7 +188,7 @@
 
 @code {
     [Parameter]
-    public Action<CoordonneeForm> AssignReference { get; set; }
+    public Action<CoordonneeForm>? AssignReference { get; set; }
     [Parameter]
     public CoordonneeFormModel CoordonneeFormModel { get; set; }
     private string? NoErrorMessage;
@@ -217,9 +217,6 @@
     private bool isGoodRegion = false;
     private bool isErrorSite = false;
     private bool isGoodSite = false;
-    private string SiteWebClass => isErrorSite ? "invalid" :
-                               isGoodSite ? "valid" :
-                               "form-control input-bleu texte-light";
 
     private List<string> listeProvinces = new List<string>{"Québec", "Ontario", "Manitoba", "Saskatchewan", "Alberta", "Colombie-Britanique",
         "Île-du-Prince-Édouard", "Nouveau-Brunswick", "Nouvelle-Écosse", "Terre-Neuve-et-Labrador", "Nunavut", "Territoires du Nord-Ouest",

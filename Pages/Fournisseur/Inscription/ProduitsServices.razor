@@ -3,7 +3,7 @@
 @using Portail_OptiVille.Data.FormModels
 @inject A2024420517riGr1Eq6Context _context
 
-<PageTitle>Produits et services</PageTitle>
+<PageTitle>Étape 4 Produits et services</PageTitle>
 <EditForm Model="@ProduitServiceFormModel">
     <div class="card-header py-2 bg-bleuFonce">
         <h3 class="py-2 p-0 my-0 text-white titre-bold">Produits et services</h3>
@@ -92,7 +92,7 @@
 
 @code{
     [Parameter]
-    public Action<ProduitsServices> AssignReference { get; set; }
+    public Action<ProduitsServices>? AssignReference { get; set; }
     [Parameter]
     public List<Produitservice> AllProduitServices { get; set; }
     [Parameter]
@@ -109,7 +109,7 @@
     private string? sousProduitErrorMessage;
     int i = 0;
     private string? selectedCategorie = "Toutes les catégories"; 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         AssignReference?.Invoke(this);
         try
