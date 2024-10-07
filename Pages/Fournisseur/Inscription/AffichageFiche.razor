@@ -2,6 +2,7 @@
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.EntityFrameworkCore
 @using Portail_OptiVille.Data.Models
+@using System.Text.RegularExpressions;
 @inject A2024420517riGr1Eq6Context _context
 <div class="container-fluid card p-0 m-0">
     <div class="card-header py-2 bg-bleuFonce">
@@ -9,7 +10,8 @@
     </div>
     <div class="card-body">
         <ul>
-            @*<li>État @(selectedHistoriques.FirstOrDefault().DateEtatChanged.HasValue ? selectedHistoriques.FirstOrDefault().DateEtatChanged.Value.ToString("yyyy-MM-dd") : "N/A")</li>*@
+            <li>Demande @(closestHistorique != null ? closestHistorique.EtatDemande : "N/A")</li>
+            <li>État @(closestHistorique != null && closestHistorique.DateEtatChanged.HasValue ? closestHistorique.DateEtatChanged.Value.ToString("yyyy-MM-dd") : "N/A")</li>
             <li>Création @(selectedFournisseur.DateCreation.HasValue ? selectedFournisseur.DateCreation.Value.ToString("yyyy-MM-dd") : "N/A")</li>
             <li>Modification @(selectedFournisseur.DateLastChanged.HasValue ? selectedFournisseur.DateLastChanged.Value.ToString("yyyy-MM-dd") : "N/A")</li>
         </ul>
@@ -48,6 +50,16 @@
                 <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.SiteInternet">
             </div>
         </div>
+        <div class="row">
+            @foreach(var telephone in selectedTelephones)
+            {
+            <div class="col-xl-6 p-1">
+                <label for="inputEmail4">Numéro de téléphone (@telephone.Type)</label>
+                <input type="text" class="form-control" id="inputEmail4" value="@($"{telephone.NumTelephone.Insert(3, "-").Insert(7, "-")} #{telephone.Poste}")">
+            </div>
+
+            }
+        </div>
     </div>
     <div class="card-header py-2 bg-bleuFonce">
         <h3 class="py-2 p-0 my-0 text-white">Contacts</h3>
@@ -71,9 +83,8 @@
                 <input type="text" class="form-control" id="inputEmail4" value="@contact.AdresseCourriel">
             </div>
             <div class="col-xl-6 p-1">
-    using System.Data.Common;
                 <label for="inputPassword4">Numéro de téléphone (@contact.TypeTelephone)</label>
-                <input type="text" class="form-control" id="inputPassword4" value="@contact.Telephone #@contact.Poste">
+                <input type="text" class="form-control" id="inputPassword4" value="@contact.Telephone.Insert(3, "-").Insert(7, "-") #@contact.Poste">
             </div>
         </div>
         }
@@ -82,47 +93,40 @@
         <h3 class="py-2 p-0 my-0 text-white">Produits et services</h3>
     </div>
     <div class="card-body">
-        <div class="row">
+        <div class="row h-100">
             <div class="col-xl-6">
-@if (groupedServices != null && groupedServices.Count > 0)
-{
-    string currentCategory = null;
-    string currentNature = null;
+                @if (groupedServices != null && groupedServices.Count > 0)
+                {
+                    string currentCategory = null;
+                    string currentNature = null;
 
-    foreach (var group in groupedServices)
-    {
-        // Only print the category and nature if they have changed
-        if (currentCategory != group.Key.CodeCategorie || currentNature != group.Key.Nature)
-        {
-            // If it's not the first group, add a horizontal rule
-            if (currentCategory != null)
-            {
-                <hr />
-            }
-
-            // Print the new category and nature
-            <div>
-                <strong>@group.Key.CodeCategorie - @group.Key.Nature</strong>
-            </div>
-
-            // Update the current category and nature
-            currentCategory = group.Key.CodeCategorie;
-            currentNature = group.Key.Nature;
-        }
-
-        // List each produitservice under the current group
-        foreach (var produitservice in group)
-        {
-            <p>@produitservice.CodeUnspsc - @produitservice.Description</p>
-        }
-    }
-}
+                    foreach (var group in groupedServices)
+                    {
+                        if (currentCategory != group.Key.CodeCategorie || currentNature != group.Key.Nature)
+                        {
+                            // Ajoute une line si ce n'est pas le premier groupe
+                            if (currentCategory != null)
+                            {
+                                <hr />
+                            }
+                            <div>
+                                <strong>@group.Key.CodeCategorie - @group.Key.Nature</strong>
+                            </div>
+                            currentCategory = group.Key.CodeCategorie;
+                            currentNature = group.Key.Nature;
+                        }
+                        foreach (var produitservice in group)
+                        {
+                            <p>@produitservice.CodeUnspsc - @produitservice.Description</p>
+                        }
+                    }
+                }
 
 
             </div>
-            <div class="col-xl-6">
+            <div class="col-xl-6 d-flex flex-column">
                 <label for="TextAreaProduitService" class="form-label">Détails et spécifications</label>
-                <textarea class="form-control" id="TextAreaProduitService" rows="6" style="resize: none;">@selectedFournisseur.Details</textarea>
+                <textarea class="form-control flex-grow-1" id="TextAreaProduitService" style="resize: none;">@selectedFournisseur.Details</textarea>
             </div>
         </div>
         
@@ -134,10 +138,20 @@
         
         @foreach(var Licencerbq in selectedLicencerbqs)
         {
-        <div class="row">
-            <div class="col-xl-4">@Licencerbq.Statut</div>
-            <div class="col-xl-4"><input type="text" class="form-control" id="inputEmail4" value="@Licencerbq.IdLicenceRbq"></div>
-            <div class="col-xl-4"><input type="text" class="form-control" id="inputEmail4" value="@Licencerbq.Type"></div>
+        <div class="row d-flex align-items-center mb-3">
+            <div class="col-xl-4">
+                @Licencerbq.Statut 
+            </div>
+            
+            <div class="col-xl-4 d-flex align-items-center">
+                <label for="IdLicenceRbq" class="me-2">Numéro</label>
+                <input type="text" class="form-control w-auto" id="IdLicenceRbq" value="@Licencerbq.IdLicenceRbq">
+            </div>
+
+            <div class="col-xl-4 d-flex align-items-center">
+                <label for="TypeLicencerbq" class="me-2">Type de licence</label>
+                <input type="text" class="form-control w-auto" id="TypeLicencerbq" value="@Licencerbq.Type">
+            </div>
         </div>
         }
 
@@ -145,20 +159,44 @@
         {
             var groupedCategories = GroupCategoriesByType();
             
-            foreach (var group in groupedCategories)
-            {
-                <div class="row d-flex">
-                    <div class="col-xl-6">
-                        <h3>Type: @group.Key</h3>
+            <div class="row">
+                <div class="col-xl-6 mb-3">
+                    <h3>Type: Général</h3>
+                    @if (groupedCategories.ContainsKey("Général") && groupedCategories["Général"].Count > 0)
+                    {
                         <ul>
-                            @foreach (var categorie in group.Value)
+                            @foreach (var categorie in groupedCategories["Général"])
                             {
                                 <li>Catégorie: @categorie.Nom</li>
                             }
                         </ul>
-                    </div> 
+                    }
+                    else
+                    {
+                        <div class="d-flex justify-content-center align-items-center">
+                            <p>Aucune Catégorie</p>
+                        </div>
+                    }
                 </div>
-            }
+                <div class="col-xl-6 mb-3">
+                    <h3>Type: Spécialisé</h3>
+                    @if (groupedCategories.ContainsKey("Spécialisé") && groupedCategories["Spécialisé"].Count > 0)
+                    {
+                        <ul>
+                            @foreach (var categorie in groupedCategories["Spécialisé"])
+                            {
+                                <li>Catégorie: @categorie.Nom</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <div class="d-flex justify-content-center align-items-center">
+                            <p>Aucune Catégorie</p>
+                        </div>
+                    }
+                </div>
+            </div>
         }
         else
         {
@@ -185,7 +223,7 @@
                                 <tr>
                                     <th scope="row" class="texte-bold">@(selectedFichiers.IndexOf(file)+1)</th>
                                     <td class="texte-light">@file.Nom@file.Type</td>
-                                    <td class="texte-light">@GetFormatSizeFile((long)file.Taille)</td>
+                                    <td class="texte-light">@GetFormatSizeFile(file.Taille)</td>
                                     <td><button class="btn btn-danger texte-bold disabled" type="button"><i class="bi bi-trash"></i> Effacer</button></td>
                                 </tr>
                             }
@@ -227,37 +265,25 @@
 </div>
 
 @code{
-    public long sizeTotal { get; set; } = 0;
-    public long MaxSize = 75;
-    private DateTime date = DateTime.UtcNow;
-    List<Categorierbq> Categorierbqs = new List<Categorierbq>();
-
-    List<Categorieunspsc> Categorieunspscs = new List<Categorieunspsc>();
-
+    public int sizeTotal { get; set; } = 0;
+    public int MaxSize = 75;
     List<Portail_OptiVille.Data.Models.Contact> selectedContacts = new List<Portail_OptiVille.Data.Models.Contact>();
-
     List<Fichier> selectedFichiers = new List<Fichier>();
-
     List<Fournisseur> selectedFournisseurs = new List<Fournisseur>();
-
     List<Historique> selectedHistoriques = new List<Historique>();
-
+    private Historique? closestHistorique;
     List<Licencerbq> selectedLicencerbqs = new List<Licencerbq>();
-
     List<Produitservice> selectedProduitservices = new List<Produitservice>();
-
-    List<Telephone> Telephones = new List<Telephone>();
-
+    List<Telephone> selectedTelephones = new List<Telephone>();
     Fournisseur selectedFournisseur = new Fournisseur();
-    
-    List<IGrouping<GroupKey, Produitservice>> groupedServices;
+    List<IGrouping<GroupKey, Produitservice>>? groupedServices;
 
     public class GroupKey
     {
-        public string CodeCategorie { get; set; }
-        public string Nature { get; set; }
+        public string? CodeCategorie { get; set; }
+        public string? Nature { get; set; }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is GroupKey other)
             {
@@ -287,7 +313,6 @@
                 groupedCategories[categorie.NomCategorie].Add(categorie);
             }
         }
-
         return groupedCategories;
     }
 
@@ -301,47 +326,22 @@
             selectedFichiers = await _context.Fichiers.Where(c => c.IdFournisseur == 1).ToListAsync();
             selectedProduitservices = await _context.Produitservices.Where(p => p.IdFournisseurs.Any(f => f.IdFournisseur == 1)).ToListAsync();
             selectedFournisseur = selectedFournisseurs[0];
-            //selectedLicencerbqs = await _context.Licencerbqs.Where(c => c.IdFournisseur == 1).ToListAsync();
-            selectedLicencerbqs = await _context.Licencerbqs
-        .Include(l => l.CodeSousCategories) // Assurez-vous que cette propriété existe
-        .Where(c => c.IdFournisseur == 1)
-        .ToListAsync();
-        
-
-        groupedServices = selectedProduitservices
-    .GroupBy(p => new GroupKey 
-    { 
-        CodeCategorie = p.CodeCategorie, 
-        Nature = p.Nature 
-    })
-    .ToList(); 
-
-
-
+            selectedTelephones = await _context.Telephones.Where(c => c.IdFournisseur == 1).ToListAsync();
+            selectedLicencerbqs = await _context.Licencerbqs.Include(l => l.CodeSousCategories).Where(c => c.IdFournisseur == 1).ToListAsync();
+            closestHistorique = selectedHistoriques.Where(h => h.DateEtatChanged.HasValue).OrderBy(h => Math.Abs((h.DateEtatChanged.Value - DateTime.Now).TotalDays)).FirstOrDefault();
+            groupedServices = selectedProduitservices.GroupBy(p => new GroupKey 
+            { 
+                CodeCategorie = p.CodeCategorie, 
+                Nature = p.Nature 
+            }).ToList(); 
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Erreur lors de la récupération des personnes: {ex.Message}");
+            Console.WriteLine($"Erreur lors de la récupération des informations: {ex.Message}");
         }
     }
 
-@*
-    public class ProduitserviceComparer : IEqualityComparer<Produitservice>
-    {
-        public bool Equals(Produitservice x, Produitservice y)
-        {
-            if (x == null || y == null)
-                return false;
-
-            return x.CodeCategorie == y.CodeCategorie && x.Nature == y.Nature;
-        }
-
-        public int GetHashCode(Produitservice obj)
-        {
-            return (obj.CodeCategorie + obj.Nature).GetHashCode();
-        }
-    }*@
-    private string GetFormatSizeFile(long size)
+    private string GetFormatSizeFile(int? size)
     {
         if (size >= 1048576)
         {
@@ -355,7 +355,7 @@
  
     private string GetFormatSize()
     {
-        sizeTotal = selectedFichiers.Sum(file => (long)(file.Taille));
+        sizeTotal = selectedFichiers.Sum(file => (int)(file.Taille.GetValueOrDefault(0)));
         if (sizeTotal >= 1048576) // 1 MB = 1048576 bytes (1 * 1024 * 1024)
         {
             return $"{(sizeTotal / 1048576.0):F2} MB / {MaxSize}MB";
