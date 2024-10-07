@@ -1,18 +1,22 @@
 @using Portail_OptiVille.Data.FormModels
+@using System.Linq.Expressions
 
 <PageTitle>Étape 3 Contacts</PageTitle>
 <div class="card-header py-2 bg-bleuFonce">
     <h3 class="py-2 p-0 my-0 text-white titre-bold">Contacts</h3>
 </div>
 <div class="card-body border-bleuFonce bg-blanc py-1">
-    <Contact ContactNumber="1" />
-    @foreach (var contactNumber in contactList)
-    {
-        <Contact ContactNumber="@contactNumber" />
+    @{
+        var contactNo = 1;
+        foreach (var contact in ContactHosterFormModel.ContactList)
+        {
+            <Contact ContactNumber="@contactNo" @ref="contactComponents[contact]" />        
+            contactNo++;        
+        }
     }
     <div class="d-flex justify-content-center py-2">
         <button type="button" class="btn bg-success text-white texte-bold me-2" @onclick="AddContact" style="width: 200px;"><i class="bi bi-plus-circle"></i> Ajout contact</button>
-        <button type="button" class="btn bg-danger text-white texte-bold" @onclick="RemoveContact" style="width: 200px;" disabled="@(!contactList.Any())"><i class="bi bi-trash"></i> Retirer contact</button>
+        <button type="button" class="btn bg-danger text-white texte-bold" @onclick="RemoveContact" style="width: 200px;" disabled="@(!(ContactHosterFormModel.ContactList.Count > 1))"><i class="bi bi-trash"></i> Retirer contact</button>
     </div>
 </div>
 
@@ -21,33 +25,71 @@
     public Action<ContactFormHoster>? AssignReference { get; set; }
     [Parameter]
     public ContactHosterFormModel ContactHosterFormModel { get; set; }
-    private List<int> contactList = new List<int>();
-    private int contactCounter = 1;
+     private Dictionary<ContactFormModel, Contact> contactComponents = new Dictionary<ContactFormModel, Contact>();
+    private EditContext EditContext { get; set; }
+    private bool isSubmit = false;
 
     protected override void OnInitialized()
     {
+        EditContext = new EditContext(ContactHosterFormModel);
+        EditContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
         AssignReference?.Invoke(this);
+        if (!ContactHosterFormModel.ContactList.Any()) {
+            ContactHosterFormModel.ContactList.Add(new ContactFormModel());
+        }
+    }
+
+    private string GetInputClass<TField> (Expression<Func<TField>> fieldExpression)
+    {
+        if (!isSubmit) {
+           return "";
+        }
+        var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
+        var isValid = !EditContext.GetValidationMessages(fieldIdentifier).Any();
+        return isValid ? "valid" : "invalid";
+    }
+
+    private string GetValidationHTML<TField> (Expression<Func<TField>> fieldExpression) 
+    {
+        if (!isSubmit) {
+           return "";
+        }
+        var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
+        var isValid = !EditContext.GetValidationMessages(fieldIdentifier).Any();
+        return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-medium\">Valide</span></span>" 
+                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + EditContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
+    }
+
+    public bool TriggerValidation() 
+    {
+        isSubmit = true;
+        EditContext.Validate();
+        StateHasChanged();
+        return ValidateContacts();
     }
 
     private void AddContact()
     {
-        contactCounter++;
-        if (contactCounter <= 5) {
-            contactList.Add(contactCounter);
-        }
+        ContactHosterFormModel.ContactList.Add(new ContactFormModel());
     }
 
-    private void RemoveContact()
+     private void RemoveContact()
     {
-        if (contactList.Any())
-        {
-            contactList.RemoveAt(contactList.Count - 1);
-            contactCounter--;
+        if (ContactHosterFormModel.ContactList.Count > 1) {
+            ContactHosterFormModel.ContactList.RemoveAt(ContactHosterFormModel.ContactList.Count - 1);
         }
     }
 
-    public bool ValidateAllContact() {
+    public bool ValidateContacts()
+    {
+        Console.WriteLine("ValidateContacts Is called");
         bool isValid = true;
+        foreach (var component in contactComponents.Values) {
+            var contactState = component.TriggerValidation();
+            if (!contactState) {
+                isValid = false;
+            }
+        }
         return isValid;
     }
 }

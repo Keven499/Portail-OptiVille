@@ -51,7 +51,7 @@
     private IdenticationFormModel identicationFormModel = new IdenticationFormModel();
     private IdentificationForm? identificationRef;
 
-    private CoordonneeFormModel coordonneeFormModel = new CoordonneeFormModel();
+    private FournisseurFormModel FournisseurFormModel = new FournisseurFormModel(); 
     private CoordonneeForm? coordoneeRef;
 
     private ContactHosterFormModel contactHosterFormModel = new ContactHosterFormModel();
@@ -95,7 +95,7 @@
         }
 
         Components = new List<RenderFragment>
-        {
+        {   
             // FORMULAIRE IDENTIFICATION 1
             builder =>
             {
@@ -109,7 +109,7 @@
             {
                 builder.OpenComponent<CoordonneeForm>(1);
                 builder.AddAttribute(1, "AssignReference", (Action<CoordonneeForm>)(coordonneeForm => coordoneeRef = coordonneeForm));
-                builder.AddAttribute(2, "CoordonneeFormModel", coordonneeFormModel);
+                builder.AddAttribute(2, "FournisseurFormModel", FournisseurFormModel);
                 builder.CloseComponent();
             },
             // FORMULAIRE CONTACT 3
@@ -159,30 +159,30 @@
 
     private async Task ShowNext()
     {
-        // CASE IDENTIFICATION VALIDATION 1
+        // CASE IDENTIFICATION 1
         if (currentIndex == 0 && identificationRef != null)
         {
-            bool isValid = identificationRef.ValidateForm();
+            bool isValid = identificationRef.TriggerValidation();
             if (!isValid)
             {
                 return;
             }
         }
 
-        // CASE COORDONNEE VALIDATION 2
+        // CASE COORDONNEE 2
         if (currentIndex == 1 && coordoneeRef != null)
         {
-            bool isValid = coordoneeRef.ValidateForm();
+            bool isValid = coordoneeRef.TriggerValidation();
             if (!isValid)
             {
                 return;
             }
         }
 
-        // CASE CONTACT VALIDATION 3
+        // CASE CONTACT 3
          if (currentIndex == 2 && contactHosterRef != null)
         {
-            bool isValid = contactHosterRef.ValidateAllContact();
+            bool isValid = contactHosterRef.TriggerValidation();
             if (!isValid)
             {
                 return;
@@ -199,7 +199,7 @@
             }
         }
 
-        // CASE LICENCE RBQ VALIDATION 5
+        // CASE LICENCE RBQ 5
         if (currentIndex == 4 && licenceRBQRef != null)
         {
             bool isValid = await licenceRBQRef.ValidateForm();
@@ -209,7 +209,7 @@
             }
         }
 
-        // CASE PIÈCES JOINTES 5
+        // CASE PIÈCES JOINTES 6
         if (currentIndex == 5 && piecesJointesRef != null)
         {
             bool isValid = piecesJointesRef.ValidatePieceJointe();

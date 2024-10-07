@@ -1,5 +1,6 @@
 @using System.ComponentModel.DataAnnotations
-@using System.Text.RegularExpressions
+@using Portail_OptiVille.Data.FormModels
+@using System.Linq.Expressions
 
 <style>
     .invalid {
@@ -10,142 +11,51 @@
     }
 </style>
 
-<EditForm Model="@contactFormModel">
+<EditForm EditContext="@EditContext">
+        <DataAnnotationsValidator />
         <h4 class="col-lg-12 col-xl-12 titre-bold">Contact @ContactNumber <i class="bi bi-braces-asterisk text-danger"></i></h4>
         <div class="d-flex justify-content-between">
             <div class="col-lg-6 col-xl-6 col-6 col-sm-6">
                 <label class="bleuFonce texte-bold" for="Prenom">Prénom <i class="bi bi-braces-asterisk text-danger"></i></label>
-                <input type="text" @bind="contactFormModel.PrenomContact" class="form-control @(isErrorPrenom ? "invalid" : (isGoodPrenom ? "valid" : "")) input-bleu texte-light" id="Prenom" />                                                                                                                                                                 
-                @if (isErrorPrenom)
-                {
-                    <span class="input-group-text text-danger">
-                        <i class="bi bi-x-circle me-2"></i>
-                        <span class="texte-medium">@PrenomErrorMessage</span>
-                    </span>
-                }
-                @if (isGoodPrenom)
-                {
-                    <span class="input-group-text text-success">
-                        <i class="bi bi-check-circle me-2"></i>
-                        <span class="texte-medium">Valide</span>
-                    </span>
-                }
+                <input type="text" @bind="contactFormModel.Prenom" maxlength="32" class="form-control @GetInputClass(() => contactFormModel.Prenom) input-bleu texte-light" id="Prenom" />                                                                                                                                                                 
+                @((MarkupString)GetValidationHTML(() => contactFormModel.Prenom))
             </div>
             <div class="col-lg-6 col-xl-6 col-6 col-sm-6 me-1 ms-1">
                 <label class="bleuFonce texte-bold" for="Nom">Nom <i class="bi bi-braces-asterisk text-danger"></i></label>
-                <input type="text" @bind="contactFormModel.NomContact" class="form-control @(isErrorNom ? "invalid" : (isGoodNom ? "valid" : "")) input-bleu texte-light" id="Nom" />                                                                                                                                                         
-                @if (isErrorNom)
-                {
-                    <span class="input-group-text text-danger">
-                        <i class="bi bi-x-circle me-2"></i>
-                        <span class="texte-medium">@NomErrorMessage</span>
-                    </span>
-                }
-                @if (isGoodNom)
-                {
-                    <span class="input-group-text text-success">
-                        <i class="bi bi-check-circle me-2"></i>
-                        <span class="texte-medium">Valide</span>
-                    </span>
-                }
+                <input type="text" @bind="contactFormModel.Nom" maxlength="32" class="form-control @GetInputClass(() => contactFormModel.Nom) input-bleu texte-light" id="Nom" />                                                                                                                                                         
+                @((MarkupString)GetValidationHTML(() => contactFormModel.Nom))
             </div>            
         </div>
             <div class="col-lg-6 col-xl-6 col-6 col-sm-6 py-2">
                 <label class="bleuFonce texte-bold" for="Fonction1">Fonction <i class="bi bi-braces-asterisk text-danger"></i></label>
-                <input type="text" @bind="contactFormModel.FonctionContact" class="form-control @(isErrorFonction ? "invalid" : (isGoodFonction ? "valid" : "")) input-bleu texte-light" id="Fonction1" />                                                                                                                                                                                                                                                                                                                                                                              
-                @if (isErrorFonction)
-                {
-                    <span class="input-group-text text-danger">
-                        <i class="bi bi-x-circle me-2"></i>
-                        <span class="texte-medium">@FonctionErrorMessage</span>
-                    </span>
-                }
-                @if (isGoodFonction)
-                {
-                    <span class="input-group-text text-success">
-                        <i class="bi bi-check-circle me-2"></i>
-                        <span class="texte-medium">Valide</span>
-                    </span>
-                }
+                <input type="text" @bind="contactFormModel.Fonction" max="32" class="form-control @GetInputClass(() => contactFormModel.Fonction) input-bleu texte-light" id="Fonction1" />                                                                                                                                                                                                                                                                                                                                                                              
+                @((MarkupString)GetValidationHTML(() => contactFormModel.Fonction))
             </div>
         <div class="col-lg-12 col-xl-12 col-12 col-sm-12 py-2">
             <label class="bleuFonce texte-bold" for="Courriel">Courriel du contact <i class="bi bi-braces-asterisk text-danger"></i></label>
-            <input type="text" @bind="contactFormModel.EmailContact" class="form-control @(isErrorEmail ? "invalid" : (isGoodEmail ? "valid" : "")) input-bleu texte-light" id="Courriel" />                                                                                                                                                                                                                                        
-            @if (isErrorEmail)
-            {
-                <span class="input-group-text text-danger">
-                    <i class="bi bi-x-circle me-2"></i>
-                    <span class="texte-medium">@EmailErrorMessage</span>
-                </span>
-            }
-            @if (isGoodEmail)
-            {
-                <span class="input-group-text text-success">
-                    <i class="bi bi-check-circle me-2"></i>
-                    <span class="texte-medium">Valide</span>
-                </span>
-            }
+            <input type="text" @bind="contactFormModel.AdresseCourriel" maxlength="64" class="form-control @GetInputClass(() => contactFormModel.AdresseCourriel) input-bleu texte-light" id="Courriel" />                                                                                                                                                                                                                                        
+            @((MarkupString)GetValidationHTML(() => contactFormModel.AdresseCourriel))
         </div>
         <div class="py-2 d-flex justify-content-between">
             <div class="col-lg-3 col-xl-3 col-3 col-sm-3">
                 <label class="bleuFonce texte-bold" for="typeTel1">Type <i class="bi bi-braces-asterisk text-danger"></i></label>
-                <select class="form-control @(isErrorType ? "invalid" : (isGoodType ? "valid" : "")) input-bleu texte-light" id="typeTel1" @bind="contactFormModel.TypeTelContact">
+                <select class="form-control @GetInputClass(() => contactFormModel.TypeTelephone) input-bleu texte-light" id="typeTel1" @bind="contactFormModel.TypeTelephone">
                     <option value="" disabled selected>Veuillez choisir un type</option>
-                    @foreach(string type in listeTypeContact)
-                    {
-                        <option value="@type">@type</option>
-                    }
+                    <option value="Bureau">Bureau</option>
+                    <option value="Télécopieur">Télécopieur</option>
+                    <option value="Cellulaire">Cellulaire</option>
                 </select>                                                                                                                                                                                                                         
-                @if (isErrorType)
-                {
-                    <span class="input-group-text text-danger">
-                        <i class="bi bi-x-circle me-2"></i>
-                        <span class="texte-medium">@TypeErrorMessage</span>
-                    </span>
-                }
-                @if (isGoodType)
-                {
-                    <span class="input-group-text text-success">
-                        <i class="bi bi-check-circle me-2"></i>
-                        <span class="texte-medium">Valide</span>
-                    </span>
-                }
+                @((MarkupString)GetValidationHTML(() => contactFormModel.TypeTelephone))
             </div>
             <div class="col-lg-6 col-xl-6 col-6 col-sm-6 ms-1 me-1">
                 <label class="bleuFonce texte-bold" for="NoTel1">Numéro <i class="bi bi-braces-asterisk text-danger"></i></label>
-                <input type="number" TValue="long?" @bind="contactFormModel.NoTelContact" class="form-control @(isErrorTel ? "invalid" : (isGoodTel ? "valid" : "")) input-bleu texte-light" id="NoTel1" />                                                                                                                    
-                @if (isErrorTel)
-                {
-                    <span class="input-group-text text-danger">
-                        <i class="bi bi-x-circle me-2"></i>
-                        <span class="texte-medium">@TelErrorMessage</span>
-                    </span>
-                }
-                @if (isGoodTel)
-                {
-                    <span class="input-group-text text-success">
-                        <i class="bi bi-check-circle me-2"></i>
-                        <span class="texte-medium">Valide</span>
-                    </span>
-                }
+                <input type="text" @bind="contactFormModel.Telephone" class="form-control @GetInputClass(() => contactFormModel.Telephone) input-bleu texte-light" id="NoTel1" />                                                                                                                    
+                @((MarkupString)GetValidationHTML(() => contactFormModel.Telephone))
             </div>
             <div class="col-lg-3 col-xl-3 col-3 col-sm-3">
                 <label class="bleuFonce texte-bold" for="Poste1Contact">Poste <i class="bi bi-braces text-success"></i></label>
-                <input type="number" TValue="long?" @bind="contactFormModel.PosteTelContact" class="form-control @(isErrorPoste ? "invalid" : (isGoodPoste ? "valid" : "")) input-bleu texte-light" id="Poste1Contact" />
-                @if (isErrorPoste)
-                {
-                    <span class="input-group-text text-danger">
-                        <i class="bi bi-x-circle me-2"></i>
-                        <span class="texte-medium">@PosteErrorMessage</span>
-                    </span>
-                }
-                @if (isGoodPoste)
-                {
-                    <span class="input-group-text text-success">
-                        <i class="bi bi-check-circle me-2"></i>
-                        <span class="texte-medium">Valide</span>
-                    </span>
-                }
+                <input type="text" @bind="contactFormModel.Poste" class="form-control @GetInputClass(() => contactFormModel.Poste) input-bleu texte-light" id="Poste1Contact" />
+                @((MarkupString)GetValidationHTML(() => contactFormModel.Poste))
             </div>
         </div>
 </EditForm>
@@ -154,204 +64,40 @@
     [Parameter]
     public int ContactNumber { get; set; } = 1;
     ContactFormModel contactFormModel = new ContactFormModel();
-    private List<string> listeTypeContact = new List<string>{"Bureau", "Télécopieur", "Cellulaire"};
-    private string? PrenomErrorMessage;
-    private string? NomErrorMessage;
-    private string? FonctionErrorMessage;
-    private string? EmailErrorMessage;
-    private string? TypeErrorMessage;
-    private string? TelErrorMessage;
-    private string? PosteErrorMessage;
-    private bool isErrorPrenom = false;
-    private bool isGoodPrenom = false;
-    private bool isErrorNom = false;
-    private bool isGoodNom = false;
-    private bool isErrorFonction = false;
-    private bool isGoodFonction = false;
-    private bool isErrorEmail = false;
-    private bool isGoodEmail = false;
-    private bool isErrorType = false;
-    private bool isGoodType = false;
-    private bool isErrorTel = false;
-    private bool isGoodTel = false;
-    private bool isErrorPoste = false;
-    private bool isGoodPoste = false;
+    private EditContext EditContext { get; set; }
+    private bool isSubmit = false;
 
-    public Task<bool> ValidateContact()
+    protected override void OnInitialized() 
     {
-        bool isValid = true;
-        if (!string.IsNullOrEmpty(contactFormModel.PrenomContact))
-        {
-            if (contactFormModel.PrenomContact.Length > 32) {
-                isErrorPrenom = true;
-                isGoodPrenom = false;
-                PrenomErrorMessage = "Maximum 32 caractères";
-                isValid = false;
-            }
-            else {
-                if (!Regex.IsMatch(contactFormModel.PrenomContact, "^[a-zA-Z'-]+$")) {
-                    isErrorPrenom = true;
-                    isGoodPrenom = false;
-                    PrenomErrorMessage = "Mauvais format";
-                    isValid = false;
-                }
-                else {
-                    isErrorPrenom = false;
-                    isGoodPrenom = true;
-                }
-            }
-        }
-        else {
-            isErrorPrenom = true;
-            isGoodPrenom = false;
-            PrenomErrorMessage = "Prénom requis";
-            isValid = false;
-        }
-
-        if (!string.IsNullOrEmpty(contactFormModel.NomContact))
-        {
-            if (contactFormModel.NomContact.Length > 32) {
-                isErrorNom = true;
-                isGoodNom = false;
-                NomErrorMessage = "Maximum 32 caractères";
-                isValid = false;
-            }
-            else {
-                if (!Regex.IsMatch(contactFormModel.NomContact, "^[a-zA-Z'-]+$")) {
-                    isErrorNom = true;
-                    isGoodNom = false;
-                    NomErrorMessage = "Mauvais format";
-                    isValid = false;
-                }
-                else {
-                    isErrorNom = false;
-                    isGoodNom = true;
-                }
-            }
-        }
-        else {
-            isErrorNom = true;
-            isGoodNom = false;
-            NomErrorMessage = "Nom requis";
-            isValid = false;
-        }
-
-        if (!string.IsNullOrEmpty(contactFormModel.FonctionContact))
-        {
-            if (contactFormModel.FonctionContact.Length > 32) {
-                isErrorFonction = true;
-                isGoodFonction = false;
-                FonctionErrorMessage = "Maximum 32 caractères";
-                isValid = false;
-            }
-            else {
-                isErrorFonction = false;
-                isGoodFonction = true;
-            }
-        }
-        else {
-            isErrorFonction = true;
-            isGoodFonction = false;
-            FonctionErrorMessage = "Fonction requise";
-            isValid = false;
-        }
-
-        if (!string.IsNullOrEmpty(contactFormModel.EmailContact))
-        {
-            if (contactFormModel.EmailContact.Length > 64) {
-                isErrorEmail = true;
-                isGoodEmail = false;
-                EmailErrorMessage = "Maximum 64 caractères";
-                isValid = false;
-            }
-            else {
-                if (!Regex.IsMatch(contactFormModel.EmailContact, @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")) {
-                    isErrorEmail = true;
-                    isGoodEmail = false;
-                    EmailErrorMessage = "Mauvais format";
-                    isValid = false;
-                }
-                else {
-                    isErrorEmail = false;
-                    isGoodEmail = true;
-                }
-            }
-        }
-        else {
-            isErrorEmail = true;
-            isGoodEmail = false;
-            EmailErrorMessage = "Courriel requis";
-            isValid = false;
-        }
-
-        if (!string.IsNullOrEmpty(contactFormModel.TypeTelContact))
-        {
-            isErrorType = false;
-            isGoodType = true;
-        }
-        else {
-            isErrorType = true;
-            isGoodType = false;
-            TypeErrorMessage = "Type requis";
-            isValid = false;
-        }
-
-        if (!contactFormModel.NoTelContact.HasValue)        
-        {
-            if (!Regex.IsMatch(contactFormModel.NoTelContact.Value.ToString(), @"^\d{10}$")) {
-                isErrorTel = true;
-                isGoodTel = false;
-                TelErrorMessage = "Mauvais format";
-                isValid = false;
-            }
-            else {
-                isErrorTel = false;
-                isGoodTel = true;
-            }
-        }
-        else {
-            isErrorTel = true;
-            isGoodTel = false;
-            TelErrorMessage = "Numéro requis";
-            isValid = false;
-        }
-
-        if (!contactFormModel.PosteTelContact.HasValue)        
-        {
-            if (!(contactFormModel.PosteTelContact.HasValue.ToString().Length == 6)) {
-                isErrorPoste = true;
-                isGoodPoste = false;
-                PosteErrorMessage = "Doit contenir 6 caractères";
-                isValid = false;
-            }
-            else {
-                isErrorPoste = false;
-                isGoodPoste = true;
-            }
-        }
-
-        return Task.FromResult(isValid);
+        EditContext = new EditContext(contactFormModel);
+        EditContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
     }
 
-    public class ContactFormModel {
-        [Required]
-        public string? PrenomContact { get; set; }
+    private string GetInputClass<TField> (Expression<Func<TField>> fieldExpression)
+    {
+        if (!isSubmit) {
+           return "";
+        }
+        var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
+        var isValid = !EditContext.GetValidationMessages(fieldIdentifier).Any();
+        return isValid ? "valid" : "invalid";
+    }
 
-        [Required]
-        public string? NomContact { get; set; }
+    private string GetValidationHTML<TField> (Expression<Func<TField>> fieldExpression) 
+    {
+        if (!isSubmit) {
+           return "";
+        }
+        var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
+        var isValid = !EditContext.GetValidationMessages(fieldIdentifier).Any();
+        return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-medium\">Valide</span></span>" 
+                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + EditContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
+    }
 
-        [Required]
-        public string? FonctionContact { get; set; }
-
-        [Required]
-        public string? EmailContact { get; set; }
-
-        [Required]
-        public string? TypeTelContact { get; set; }
-
-        [Required]
-        public long? NoTelContact { get; set; }
-
-        public long? PosteTelContact { get; set; }
+     public bool TriggerValidation() 
+    {
+        isSubmit = true;
+        StateHasChanged();
+        return EditContext.Validate();
     }
 }
