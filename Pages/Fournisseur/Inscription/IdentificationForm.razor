@@ -67,7 +67,7 @@
         var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
         // THERE'S PROBABLY A BETTER WAY TO DO THIS.
         if (fieldIdentifier.FieldName.Equals("NEQ")) {
-            return isValid ? "" : "";
+            return isValid ? "" : "invalid";
         }
 
         return isValid ? "valid" : "invalid";

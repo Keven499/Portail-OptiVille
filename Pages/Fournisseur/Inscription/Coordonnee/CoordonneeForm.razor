@@ -23,7 +23,8 @@
             </div>
             <div class="col-xl-4 col-lg-4 col-6 col-sm-6 py-2 ms-xl-3 ms-lg-3">
                 <label class="bleuFonce texte-bold" for="Bureau">Bureau <i class="bi bi-braces text-success"></i></label>
-                <input type="text" @bind="FournisseurFormModel.BureauEntreprise" maxlength="8" class="form-control input-bleu texte-light" id="Bureau" />
+                <input type="text" @bind="FournisseurFormModel.BureauEntreprise" maxlength="8" class="form-control @GetInputClass(() => FournisseurFormModel.BureauEntreprise) input-bleu texte-light" id="Bureau" />
+                @((MarkupString)GetValidationHTML(() => FournisseurFormModel.BureauEntreprise))
             </div>
             
             <div class="col-xl-8 col-lg-8 col-12 col-sm-12 py-2 ms-xl-3 ms-lg-3">
@@ -60,6 +61,7 @@
             <div class="col-lg-8 col-xl-8 col-12 col-sm-12 py-2 ms-xl-3 ms-lg-3">
                 <label class="bleuFonce texte-bold" for="SiteWeb">Site Internet <i class="bi bi-braces text-success"></i></label>
                 <input type="text" @bind="FournisseurFormModel.SiteWebEntreprise" maxlength="64" class="form-control @GetInputClass(() => FournisseurFormModel.SiteWebEntreprise) input-bleu texte-light" id="SiteWeb" />
+                  @((MarkupString)GetValidationHTML(() => FournisseurFormModel.SiteWebEntreprise))
             </div>
             @{
                 var phoneNo = 1;
@@ -116,6 +118,15 @@
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
         var isValid = !EditContext.GetValidationMessages(fieldIdentifier).Any();
+        // THERE'S PROBABLY A BETTER WAY TO DO THIS.
+        if (fieldIdentifier.FieldName.Equals("BureauEntreprise")) {
+            return isValid ? "" : "invalid";
+        }
+
+        // THERE'S PROBABLY A BETTER WAY TO DO THIS.
+        if (fieldIdentifier.FieldName.Equals("SiteWebEntreprise")) {
+            return isValid ? "" : "invalid";
+        }
         return isValid ? "valid" : "invalid";
     }
 
@@ -126,6 +137,16 @@
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
         var isValid = !EditContext.GetValidationMessages(fieldIdentifier).Any();
+        // THERE'S PROBABLY A BETTER WAY TO DO THIS.
+        if (fieldIdentifier.FieldName.Equals("BureauEntreprise")) {
+            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + EditContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
+        }
+
+        // THERE'S PROBABLY A BETTER WAY TO DO THIS.
+        if (fieldIdentifier.FieldName.Equals("SiteWebEntreprise")) {
+            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + EditContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
+        }
+
         return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-medium\">Valide</span></span>" 
                        : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + EditContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
     }
