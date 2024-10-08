@@ -1,4 +1,5 @@
 ﻿@page "/counter"
+@attribute [Authorize(Roles = "Commis")]
 @using Portail_OptiVille.Data.Utilities
 @using System.IO;
 @using System.Collections.Generic;
@@ -6,6 +7,7 @@
 
 @inject MailManager _mailManager
 @inject DownloadService DownloadService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 <PageTitle>Counter</PageTitle>
 
 <h1>Test pour voir si on peut envoyer des mails</h1>
@@ -17,6 +19,7 @@
 
 @code {
     private int currentCount = 0;
+    string role = "";
 
     private void IncrementCount()
     {
@@ -139,4 +142,32 @@
 
         Console.WriteLine("Fichier CSV trié et sauvegardé avec succès.");
     }
+
+
+        private bool isCommis;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        string role = user.FindFirst("role")?.Value;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            isCommis = user.IsInRole("Commis");
+            role = user.FindFirst("Role")?.Value;
+        }
+    }
 }
+
+@if (isCommis)
+{
+    <p>L'utilisateur a le rôle "Commis" .</p>
+}
+else
+{
+    <p>L'utilisateur n'a pas le rôle "Commis".</p>
+}
+    <p>L'utilisateur a le rôle "@role".</p>
+
+
