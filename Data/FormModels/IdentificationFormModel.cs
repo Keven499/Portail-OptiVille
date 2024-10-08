@@ -21,7 +21,6 @@ namespace Portail_OptiVille.Data.FormModels
         public string? MotDePasse { get; set; }
 
         [Required(ErrorMessage = "Confirmation requise")]
-        // CHAMP ET VALIDATION À REVOIR
         [MatchField("MotDePasse", ErrorMessage = "Les champs ne correspondent pas")]
         public string? ConfirmationMotDePasse { get; set; }
     }

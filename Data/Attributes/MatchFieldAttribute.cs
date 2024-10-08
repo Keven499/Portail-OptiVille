@@ -17,9 +17,11 @@ namespace Portail_OptiVille.Data.Attributes
             var comparisonValue = validationContext.ObjectType.GetProperty(_comparisonProperty)
                 ?.GetValue(validationContext.ObjectInstance)?.ToString();
 
-            if (currentValue != comparisonValue)
+            Console.WriteLine($"Current Value: {currentValue}, Comparison Value: {comparisonValue}");
+
+            if (!currentValue.Equals(comparisonValue))
             {
-                return new ValidationResult(ErrorMessage ?? "Les champs ne correspondent pas.");
+                return new ValidationResult(ErrorMessage ?? "Les champs ne correspondent pas. I was null", new []{validationContext.MemberName});
             }
 
             return ValidationResult.Success;

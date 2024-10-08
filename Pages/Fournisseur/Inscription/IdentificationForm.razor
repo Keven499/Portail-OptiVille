@@ -1,18 +1,10 @@
 @using Portail_OptiVille.Data.FormModels
 @using System.Text.RegularExpressions
 @using System.Linq.Expressions
-
-<style>
-    .invalid {
-        outline: 1px solid red;
-    }
-    .valid {
-        outline: 1px solid #26b050;
-    }
-</style>
+@using System.ComponentModel.DataAnnotations
 
 <PageTitle>Étape 1 Identification</PageTitle>
-<EditForm EditContext="@EditContext">
+<EditForm EditContext="@editContext">
     <DataAnnotationsValidator />
     <div class="card-header py-2 bg-bleuFonce">
         <h3 class="py-2 p-0 my-0 text-white titre-bold">Identification</h3>
@@ -51,12 +43,12 @@
     public Action<IdentificationForm>? AssignReference { get; set; }
     [Parameter]
     public IdenticationFormModel IdenticationFormModel { get; set; }
-    private EditContext EditContext { get; set; }
-     private bool isSubmit = false;
+    private EditContext editContext;
+    private bool isSubmit = false;
     protected override void OnInitialized()
     {
-        EditContext = new EditContext(IdenticationFormModel);
-        EditContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
+        editContext = new EditContext(IdenticationFormModel);
+        editContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
         AssignReference?.Invoke(this);
     }
 
@@ -66,7 +58,7 @@
            return "";
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
-        var isValid = !EditContext.GetValidationMessages(fieldIdentifier).Any();
+        var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
         return isValid ? "valid" : "invalid";
     }
 
@@ -76,15 +68,17 @@
            return "";
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
-        var isValid = !EditContext.GetValidationMessages(fieldIdentifier).Any();
+        var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
         return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-medium\">Valide</span></span>" 
-                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + EditContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
+                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
     }
 
     public bool TriggerValidation() 
     {
         isSubmit = true;
+        bool isValid = false;
+        isValid = editContext.Validate();
         StateHasChanged();
-        return EditContext.Validate();
+        return isValid;
     }
 }
