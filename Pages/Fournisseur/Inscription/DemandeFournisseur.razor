@@ -20,21 +20,25 @@
         }
         else
         {
-            <div class="progress mb-2 texte-bold p-0">
-                <div class="bg-bleuFonce progress-bar progress-bar-striped rounded text-white texte-medium" role="progressbar" 
-                    style="width: @ProgressPercentage%;" aria-valuenow="@ProgressPercentage" aria-valuemin="0" aria-valuemax="100">
-                    Étape @currentStep sur @totalSteps
-                </div>
-            </div>
-             <div class="card p-0 m-0">
-                @Components[currentIndex]
-                <div class="card-footer bg-bleuFonce d-flex justify-content-center">
-                    <button @onclick="ShowPrevious" disabled="@isFirstComponent" class="btn bg-bleu text-white texte-bold" style="width: 200px;">Précédent 
-                        <i class="bi bi-arrow-left-circle"></i>
-                    </button>
-                    <button @onclick="ShowNext" class="btn bg-bleu text-white texte-bold ms-2" style="width: 200px;">Suivant 
-                        <i class="bi bi-arrow-right-circle"></i>
-                    </button>
+            <div class="row d-flex justify-content-center">
+                <div class="col-xl-8 col-lg-8 col-12 col-sm-12">
+                    <div class="progress mb-2 texte-bold">
+                        <div class="bg-bleuFonce progress-bar progress-bar-striped rounded text-white texte-medium" role="progressbar" 
+                            style="width: @ProgressPercentage%;" aria-valuenow="@ProgressPercentage" aria-valuemin="0" aria-valuemax="100">
+                            Étape @currentStep sur @totalSteps
+                        </div>
+                    </div>
+                    <div class="card">
+                        @Components[currentIndex]
+                        <div class="card-footer bg-bleuFonce d-flex justify-content-center">
+                            <button @onclick="ShowPrevious" disabled="@isFirstComponent" class="btn bg-bleu text-white texte-medium" style="width: 200px;">Précédent 
+                                <i class="bi bi-arrow-left-circle"></i>
+                            </button>
+                            <button @onclick="ShowNext" class="btn bg-bleu text-white texte-medium ms-2" style="width: 200px;">Suivant 
+                                <i class="bi bi-arrow-right-circle"></i>
+                            </button>
+                        </div>
+                    </div>                    
                 </div>
             </div>
         }
