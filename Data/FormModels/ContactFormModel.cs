@@ -23,7 +23,7 @@ namespace Portail_OptiVille.Data.FormModels {
         [Required(ErrorMessage = "Type requis")]
         public string TypeTelephone { get; set; } = null!;
 
-        [Required(ErrorMessage = "Numéro requis")]
+        [Required(ErrorMessage = "No requis")]
         [RegularExpression(@"^\d{10}$", ErrorMessage = "Caractères interdits")]
         public string Telephone { get; set; }
 
