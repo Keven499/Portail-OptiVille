@@ -74,7 +74,6 @@
     private int currentIndex = 0;
     private int currentStep => currentIndex + 1;
     private int totalSteps => Components.Count;
-    private double ProgressPercentage => (double)currentStep / totalSteps * 100;
     private string ProgressPercentage => ((double)currentStep / totalSteps * 100).ToString("F2").Replace(',', '.');
 
 
