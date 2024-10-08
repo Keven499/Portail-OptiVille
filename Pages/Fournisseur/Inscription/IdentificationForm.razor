@@ -3,6 +3,12 @@
 @using System.Linq.Expressions
 @using System.ComponentModel.DataAnnotations
 
+<style>
+    .valid {
+        outline: 1px solid #26b050;
+    }   
+</style>
+
 <PageTitle>Étape 1 Identification</PageTitle>
 <EditForm EditContext="@editContext">
     <DataAnnotationsValidator />
@@ -60,6 +66,11 @@
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
         var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
+        // THERE'S PROBABLY A BETTER WAY TO DO THIS.
+        if (fieldIdentifier.FieldName.Equals("NEQ")) {
+            return isValid ? "" : "invalid";
+        }
+
         return isValid ? "valid" : "invalid";
     }
 
@@ -70,6 +81,11 @@
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
         var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
+        // THERE'S PROBABLY A BETTER WAY TO DO THIS.
+        if (fieldIdentifier.FieldName.Equals("NEQ")) {
+            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
+        }
+        
         return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-medium\">Valide</span></span>" 
                        : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
     }
