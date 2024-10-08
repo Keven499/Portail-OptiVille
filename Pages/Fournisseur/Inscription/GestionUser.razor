@@ -102,6 +102,7 @@
     private string? validationError = null;
     List<string> Roles = new() { "Administrateur", "Responsable", "Commis" };
     private List<Employe> allEmployes = new List<Employe>();
+    private List<Employe> allBonobos = new List<Employe>();
     public class UserModele
     {
         [Required(ErrorMessage = "Veuillez mettre un courriel")]
@@ -118,7 +119,8 @@
     {
         try
         {
-            allEmployes = await _context.Employes.ToListAsync();
+            allEmployes = await _context.Employes.Where(e => Roles.Contains(e.Role)).ToListAsync();
+            allBonobos = await _context.Employes.Where(e => e.Role == "Aucun").ToListAsync();
         }
         catch (Exception ex)
         {
@@ -163,12 +165,16 @@
 
     private void AjoutUtilisateur()
     {
+       var allBonobosEmails = allBonobos.Select(e => e.Courriel).ToList();
+        if (allBonobosEmails.Contains(userModel.email))
+        {
         allEmployes.Add(new Employe { Courriel = userModel.email!, Role = userModel.role! });
 
         Console.WriteLine($"User: {userModel.email} Role: {userModel.role} (ajouté)");
         
         userModel = new UserModele();
         formAjouter = false;
+        }
     }
 
 
@@ -180,7 +186,7 @@
             {
                 Console.WriteLine($"Employe: {employe.Courriel}, Role: {employe.Role}");
             }
-            _context.Employes.Add(new Employe { Courriel = "test25@test.com", Role = "Administrateur" });
+              
         }
         else
         {
