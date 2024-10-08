@@ -6,6 +6,7 @@ using Portail_OptiVille.Data.Models;
 using Portail_OptiVille.Data.Utilities;
 using static Portail_OptiVille.Data.Utilities.MailManager;
 using System.Net.Http;
+using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,19 @@ builder.Services.AddDbContext<A2024420517riGr1Eq6Context>(options =>
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<DownloadService>();
 
+#region Connexion
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddAuthentication("Cookies")
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Connexion-employe";  // Page de connexion
+    });
+builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddAuthorizationCore();
+#endregion
+
 //builder.Services.AddHttpClient();
 
 var app = builder.Build();
@@ -62,6 +76,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// Ajout de l'authentification et de l'autorisation
+app.UseAuthentication();  // Middleware d'authentification
+app.UseAuthorization();   // Middleware d'autorisation
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
