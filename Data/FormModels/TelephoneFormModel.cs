@@ -8,7 +8,7 @@ namespace Portail_OptiVille.Data.FormModels {
         [Required(ErrorMessage = "Type requis")]
         public string TypeTelEntreprise { get; set; }
     
-        [Required(ErrorMessage = "Numéro requis")]
+        [Required(ErrorMessage = "No requis")]
         [StringLength(10, MinimumLength = 10, ErrorMessage = "Doit contenir 10 caractères")]
         public string NoTelEntreprise { get; set; }
 

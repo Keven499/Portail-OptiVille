@@ -9,7 +9,7 @@ namespace Portail_OptiVille.Data.FormModels
             PhoneList = new List<TelephoneFormModel>();
         }
 
-        [Required(ErrorMessage = "Numéro requis")]
+        [Required(ErrorMessage = "No requis")]
         [RegularExpression(@"^(\d{1,5}[A-Z]?)\s*(½?)$", ErrorMessage = "Format invalide")]
         public string NoEntreprise { get; set; }
 
