@@ -1,24 +1,27 @@
 @using Microsoft.EntityFrameworkCore
 @using Portail_OptiVille.Data.Models
 @using Portail_OptiVille.Data.FormModels
+@using System.Linq.Expressions
 @inject A2024420517riGr1Eq6Context _context
 
 <PageTitle>Étape 4 Produits et services</PageTitle>
-<EditForm Model="@ProduitServiceFormModel">
+<EditForm EditContext="@editContext">
+    <DataAnnotationsValidator />
     <div class="card-header py-2 bg-bleuFonce">
         <h3 class="py-2 p-0 my-0 text-white titre-bold">Produits et services</h3>
     </div>
     <div class="card-body border-bleuFonce py-1">
         <div class="col-xl-12 col-lg-12 py-2">
+            <label class="texte-bold">Chercher un produit ou un service</label>
             <div class="input-group">
-                <input @bind="searchBarValue" type="text" class="form-control input-bleu texte-light" placeholder="Recherchez">
+                <input @bind="searchBarValue" type="text" class="form-control input-bleu texte-light" placeholder="Recherchez..">
                 <button class="btn bg-bleu text-white" type="button" @onclick="OnSearch">
                     <i class="bi bi-search"></i>
                 </button>
             </div>
         </div>
         <div class="col-xl-12 col-lg-12 py-2">
-            <label class="texte-bold" for="statut"><i class="bi bi-braces text-success"></i> Catégorie</label>
+            <label class="texte-bold" for="statut">Catégorie <i class="bi bi-braces text-success"></i> </label>
             <select class="form-select input-bleu texte-light" @onchange="OnCategorieChange">
                 <option>Toutes les catégories</option>
                     @foreach (var categorie in CategorieUNSPSC) {
@@ -27,10 +30,11 @@
             </select>
         </div>
         <div class="col-xl-12 col-lg-12 py-2">
-            <label class="texte-bold"><i class="bi bi-braces-asterisk text-danger"></i></label>
-            <div class="@(isErrorSousProduit ? "invalid" : (isGoodSousProduit ? "valid" : "")) overflow-auto box-bleu card">
+            <label class="texte-bold">Produits et services <i class="bi bi-braces-asterisk text-danger"></i></label>
+            <div class="@GetInputClass(() => ProduitServiceFormModel.SousProduitSelected) overflow-auto box-bleu card">
                 @foreach (var produitServiceLine in produitServiceCatego)
                 {
+                    int i = 0;
                     <div class="row m-0 mb-1">
                         <div class="col-auto p-0">
                             <label for="categorie@(i)" class="d-flex">
@@ -45,29 +49,12 @@
                     i++;
                 }
             </div>
-            @if (isErrorSousProduit)
-            {
-                <span class="input-group-text text-danger">
-                    <i class="bi bi-x-circle me-2"></i>
-                    <div class="validation-message texte-medium">Sélectionnez au moins un produit ou service</div>
-                </span>
-            }
+            @((MarkupString)GetValidationHTML(() => ProduitServiceFormModel.SousProduitSelected))
         </div>
         <div class="col-xl-12 col-lg-12 py-2">
-            <label for="details" class="texte-bold" form="message"><i class="bi bi-braces-asterisk text-danger"></i> Détails et spécifications</label>
-            <textarea id="message" oninput="countCharacters(this)" class="form-control @(isErrorDetail ? "invalid" : (isGoodDetail ? "valid" : "")) texte-light box-bleu" rows="6" placeholder="Entrez les détails ici" style="resize: none;" @bind="ProduitServiceFormModel.Message" />
-            @if (isErrorDetail) {
-                <span class="input-group-text text-danger">
-                    <i class="bi bi-x-circle me-2"></i>
-                    <div class="validation-message texte-medium">@detailErrorMessage</div>
-                </span>
-            }
-            @if (isGoodDetail) {
-                <span class="input-group-text text-success">
-                    <i class="bi bi-check-circle me-2"></i>
-                    <span class="texte-medium">Valide</span>
-                </span>
-            }
+            <label for="details" class="texte-bold" form="message">Détails et spécifications <i class="bi bi-braces-asterisk text-danger"></i> </label>
+            <textarea id="message" oninput="countCharacters(this)" class="form-control @GetInputClass(() => ProduitServiceFormModel.Message) texte-light box-bleu" rows="6" placeholder="Entrez les détails ici.." style="resize: none;" @bind="ProduitServiceFormModel.Message" />
+            @((MarkupString)GetValidationHTML(() => ProduitServiceFormModel.Message))
             <span style="display:none;" class="texte-bold" id="charCount">500 caractères restant.</span>
         </div>
     </div>
@@ -99,18 +86,15 @@
     public ProduitServiceFormModel ProduitServiceFormModel { get; set; }
     [Parameter]
     public List<Categorieunspsc> CategorieUNSPSC { get; set; }
+    private EditContext editContext { get; set; }
     private List<Produitservice> produitServiceCatego = new List<Produitservice>();
+    private bool isSubmit = false;
     private string? searchBarValue;
-    private bool isErrorDetail = false;
-    private bool isGoodDetail = false;
-    private string? detailErrorMessage;
-    private bool isErrorSousProduit = false;
-    private bool isGoodSousProduit = false;
-    private string? sousProduitErrorMessage;
-    int i = 0;
     private string? selectedCategorie = "Toutes les catégories"; 
     protected override void OnInitialized()
     {
+        editContext = new EditContext(ProduitServiceFormModel);
+        editContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
         AssignReference?.Invoke(this);
         try
         {
@@ -121,6 +105,34 @@
             Console.WriteLine($"Erreur lors de la récupération des personnes: {ex.Message}");
         }
     }
+
+    private string GetInputClass<TField> (Expression<Func<TField>> fieldExpression)
+    {
+        if (!isSubmit) {
+           return "";
+        }
+        var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
+        var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
+        return isValid ? "valid" : "invalid";
+    }
+
+    private string GetValidationHTML<TField> (Expression<Func<TField>> fieldExpression) 
+    {
+        if (!isSubmit) {
+           return "";
+        }
+        var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
+        var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
+        return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-medium\">Valide</span></span>" 
+                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
+    }
+
+    public bool TriggerValidation() 
+    {
+        isSubmit = true;
+        StateHasChanged();
+        return editContext.Validate();
+    }
     
     private void OnCheckboxChange(string codeUNSPSC, ChangeEventArgs e)
     {
@@ -128,16 +140,6 @@
         {
             ProduitServiceFormModel.SousProduitSelected[codeUNSPSC] = (bool)e.Value;
         }
-    }
-
-    private bool ValidateSelection()
-    {
-        if (ProduitServiceFormModel == null || ProduitServiceFormModel.SousProduitSelected == null)
-        {
-            return false;
-        }
-
-        return ProduitServiceFormModel.SousProduitSelected.Values.Any(isSelected => isSelected);
     }
 
     private void OnCategorieChange(ChangeEventArgs e) {
@@ -184,35 +186,5 @@
                 }
             }
         }
-    }
-
-    public bool ValidateForm() {
-        bool isValid = true;
-        if (!ValidateSelection())
-        {
-            isErrorSousProduit = true;
-            isGoodSousProduit = false;
-            sousProduitErrorMessage = "Au moins une catégorie doit être sélectionné";
-            isValid = false;
-        }
-        else
-        {
-            isErrorSousProduit = false;
-            isGoodSousProduit = true;
-        }
-
-        if (!string.IsNullOrEmpty(ProduitServiceFormModel.Message)) {
-            isGoodDetail = true;
-            isErrorDetail = false;
-        }
-        else {
-            isGoodDetail = false;
-            isErrorDetail = true;
-            detailErrorMessage = "Détails et spécifications requis";
-            isValid = false;
-        }
-
-        return isValid;
-    }
-        
+    }     
 }

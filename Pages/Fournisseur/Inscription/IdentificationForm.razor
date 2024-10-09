@@ -12,7 +12,7 @@
     <div class="card-body border-bleuFonce py-1">
         <div class="col-xl-5 col-lg-5 col-6 col-sm-6 py-2 ms-xl-3 ms-lg-3">
             <label class="bleuFonce texte-bold" for="NEQ">NEQ <i class="bi bi-braces text-success"></i></label>
-            <input type="text" @bind="IdenticationFormModel.NEQ" class="form-control @GetInputClass(() => IdenticationFormModel.NEQ) input-bleu texte-light" id="NEQ" />
+            <input type="text" @bind="IdenticationFormModel.NEQ" class="form-control @GetInputClass(() => IdenticationFormModel.NEQ) input-bleu texte-light" id="NEQ" placeholder="##########"/>
             @((MarkupString)GetValidationHTML(() => IdenticationFormModel.NEQ))
         </div>
         <div class="col-xl-9 col-lg-9 col-12 col-sm-12 py-2 ms-xl-3 ms-lg-3">

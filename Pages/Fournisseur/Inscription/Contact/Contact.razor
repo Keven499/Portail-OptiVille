@@ -2,16 +2,7 @@
 @using Portail_OptiVille.Data.FormModels
 @using System.Linq.Expressions
 
-<style>
-    .invalid {
-        outline: 1px solid red;
-    }
-    .valid {
-        outline: 1px solid #26b050;
-    }
-</style>
-
-<EditForm EditContext="@EditContext">
+<EditForm EditContext="@editContext">
         <DataAnnotationsValidator />
         <h4 class="col-lg-12 col-xl-12 titre-bold">Contact @ContactNumber <i class="bi bi-braces-asterisk text-danger"></i></h4>
         <div class="d-flex align-baseline">
@@ -64,13 +55,13 @@
     [Parameter]
     public int ContactNumber { get; set; } = 1;
     ContactFormModel contactFormModel = new ContactFormModel();
-    private EditContext EditContext { get; set; }
+    private EditContext editContext { get; set; }
     private bool isSubmit = false;
 
     protected override void OnInitialized() 
     {
-        EditContext = new EditContext(contactFormModel);
-        EditContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
+        editContext = new EditContext(contactFormModel);
+        editContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
     }
 
     private string GetInputClass<TField> (Expression<Func<TField>> fieldExpression)
@@ -79,7 +70,13 @@
            return "";
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
-        var isValid = !EditContext.GetValidationMessages(fieldIdentifier).Any();
+        var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
+
+        // THERE'S PROBABLY A BETTER WAY TO DO THIS.
+        if (fieldIdentifier.FieldName.Equals("Poste")) {
+            return isValid ? "" : "invalid";
+        }
+
         return isValid ? "valid" : "invalid";
     }
 
@@ -89,15 +86,21 @@
            return "";
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
-        var isValid = !EditContext.GetValidationMessages(fieldIdentifier).Any();
+        var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
+
+         // THERE'S PROBABLY A BETTER WAY TO DO THIS.
+        if (fieldIdentifier.FieldName.Equals("Poste")) {
+            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
+        }
+
         return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-medium\">Valide</span></span>" 
-                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + EditContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
+                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
     }
 
      public bool TriggerValidation() 
     {
         isSubmit = true;
         StateHasChanged();
-        return EditContext.Validate();
+        return editContext.Validate();
     }
 }

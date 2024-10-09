@@ -20,6 +20,16 @@
         }
         else
         {
+            // PEUT ÊTRE AMENÉ À CHANGER DE PLACE, MAIS LE PRINCIPE EST PRÉSENT.
+            <div class="row d-flex justify-content-center mb-1">
+                 <div class="col-xl-8 col-lg-8 col-12 col-sm-12">
+                    <div class=" d-flex">  
+                        <div class="texte-bold me-1">Légende</div>
+                        <div class="texte-medium">- Optionnel: <i class="bi bi-braces text-success"></i>  /  Obligatoire: <i class="bi bi-braces-asterisk text-danger"></i></div> 
+                    </div>
+                 </div>
+            </div>
+            
             <div class="row d-flex justify-content-center">
                 <div class="col-xl-8 col-lg-8 col-12 col-sm-12">
                     <div class="progress mb-2 texte-bold">
@@ -197,7 +207,7 @@
         // CASE PRODUITS ET SERVICES 4
          if (currentIndex == 3 && produitServiceRef != null)
         {
-            bool isValid = produitServiceRef.ValidateForm();
+            bool isValid = produitServiceRef.TriggerValidation();
             if (!isValid)
             {
                 return;
