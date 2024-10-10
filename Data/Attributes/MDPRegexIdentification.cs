@@ -15,7 +15,7 @@ public class MDPRegexIdentification : ValidationAttribute
         Console.WriteLine($"Password is not null and its value is: {password}");
         if (password.Length < 7 || password.Length > 12)
         {
-            return new ValidationResult("7 à 12 caractères", new[] { validationContext.MemberName });
+            return new ValidationResult("Entre 7 à 12 caractères", new[] { validationContext.MemberName });
         }
         if (!Regex.IsMatch(password, @"[A-Z]"))
         {
