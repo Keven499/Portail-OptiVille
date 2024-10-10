@@ -5,14 +5,11 @@ public class MDPRegexIdentification : ValidationAttribute
 {
     protected override ValidationResult IsValid(object value, ValidationContext validationContext)
     {
-        Console.WriteLine($"REGEX VALIDATION FOR MDP");
         var password = value as string;
         if (string.IsNullOrEmpty(password))
         {
             return new ValidationResult("Mdp requis", new[] { validationContext.MemberName });
         }
-
-        Console.WriteLine($"Password is not null and its value is: {password}");
         if (password.Length < 7 || password.Length > 12)
         {
             return new ValidationResult("Entre 7 à 12 caractères", new[] { validationContext.MemberName });
