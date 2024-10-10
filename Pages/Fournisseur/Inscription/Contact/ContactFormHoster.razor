@@ -8,13 +8,14 @@
 <div class="card-body border-bleuFonce bg-blanc py-1">
     @{
         var contactNo = 1;
-        foreach (var contactModel in ContactHosterFormModel.ContactList)
+        foreach (var contact in ContactHosterFormModel.ContactList)
         {
-            <Contact ContactNumber="@contactNo" contactFormModel="@contactModel" />    
-            if (!(ContactHosterFormModel.ContactList.Last() == contactModel)) 
-            {
-                <hr class="m-0">
-            }   
+            <Contact ContactNumber="@contactNo" @ref="contactComponents[contact]" />    
+            if (!(ContactHosterFormModel.ContactList.Count == contactNo)) {
+                <div class="">
+                    <hr class="m-0 mb-2">  
+                </div> 
+            }    
             contactNo++;        
         }
     }

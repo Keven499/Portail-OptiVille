@@ -69,17 +69,16 @@
         <div class="card-body border-bleuFonce bg-blanc py-1">
         @{
             var phoneNo = 1;
-            @foreach (var phoneModel in FournisseurFormModel.PhoneList)
+            foreach (var phone in FournisseurFormModel.PhoneList)
             {
-                <Telephone TelephoneNumber="@phoneNo" telephoneFormModel="@phoneModel" />
-                if (!(FournisseurFormModel.PhoneList.Last() == phoneModel)) 
-                {
-                    <hr class="m-0">
+                <Telephone TelephoneNumber="@phoneNo" @ref="telephoneComponents[phone]" />  
+                if (!(FournisseurFormModel.PhoneList.Count == phoneNo)) {
+                    <hr class="m-0">  
                 }
                 phoneNo++;        
             }
         }
-        <div class="d-flex justify-content-center pb-2">
+          <div class="d-flex justify-content-center pb-2">
             <button type="button" class="btn bg-success text-white texte-bold me-2" @onclick="AddTelephone" style="width: 200px;" ><i class="bi bi-plus-circle"></i> Ajout</button>
             <button type="button" class="btn bg-danger text-white texte-bold" @onclick="RemoveTelephone" disabled="@(!(FournisseurFormModel.PhoneList.Count > 1))" style="width: 200px;" ><i class="bi bi-trash"></i> Retirer</button>
         </div>
@@ -149,15 +148,15 @@
 
         // THERE'S PROBABLY A BETTER WAY TO DO THIS.
         if (fieldIdentifier.FieldName.Equals("BureauEntreprise")) {
-            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + EditContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
+            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + EditContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
         }
         // THERE'S PROBABLY A BETTER WAY TO DO THIS.
         if (fieldIdentifier.FieldName.Equals("SiteWebEntreprise")) {
-            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + EditContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
+            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + EditContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
         }
 
-        return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-validation\">Valide</span></span>" 
-                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + EditContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
+        return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-medium\">Valide</span></span>" 
+                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + EditContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
     }
 
     public bool TriggerValidation() 

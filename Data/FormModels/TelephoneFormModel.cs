@@ -5,10 +5,10 @@ namespace Portail_OptiVille.Data.FormModels {
     {
         public int IdTelephone { get; set; }
 
-        [Required(ErrorMessage = "Type requis")]
+        [Required(ErrorMessage = "Requis")]
         public string TypeTelEntreprise { get; set; }
     
-        [Required(ErrorMessage = "No requis")]
+        [Required(ErrorMessage = "Requis")]
         [StringLength(10, MinimumLength = 10, ErrorMessage = "10 caractères exigés")]
         public string NoTelEntreprise { get; set; }
 
