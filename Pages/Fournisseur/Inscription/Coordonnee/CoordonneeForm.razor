@@ -69,16 +69,17 @@
         <div class="card-body border-bleuFonce bg-blanc py-1">
         @{
             var phoneNo = 1;
-            foreach (var phone in FournisseurFormModel.PhoneList)
+            @foreach (var phoneModel in FournisseurFormModel.PhoneList)
             {
-                <Telephone TelephoneNumber="@phoneNo" @ref="telephoneComponents[phone]" />  
-                if (!(FournisseurFormModel.PhoneList.Count == phoneNo)) {
-                    <hr class="m-0">  
+                <Telephone TelephoneNumber="@phoneNo" telephoneFormModel="@phoneModel" />
+                if (!(FournisseurFormModel.PhoneList.Last() == phoneModel)) 
+                {
+                    <hr class="m-0">
                 }
                 phoneNo++;        
             }
         }
-          <div class="d-flex justify-content-center pb-2">
+        <div class="d-flex justify-content-center pb-2">
             <button type="button" class="btn bg-success text-white texte-bold me-2" @onclick="AddTelephone" style="width: 200px;" ><i class="bi bi-plus-circle"></i> Ajout</button>
             <button type="button" class="btn bg-danger text-white texte-bold" @onclick="RemoveTelephone" disabled="@(!(FournisseurFormModel.PhoneList.Count > 1))" style="width: 200px;" ><i class="bi bi-trash"></i> Retirer</button>
         </div>
