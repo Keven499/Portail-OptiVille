@@ -1,10 +1,14 @@
-.navbar-toggler {
-    background-color: rgba(255, 255, 255, 0.1);
+@font-face {
+    font-family: 'TT Hoves Medium';
+    src: url('/fonts/TT Hoves Pro Trial Medium.ttf');
 }
 
-.top-row {
-    height: 3.5rem;
-    background-color: rgba(0,0,0,0.4);
+.navbar-toggler {
+    background-color: rgb(120, 198, 224, 0.5);
+}
+
+.top-row-nav {
+    height: 80px;
 }
 
 .navbar-brand {
@@ -19,6 +23,7 @@
 }
 
 .nav-item {
+    font-family: 'TT Hoves Medium';
     font-size: 0.9rem;
     padding-bottom: 0.5rem;
 }
@@ -41,12 +46,12 @@
     }
 
 .nav-item ::deep a.active {
-    background-color: rgba(255,255,255,0.25);
+    background-color: rgb(0, 118, 213, 0.2);
     color: white;
 }
 
 .nav-item ::deep a:hover {
-    background-color: rgba(255,255,255,0.1);
+    background-color: rgb(0, 118, 213, 0.2);
     color: white;
 }
 
