@@ -10,7 +10,7 @@
         <h3 class="py-2 my-0 text-white titre-bold">Identification</h3>
     </div>
     <div class="card-body border-bleuFonce py-1">
-        <div class="col-xl-5 col-lg-5 col-6 col-sm-6 py-2 ms-xl-3 ms-lg-3">
+        <div class="col-xl-5 col-lg-7 col-12 col-sm-7 ms-xl-3 ms-lg-3 py-2">
             <label class="bleuFonce texte-bold" for="NEQ">NEQ <i class="bi bi-braces text-success"></i></label>
             <input type="text" @bind="IdenticationFormModel.NEQ" class="form-control @GetInputClass(() => IdenticationFormModel.NEQ) input-bleu texte-light" id="NEQ" placeholder="##########"/>
             @((MarkupString)GetValidationHTML(() => IdenticationFormModel.NEQ))
@@ -65,6 +65,7 @@
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
         var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
+
         // THERE'S PROBABLY A BETTER WAY TO DO THIS.
         if (fieldIdentifier.FieldName.Equals("NEQ")) {
             return isValid ? "" : "invalid";
@@ -80,6 +81,7 @@
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
         var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
+        
         // THERE'S PROBABLY A BETTER WAY TO DO THIS.
         if (fieldIdentifier.FieldName.Equals("NEQ")) {
             return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";

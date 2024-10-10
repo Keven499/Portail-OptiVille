@@ -63,19 +63,18 @@
         </div>
         @if (!string.IsNullOrEmpty(errorMessage))
         {
-            <div class="d-flex justify-content-center">
-                <div class="col-xl-6 alert alert-danger alert-dismissible fade show m-1" role="alert">
+            <div class="d-flex justify-content-center p-2">
+                <div class="col-xl-12 alert alert-danger alert-dismissible fade show m-1" role="alert">
                     @errorMessage
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <button type="button" @onclick="ClearErrorMessage" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             </div>
         }
-
         <div class="card-header py-2 bg-bleuFonce titre-bold">
             <h3 class="py-2 p-0 my-0 text-white">Fichiers téléversés (Total: @GetFormatSize())</h3>
         </div>
 
-        <div class="card-body table-bleu">
+        <div class="card-body table-bleu table-responsive">
             <table class="table border-bleuFonce table-bordered my-0 mb-2">
                 <thead>
                     <tr>
@@ -97,14 +96,9 @@
                     }
                 </tbody>
             </table>
-            <div class="d-flex justify-content-center">
-                <button type="submit" class="btn bg-bleu text-white texte-bold" style="width: 200px;">
-                    Enregistrer 
-                    <i class="bi bi-check2-circle"></i>
-                </button>
-            </div>
         </div>
 </EditForm>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/dragdrop.js"></script>
 
@@ -136,8 +130,12 @@
     {  
         [FileExtensionsAttribute(Extensions = "doc,docx,pdf,xls,xlsx,jpg,jpeg,png", ErrorMessage = "Format de fichier non valide.")]
         public IBrowserFile? fichier { get; set; }
-        public string? NoLicenceNEQ { get; set; }
     }
+
+    private void ClearErrorMessage() {
+        errorMessage = "";
+    }
+
     private string GetFormatSizeFile(long size)
     {
         if (size >= 1048576)
@@ -161,10 +159,12 @@
             return $"{(sizeTotal / 1024.0):F2} KB / {MaxSize}MB";
         }
     }
+
     private void CalculTotalSize()
     {
         sizeTotal = listFichiers.Sum(file => file.Size);
     }
+
     private void HandleFileChange(InputFileChangeEventArgs e)
     {
         var allowedExtensions = new[] { ".doc", ".docx", ".pdf", ".xls", ".xlsx", ".jpg", ".jpeg", ".png" };
@@ -212,6 +212,7 @@
             var fileExtension = Path.GetExtension(fileName);
             Console.WriteLine($"Le fichier {fileName} a été upload. (Taille:{fileSize})");
         }
+
         /*
         // Ensure the folder exists
         var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "{(idPERUser)}");

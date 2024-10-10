@@ -8,7 +8,6 @@
         <h3 class="py-2 p-0 my-0 text-white titre-bold">Coordonnées de l'entreprise</h3>
     </div>
         <div class="card-body border-bleuFonce bg-blanc py-1">
-            
             <div class="py-2 d-flex align-baseline">
                 <div class="col-xl-4 col-lg-4 col-5 col-sm-5 ms-xl-3 ms-lg-3">
                     <label class="bleuFonce texte-bold" for="No">Numéro <i class="bi bi-braces-asterisk text-danger"></i></label>
@@ -63,19 +62,27 @@
                 <input type="text" @bind="FournisseurFormModel.SiteWebEntreprise" maxlength="64" class="form-control @GetInputClass(() => FournisseurFormModel.SiteWebEntreprise) input-bleu texte-light" id="SiteWeb" />
                   @((MarkupString)GetValidationHTML(() => FournisseurFormModel.SiteWebEntreprise))
             </div>
-            @{
-                var phoneNo = 1;
-                foreach (var phone in FournisseurFormModel.PhoneList)
-                {
-                    <Telephone TelephoneNumber="@phoneNo" @ref="telephoneComponents[phone]" />        
-                    phoneNo++;        
-                }
-            }
-            <div class="d-flex justify-content-center py-2">
-                <button type="button" class="btn bg-success text-white texte-bold me-2" @onclick="AddTelephone" style="width: 200px;"><i class="bi bi-plus-circle"></i> Ajout téléphone</button>
-                <button type="button" class="btn bg-danger text-white texte-bold" @onclick="RemoveTelephone" disabled="@(!(FournisseurFormModel.PhoneList.Count > 1))" style="width: 200px;" ><i class="bi bi-trash"></i> Retirer téléphone</button>
-            </div>
         </div>
+        <div class="card-header py-2 bg-bleuFonce">
+            <h3 class="py-2 p-0 my-0 text-white titre-bold">Téléphone(s)</h3>
+        </div>
+        <div class="card-body border-bleuFonce bg-blanc py-1">
+        @{
+            var phoneNo = 1;
+            foreach (var phone in FournisseurFormModel.PhoneList)
+            {
+                <Telephone TelephoneNumber="@phoneNo" @ref="telephoneComponents[phone]" />  
+                if (!(FournisseurFormModel.PhoneList.Count == phoneNo)) {
+                    <hr class="m-0">  
+                }
+                phoneNo++;        
+            }
+        }
+          <div class="d-flex justify-content-center pb-2">
+            <button type="button" class="btn bg-success text-white texte-bold me-2" @onclick="AddTelephone" style="width: 200px;" ><i class="bi bi-plus-circle"></i> Ajout</button>
+            <button type="button" class="btn bg-danger text-white texte-bold" @onclick="RemoveTelephone" disabled="@(!(FournisseurFormModel.PhoneList.Count > 1))" style="width: 200px;" ><i class="bi bi-trash"></i> Retirer</button>
+        </div>
+    </div>
 </EditForm>
 
 <style>

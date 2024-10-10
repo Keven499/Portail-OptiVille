@@ -19,7 +19,7 @@ namespace Portail_OptiVille.Data.Attributes
 
             if (!currentValue.Equals(comparisonValue))
             {
-                return new ValidationResult(ErrorMessage ?? "Les champs ne correspondent pas. I was null", new []{validationContext.MemberName});
+                return new ValidationResult(ErrorMessage ?? "Les champs ne correspondent pas", new []{validationContext.MemberName});
             }
 
             return ValidationResult.Success;

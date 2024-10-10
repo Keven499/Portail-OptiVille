@@ -8,50 +8,45 @@
 @inject HttpClient Http
 @using System.ComponentModel.DataAnnotations
 @using System.Text.RegularExpressions
-@inject HttpClient Http
+@using System.Linq.Expressions
+@inject LicenceService licenceService
 
 <PageTitle>Étape 5 Licence RBQ</PageTitle>
-<EditForm Model="@LicenceRBQFormModel">
+<EditForm EditContext="@editContext">
+    <DataAnnotationsValidator />
     <div class="card-header py-2 bg-bleuFonce">
         <h3 class="py-2 p-0 my-0 text-white titre-bold">Licence RBQ</h3>
     </div>
     <div class="card-body border-bleuFonce py-1">
-        <div class="col-xl-3 col-lg-3 col-6 col-sm-6 py-2">
-            <label class="bleuFonce texte-bold" for="noLicenceRBQ">Numéro<i class="bi bi-braces-asterisk text-danger ms-1"></i></label>
-            <input type="text" id="noLicenceRBQ" class="@validityCSS input-bleu texte-light" @bind="LicenceRBQFormModel.NumeroLicence" />
-            @if (numErrorBool) {
-                <span class="input-group-text text-danger">
-                    <i class="bi bi-x-circle me-2"></i>
-                    <div class="validation-message texte-medium">@numErrorMessage</div>
-                </span>
-            }
-            @if (numGoodBool) {
-                <span class="input-group-text text-success">
-                    <i class="bi bi-check-circle me-2"></i>
-                    <span class="texte-medium">Valide</span>
-                </span>
-            }
+        <div class="col-xl-4 col-lg-4 col-6 col-sm-6 py-2">
+            <label class="bleuFonce texte-bold" for="noLicenceRBQ">Numéro<i class="bi bi-braces text-success ms-1"></i> </label>
+            <input type="text" id="noLicenceRBQ" class="form-control @GetInputClass(() => LicenceRBQFormModel.NumeroLicence) input-bleu texte-light" @bind="LicenceRBQFormModel.NumeroLicence" />
+            @((MarkupString)GetValidationHTML(() => LicenceRBQFormModel.NumeroLicence))
         </div>
         <div class="row">
             <div class="col-xl-6 col-lg-6 py-2">
-                <label class="bleuFonce texte-bold" for="statut">Statut<i class="bi bi-braces text-success"></i></label>
-                <select class="form-select input-bleu texte-light" id="statut" @bind="LicenceRBQFormModel.StatutLicence">
+                <label class="bleuFonce texte-bold" for="statut">Statut<i class="bi bi-braces-asterisk text-danger ms-1"></i></label>
+                <select class="form-select @GetInputClass(() => LicenceRBQFormModel.StatutLicence) input-bleu texte-light" id="statut" @bind="LicenceRBQFormModel.StatutLicence">
+                    <option value="" disabled selected>Veuillez choisir un statut</option>
                     <option value="1">Valide</option>
                     <option value="2">Valide avec restriction</option>
                     <option value="3">Non valide</option>
-                </select>                                        
+                </select>         
+                @((MarkupString)GetValidationHTML(() => LicenceRBQFormModel.StatutLicence))                               
             </div>
             <div class="col-xl-6 col-lg-6 py-2">
-                <label class="bleuFonce texte-bold" for="licenceType"><i class="bi bi-braces text-success me-1"></i> Type de licence</label>
-                <select class="form-select input-bleu texte-light" id="licenceType" @bind="LicenceRBQFormModel.TypeLicence">
+                <label class="bleuFonce texte-bold" for="licenceType">Type de licence<i class="bi bi-braces-asterisk text-danger ms-1"></i></label>
+                <select class="form-select @GetInputClass(() => LicenceRBQFormModel.TypeLicence) input-bleu texte-light" id="licenceType" @bind="LicenceRBQFormModel.TypeLicence">
+                     <option value="" disabled selected>Veuillez choisir un type</option>
                     <option value="1">Entrepreneur</option>
                     <option value="2">Constructeur-Propriétaire</option>
                 </select>
+                @((MarkupString)GetValidationHTML(() => LicenceRBQFormModel.TypeLicence))        
             </div>                    
         </div>
         <div class="col-xl-12 col-lg-12 py-2">
-            <label class="texte-bold"><i class="bi bi-braces-asterisk text-danger me-1"></i> Entrepeneur général</label>               
-            <div class="overflow-auto box-bleu card @validityCategoSelect">
+            <label class="texte-bold">Entrepeneur général<i class="bi bi-braces-asterisk text-danger ms-1"></i></label>               
+            <div class="@GetInputClass(() => LicenceRBQFormModel.SousCategoSelected) overflow-auto box-bleu card">
             @{
                 int i = 0;
                 foreach (var categorie in categorieGeneral)
@@ -73,8 +68,8 @@
             </div>
         </div>    
         <div class="col-xl-12 col-lg-12 py-2">
-            <label class="texte-bold"><i class="bi bi-braces-asterisk text-danger me-1"></i> Entrepeneur spécialisé</label>
-            <div class="overflow-auto box-bleu card @validityCategoSelect">
+            <label class="texte-bold">Entrepeneur spécialisé</label>
+            <div class="@GetInputClass(() => LicenceRBQFormModel.SousCategoSelected) overflow-auto box-bleu card">
             @foreach (var categorie in categorieSpecialise)
             {
                 <div class="row m-0">
@@ -92,13 +87,7 @@
                 i++;
             }
             </div>
-            @if (sousCategoError)
-            {
-                <span class="input-group-text text-danger">
-                    <i class="bi bi-x-circle me-2"></i>
-                    <div class="validation-message texte-medium">Sélectionnez au moins une catégorie</div>
-                </span>
-            }
+            @((MarkupString)GetValidationHTML(() => LicenceRBQFormModel.SousCategoSelected))
         </div>
     </div>
 </EditForm>
@@ -110,20 +99,13 @@
     public List<Categorierbq> AllCategories { get; set; }
     [Parameter]
     public LicenceRBQFormModel LicenceRBQFormModel { get; set; }
-   
+    private EditContext editContext;
+    ValidationMessageStore validationMessageStore;
     private List<Categorierbq> categorieGeneral = new List<Categorierbq>();
     private List<Categorierbq> categorieSpecialise = new List<Categorierbq>();
     public string? noLicenceRBQ { get; set; }
-    private int statutLicence = 1;
-    private string validityCSS = "form-control";
-    private string validityCategoSelect = "";
-    private int typeLicence = 1;
+    private bool isSubmit = false;
     private string? tempoNoLicence;
-    private bool numErrorBool = false;
-    private bool numGoodBool = false;
-    private string? numErrorMessage;
-    private bool sousCategoError = false;
-    private bool sousCategoGood = false;
 
     private Dictionary<int, string> statutLicenceText = new Dictionary<int, string>
     {
@@ -140,6 +122,9 @@
 
     protected override void OnInitialized()
     {
+        editContext = new EditContext(LicenceRBQFormModel);
+        editContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
+        validationMessageStore = new ValidationMessageStore(editContext);
         AssignReference?.Invoke(this);
 
         try
@@ -158,6 +143,55 @@
         }
     }
 
+    private string GetInputClass<TField> (Expression<Func<TField>> fieldExpression)
+    {
+        if (!isSubmit) {
+           return "";
+        }
+        var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
+        var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
+
+        // THERE'S PROBABLY A BETTER WAY TO DO THIS.
+        if (fieldIdentifier.FieldName.Equals("NumeroLicence")) {
+            return isValid ? "" : "invalid";
+        }
+
+        return isValid ? "valid" : "invalid";
+    }
+
+    private string GetValidationHTML<TField> (Expression<Func<TField>> fieldExpression) 
+    {
+        if (!isSubmit) {
+           return "";
+        }
+        var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
+        var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
+
+        // THERE'S PROBABLY A BETTER WAY TO DO THIS.
+        if (fieldIdentifier.FieldName.Equals("NumeroLicence")) {
+            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
+        }
+
+        return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-medium\">Valide</span></span>" 
+                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
+    }
+
+    public async Task<bool> TriggerValidation() 
+    {
+        validationMessageStore.Clear();
+        isSubmit = true;
+        if (!string.IsNullOrEmpty(LicenceRBQFormModel.NumeroLicence)) {
+            bool isValid = await licenceService.ValidateNumeroDeLicenceAsync(InsertHyphens(LicenceRBQFormModel.NumeroLicence));
+            if (!isValid)
+            {
+                validationMessageStore.Add(() => LicenceRBQFormModel.NumeroLicence, "Aucune correspondance");
+                editContext.NotifyValidationStateChanged();
+            }
+        }
+        StateHasChanged();
+        return editContext.Validate();
+    }
+
     private void OnCheckboxChange(string codeSousCategorie, ChangeEventArgs e)
     {
         if (e.Value is bool isChecked)
@@ -172,11 +206,8 @@
         {
             return false;
         }
-
         return LicenceRBQFormModel.SousCategoSelected.Values.Any(isSelected => isSelected);
     }
-
-
 
     static string InsertHyphens(string input)
     {
@@ -185,108 +216,5 @@
             return input.Substring(0, 4) + "-" + input.Substring(4, 4) + "-" + input.Substring(8, 2);
         }
         return input;
-    }
-
-    public class ApiResponse
-    {
-        public Result? Result { get; set; }
-    }
-
-    public class Result
-    {
-        public List<RBQRecord>? Records { get; set; }
-    }
-
-    public class RBQRecord
-    {
-        [JsonPropertyName("Numero de licence")]
-        public string? NumeroDeLicence { get; set; }
-    }
-    protected async Task<string?> GetNumeroDeLicenceAsync()
-    {
-        try
-        {
-            var response = await Http.GetAsync($"https://www.donneesquebec.ca/recherche/api/3/action/datastore_search_sql?sql=SELECT%20*%20FROM%20%2232f6ec46-85fd-45e9-945b-965d9235840a%22%20WHERE%20%22Numero%20de%20licence%22%20=%20%27{noLicenceRBQ}%27LIMIT%201"); // Replace `url` with your API endpoint
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                var apiResponse = JsonSerializer.Deserialize<ApiResponse>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                var responseNoLicence = apiResponse?.Result?.Records?.FirstOrDefault()?.NumeroDeLicence;
-                Console.WriteLine("API: "+ responseNoLicence);
-                return responseNoLicence;
-            }
-            return "0000-0000-00";
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred: {ex.Message}");
-            return null;
-        }
-    }
-
-    public async Task<bool> ValidateForm()
-    {
-        bool isValid = true;
-        if (!ValidateSelection())
-        {
-            validityCategoSelect = "invalid";
-            sousCategoError = true;
-            sousCategoGood = false;
-            isValid = false;
-        }
-        else
-        {
-            validityCategoSelect = "valid";
-            sousCategoError = false;
-            sousCategoGood = true;
-        }
-
-        if (!string.IsNullOrEmpty(LicenceRBQFormModel.NumeroLicence))
-        {
-            if (LicenceRBQFormModel.NumeroLicence.Length == 10 || LicenceRBQFormModel.NumeroLicence.Length == 12) {
-                noLicenceRBQ = InsertHyphens(LicenceRBQFormModel.NumeroLicence);
-                tempoNoLicence = await GetNumeroDeLicenceAsync(); 
-            }
-            else {
-                isValid = false;
-                numErrorBool = true;
-                numErrorMessage = "Aucune correspondance";
-                validityCSS = "form-control invalid";
-                numGoodBool = false;
-            }
-            if (tempoNoLicence != null) {
-                if (tempoNoLicence.Equals(LicenceRBQFormModel.NumeroLicence))
-                {
-                    numErrorBool = false;
-                    validityCSS = "form-control valid";
-                    numGoodBool = true;
-                }
-                else
-                {
-                    isValid = false;
-                    numErrorMessage = "Aucune correspondance";
-                    numErrorBool = true;
-                    validityCSS = "form-control invalid";
-                    numGoodBool = false;
-                }
-            }
-            else {
-                isValid = false;
-                numErrorBool = true;
-                numErrorMessage = "Aucune correspondance";
-                validityCSS = "form-control invalid";
-                numGoodBool = false;
-            }
-        }
-        else
-        {
-            isValid = false;
-            numErrorBool = true;
-            validityCSS = "form-control invalid";
-            numGoodBool = false;
-            numErrorMessage = "Numéro de licence requis";
-        }
-
-        return isValid;
     }
 }

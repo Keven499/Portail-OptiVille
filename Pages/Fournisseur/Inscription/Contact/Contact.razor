@@ -44,7 +44,7 @@
                 @((MarkupString)GetValidationHTML(() => contactFormModel.Telephone))
             </div>
         </div>
-        <div class="col-lg-5 col-xl-5 col-6 col-sm-6 ms-xl-3 ms-lg-3 py-2">
+        <div class="col-lg-5 col-xl-5 col-6 col-sm-6 ms-xl-3 ms-lg-3 py-2 mb-2">
             <label class="bleuFonce texte-bold" for="Poste1Contact">Poste <i class="bi bi-braces text-success"></i></label>
             <input type="text" @bind="contactFormModel.Poste" class="form-control @GetInputClass(() => contactFormModel.Poste) input-bleu texte-light" id="Poste1Contact" />
             @((MarkupString)GetValidationHTML(() => contactFormModel.Poste))

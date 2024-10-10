@@ -32,21 +32,24 @@
         <div class="col-xl-12 col-lg-12 py-2">
             <label class="texte-bold">Produits et services <i class="bi bi-braces-asterisk text-danger"></i></label>
             <div class="@GetInputClass(() => ProduitServiceFormModel.SousProduitSelected) overflow-auto box-bleu card">
-                @foreach (var produitServiceLine in produitServiceCatego)
-                {
+                @{
                     int i = 0;
-                    <div class="row m-0 mb-1">
-                        <div class="col-auto p-0">
-                            <label for="categorie@(i)" class="d-flex">
-                                <input type="checkbox" id="categorie@(i)"
-                                    checked="@ProduitServiceFormModel.SousProduitSelected[produitServiceLine.CodeUnspsc]" 
-                                    @onchange="(e) => OnCheckboxChange(produitServiceLine.CodeUnspsc, e)" />
-                                <span class="check-blanc" />
-                                <span class="texte-14bold">@produitServiceLine.CodeUnspsc - @produitServiceLine.Description</span>
-                            </label>
+                    foreach (var produitServiceLine in produitServiceCatego)
+                    {
+                        
+                        <div class="row m-0 mb-1">
+                            <div class="col-auto p-0">
+                                <label for="categorie@(i)" class="d-flex">
+                                    <input type="checkbox" id="categorie@(i)"
+                                        checked="@ProduitServiceFormModel.SousProduitSelected[produitServiceLine.CodeUnspsc]" 
+                                        @onchange="(e) => OnCheckboxChange(produitServiceLine.CodeUnspsc, e)" />
+                                    <span class="check-blanc" />
+                                    <span class="texte-14bold">@produitServiceLine.CodeUnspsc - @produitServiceLine.Description</span>
+                                </label>
+                            </div>
                         </div>
-                    </div>
-                    i++;
+                        i++;
+                    }
                 }
             </div>
             @((MarkupString)GetValidationHTML(() => ProduitServiceFormModel.SousProduitSelected))

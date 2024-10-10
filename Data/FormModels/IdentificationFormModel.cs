@@ -18,6 +18,7 @@ namespace Portail_OptiVille.Data.FormModels
         [Required(ErrorMessage = "Requis")]
         [StringLength(12, MinimumLength = 7, ErrorMessage = "7 à 12 caractères")]
         [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).+$", ErrorMessage = "Caractères interdits")]
+        // IL MANQUE DES VALIDATIONS POUR LE MOT DE PASSE
         public string? MotDePasse { get; set; }
 
         [Required(ErrorMessage = "Requis")]
