@@ -5,7 +5,7 @@ namespace Portail_OptiVille.Data.FormModels
 {
     public class ProduitServiceFormModel
     {
-        [Required(ErrorMessage = "Requis")]
+        [Required(ErrorMessage = "Détails requis")]
         [StringLength(500, MinimumLength = 1, ErrorMessage = "Limite dépassée")]
         public string? Message { get; set; }
 

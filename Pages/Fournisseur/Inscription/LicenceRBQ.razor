@@ -18,13 +18,13 @@
         <h3 class="py-2 p-0 my-0 text-white titre-bold">Licence RBQ</h3>
     </div>
     <div class="card-body border-bleuFonce py-1">
-        <div class="col-xl-4 col-lg-4 col-6 col-sm-6 py-2">
+        <div class="col-xl-4 col-lg-4 col-6 col-sm-6 py-2 ms-xl-3 ms-lg-3">
             <label class="bleuFonce texte-bold" for="noLicenceRBQ">Numéro<i class="bi bi-braces text-success ms-1"></i> </label>
             <input type="text" id="noLicenceRBQ" class="form-control @GetInputClass(() => LicenceRBQFormModel.NumeroLicence) input-bleu texte-light" @bind="LicenceRBQFormModel.NumeroLicence" />
             @((MarkupString)GetValidationHTML(() => LicenceRBQFormModel.NumeroLicence))
         </div>
         <div class="row">
-            <div class="col-xl-6 col-lg-6 py-2">
+            <div class="col-xl-5 col-lg-5 col-6 col-sm-6 py-2 ms-xl-3 ms-lg-3">
                 <label class="bleuFonce texte-bold" for="statut">Statut<i class="bi bi-braces-asterisk text-danger ms-1"></i></label>
                 <select class="form-select @GetInputClass(() => LicenceRBQFormModel.StatutLicence) input-bleu texte-light" id="statut" @bind="LicenceRBQFormModel.StatutLicence">
                     <option value="" disabled selected>Veuillez choisir un statut</option>
@@ -34,8 +34,8 @@
                 </select>         
                 @((MarkupString)GetValidationHTML(() => LicenceRBQFormModel.StatutLicence))                               
             </div>
-            <div class="col-xl-6 col-lg-6 py-2">
-                <label class="bleuFonce texte-bold" for="licenceType">Type de licence<i class="bi bi-braces-asterisk text-danger ms-1"></i></label>
+            <div class="col-xl-5 col-lg-5 col-6 col-sm-6 py-2">
+                <label class="bleuFonce texte-bold" for="licenceType">Type<i class="bi bi-braces-asterisk text-danger ms-1"></i></label>
                 <select class="form-select @GetInputClass(() => LicenceRBQFormModel.TypeLicence) input-bleu texte-light" id="licenceType" @bind="LicenceRBQFormModel.TypeLicence">
                      <option value="" disabled selected>Veuillez choisir un type</option>
                     <option value="1">Entrepreneur</option>
@@ -44,7 +44,7 @@
                 @((MarkupString)GetValidationHTML(() => LicenceRBQFormModel.TypeLicence))        
             </div>                    
         </div>
-        <div class="col-xl-12 col-lg-12 py-2">
+        <div class="col-xl-10 col-lg-10 col-12 col-sm-12 py-2 ms-xl-3 ms-lg-3">
             <label class="texte-bold">Entrepeneur général<i class="bi bi-braces-asterisk text-danger ms-1"></i></label>               
             <div class="@GetInputClass(() => LicenceRBQFormModel.SousCategoSelected) overflow-auto box-bleu card">
             @{
@@ -67,7 +67,7 @@
             }
             </div>
         </div>    
-        <div class="col-xl-12 col-lg-12 py-2">
+        <div class="col-xl-10 col-lg-10 col-12 col-sm-12 py-2 ms-xl-3 ms-lg-3">
             <label class="texte-bold">Entrepeneur spécialisé</label>
             <div class="@GetInputClass(() => LicenceRBQFormModel.SousCategoSelected) overflow-auto box-bleu card">
             @foreach (var categorie in categorieSpecialise)
@@ -169,11 +169,11 @@
 
         // THERE'S PROBABLY A BETTER WAY TO DO THIS.
         if (fieldIdentifier.FieldName.Equals("NumeroLicence")) {
-            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
+            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
         }
 
-        return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-medium\">Valide</span></span>" 
-                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
+        return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-validation\">Valide</span></span>" 
+                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
     }
 
     public async Task<bool> TriggerValidation() 

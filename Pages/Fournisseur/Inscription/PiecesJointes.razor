@@ -64,18 +64,19 @@
         @if (!string.IsNullOrEmpty(errorMessage))
         {
             <div class="d-flex justify-content-center p-2">
-                <div class="col-xl-12 alert alert-danger alert-dismissible fade show m-1" role="alert">
+                <div class="alert alert-danger alert-dismissible fade show m-1" role="alert">
                     @errorMessage
                     <button type="button" @onclick="ClearErrorMessage" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             </div>
         }
-        <div class="card-header py-2 bg-bleuFonce titre-bold">
-            <h3 class="py-2 p-0 my-0 text-white">Fichiers téléversés (Total: @GetFormatSize())</h3>
+        <div class="card-header py-2 bg-bleuFonce">
+            <h3 class="py-2 p-0 my-0 titre-bold text-white">Fichiers téléversés</h3>
         </div>
 
         <div class="card-body table-bleu table-responsive">
-            <table class="table border-bleuFonce table-bordered my-0 mb-2">
+            <p class="texte-bold">Total: @GetFormatSize()</p>
+            <table class="table border-bleuFonce table-bordered my-0  col-12 col-sm-12">
                 <thead>
                     <tr>
                         <th scope="col" class="col-1 texte-bold">Fichier</th>

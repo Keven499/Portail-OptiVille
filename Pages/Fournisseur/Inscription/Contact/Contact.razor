@@ -17,12 +17,12 @@
                 @((MarkupString)GetValidationHTML(() => contactFormModel.Nom))
             </div>            
         </div>
-            <div class="col-lg-5 col-xl-5 col-8 col-sm-8 py-2 ms-xl-3 ms-lg-3">
+            <div class="col-lg-4 col-xl-4 col-8 col-sm-8 py-2 ms-xl-3 ms-lg-3">
                 <label class="bleuFonce texte-bold" for="Fonction1">Fonction <i class="bi bi-braces-asterisk text-danger"></i></label>
                 <input type="text" @bind="contactFormModel.Fonction" max="32" class="form-control @GetInputClass(() => contactFormModel.Fonction) input-bleu texte-light" id="Fonction1" />                                                                                                                                                                                                                                                                                                                                                                              
                 @((MarkupString)GetValidationHTML(() => contactFormModel.Fonction))
             </div>
-        <div class="col-lg-5 col-xl-5 col-12 col-sm-12 py-2 ms-xl-3 ms-lg-3">
+        <div class="col-lg-6 col-xl-6 col-12 col-sm-12 py-2 ms-xl-3 ms-lg-3">
             <label class="bleuFonce texte-bold" for="Courriel">Courriel du contact <i class="bi bi-braces-asterisk text-danger"></i></label>
             <input type="text" @bind="contactFormModel.AdresseCourriel" maxlength="64" class="form-control @GetInputClass(() => contactFormModel.AdresseCourriel) input-bleu texte-light" id="Courriel" />                                                                                                                                                                                                                                        
             @((MarkupString)GetValidationHTML(() => contactFormModel.AdresseCourriel))
@@ -44,7 +44,7 @@
                 @((MarkupString)GetValidationHTML(() => contactFormModel.Telephone))
             </div>
         </div>
-        <div class="col-lg-5 col-xl-5 col-6 col-sm-6 ms-xl-3 ms-lg-3 py-2 mb-2">
+        <div class="col-lg-4 col-xl-4 col-6 col-sm-6 ms-xl-3 ms-lg-3 py-2 mb-2">
             <label class="bleuFonce texte-bold" for="Poste1Contact">Poste <i class="bi bi-braces text-success"></i></label>
             <input type="text" @bind="contactFormModel.Poste" class="form-control @GetInputClass(() => contactFormModel.Poste) input-bleu texte-light" id="Poste1Contact" />
             @((MarkupString)GetValidationHTML(() => contactFormModel.Poste))
@@ -90,11 +90,11 @@
 
          // THERE'S PROBABLY A BETTER WAY TO DO THIS.
         if (fieldIdentifier.FieldName.Equals("Poste")) {
-            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
+            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
         }
 
-        return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-medium\">Valide</span></span>" 
-                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
+        return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-validation\">Valide</span></span>" 
+                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
     }
 
      public bool TriggerValidation() 
