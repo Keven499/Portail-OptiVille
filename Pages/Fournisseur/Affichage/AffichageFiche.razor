@@ -7,7 +7,20 @@
 <div class="container-fluid card p-0 m-0">
     <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Demande</h3>
-        <button type="button" class="btn btn-danger">Supprimer la fiche</button>
+        <button type="button" class="btn btn-danger" data-bs-target="#ModalConfirmationDeleteFiche" data-bs-toggle="modal">Supprimer la fiche</button>
+        <div class="modal fade" id="ModalConfirmationDeleteFiche" tabindex="-1" aria-labelledby="ModalConfirmationDeleteFiche" aria-hidden="true" data-bs-backdrop="static">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header border-0 text-center w-100">
+                                <h1 class="modal-title fs-5 mx-auto" id="ModalConfirmationDeleteFiche">Êtes-vous sûre de vouloir effacer la fiche</h1>
+                            </div>
+                            <div class="modal-footer border-0 d-flex justify-content-center">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="DeleteFiche">Confirmer</button>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
     </div>
 
     <div class="card-body">
@@ -239,8 +252,8 @@
                     <div class="modal fade" id="ModalConfirmation" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
-                        <div class="modal-header border-0">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Êtes-vous sûre de vouloir effacer ce fichier </h1>
+                        <div class="modal-header border-0 text-center w-100">
+                            <h1 class="modal-title fs-5 mx-auto" id="exampleModalLabel">Êtes-vous sûre de vouloir effacer ce fichier </h1>
                         </div>
                         <div class="modal-footer border-0 d-flex justify-content-center">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
@@ -391,6 +404,12 @@
         }
     }
 
+    private void DeleteFiche()
+    {
+        selectedFichiers.Clear();
+        closestHistorique.EtatDemande = "Refusé";
+        Console.WriteLine("La fiche a été supprimé");
+    }
     private void OpenConfirmationModal(Fichier file)
     {
         selectedFile = file;
