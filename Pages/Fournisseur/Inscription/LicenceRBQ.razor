@@ -20,7 +20,7 @@
     <div class="card-body border-bleuFonce py-1">
         <div class="col-xl-4 col-lg-4 col-6 col-sm-6 py-2 ms-xl-3 ms-lg-3">
             <label class="bleuFonce texte-bold" for="noLicenceRBQ">Numéro<i class="bi bi-braces text-success ms-1"></i> </label>
-            <input type="text" id="noLicenceRBQ" class="form-control @GetInputClass(() => LicenceRBQFormModel.NumeroLicence) input-bleu texte-light" @bind="LicenceRBQFormModel.NumeroLicence" />
+            <input type="text" id="noLicenceRBQ" placeholder="0000-0000-00 ou 0000000000" class="form-control @GetInputClass(() => LicenceRBQFormModel.NumeroLicence) input-bleu texte-light" @bind="LicenceRBQFormModel.NumeroLicence" />
             @((MarkupString)GetValidationHTML(() => LicenceRBQFormModel.NumeroLicence))
         </div>
         <div class="row">

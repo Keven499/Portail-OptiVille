@@ -24,7 +24,7 @@
             </div>
         <div class="col-lg-6 col-xl-6 col-12 col-sm-12 py-2 ms-xl-3 ms-lg-3">
             <label class="bleuFonce texte-bold" for="Courriel">Courriel du contact <i class="bi bi-braces-asterisk text-danger"></i></label>
-            <input type="text" @bind="contactFormModel.AdresseCourriel" maxlength="64" class="form-control @GetInputClass(() => contactFormModel.AdresseCourriel) input-bleu texte-light" id="Courriel" />                                                                                                                                                                                                                                        
+            <input type="text" @bind="contactFormModel.AdresseCourriel" maxlength="64" placeholder="courriel@domaine.com" class="form-control @GetInputClass(() => contactFormModel.AdresseCourriel) input-bleu texte-light" id="Courriel" />                                                                                                                                                                                                                                        
             @((MarkupString)GetValidationHTML(() => contactFormModel.AdresseCourriel))
         </div>
         <div class="py-2 d-flex align-baseline ms-xl-3 ms-lg-3">
@@ -40,7 +40,7 @@
             </div>
             <div class="col-lg-6 col-xl-6 col-6 col-sm-6 ms-2">
                 <label class="bleuFonce texte-bold" for="NoTel1">Numéro <i class="bi bi-braces-asterisk text-danger"></i></label>
-                <input type="text" @bind="contactFormModel.Telephone" class="form-control @GetInputClass(() => contactFormModel.Telephone) input-bleu texte-light" id="NoTel1" />                                                                                                                    
+                <input type="text" @bind="contactFormModel.Telephone" placeholder="0000000000" class="form-control @GetInputClass(() => contactFormModel.Telephone) input-bleu texte-light" id="NoTel1" />                                                                                                                    
                 @((MarkupString)GetValidationHTML(() => contactFormModel.Telephone))
             </div>
         </div>
