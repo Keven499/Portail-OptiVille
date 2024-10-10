@@ -7,10 +7,10 @@ namespace Portail_OptiVille.Data.FormModels
     {
         public string? NumeroLicence { get; set; }
 
-        [Required(ErrorMessage = "Requis")]
+        [Required(ErrorMessage = "Statut requis")]
         public string? StatutLicence { get; set; }
 
-        [Required(ErrorMessage = "Requis")]
+        [Required(ErrorMessage = "Type requis")]
         public string? TypeLicence { get; set; }
 
         [NothingSelected(ErrorMessage = "Aucune case n'a été coché")]
