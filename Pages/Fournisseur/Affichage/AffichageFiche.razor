@@ -5,6 +5,10 @@
 @using System.Text.RegularExpressions;
 @inject A2024420517riGr1Eq6Context _context
 @using Portail_OptiVille.Data.FormModels
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage ProtectedSessionStore
+@using Portail_OptiVille.Data.Exceptions
+@inject NavigationManager NavigationManager
 <div class="container-fluid card p-0 m-0">
     <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Demande</h3>
@@ -411,6 +415,21 @@
             }
         }
         return groupedCategories;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender){
+        try{
+            var result = await ProtectedSessionStore.GetAsync<string>("Email");
+            if (!result.Success || string.IsNullOrEmpty(result.Value))
+            {
+                throw new UserNotAuthenticatedException("Employé non connecté ou session expirée.");
+            }
+        }catch(UserNotAuthenticatedException ex)
+        {
+            Console.WriteLine($"Erreur lors de la récupération de l'adresse courriel: {ex.Message}");
+            NavigationManager.NavigateTo("/Connexion",true);
+        }
+
     }
 
     protected override async Task OnInitializedAsync()
