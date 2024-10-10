@@ -232,18 +232,13 @@
         // CASE LICENCE RBQ 5
         if (currentIndex == 4 && licenceRBQRef != null)
         {
-            bool isValid;
             if (!IsCanSkipRBQ())
             {
-                isValid = await licenceRBQRef.TriggerValidation();
+                bool isValid = await licenceRBQRef.TriggerValidation();
                 if (!isValid)
                 {
                     return;
                 }
-            }
-            else
-            {
-                return;
             }
         }
 
