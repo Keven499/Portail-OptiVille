@@ -5,9 +5,11 @@
 @using System.Text.RegularExpressions;
 @inject A2024420517riGr1Eq6Context _context
 <div class="container-fluid card p-0 m-0">
-    <div class="card-header py-2 bg-bleuFonce">
+    <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Demande</h3>
+        <button type="button" class="btn btn-danger">Supprimer la fiche</button>
     </div>
+
     <div class="card-body">
         <ul>
             <li>Demande @(closestHistorique != null ? closestHistorique.EtatDemande : "N/A")</li>
@@ -16,8 +18,9 @@
             <li>Modification @(selectedFournisseur.DateLastChanged.HasValue ? selectedFournisseur.DateLastChanged.Value.ToString("yyyy-MM-dd") : "N/A")</li>
         </ul>
     </div>
-    <div class="card-header py-2 bg-bleuFonce">
+    <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Informations générales</h3>
+        <button type="button" class="btn btn-warning">Modifier</button>
     </div>
     <div class="card-body">
         <div class="row">
@@ -61,8 +64,9 @@
             }
         </div>
     </div>
-    <div class="card-header py-2 bg-bleuFonce">
+    <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Contacts</h3>
+        <button type="button" class="btn btn-warning">Modifier</button>
     </div>
     <div class="card-body">
         @foreach(var contact in selectedContacts)
@@ -89,8 +93,9 @@
         </div>
         }
     </div>
-    <div class="card-header py-2 bg-bleuFonce">
+    <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Produits et services</h3>
+        <button type="button" class="btn btn-warning">Modifier</button>
     </div>
     <div class="card-body">
         <div class="row h-100">
@@ -131,8 +136,9 @@
         </div>
         
     </div>
-    <div class="card-header py-2 bg-bleuFonce">
+    <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Licence RBQ</h3>
+        <button type="button" class="btn btn-warning">Modifier</button>
     </div>
     <div class="card-body">
         
@@ -204,8 +210,9 @@
         }
 
     </div>
-    <div class="card-header py-2 bg-bleuFonce">
+    <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Brochures et cartes d'affaire (Total: @GetFormatSize())</h3>
+        <button type="button" class="btn btn-warning">Modifier</button>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -246,10 +253,9 @@
 </div>
     </div>
 
-
-
-    <div class="card-header py-2 bg-bleuFonce">
+    <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Finances</h3>
+        <button type="button" class="btn btn-warning">Modifier</button>
     </div>
     <div class="card-body">
         <div class="row">
@@ -285,7 +291,7 @@
 @code{
     public int sizeTotal { get; set; } = 0;
     public int MaxSize = 75;
-    private Fichier selectedFile;
+    private Fichier? selectedFile;
     List<Portail_OptiVille.Data.Models.Contact> selectedContacts = new List<Portail_OptiVille.Data.Models.Contact>();
     List<Fichier> selectedFichiers = new List<Fichier>();
     List<Fournisseur> selectedFournisseurs = new List<Fournisseur>();

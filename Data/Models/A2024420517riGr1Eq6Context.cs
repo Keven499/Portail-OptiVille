@@ -156,7 +156,7 @@ public partial class A2024420517riGr1Eq6Context : DbContext
                 .HasMaxLength(256)
                 .HasColumnName("motDePasse");
             entity.Property(e => e.Role)
-                .HasColumnType("enum('Administrateur','Commis','Responsable')")
+                .HasColumnType("enum('Administrateur','Commis','Responsable','Aucun')")
                 .HasColumnName("role");
         });
 

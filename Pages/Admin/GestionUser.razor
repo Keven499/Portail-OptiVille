@@ -3,11 +3,20 @@
 @using Microsoft.EntityFrameworkCore
 @using Portail_OptiVille.Data.Models
 @inject A2024420517riGr1Eq6Context _context
+<style>
+    .custom-alert {
+        position: relative; /* Ensures it behaves normally in document flow */
+        display: flex; /* Allows flexbox alignment */
+        justify-content: space-between; /* Positions the button at the end */
+        align-items: center; /* Centers content vertically */
+    }
+</style>
 <div class="card">
     <div class="card-header py-2 bg-bleuFonce">
-        <h3 class="py-2 p-0 my-0 text-white titre-bold">Carte d'affaires et brochures</h3>
+        <h3 class="py-2 p-0 my-0 text-white titre-bold">Gestion des utilisateurs</h3>
     </div>
     <div class="card-body">
+        <div class="table-responsive">
         <table class="table table-borderless">
             <thead>
                 <tr>
@@ -36,6 +45,7 @@
                 }
             </tbody>
         </table>
+</div>
         <div class="">
         @if (!formAjouter)
         {
@@ -62,7 +72,7 @@
                 <div class="row mb-3 justify-content-center">
                     <div class="col-xl-12">
                         <label for="roleNewUser">Role:</label>
-                        <select class="form-select" @bind="userModel.role" id="roleNewUser">
+                        <select class="form-select" @bind="userModel.role" id="roleNewUser" selected="@((userModel.role == "Commis"))">
                             @foreach (var value in Roles)
                             {
                                 <option value="@value">@value</option>
@@ -84,25 +94,27 @@
     <div class="card-footer">
         @if (!string.IsNullOrEmpty(validationError))
         {
-            <div class="d-flex justify-content-center">
-                <div class="col-xl-6 alert alert-danger alert-dismissible fade show m-1 text-center" role="alert">
+        <div class="d-flex justify-content-center align-items-center">
+            <div class="col-xl-6 alert alert-danger custom-alert fade show m-1" role="alert">
+                <span class="text-center flex-grow-1">
                     @((MarkupString)validationError)
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+                </span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" @onclick="ClearMessageError"></button>
             </div>
+        </div>
         }
-        <button type="submit" class="btn btn-success w-100" @onclick="SubmitChanges">Submit</button>
+        <button type="submit" class="btn btn-success w-100" @onclick="SubmitChanges">Sauvegarder</button>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 @code{
-    private UserModele userModel = new UserModele();
+    private UserModele userModel = new UserModele() { role = "Commis" };
     private bool formAjouter = false;
     private string? validationError = null;
     List<string> Roles = new() { "Administrateur", "Responsable", "Commis" };
     private List<Employe> allEmployes = new List<Employe>();
-    private List<Employe> allBonobos = new List<Employe>();
+    private List<Employe> allNonUsers = new List<Employe>();
     public class UserModele
     {
         [Required(ErrorMessage = "Veuillez mettre un courriel")]
@@ -120,7 +132,7 @@
         try
         {
             allEmployes = await _context.Employes.Where(e => Roles.Contains(e.Role)).ToListAsync();
-            allBonobos = await _context.Employes.Where(e => e.Role == "Aucun").ToListAsync();
+            allNonUsers = await _context.Employes.Where(e => e.Role == "Aucun").ToListAsync();
         }
         catch (Exception ex)
         {
@@ -139,18 +151,21 @@
 
         if (adminCount != 2)
         {
-            validationError += "Vous devez avoir 2 Administrateurs.<br />";
+            validationError += "Vous devez avoir 2 Administrateurs. <br>";
         }
 
         if (responsableCount < 1)
         {
-            validationError += "Vous devez avoir au moins 1 Responsable.<br />";
+            validationError += "Vous devez avoir au moins 1 Responsable.";
         }
 
         return string.IsNullOrEmpty(validationError);
     }
 
-
+    private void ClearMessageError()
+    {
+        validationError = "";
+    }
 
     private void OnDeleteUser(Employe employe)
     {
@@ -165,15 +180,20 @@
 
     private void AjoutUtilisateur()
     {
-       var allBonobosEmails = allBonobos.Select(e => e.Courriel).ToList();
-        if (allBonobosEmails.Contains(userModel.email))
+       var allNonUsersEmails = allNonUsers.Select(e => e.Courriel).ToList();
+        if (allNonUsersEmails.Contains(userModel.email))
         {
         allEmployes.Add(new Employe { Courriel = userModel.email!, Role = userModel.role! });
 
         Console.WriteLine($"User: {userModel.email} Role: {userModel.role} (ajouté)");
         
-        userModel = new UserModele();
+        userModel = new UserModele() { role = "Commis" };;
         formAjouter = false;
+        ClearMessageError();
+        }
+        else
+        {
+            validationError = "Cet utilisateur n'existe pas";
         }
     }
 
@@ -186,7 +206,7 @@
             {
                 Console.WriteLine($"Employe: {employe.Courriel}, Role: {employe.Role}");
             }
-              
+            ClearMessageError();
         }
         else
         {
