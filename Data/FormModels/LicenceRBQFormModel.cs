@@ -15,5 +15,7 @@ namespace Portail_OptiVille.Data.FormModels
 
         [NothingSelected(ErrorMessage = "Aucune case n'a été coché")]
         public Dictionary<string, bool> SousCategoSelected { get; set; } = new Dictionary<string, bool>();
+
+        public bool Disabled = false;
     }
 }
