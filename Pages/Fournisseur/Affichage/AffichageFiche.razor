@@ -4,10 +4,26 @@
 @using Portail_OptiVille.Data.Models
 @using System.Text.RegularExpressions;
 @inject A2024420517riGr1Eq6Context _context
+@using Portail_OptiVille.Data.FormModels
 <div class="container-fluid card p-0 m-0">
-    <div class="card-header py-2 bg-bleuFonce">
+    <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Demande</h3>
+        <button type="button" class="btn btn-danger" data-bs-target="#ModalConfirmationDeleteFiche" data-bs-toggle="modal">Supprimer la fiche</button>
+        <div class="modal fade" id="ModalConfirmationDeleteFiche" tabindex="-1" aria-labelledby="ModalConfirmationDeleteFiche" aria-hidden="true" data-bs-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header border-0 text-center w-100">
+                        <h1 class="modal-title fs-5 mx-auto" id="ModalConfirmationDeleteFiche">Êtes-vous sûre de vouloir effacer la fiche</h1>
+                    </div>
+                    <div class="modal-footer border-0 d-flex justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="DeleteFiche">Confirmer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
     <div class="card-body">
         <ul>
             <li>Demande @(closestHistorique != null ? closestHistorique.EtatDemande : "N/A")</li>
@@ -16,53 +32,66 @@
             <li>Modification @(selectedFournisseur.DateLastChanged.HasValue ? selectedFournisseur.DateLastChanged.Value.ToString("yyyy-MM-dd") : "N/A")</li>
         </ul>
     </div>
-    <div class="card-header py-2 bg-bleuFonce">
-        <h3 class="py-2 p-0 my-0 text-white">Informations générales</h3>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-xl-6 p-1">
-                <label for="inputEmail4">NEQ</label>
-                <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.Neq">
-            </div>
-            <div class="col-xl-6 p-1">
-                <label for="inputPassword4">Adresse</label>
-                <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.NoCivique, @selectedFournisseur.Rue, @selectedFournisseur.Bureau">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xl-6 p-1">
-                <label for="inputEmail4">Nom de l'entreprise</label>
-                <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.NomEntreprise">
-            </div>
-            <div class="col-xl-6 p-1">
-                <label for="inputPassword4"></label>
-                <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.Ville, @selectedFournisseur.Province, @selectedFournisseur.CodePostal">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xl-6 p-1">
-                <label for="inputEmail4">Adresse courriel</label>
-                <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.AdresseCourriel">
-            </div>
-            <div class="col-xl-6 p-1">
-                <label for="inputPassword4">Site Web</label>
-                <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.SiteInternet">
-            </div>
-        </div>
-        <div class="row">
-            @foreach(var telephone in selectedTelephones)
+    <EditForm Model="combinedFormModel" OnValidSubmit="SaveModifcationInfo">
+        <DataAnnotationsValidator />
+        <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
+            <h3 class="py-2 p-0 my-0 text-white">Informations générales</h3>
+            @if(modificationInfo)
             {
-            <div class="col-xl-6 p-1">
-                <label for="inputEmail4">Numéro de téléphone (@telephone.Type)</label>
-                <input type="text" class="form-control" id="inputEmail4" value="@($"{telephone.NumTelephone.Insert(3, "-").Insert(7, "-")} #{telephone.Poste}")">
-            </div>
-
+                <button type="button" class="btn btn-warning" @onclick="ModifcationInfo">Modifier</button>
+            }
+            else
+            {
+            <button type="button" class="btn btn-success" @onclick="SaveModifcationInfo">Sauvegarder</button> 
             }
         </div>
-    </div>
-    <div class="card-header py-2 bg-bleuFonce">
+        <div class="card-body">
+                <div class="row">
+
+                    <div class="col-xl-6 p-1">
+                        <label for="inputEmail4">NEQ</label>
+                        <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.Neq" readonly="@modificationInfo">
+                    </div>
+                    <div class="col-xl-6 p-1">
+                        <label for="inputPassword4">Adresse</label>
+                        <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.NoCivique, @selectedFournisseur.Rue, @selectedFournisseur.Bureau" readonly="@modificationInfo">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-6 p-1">
+                        <label for="inputEmail4">Nom de l'entreprise</label>
+                        <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.NomEntreprise" readonly="@modificationInfo">
+                    </div>
+                    <div class="col-xl-6 p-1">
+                        <label for="inputPassword4"></label>
+                        <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.Ville, @selectedFournisseur.Province, @selectedFournisseur.CodePostal" readonly="@modificationInfo">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-6 p-1">
+                        <label for="inputEmail4">Adresse courriel</label>
+                        <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.AdresseCourriel" readonly="@modificationInfo">
+                    </div>
+                    <div class="col-xl-6 p-1">
+                        <label for="inputPassword4">Site Web</label>
+                        <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.SiteInternet" readonly="@modificationInfo">
+                    </div>
+                </div>
+            <div class="row">
+                @foreach(var telephone in selectedTelephones)
+                {
+                <div class="col-xl-6 p-1">
+                    <label for="inputEmail4">Numéro de téléphone (@telephone.Type)</label>
+                    <input type="text" class="form-control" id="inputEmail4" value="@($"{telephone.NumTelephone.Insert(3, "-").Insert(7, "-")} #{telephone.Poste}")">
+                </div>
+
+                }
+            </div>
+        </div>
+    </EditForm>
+    <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Contacts</h3>
+        <button type="button" class="btn btn-warning">Modifier</button>
     </div>
     <div class="card-body">
         @foreach(var contact in selectedContacts)
@@ -89,8 +118,9 @@
         </div>
         }
     </div>
-    <div class="card-header py-2 bg-bleuFonce">
+    <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Produits et services</h3>
+        <button type="button" class="btn btn-warning">Modifier</button>
     </div>
     <div class="card-body">
         <div class="row h-100">
@@ -131,8 +161,9 @@
         </div>
         
     </div>
-    <div class="card-header py-2 bg-bleuFonce">
+    <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Licence RBQ</h3>
+        <button type="button" class="btn btn-warning">Modifier</button>
     </div>
     <div class="card-body">
         
@@ -204,8 +235,9 @@
         }
 
     </div>
-    <div class="card-header py-2 bg-bleuFonce">
+    <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Brochures et cartes d'affaire (Total: @GetFormatSize())</h3>
+        <button type="button" class="btn btn-warning">Modifier</button>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -232,8 +264,8 @@
                     <div class="modal fade" id="ModalConfirmation" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
-                        <div class="modal-header border-0">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">Êtes-vous sûre de vouloir effacer ce fichier </h1>
+                        <div class="modal-header border-0 text-center w-100">
+                            <h1 class="modal-title fs-5 mx-auto" id="exampleModalLabel">Êtes-vous sûre de vouloir effacer ce fichier </h1>
                         </div>
                         <div class="modal-footer border-0 d-flex justify-content-center">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
@@ -246,36 +278,35 @@
 </div>
     </div>
 
-
-
-    <div class="card-header py-2 bg-bleuFonce">
+    <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Finances</h3>
+        <button type="button" class="btn btn-warning" @onclick="ModifcationFinances">Modifier</button>
     </div>
     <div class="card-body">
         <div class="row">
             <div class="col-xl-6 p-1">
                 <label for="inputEmail4">TPS</label>
-                <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.NumeroTps">
+                <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.NumeroTps" readonly="@modificationFinances">
             </div>
             <div class="col-xl-6 p-1">
                 <label for="inputPassword4">TVQ</label>
-                <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.NumeroTvq">
+                <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.NumeroTvq" readonly="@modificationFinances">
             </div>
         </div>
         <div class="row">
             <div class="col-xl-6 p-1">
                 <label for="inputEmail4">Conditions de paiement</label>
-                <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.ConditionPaiement">
+                <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.ConditionPaiement" readonly="@modificationFinances">
             </div>
             <div class="col-xl-6 p-1">
                 <label for="inputPassword4">Devise</label>
-                <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.Devise">
+                <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.Devise" readonly="@modificationFinances">
             </div>
         </div>
         <div class="row justify-content-center">
             <div class="col-xl-6 p-1">
                 <label for="inputEmail4">Mode de communication</label>
-                <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.ModeCommunication">
+                <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.ModeCommunication" readonly="@modificationFinances">
             </div>
             
         </div>
@@ -283,9 +314,12 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 @code{
+    private bool modificationFinances = true;
+    private bool modificationInfo = true;
     public int sizeTotal { get; set; } = 0;
+    private CombinedFormModel combinedFormModel = new CombinedFormModel();
     public int MaxSize = 75;
-    private Fichier selectedFile;
+    private Fichier? selectedFile;
     List<Portail_OptiVille.Data.Models.Contact> selectedContacts = new List<Portail_OptiVille.Data.Models.Contact>();
     List<Fichier> selectedFichiers = new List<Fichier>();
     List<Fournisseur> selectedFournisseurs = new List<Fournisseur>();
@@ -297,6 +331,50 @@
     Fournisseur selectedFournisseur = new Fournisseur();
     List<IGrouping<GroupKey, Produitservice>>? groupedServices;
 
+    public class CombinedFormModel
+    {
+        public Fournisseur FournisseurFormModel { get; set; }
+        public IdenticationFormModel IdentificationFormModel { get; set; }
+
+        public CombinedFormModel()
+        {
+            FournisseurFormModel = new Fournisseur();
+            IdentificationFormModel = new IdenticationFormModel();
+        }
+    }
+
+    private void ModifcationFinances()
+    {
+        modificationFinances = false;
+    }
+
+    private void ModifcationInfo()
+    {
+        modificationInfo = false;
+    }
+
+    private async Task SaveModifcationInfo()
+    {
+        // Validate the form data
+            // Replace selectedFournisseur data with contactFormModel data
+            selectedFournisseur.Neq = combinedFormModel.IdentificationFormModel.NEQ;
+            selectedFournisseur.NoCivique = combinedFormModel.FournisseurFormModel.NoCivique; // Ensure this property is available
+            selectedFournisseur.Rue = combinedFormModel.FournisseurFormModel.Rue; // Ensure this property is available
+            selectedFournisseur.Bureau = combinedFormModel.FournisseurFormModel.Bureau; // Ensure this property is available
+            selectedFournisseur.NomEntreprise = combinedFormModel.IdentificationFormModel.NomEntreprise;
+            selectedFournisseur.Ville = combinedFormModel.FournisseurFormModel.Ville; // Ensure this property is available
+            selectedFournisseur.Province = combinedFormModel.FournisseurFormModel.Province; // Ensure this property is available
+            selectedFournisseur.CodePostal = combinedFormModel.FournisseurFormModel.CodePostal; // Ensure this property is available
+            selectedFournisseur.AdresseCourriel = combinedFormModel.IdentificationFormModel.CourrielEntreprise;
+            selectedFournisseur.SiteInternet = combinedFormModel.FournisseurFormModel.SiteInternet;
+
+            // Save changes to the database
+            //_context.Update(selectedFournisseur);
+            //await _context.SaveChangesAsync();
+
+        // Reset modificationInfo after saving
+        modificationInfo = true;
+    }
     public class GroupKey
     {
         public string? CodeCategorie { get; set; }
@@ -347,7 +425,7 @@
             selectedFournisseur = selectedFournisseurs[0];
             selectedTelephones = await _context.Telephones.Where(c => c.IdFournisseur == 1).ToListAsync();
             selectedLicencerbqs = await _context.Licencerbqs.Include(l => l.CodeSousCategories).Where(c => c.IdFournisseur == 1).ToListAsync();
-            closestHistorique = selectedHistoriques.Where(h => h.DateEtatChanged.HasValue).OrderBy(h => Math.Abs((h.DateEtatChanged.Value - DateTime.Now).TotalDays)).FirstOrDefault();
+            closestHistorique = selectedHistoriques.Where(h => h.DateEtatChanged.HasValue).OrderBy(h => Math.Abs((h.DateEtatChanged.Value - DateTime.UtcNow).TotalDays)).FirstOrDefault();
             groupedServices = selectedProduitservices.GroupBy(p => new GroupKey 
             { 
                 CodeCategorie = p.CodeCategorie, 
@@ -385,6 +463,44 @@
         }
     }
 
+    private async Task ChangementDemande()
+    {
+        if(closestHistorique.EtatDemande == "Refusé")
+        {
+            var newHistorique = new Historique
+            {
+                EtatDemande = "En attente",
+                DateEtatChanged = DateTime.UtcNow,
+                IdFournisseur = closestHistorique.IdFournisseur
+            };
+            _context.Historiques.Add(newHistorique);
+            closestHistorique.EtatDemande = "En attente";
+            closestHistorique.DateEtatChanged = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+        }
+    }
+    private async Task DeleteFiche()
+    {
+        var newHistorique = new Historique
+        {
+            EtatDemande = "Refusé",
+            DateEtatChanged = DateTime.UtcNow,
+            IdFournisseur = closestHistorique.IdFournisseur
+        };
+        _context.Historiques.Add(newHistorique);
+        closestHistorique.EtatDemande = "Refusé";
+        closestHistorique.DateEtatChanged = DateTime.UtcNow;
+
+        foreach (var fichier in selectedFichiers.ToList())
+        {
+            _context.Fichiers.Remove(fichier);
+        }
+        selectedFichiers.Clear();
+
+        
+        Console.WriteLine("La fiche a été supprimé");
+        await _context.SaveChangesAsync();
+    }
     private void OpenConfirmationModal(Fichier file)
     {
         selectedFile = file;
