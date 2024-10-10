@@ -42,12 +42,23 @@
                         <div class="card">
                             @Components[currentIndex]
                             <div class="card-footer bg-bleuFonce d-flex justify-content-center">
-                                <button @onclick="ShowPrevious" disabled="@isFirstComponent" class="btn bg-bleu text-white texte-medium" style="width: 200px;"><i class="bi bi-arrow-left-circle"></i> Précédent 
-                                    
+                                <button @onclick="ShowPrevious" disabled="@isFirstComponent" class="btn bg-bleu text-white texte-medium" style="width: 200px;">
+                                    <i class="bi bi-arrow-left-circle"></i> Précédent 
                                 </button>
-                                <button @onclick="ShowNext" class="btn bg-bleu text-white texte-medium ms-2" style="width: 200px;">Suivant 
-                                    <i class="bi bi-arrow-right-circle"></i>
-                                </button>
+                                @if (IsCanSkipRBQ())
+                                {
+                                    <button @onclick="ShowNext" class="btn text-white texte-medium ms-2" style="width: 200px; background-color: #FFC300;">
+                                        Passer
+                                        <i class="bi bi-arrow-right-circle"></i>
+                                    </button>
+                                } 
+                                else
+                                {
+                                    <button @onclick="ShowNext" class="btn bg-bleu text-white texte-medium ms-2" style="width: 200px;">
+                                        Suivant
+                                        <i class="bi bi-arrow-right-circle"></i>
+                                    </button>
+                                }
                             </div>
                         </div>                    
                     </div>
@@ -199,7 +210,7 @@
         }
 
         // CASE CONTACT 3
-         if (currentIndex == 2 && contactHosterRef != null)
+        if (currentIndex == 2 && contactHosterRef != null)
         {
             bool isValid = contactHosterRef.TriggerValidation();
             if (!isValid)
@@ -209,7 +220,7 @@
         }
 
         // CASE PRODUITS ET SERVICES 4
-         if (currentIndex == 3 && produitServiceRef != null)
+        if (currentIndex == 3 && produitServiceRef != null)
         {
             bool isValid = produitServiceRef.TriggerValidation();
             if (!isValid)
@@ -221,10 +232,17 @@
         // CASE LICENCE RBQ 5
         if (currentIndex == 4 && licenceRBQRef != null)
         {
-            bool isValid = await licenceRBQRef.TriggerValidation();
-            if (!isValid)
+            bool isValid = true;
+            if (!IsCanSkipRBQ())
             {
-                return;
+                isValid = await licenceRBQRef.TriggerValidation();
+            }
+            else
+            {
+                if (!isValid)
+                {
+                    return;
+                }
             }
         }
 
@@ -250,5 +268,17 @@
         {
             currentIndex--;
         }
+    }
+
+    private bool IsCanSkipRBQ()
+    {
+        if (currentIndex == 4)
+        {
+            if (string.IsNullOrEmpty(identicationFormModel.NEQ))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }
