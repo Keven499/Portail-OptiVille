@@ -8,7 +8,7 @@
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedSessionStorage ProtectedSessionStore
 @using Portail_OptiVille.Data.Exceptions
-@inject NavigationManager NavigationManager
+@inject NavigationManager navigationManager
 <div class="container-fluid card p-0 m-0">
     <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Demande</h3>
@@ -427,7 +427,7 @@
         }catch(UserNotAuthenticatedException ex)
         {
             Console.WriteLine($"Erreur lors de la récupération de l'adresse courriel: {ex.Message}");
-            NavigationManager.NavigateTo("/Connexion",true);
+            navigationManager.NavigateTo("/Connexion",true);
         }
 
     }
