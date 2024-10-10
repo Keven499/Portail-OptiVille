@@ -232,17 +232,18 @@
         // CASE LICENCE RBQ 5
         if (currentIndex == 4 && licenceRBQRef != null)
         {
-            bool isValid = true;
+            bool isValid;
             if (!IsCanSkipRBQ())
             {
                 isValid = await licenceRBQRef.TriggerValidation();
-            }
-            else
-            {
                 if (!isValid)
                 {
                     return;
                 }
+            }
+            else
+            {
+                return;
             }
         }
 
@@ -272,13 +273,13 @@
 
     private bool IsCanSkipRBQ()
     {
-        if (currentIndex == 4)
+        if (currentIndex == 4 && string.IsNullOrEmpty(identicationFormModel.NEQ))
         {
-            if (string.IsNullOrEmpty(identicationFormModel.NEQ))
-            {
-                return true;
-            }
+            return true;
         }
-        return false;
+        else
+        {
+            return false;
+        }
     }
 }
