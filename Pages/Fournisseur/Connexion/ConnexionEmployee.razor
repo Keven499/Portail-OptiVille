@@ -54,8 +54,6 @@
 @code {
 
     private EmployeLogInModel employeLogInModel = new EmployeLogInModel();
-    [Inject] private CustomAuthenticationStateProvider AuthenticationStateProvider { get; set; }
-    [Inject] private IUserService UserService { get; set; }
 
     private async Task EmployeValidSubmit()
 {
@@ -63,14 +61,16 @@
     {
         // Assure-toi d'ajouter 'using Microsoft.EntityFrameworkCore;' pour utiliser 'FirstOrDefaultAsync'
         Employe? employe = await _context.Employes.FirstOrDefaultAsync(e => e.Courriel == employeLogInModel.Courriel);
-        var user = await UserService.GetUserByUsernameAsync(employeLogInModel.Courriel);
 
         if (employe != null)
         {
             // Vérification du mot de passe
             if (employeLogInModel.MotDePasse.Equals(employe.MotDePasse))
             {
-                AuthenticationStateProvider.MarkUserAsAuthenticated(user.Courriel, user.Role);
+                    await ProtectedSessionStore.SetAsync("Email", employe.Courriel);
+                    await ProtectedSessionStore.SetAsync("Role", employe.Role);
+                    await ProtectedSessionStore.SetAsync("Login", true);
+
                 NavigationManager.NavigateTo("/");
             }
             else

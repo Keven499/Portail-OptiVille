@@ -48,14 +48,6 @@ builder.Services.AddHttpClient<DownloadService>();
 
 #region Connexion
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddAuthentication("Cookies")
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/Connexion-employe";  // Page de connexion
-    });
-builder.Services.AddScoped<CustomAuthenticationStateProvider>();
-builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddAuthorizationCore();
 #endregion
 
