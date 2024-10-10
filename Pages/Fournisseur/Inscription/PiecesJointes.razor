@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using System.IO
 @inject IJSRuntime _jsRuntime
+@inject Portail_OptiVille.Data.Utilities.Config config
 
 <style>
     ul 
@@ -88,7 +89,7 @@
                     @foreach (var file in listFichiers)
                     {
                         <tr>
-                            <th scope="row" class="texte-bold">@(listFichiers.IndexOf(file)+1)</th>
+                            <th scope="row" class="texte-bold">@(listFichiers.IndexOf(file) + 1)</th>
                             <td class="texte-light">@file.Name</td>
                             <td class="texte-light">@GetFormatSizeFile(file.Size)</td>
                             <td><button class="btn btn-danger texte-bold" type="button" @onclick="() => RemoveFile(file)"><i class="bi bi-trash"></i> Effacer</button></td>
@@ -123,7 +124,7 @@
     private List<IBrowserFile> listFichiers = new List<IBrowserFile>();
     private FichierModel fileModel = new FichierModel();
     public long sizeTotal { get; set; } = 0;
-    public long MaxSize = 75;
+    public long maxSize = 75;
     public string errorMessage = "";
     
     private class FichierModel 
@@ -152,11 +153,11 @@
     {
         if (sizeTotal >= 1048576) // 1 MB = 1048576 bytes (1 * 1024 * 1024)
         {
-            return $"{(sizeTotal / 1048576.0):F2} MB / {MaxSize}MB";
+            return $"{(sizeTotal / 1048576.0):F2} MB / {maxSize}MB";
         }
         else
         {
-            return $"{(sizeTotal / 1024.0):F2} KB / {MaxSize}MB";
+            return $"{(sizeTotal / 1024.0):F2} KB / {maxSize}MB";
         }
     }
 
@@ -179,7 +180,7 @@
                 Console.WriteLine(errorMessage);
                 continue;
             }
-            if (sizeTotal + file.Size <= MaxSize * 1024 * 1024)
+            if (sizeTotal + file.Size <= maxSize * 1024 * 1024)
             {
                 if (!listFichiers.Any(f => f.Name == file.Name && f.Size == file.Size))
                 {
