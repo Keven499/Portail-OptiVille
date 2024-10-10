@@ -63,7 +63,7 @@
     private LicenceRBQFormModel licenceRBQFormModel = new LicenceRBQFormModel();
     private LicenceRBQ? licenceRBQRef;
     private List<Categorierbq> allCategories = new List<Categorierbq>();
-        
+
     private IdenticationFormModel identicationFormModel = new IdenticationFormModel();
     private IdentificationForm? identificationRef;
 
@@ -76,6 +76,7 @@
     private ProduitServiceFormModel produitServiceFormModel = new ProduitServiceFormModel();
     private ProduitsServices? produitServiceRef;
 
+    private PieceJointeFormModel pieceJointeFormModel = new PieceJointeFormModel();
     private PiecesJointes? piecesJointesRef;
 
     private List<Produitservice> allProduitService = new List<Produitservice>();
@@ -161,6 +162,7 @@
             {
                 builder.OpenComponent<PiecesJointes>(5);
                 builder.AddAttribute(1, "AssignReference", (Action<PiecesJointes>)(piecesJointes => piecesJointesRef = piecesJointes));
+                builder.AddAttribute(2, "PieceJointeFormModel", pieceJointeFormModel);
                 builder.CloseComponent();
             }
         };
@@ -229,7 +231,7 @@
         // CASE PIÈCES JOINTES 6
         if (currentIndex == 5 && piecesJointesRef != null)
         {
-            bool isValid = piecesJointesRef.ValidatePieceJointe();
+            bool isValid = piecesJointesRef.TriggerValidation();
             if (!isValid)
             {
                 return;

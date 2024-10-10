@@ -2,7 +2,7 @@
 @using System.Linq.Expressions
 
 <PageTitle>Étape 2 Coordonnées</PageTitle>
-<EditForm EditContext="@EditContext">
+<EditForm EditContext="@editContext">
     <DataAnnotationsValidator />
     <div class="card-header py-2 bg-bleuFonce">
         <h3 class="py-2 p-0 my-0 text-white titre-bold">Coordonnées de l'entreprise</h3>
@@ -25,7 +25,6 @@
                 <input type="text" @bind="FournisseurFormModel.BureauEntreprise" maxlength="8" class="form-control @GetInputClass(() => FournisseurFormModel.BureauEntreprise) input-bleu texte-light" id="Bureau" />
                 @((MarkupString)GetValidationHTML(() => FournisseurFormModel.BureauEntreprise))
             </div>
-            
             <div class="col-xl-8 col-lg-8 col-12 col-sm-12 py-2 ms-xl-3 ms-lg-3">
                 <label class="bleuFonce texte-bold" for="Ville">Ville <i class="bi bi-braces-asterisk text-danger"></i></label>
                 <input type="text" @bind="FournisseurFormModel.VilleEntreprise" maxlength="64" class="form-control @GetInputClass(() => FournisseurFormModel.VilleEntreprise) input-bleu texte-light" id="Ville" />
@@ -69,16 +68,16 @@
         <div class="card-body border-bleuFonce bg-blanc py-1">
         @{
             var phoneNo = 1;
-            foreach (var phone in FournisseurFormModel.PhoneList)
+            foreach (var phoneModel in FournisseurFormModel.PhoneList)
             {
-                <Telephone TelephoneNumber="@phoneNo" @ref="telephoneComponents[phone]" />  
+                <Telephone TelephoneNumber="@phoneNo" telephoneFormModel="phoneModel" />  
                 if (!(FournisseurFormModel.PhoneList.Count == phoneNo)) {
                     <hr class="m-0">  
                 }
                 phoneNo++;        
             }
         }
-          <div class="d-flex justify-content-center pb-2">
+        <div class="d-flex justify-content-center pb-2">
             <button type="button" class="btn bg-success text-white texte-bold me-2" @onclick="AddTelephone" style="width: 200px;" ><i class="bi bi-plus-circle"></i> Ajout</button>
             <button type="button" class="btn bg-danger text-white texte-bold" @onclick="RemoveTelephone" disabled="@(!(FournisseurFormModel.PhoneList.Count > 1))" style="width: 200px;" ><i class="bi bi-trash"></i> Retirer</button>
         </div>
@@ -97,7 +96,7 @@
     [Parameter]
     public FournisseurFormModel FournisseurFormModel { get; set; }
     private Dictionary<TelephoneFormModel, Telephone> telephoneComponents = new Dictionary<TelephoneFormModel, Telephone>();
-    private EditContext EditContext { get; set; }
+    private EditContext editContext { get; set; }
     private bool isSubmit = false;
 
     private List<string> listeProvinces = new List<string>{"Québec", "Ontario", "Manitoba", "Saskatchewan", "Alberta", "Colombie-Britanique",
@@ -110,8 +109,8 @@
 
     protected override void OnInitialized()
     {
-        EditContext = new EditContext(FournisseurFormModel);
-        EditContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
+        editContext = new EditContext(FournisseurFormModel);
+        editContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
         AssignReference?.Invoke(this);
         if (!FournisseurFormModel.PhoneList.Any()) {
             FournisseurFormModel.PhoneList.Add(new TelephoneFormModel());
@@ -124,7 +123,7 @@
            return "";
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
-        var isValid = !EditContext.GetValidationMessages(fieldIdentifier).Any();
+        var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
 
         // THERE'S PROBABLY A BETTER WAY TO DO THIS.
         if (fieldIdentifier.FieldName.Equals("BureauEntreprise")) {
@@ -144,25 +143,25 @@
            return "";
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
-        var isValid = !EditContext.GetValidationMessages(fieldIdentifier).Any();
+        var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
 
         // THERE'S PROBABLY A BETTER WAY TO DO THIS.
         if (fieldIdentifier.FieldName.Equals("BureauEntreprise")) {
-            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + EditContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
+            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
         }
         // THERE'S PROBABLY A BETTER WAY TO DO THIS.
         if (fieldIdentifier.FieldName.Equals("SiteWebEntreprise")) {
-            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + EditContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
+            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
         }
 
-        return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-validation\">Valide</span></span>" 
-                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + EditContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
+        return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-medium\">Valide</span></span>" 
+                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
     }
 
     public bool TriggerValidation() 
     {
         isSubmit = true;
-        EditContext.Validate();
+        editContext.Validate();
         StateHasChanged();
         return ValidateCoordonnee();
     }

@@ -1,5 +1,7 @@
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Components.Forms
+@using System.Linq.Expressions
+@using Portail_OptiVille.Data.FormModels
 @using System.IO
 @inject IJSRuntime _jsRuntime
 
@@ -46,12 +48,13 @@
 </style>
 
 <PageTitle>Étape 6 Pièces jointes</PageTitle>
-<EditForm Model="fileModel">
+<EditForm EditContext="@editContext">
+    <DataAnnotationsValidator />
     <div class="card-header py-2 bg-bleuFonce">
         <h3 class="py-2 p-0 my-0 text-white titre-bold">Carte d'affaires et brochures</h3>
     </div>
         <div class="card-body py-1 border-bleuFonce d-flex justify-content-center">
-            <div id="dropArea" class="drag-drop-area">
+            <div id="dropArea" class="drag-drop-area @GetInputClass(() => PieceJointeFormModel.Fichier)">
                 <label for="fileInput">
                     <h4 class="texte-bold">Faites glisser et déposez les fichiers ici</h4>
                     <p class="texte-medium">ou cliquez pour sélectionner les fichiers</p>
@@ -61,17 +64,9 @@
                     accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" 
                     style="display: none;" />
         </div>
-        @if (!string.IsNullOrEmpty(errorMessage))
-        {
-            <div class="d-flex justify-content-center p-2">
-                <div class="alert alert-danger alert-dismissible fade show m-1" role="alert">
-                    @errorMessage
-                    <button type="button" @onclick="ClearErrorMessage" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            </div>
-        }
-        <div class="card-header py-2 bg-bleuFonce">
-            <h3 class="py-2 p-0 my-0 titre-bold text-white">Fichiers téléversés</h3>
+        @((MarkupString)GetValidationHTML(() => PieceJointeFormModel.Fichier))
+        <div class="card-header py-2 bg-bleuFonce titre-bold">
+            <h3 class="py-2 p-0 my-0 text-white">Fichiers téléversés (Total: @GetFormatSize())</h3>
         </div>
 
         <div class="card-body table-bleu table-responsive">
@@ -86,10 +81,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var file in listFichiers)
+                @foreach (var file in PieceJointeFormModel.ListFichiers)
                     {
                         <tr>
-                            <th scope="row" class="texte-bold">@(listFichiers.IndexOf(file)+1)</th>
+                        <th scope="row" class="texte-bold">@(PieceJointeFormModel.ListFichiers.IndexOf(file) + 1)</th>
                             <td class="texte-light">@file.Name</td>
                             <td class="texte-light">@GetFormatSizeFile(file.Size)</td>
                             <td><button class="btn btn-danger texte-bold" type="button" @onclick="() => RemoveFile(file)"><i class="bi bi-trash"></i> Effacer</button></td>
@@ -100,15 +95,31 @@
         </div>
 </EditForm>
 
+<style>
+    .valid {
+        outline: 1px solid #26b050;
+    }
+</style>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/dragdrop.js"></script>
 
 @code{
     [Parameter]
     public Action<PiecesJointes>? AssignReference { get; set; }
+    [Parameter]
+    public PieceJointeFormModel PieceJointeFormModel { get; set; }
+    private EditContext editContext;
+    private ValidationMessageStore validationMessageStore;
+    private bool isFileInputTouched = false;
+    public long sizeTotal { get; set; } = 0;
+    public long MaxSize = 75;
 
     protected override void OnInitialized()
     {
+        editContext = new EditContext(PieceJointeFormModel);
+        editContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
+        validationMessageStore = new ValidationMessageStore(editContext);
         AssignReference?.Invoke(this);
     }
 
@@ -119,22 +130,6 @@
             await Task.Delay(100);
             await _jsRuntime.InvokeVoidAsync("dragAndDrop.initialize", "dropArea", "fileInput");
         }
-    }
-
-    private List<IBrowserFile> listFichiers = new List<IBrowserFile>();
-    private FichierModel fileModel = new FichierModel();
-    public long sizeTotal { get; set; } = 0;
-    public long MaxSize = 75;
-    public string errorMessage = "";
-    
-    private class FichierModel 
-    {  
-        [FileExtensionsAttribute(Extensions = "doc,docx,pdf,xls,xlsx,jpg,jpeg,png", ErrorMessage = "Format de fichier non valide.")]
-        public IBrowserFile? fichier { get; set; }
-    }
-
-    private void ClearErrorMessage() {
-        errorMessage = "";
     }
 
     private string GetFormatSizeFile(long size)
@@ -148,7 +143,7 @@
             return $"{(size / 1024.0):F2} KB";
         }
     }
- 
+
     private string GetFormatSize()
     {
         if (sizeTotal >= 1048576) // 1 MB = 1048576 bytes (1 * 1024 * 1024)
@@ -163,90 +158,113 @@
 
     private void CalculTotalSize()
     {
-        sizeTotal = listFichiers.Sum(file => file.Size);
+        sizeTotal = PieceJointeFormModel.ListFichiers.Sum(file => file.Size);
     }
 
     private void HandleFileChange(InputFileChangeEventArgs e)
     {
+        isFileInputTouched = true;
+        validationMessageStore.Clear();
         var allowedExtensions = new[] { ".doc", ".docx", ".pdf", ".xls", ".xlsx", ".jpg", ".jpeg", ".png" };
-        errorMessage = "";
 
         foreach (var file in e.GetMultipleFiles())
         {
             var fileExtension = Path.GetExtension(file.Name).ToLower();
             if (!allowedExtensions.Contains(fileExtension))
             {
-                errorMessage = $"Le fichier {file.Name} a un format non valide.";
-                Console.WriteLine(errorMessage);
+                Console.WriteLine("Extension type file not accepted");
+                validationMessageStore.Add(() => PieceJointeFormModel.Fichier, $"Le fichier {file.Name} a un format non valide");
                 continue;
             }
             if (sizeTotal + file.Size <= MaxSize * 1024 * 1024)
             {
-                if (!listFichiers.Any(f => f.Name == file.Name && f.Size == file.Size))
+                if (!PieceJointeFormModel.ListFichiers.Any(f => f.Name == file.Name && f.Size == file.Size))
                 {
-                    listFichiers.Add(file);
+                    PieceJointeFormModel.ListFichiers.Add(file);
                 }
             }
             else
             {
-                // Mettre le message d'erreur sur le forms
-                errorMessage = $"Le fichier {file.Name} dépasse la taille maximale autorisée.";
-                Console.WriteLine(errorMessage);
+                validationMessageStore.Add(() => PieceJointeFormModel.Fichier, $"Le fichier {file.Name} dépasse la taille maximale autorisée");
             }
         }
+        editContext.NotifyValidationStateChanged();
         CalculTotalSize();
     }
+
     private void RemoveFile(IBrowserFile file)
     {
-        listFichiers.Remove(file);
+        PieceJointeFormModel.ListFichiers.Remove(file);
         CalculTotalSize();
     }
 
-    public bool ValidatePieceJointe()
+    private string GetInputClass<TField>(Expression<Func<TField>> fieldExpression)
     {
-        bool isValid = true;
-        errorMessage = "";
-        foreach(var file in listFichiers)
+        if (!isFileInputTouched)
         {
-            var fileName = Path.GetFileName(file.Name);
-            var fileSize = file.Size;
-            var fileExtension = Path.GetExtension(fileName);
-            Console.WriteLine($"Le fichier {fileName} a été upload. (Taille:{fileSize})");
+            return "";
         }
+        var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
+        var validationMessages = editContext.GetValidationMessages(fieldIdentifier);
+        var isValid = !validationMessages.Any();
+        return isValid ? "valid" : "invalid";
+    }
 
-        /*
-        // Ensure the folder exists
-        var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "{(idPERUser)}");
-        Directory.CreateDirectory(folderPath);
+    private string GetValidationHTML<TField>(Expression<Func<TField>> fieldExpression)
+    {
+        var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
+        var validationMessages = editContext.GetValidationMessages(fieldIdentifier);
+        var isValid = !validationMessages.Any();
+        return isValid
+        ? ""
+        : "<div style=\"display: flex; justify-content: center;\">" +  
+          "<span style=\"display: flex; align-items: center; border-radius: 0; background: none; border: none;\" class=\"input-group-text text-danger\">" +
+          "<i class=\"bi bi-x-circle me-2\"></i>" +
+          $"<span style=\"letter-spacing: 1px;\">{validationMessages.FirstOrDefault()}</span>" +
+          "</span>" +
+          "</div>";
+    }
 
-        // Combine the folder path and the file name
-        var filePath = Path.Combine(folderPath, uploadedFileName);
-
-        // Open a stream for the uploaded file
-        using (var fileStream = new FileStream(filePath, FileMode.Create))
-        {
-            // Save the file to a folder on the server
-            await fichier.OpenReadStream(maxAllowedSize: 4096000).CopyToAsync(fileStream);
-
-            // Reset the position of the stream to the beginning
-            Stream StreamFile = fichier.OpenReadStream(maxAllowedSize: 4096000);
-
-            // Instantiate ProfilePictureService with the folder path
-            var profilePictureService = new ProfilePictureService(folderPath);
-
-            // Pass the file stream to the UploadAndRenameProfilePicture method
-            var profilePicturePath = await profilePictureService.UploadAndRenameProfilePicture(username, uploadedFileName, StreamFile);
-            //[ERREUR]
-            userData.ImagePath = profilePicturePath;
-
-            // Instantiate UserService
-            var userService = new UserService(userData);
-
-            // Now you can update the user's profile in the database with the new profile picture path
-            await userService.UpdateUserProfilePicture(username, profilePicturePath);
-*/
+    public bool TriggerValidation()
+    {
+        bool isValid = false;
+        isValid = editContext.Validate();
+        StateHasChanged();
         return isValid;
     }
+
+        /*
+    // Ensure the folder exists
+    var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "{(idPERUser)}");
+    Directory.CreateDirectory(folderPath);
+
+    // Combine the folder path and the file name
+    var filePath = Path.Combine(folderPath, uploadedFileName);
+
+    // Open a stream for the uploaded file
+    using (var fileStream = new FileStream(filePath, FileMode.Create))
+    {
+        // Save the file to a folder on the server
+        await fichier.OpenReadStream(maxAllowedSize: 4096000).CopyToAsync(fileStream);
+
+        // Reset the position of the stream to the beginning
+        Stream StreamFile = fichier.OpenReadStream(maxAllowedSize: 4096000);
+
+        // Instantiate ProfilePictureService with the folder path
+        var profilePictureService = new ProfilePictureService(folderPath);
+
+        // Pass the file stream to the UploadAndRenameProfilePicture method
+        var profilePicturePath = await profilePictureService.UploadAndRenameProfilePicture(username, uploadedFileName, StreamFile);
+        //[ERREUR]
+        userData.ImagePath = profilePicturePath;
+
+        // Instantiate UserService
+        var userService = new UserService(userData);
+
+        // Now you can update the user's profile in the database with the new profile picture path
+        await userService.UpdateUserProfilePicture(username, profilePicturePath);
+*/
+
     
 /*
     public class ProfilePictureService

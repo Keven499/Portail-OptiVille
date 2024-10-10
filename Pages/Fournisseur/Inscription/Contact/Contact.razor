@@ -54,7 +54,8 @@
 @code {
     [Parameter]
     public int ContactNumber { get; set; } = 1;
-    ContactFormModel contactFormModel = new ContactFormModel();
+    [Parameter]
+    public ContactFormModel contactFormModel { get; set; }
     private EditContext editContext { get; set; }
     private bool isSubmit = false;
 
