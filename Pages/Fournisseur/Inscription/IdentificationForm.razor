@@ -61,14 +61,18 @@
     private string GetInputClass<TField> (Expression<Func<TField>> fieldExpression)
     {
         if (!isSubmit) {
-           return "";
+            return "";
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
         var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
 
         // THERE'S PROBABLY A BETTER WAY TO DO THIS.
-        if (fieldIdentifier.FieldName.Equals("NEQ")) {
-            return isValid ? "" : "invalid";
+        if (string.IsNullOrEmpty(IdenticationFormModel.NEQ))
+        {
+            if (fieldIdentifier.FieldName.Equals("NEQ"))
+            {
+                return isValid ? "" : "invalid";
+            }
         }
 
         return isValid ? "valid" : "invalid";
@@ -77,16 +81,20 @@
     private string GetValidationHTML<TField> (Expression<Func<TField>> fieldExpression) 
     {
         if (!isSubmit) {
-           return "";
+            return "";
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
         var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
-        
+
         // THERE'S PROBABLY A BETTER WAY TO DO THIS.
-        if (fieldIdentifier.FieldName.Equals("NEQ")) {
-            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
+        if (string.IsNullOrEmpty(IdenticationFormModel.NEQ))
+        {
+            if (fieldIdentifier.FieldName.Equals("NEQ"))
+            {
+                return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
+            }
         }
-        
+
         return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-validation\">Valide</span></span>" 
                        : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
     }

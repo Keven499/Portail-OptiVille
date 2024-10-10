@@ -5,8 +5,7 @@ namespace Portail_OptiVille.Data.FormModels
 {
     public class IdenticationFormModel
     {
-        [StringLength(10, MinimumLength = 10, ErrorMessage = "10 caractères exigés")]
-        [NEQRegex]
+        [NEQRegex] 
         public string? NEQ { get; set; }
 
         [Required(ErrorMessage = "Nom requis")]

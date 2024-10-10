@@ -10,12 +10,13 @@ namespace Portail_OptiVille.Data.FormModels
         }
 
         [Required(ErrorMessage = "No requis")]
-        [RegularExpression(@"^(\d{1,5}[A-Z]?)\s*(½?)$", ErrorMessage = "Format invalide")]
+        [RegularExpression(@"^[a-zA-Z0-9]{1,8}$", ErrorMessage = "Entre 1 à 8 chiffres ou lettres.")]
         public string NoEntreprise { get; set; }
 
         [Required(ErrorMessage = "Rue requise")]
         public string RueEntreprise { get; set; }
 
+        [RegularExpression(@"^[a-zA-Z0-9]{1,8}$", ErrorMessage = "Entre 1 à 8 chiffres ou lettres.")]
         public string? BureauEntreprise { get; set; }
 
         [Required(ErrorMessage = "Ville requise")]
@@ -25,8 +26,7 @@ namespace Portail_OptiVille.Data.FormModels
         public string ProvinceEntreprise { get; set; }
 
         [Required(ErrorMessage = "CP requis")]
-        [StringLength(6, MinimumLength = 6, ErrorMessage = "6 caractères max")]
-        [RegularExpression(@"^[A-z]{1}[\d]{1}[A-z]{1}[\d]{1}[A-z]{1}[\d]{1}$", ErrorMessage = "Format invalide")]
+        [RegularExpression(@"^(?!.*[DFIOQU])[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9]$", ErrorMessage = "Format invalide")]
         public string CodePostalEntreprise { get; set; }
 
         [Required(ErrorMessage = "Région adm. requise")]

@@ -10,11 +10,19 @@ namespace Portail_OptiVille.Data.Attributes
             var stringValue = value as string;
             if (stringValue != null)
             {
-                if (stringValue.Length < 2 || !Regex.IsMatch(stringValue.Substring(0, 2), @"^(11|22|33|88)"))
+                if (!Regex.IsMatch(stringValue, @"^\d{10}$"))
+                {
+                    return new ValidationResult("10 chiffres exigés", new[] { validationContext.MemberName });
+                }
+
+                // Check if the first two characters are 11, 22, 33, or 88
+                if (!Regex.IsMatch(stringValue.Substring(0, 2), @"^(11|22|33|88)"))
                 {
                     return new ValidationResult("Doit commencer par 11, 22, 33 ou 88", new[] { validationContext.MemberName });
                 }
-                if (stringValue.Length < 3 || !"456789".Contains(stringValue[2]))
+
+                // Check if the third character is 4, 5, 6, 7, 8, or 9
+                if (!"456789".Contains(stringValue[2]))
                 {
                     return new ValidationResult("Troisième caractère: 4, 5, 6, 7, 8 ou 9", new[] { validationContext.MemberName });
                 }

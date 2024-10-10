@@ -9,10 +9,10 @@ namespace Portail_OptiVille.Data.FormModels {
         public string TypeTelEntreprise { get; set; }
     
         [Required(ErrorMessage = "No requis")]
-        [StringLength(10, MinimumLength = 10, ErrorMessage = "10 caractères exigés")]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "10 chiffres exigés")]
         public string NoTelEntreprise { get; set; }
 
-        [StringLength(6, MinimumLength = 6, ErrorMessage = "6 caractères exigés")]
+        [RegularExpression(@"^\d{6}$", ErrorMessage = "6 chiffres exigés")]
         public string? PosteTelEntreprise { get; set; }
     }
 }

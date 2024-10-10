@@ -43,8 +43,9 @@
             </div>
             <div class="col-xl-4 col-lg-4 col-12 col-sm-12 py-2 ms-xl-3 ms-lg-3">
                 <label class="bleuFonce texte-bold" for="CodePostal">Code Postal <i class="bi bi-braces-asterisk text-danger"></i></label>
-                <input type="text" @bind="FournisseurFormModel.CodePostalEntreprise" placeholder="X9X9X9" class="form-control @GetInputClass(() => FournisseurFormModel.CodePostalEntreprise) input-bleu texte-light" id="CodePostal" />
-            </div>                    
+                <input type="text" @bind="FournisseurFormModel.CodePostalEntreprise" maxlength="7" placeholder="A1A 1A1" class="form-control @GetInputClass(() => FournisseurFormModel.CodePostalEntreprise) input-bleu texte-light" id="CodePostal" />
+                @((MarkupString)GetValidationHTML(() => FournisseurFormModel.CodePostalEntreprise))
+            </div>
             <div class="col-lg-8 col-xl-8 col-12 col-sm-12 py-2 ms-xl-3 ms-lg-3">
                 <label class="bleuFonce texte-bold" for="RegionAdm">Région Admnistrative <i class="bi bi-braces-asterisk text-danger"></i></label>
                 <select id="RegionAdm" @bind="FournisseurFormModel.RegionAdmEntreprise" class="form-control @GetInputClass(() => FournisseurFormModel.RegionAdmEntreprise) form-select input-bleu texte-light">
@@ -126,12 +127,20 @@
         var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
 
         // THERE'S PROBABLY A BETTER WAY TO DO THIS.
-        if (fieldIdentifier.FieldName.Equals("BureauEntreprise")) {
-            return isValid ? "" : "invalid";
+        if (string.IsNullOrEmpty(FournisseurFormModel.BureauEntreprise))
+        {
+            if (fieldIdentifier.FieldName.Equals("BureauEntreprise"))
+            {
+                return isValid ? "" : "invalid";
+            }
         }
         // THERE'S PROBABLY A BETTER WAY TO DO THIS.
-        if (fieldIdentifier.FieldName.Equals("SiteWebEntreprise")) {
-            return isValid ? "" : "invalid";
+        if (string.IsNullOrEmpty(FournisseurFormModel.SiteWebEntreprise))
+        {
+            if (fieldIdentifier.FieldName.Equals("SiteWebEntreprise"))
+            {
+                return isValid ? "" : "invalid";
+            }
         }
 
         return isValid ? "valid" : "invalid";
@@ -146,12 +155,20 @@
         var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
 
         // THERE'S PROBABLY A BETTER WAY TO DO THIS.
-        if (fieldIdentifier.FieldName.Equals("BureauEntreprise")) {
-            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
+        if (string.IsNullOrEmpty(FournisseurFormModel.BureauEntreprise))
+        {
+            if (fieldIdentifier.FieldName.Equals("BureauEntreprise"))
+            {
+                return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
+            }
         }
         // THERE'S PROBABLY A BETTER WAY TO DO THIS.
-        if (fieldIdentifier.FieldName.Equals("SiteWebEntreprise")) {
-            return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
+        if (string.IsNullOrEmpty(FournisseurFormModel.SiteWebEntreprise))
+        {
+            if (fieldIdentifier.FieldName.Equals("SiteWebEntreprise"))
+            {
+                return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-medium\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
+            }
         }
 
         return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-medium\">Valide</span></span>" 
