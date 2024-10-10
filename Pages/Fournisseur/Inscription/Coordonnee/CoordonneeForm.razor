@@ -70,7 +70,7 @@
             var phoneNo = 1;
             foreach (var phoneModel in FournisseurFormModel.PhoneList)
             {
-                <Telephone TelephoneNumber="@phoneNo" telephoneFormModel="phoneModel" />  
+                <Telephone TelephoneNumber="@phoneNo" telephoneFormModel="@phoneModel" @ref="telephoneComponents[phoneModel]" />
                 if (!(FournisseurFormModel.PhoneList.Count == phoneNo)) {
                     <hr class="m-0">  
                 }
@@ -79,7 +79,7 @@
         }
         <div class="d-flex justify-content-center pb-2">
             <button type="button" class="btn bg-success text-white texte-bold me-2" @onclick="AddTelephone" style="width: 200px;" ><i class="bi bi-plus-circle"></i> Ajout</button>
-            <button type="button" class="btn bg-danger text-white texte-bold" @onclick="RemoveTelephone" disabled="@(!(FournisseurFormModel.PhoneList.Count > 1))" style="width: 200px;" ><i class="bi bi-trash"></i> Retirer</button>
+            <button type="button" class="btn bg-danger text-white texte-bold" @onclick="RemoveTelephone" disabled="@(!(FournisseurFormModel.PhoneList.Count > 1))" style="width: 200px;"><i class="bi bi-trash"></i> Retirer</button>
         </div>
     </div>
 </EditForm>
@@ -120,7 +120,7 @@
     private string GetInputClass<TField> (Expression<Func<TField>> fieldExpression)
     {
         if (!isSubmit) {
-           return "";
+            return "";
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
         var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
@@ -140,7 +140,7 @@
     private string GetValidationHTML<TField> (Expression<Func<TField>> fieldExpression) 
     {
         if (!isSubmit) {
-           return "";
+            return "";
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
         var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
@@ -161,9 +161,13 @@
     public bool TriggerValidation() 
     {
         isSubmit = true;
-        editContext.Validate();
         StateHasChanged();
-        return ValidateCoordonnee();
+        var isAllPhonesValid = ValidatePhones();
+        if (editContext.Validate() && isAllPhonesValid)
+        {
+            return true;
+        }
+        return false;
     }
 
     private void AddTelephone()
@@ -178,7 +182,7 @@
         }
     }
 
-    public bool ValidateCoordonnee()
+    public bool ValidatePhones()
     {
         bool isValid = true;
         foreach (var component in telephoneComponents.Values) {
