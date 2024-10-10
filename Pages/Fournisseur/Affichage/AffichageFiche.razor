@@ -5,10 +5,11 @@
 @using System.Text.RegularExpressions;
 @inject A2024420517riGr1Eq6Context _context
 @using Portail_OptiVille.Data.FormModels
+@using Portail_OptiVille.Data.Exceptions
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedSessionStorage ProtectedSessionStore
-@using Portail_OptiVille.Data.Exceptions
 @inject NavigationManager navigationManager
+
 <div class="container-fluid card p-0 m-0">
     <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Demande</h3>
@@ -54,31 +55,31 @@
 
                     <div class="col-xl-6 p-1">
                         <label for="inputEmail4">NEQ</label>
-                        <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.Neq" readonly="@modificationInfo">
+                        <input type="text" class="form-control" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.NEQ" readonly="@modificationInfo">
                     </div>
                     <div class="col-xl-6 p-1">
                         <label for="inputPassword4">Adresse</label>
-                        <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.NoCivique, @selectedFournisseur.Rue, @selectedFournisseur.Bureau" readonly="@modificationInfo">
+                        <input type="text" class="form-control" id="inputPassword4" @bind="@combinedFormModel.FournisseurFormModel.FullAddressPart1" readonly="@modificationInfo">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xl-6 p-1">
                         <label for="inputEmail4">Nom de l'entreprise</label>
-                        <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.NomEntreprise" readonly="@modificationInfo">
+                        <input type="text" class="form-control" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.NomEntreprise" readonly="@modificationInfo">
                     </div>
                     <div class="col-xl-6 p-1">
                         <label for="inputPassword4"></label>
-                        <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.Ville, @selectedFournisseur.Province, @selectedFournisseur.CodePostal" readonly="@modificationInfo">
+                        <input type="text" class="form-control" id="inputPassword4" @bind="@combinedFormModel.FournisseurFormModel.FullAddressPart2" readonly="@modificationInfo">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xl-6 p-1">
                         <label for="inputEmail4">Adresse courriel</label>
-                        <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.AdresseCourriel" readonly="@modificationInfo">
+                        <input type="text" class="form-control" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.CourrielEntreprise" readonly="@modificationInfo">
                     </div>
                     <div class="col-xl-6 p-1">
                         <label for="inputPassword4">Site Web</label>
-                        <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.SiteInternet" readonly="@modificationInfo">
+                        <input type="text" class="form-control" id="inputPassword4" @bind="@combinedFormModel.FournisseurFormModel.SiteWebEntreprise" readonly="@modificationInfo">
                     </div>
                 </div>
             <div class="row">
@@ -326,7 +327,7 @@
     private Fichier? selectedFile;
     List<Portail_OptiVille.Data.Models.Contact> selectedContacts = new List<Portail_OptiVille.Data.Models.Contact>();
     List<Fichier> selectedFichiers = new List<Fichier>();
-    List<Fournisseur> selectedFournisseurs = new List<Fournisseur>();
+    //List<Fournisseur> selectedFournisseurs = new List<Fournisseur>();
     List<Historique> selectedHistoriques = new List<Historique>();
     private Historique? closestHistorique;
     List<Licencerbq> selectedLicencerbqs = new List<Licencerbq>();
@@ -337,12 +338,12 @@
 
     public class CombinedFormModel
     {
-        public Fournisseur FournisseurFormModel { get; set; }
+        public FournisseurFormModel FournisseurFormModel { get; set; }
         public IdenticationFormModel IdentificationFormModel { get; set; }
 
         public CombinedFormModel()
         {
-            FournisseurFormModel = new Fournisseur();
+            FournisseurFormModel = new FournisseurFormModel();
             IdentificationFormModel = new IdenticationFormModel();
         }
     }
@@ -362,18 +363,31 @@
         // Validate the form data
             // Replace selectedFournisseur data with contactFormModel data
             selectedFournisseur.Neq = combinedFormModel.IdentificationFormModel.NEQ;
-            selectedFournisseur.NoCivique = combinedFormModel.FournisseurFormModel.NoCivique; // Ensure this property is available
-            selectedFournisseur.Rue = combinedFormModel.FournisseurFormModel.Rue; // Ensure this property is available
-            selectedFournisseur.Bureau = combinedFormModel.FournisseurFormModel.Bureau; // Ensure this property is available
+            selectedFournisseur.NoCivique = combinedFormModel.FournisseurFormModel.NoEntreprise; // Ensure this property is available
+            selectedFournisseur.Rue = combinedFormModel.FournisseurFormModel.RueEntreprise; // Ensure this property is available
+            selectedFournisseur.Bureau = combinedFormModel.FournisseurFormModel.BureauEntreprise; // Ensure this property is available
             selectedFournisseur.NomEntreprise = combinedFormModel.IdentificationFormModel.NomEntreprise;
-            selectedFournisseur.Ville = combinedFormModel.FournisseurFormModel.Ville; // Ensure this property is available
-            selectedFournisseur.Province = combinedFormModel.FournisseurFormModel.Province; // Ensure this property is available
-            selectedFournisseur.CodePostal = combinedFormModel.FournisseurFormModel.CodePostal; // Ensure this property is available
+            selectedFournisseur.Ville = combinedFormModel.FournisseurFormModel.VilleEntreprise; // Ensure this property is available
+            selectedFournisseur.Province = combinedFormModel.FournisseurFormModel.ProvinceEntreprise; // Ensure this property is available
+            selectedFournisseur.CodePostal = combinedFormModel.FournisseurFormModel.CodePostalEntreprise; // Ensure this property is available
             selectedFournisseur.AdresseCourriel = combinedFormModel.IdentificationFormModel.CourrielEntreprise;
-            selectedFournisseur.SiteInternet = combinedFormModel.FournisseurFormModel.SiteInternet;
+            selectedFournisseur.SiteInternet = combinedFormModel.FournisseurFormModel.SiteWebEntreprise;
+            
+
+            Console.WriteLine(selectedFournisseur.Neq);
+            Console.WriteLine(selectedFournisseur.NoCivique);
+            Console.WriteLine(selectedFournisseur.Rue);
+            Console.WriteLine(selectedFournisseur.Bureau);
+            Console.WriteLine(selectedFournisseur.NomEntreprise);
+            Console.WriteLine(selectedFournisseur.Ville);
+            Console.WriteLine(selectedFournisseur.Province);
+            Console.WriteLine(selectedFournisseur.CodePostal);
+            Console.WriteLine(selectedFournisseur.AdresseCourriel);
+            Console.WriteLine(selectedFournisseur.SiteInternet);
+
 
             // Save changes to the database
-            //_context.Update(selectedFournisseur);
+            _context.Update(selectedFournisseur);
             //await _context.SaveChangesAsync();
 
         // Reset modificationInfo after saving
@@ -417,7 +431,7 @@
         return groupedCategories;
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender){
+    @* protected override async Task OnAfterRenderAsync(bool firstRender){
         try{
             var result = await ProtectedSessionStore.GetAsync<string>("Email");
             if (!result.Success || string.IsNullOrEmpty(result.Value))
@@ -427,21 +441,20 @@
         }catch(UserNotAuthenticatedException ex)
         {
             Console.WriteLine($"Erreur lors de la récupération de l'adresse courriel: {ex.Message}");
-            navigationManager.NavigateTo("/Connexion",true);
+            //navigationManager.NavigateTo("/Connexion",true);
         }
 
-    }
+    } *@
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            selectedFournisseurs = await _context.Fournisseurs.Where(c => c.IdFournisseur == 1).ToListAsync();
+            selectedFournisseur = await _context.Fournisseurs.FindAsync(1);
             selectedContacts = await _context.Contacts.Where(c => c.IdFournisseur == 1).ToListAsync();
             selectedHistoriques = await _context.Historiques.Where(c => c.IdFournisseur == 1).ToListAsync();
             selectedFichiers = await _context.Fichiers.Where(c => c.IdFournisseur == 1).ToListAsync();
             selectedProduitservices = await _context.Produitservices.Where(p => p.IdFournisseurs.Any(f => f.IdFournisseur == 1)).ToListAsync();
-            selectedFournisseur = selectedFournisseurs[0];
             selectedTelephones = await _context.Telephones.Where(c => c.IdFournisseur == 1).ToListAsync();
             selectedLicencerbqs = await _context.Licencerbqs.Include(l => l.CodeSousCategories).Where(c => c.IdFournisseur == 1).ToListAsync();
             closestHistorique = selectedHistoriques.Where(h => h.DateEtatChanged.HasValue).OrderBy(h => Math.Abs((h.DateEtatChanged.Value - DateTime.UtcNow).TotalDays)).FirstOrDefault();
@@ -450,6 +463,27 @@
                 CodeCategorie = p.CodeCategorie, 
                 Nature = p.Nature 
             }).ToList(); 
+
+                if (selectedFournisseur != null)
+                {
+                    // Map the Fournisseur entity to FournisseurFormModel
+                    combinedFormModel.FournisseurFormModel.NoEntreprise = selectedFournisseur.NoCivique;
+                    combinedFormModel.FournisseurFormModel.RueEntreprise = selectedFournisseur.Rue;
+                    combinedFormModel.FournisseurFormModel.BureauEntreprise = selectedFournisseur.Bureau;
+                    combinedFormModel.FournisseurFormModel.VilleEntreprise = selectedFournisseur.Ville;
+                    combinedFormModel.FournisseurFormModel.ProvinceEntreprise = selectedFournisseur.Province;
+                    combinedFormModel.FournisseurFormModel.CodePostalEntreprise = selectedFournisseur.CodePostal;
+                    combinedFormModel.FournisseurFormModel.RegionAdmEntreprise = selectedFournisseur.RegionAdministrative;
+                    combinedFormModel.FournisseurFormModel.SiteWebEntreprise = selectedFournisseur.SiteInternet;
+                    //combinedFormModel.FournisseurFormModel.PhoneList = selectedFournisseur.Telephones.Select(t => new TelephoneFormModel{// Populate the phone details here}).ToList();
+
+                    // Map the Fournisseur entity to IdentificationFormModel
+                    combinedFormModel.IdentificationFormModel.NEQ = selectedFournisseur.Neq;
+                    combinedFormModel.IdentificationFormModel.NomEntreprise = selectedFournisseur.NomEntreprise;
+                    combinedFormModel.IdentificationFormModel.CourrielEntreprise = selectedFournisseur.AdresseCourriel;
+                    combinedFormModel.IdentificationFormModel.MotDePasse = selectedFournisseur.MotDePasse;
+                    combinedFormModel.IdentificationFormModel.ConfirmationMotDePasse = selectedFournisseur.MotDePasse;
+                }
         }
         catch (Exception ex)
         {
