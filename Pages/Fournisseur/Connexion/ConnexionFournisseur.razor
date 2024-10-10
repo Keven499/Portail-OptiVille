@@ -56,7 +56,7 @@
     private async void HandleValidSubmit()
     {
         // Récupérer le fournisseur qui a l'adresse courriel
-        Fournisseur? fournisseur = _context.Fournisseurs.ToList().Find(f => f.AdresseCourriel == logInModel.Courriel);
+        Fournisseur? fournisseur = _context.Fournisseurs.FirstOrDefault(f => f.AdresseCourriel == logInModel.Courriel);
         try
         {
 
@@ -88,7 +88,7 @@
             await JsRuntime.InvokeVoidAsync("alert", "Une erreur est survenue !");
             NavigationManager.NavigateTo("/", true);
         }
-    }
+     }
 
 
     public string HashPassword(string password)

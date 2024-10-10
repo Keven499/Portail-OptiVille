@@ -69,7 +69,6 @@
             {
                     await ProtectedSessionStore.SetAsync("Email", employe.Courriel);
                     await ProtectedSessionStore.SetAsync("Role", employe.Role);
-                    await ProtectedSessionStore.SetAsync("Login", true);
 
                 NavigationManager.NavigateTo("/");
             }
