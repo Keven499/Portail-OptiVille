@@ -43,6 +43,7 @@ builder.Services.AddDbContext<A2024420517riGr1Eq6Context>(options =>
     )
 );
 #endregion
+
 builder.Services.AddHttpClient();
 builder.Services.AddHttpClient<DownloadService>();
 

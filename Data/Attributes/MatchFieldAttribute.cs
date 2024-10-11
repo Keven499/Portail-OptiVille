@@ -17,9 +17,14 @@ namespace Portail_OptiVille.Data.Attributes
             var comparisonValue = validationContext.ObjectType.GetProperty(_comparisonProperty)
                 ?.GetValue(validationContext.ObjectInstance)?.ToString();
 
+            if (string.IsNullOrWhiteSpace(currentValue))
+            {
+                return new ValidationResult("Confirmation requise", new[] { validationContext.MemberName });
+            }
+
             if (!currentValue.Equals(comparisonValue))
             {
-                return new ValidationResult(ErrorMessage ?? "Les champs ne correspondent pas", new []{validationContext.MemberName});
+                return new ValidationResult(ErrorMessage ?? "Les champs ne correspondent pas.", new[] { validationContext.MemberName });
             }
 
             return ValidationResult.Success;

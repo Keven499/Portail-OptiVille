@@ -5,8 +5,11 @@
 @using Portail_OptiVille.Pages.Fournisseur.Inscription
 @using Portail_OptiVille.Data.Models
 @using Microsoft.EntityFrameworkCore;
-@inject A2024420517riGr1Eq6Context _context
+@using System.Timers
 @using Microsoft.AspNetCore.Components.Web
+@inject A2024420517riGr1Eq6Context _context
+@inject IJSRuntime JS
+@implements IDisposable
 
 <PageTitle>Demande fournisseur</PageTitle>
 <div class="form-group container-fluid ">
@@ -14,14 +17,22 @@
         <div class="col-12">
             @if (isLoading)
             {
-                <div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+                <div class="d-flex justify-content-center align-items-center" style="height: 80vh; position: relative;">
                     <div class="spinner-border text-primary me-2" role="status"></div>
-                    <span class="titre-medium fs-3">Chargement en cours..</span>
+                    <div class="d-flex flex-column">
+                        <span class="titre-medium fs-3">Chargement en cours..</span>
+                        <div style="position: relative;">
+                            @if (showMessage)
+                            {
+                                // PETIT MESSAGE POUR AVISER QU'UN PROBLÈME EST SURVENU SI LA BD NE SE LOAD PAS, CAR SERVEUR CRASH
+                                <span class="titre-medium text-danger fs-5" style="position: absolute; top: 100%; left: 0;">Un problème est survenu</span>
+                            }
+                        </div>
+                    </div>
                 </div>
             }
             else
             {
-                // PEUT ÊTRE AMENÉ À CHANGER DE PLACE, MAIS LE PRINCIPE EST PRÉSENT.
                 <div class="row d-flex justify-content-center mb-1">
                     <div class="col-xl-8 col-lg-8 col-12 col-sm-12">
                         <div class="d-flex">  
@@ -39,7 +50,7 @@
                                 @currentStep sur @totalSteps
                             </div>
                         </div>
-                        <div class="card">
+                        <div class="card" @onkeyup="HandleKeyUp">
                             @Components[currentIndex]
                             <div class="card-footer bg-bleuFonce d-flex justify-content-center">
                                 <button @onclick="ShowPrevious" disabled="@isFirstComponent" class="btn bg-bleu text-white texte-medium" style="width: 200px;">
@@ -70,6 +81,8 @@
 
 @code {
     private bool isLoading = true;
+    private bool showMessage = false;
+    private Timer loadingTimer;
 
     private LicenceRBQFormModel licenceRBQFormModel = new LicenceRBQFormModel();
     private LicenceRBQ? licenceRBQRef;
@@ -103,6 +116,10 @@
 
     protected override async Task OnInitializedAsync()
     {
+        loadingTimer = new Timer(7000); 
+        loadingTimer.Elapsed += OnLoadingTimerElapsed;
+        loadingTimer.AutoReset = false; 
+        loadingTimer.Start();
         try
         {
             allCategories = await _context.Categorierbqs.ToListAsync(); 
@@ -184,10 +201,40 @@
         licenceRBQRef = new LicenceRBQ();
         piecesJointesRef = new PiecesJointes();
         isLoading = false;
+        StopLoading();
+    }
+
+    private async Task HandleKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await Task.Delay(200); 
+            ShowNext();
+        }
+    }
+
+
+    private void OnLoadingTimerElapsed(object sender, ElapsedEventArgs e)
+    {
+        showMessage = true;
+        InvokeAsync(StateHasChanged); 
+    }
+
+    private void StopLoading()
+    {
+        isLoading = false; 
+        loadingTimer?.Stop(); 
+        loadingTimer?.Dispose(); 
+    }
+
+    public void Dispose()
+    {
+        JS.InvokeVoidAsync("window.removeEventListener", "keydown", DotNetObjectReference.Create(this));
     }
 
     private async Task ShowNext()
     {
+        StateHasChanged();
         // CASE IDENTIFICATION 1
         if (currentIndex == 0 && identificationRef != null)
         {

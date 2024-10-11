@@ -18,7 +18,6 @@ namespace Portail_OptiVille.Data.FormModels
         [MDPRegexIdentification]
         public string? MotDePasse { get; set; }
 
-        [Required(ErrorMessage = "Confirmation requise")]
         [MatchField("MotDePasse", ErrorMessage = "Ne correspondent pas")]
         public string? ConfirmationMotDePasse { get; set; }
     }

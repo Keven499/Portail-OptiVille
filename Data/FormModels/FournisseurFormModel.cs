@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Mysqlx;
+using Portail_OptiVille.Data.Attributes;
 
 namespace Portail_OptiVille.Data.FormModels
 {
@@ -9,7 +10,7 @@ namespace Portail_OptiVille.Data.FormModels
             PhoneList = new List<TelephoneFormModel>();
         }
 
-        [Required(ErrorMessage = "No requis")]
+        [Required(ErrorMessage = "\u2116 requis")]
         [RegularExpression(@"^[a-zA-Z0-9]{1,8}$", ErrorMessage = "Entre 1 à 8 chiffres ou lettres.")]
         public string NoEntreprise { get; set; }
 
@@ -19,7 +20,7 @@ namespace Portail_OptiVille.Data.FormModels
         [RegularExpression(@"^[a-zA-Z0-9]{1,8}$", ErrorMessage = "Entre 1 à 8 chiffres ou lettres.")]
         public string? BureauEntreprise { get; set; }
 
-        [Required(ErrorMessage = "Ville requise")]
+        [Ville]
         public string VilleEntreprise { get; set; }
 
         [Required(ErrorMessage = "Province requise")]
@@ -35,6 +36,7 @@ namespace Portail_OptiVille.Data.FormModels
         public string? SiteWebEntreprise { get; set; }
 
         public List<TelephoneFormModel>? PhoneList { get ; set; }
+
         public string FullAddressPart1
         {
             get

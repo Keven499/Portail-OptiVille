@@ -1,5 +1,6 @@
 @using Portail_OptiVille.Data.FormModels
 @using System.Linq.Expressions
+@inject IJSRuntime JSRuntime
 
 <PageTitle>Étape 3 Contacts</PageTitle>
 <div class="card-header py-2 bg-bleuFonce">
@@ -39,6 +40,14 @@
     private Dictionary<ContactFormModel, Contact> contactComponents = new Dictionary<ContactFormModel, Contact>();
     private EditContext editContext { get; set; }
     private bool isSubmit = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("disableEnterKey");
+        }
+    }
 
     protected override void OnInitialized()
     {
