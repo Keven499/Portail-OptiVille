@@ -10,11 +10,6 @@ using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-#region Enregistre la classe de contexte de base de données afin qu'elle puisse être injectée dans d'autres classes, comme des contrôleurs ou des services
-builder.Services.AddDbContext<A2024420517riGr1Eq6Context>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-#endregion
-
 #region Configuration des services
 builder.Services.AddScoped<LicenceService>();
 #endregion
