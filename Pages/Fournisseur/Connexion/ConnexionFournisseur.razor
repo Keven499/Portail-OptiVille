@@ -56,7 +56,7 @@
     private async void HandleValidSubmit()
     {
         // Récupérer le fournisseur qui a l'adresse courriel
-        Fournisseur? fournisseur = _context.Fournisseurs.FirstOrDefault(f => f.AdresseCourriel == logInModel.Courriel);
+        Identification? fournisseur = _context.Identifications.FirstOrDefault(f => f.AdresseCourriel == logInModel.Courriel);
         try
         {
 
