@@ -65,7 +65,7 @@
                 <div class="row">
                     <div class="col-xl-6 p-1">
                         <label for="inputEmail4">Nom de l'entreprise</label>
-                        <input type="text" class="form-control" id="inputEmail4" @bind="@identification.NomEntreprise" readonly="@modificationInfo">
+                        <input type="text" class="form-control" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.NomEntreprise" readonly="@modificationInfo">
                     </div>
                     <div class="col-xl-6 p-1">
                         <label for="inputPassword4"></label>
@@ -175,24 +175,23 @@
     </div>
     <div class="card-body">
         
-        @foreach(var Licencerbq in selectedLicencerbqs)
-        {
+
         <div class="row d-flex align-items-center mb-3">
             <div class="col-xl-4">
-                @Licencerbq.Statut 
+                @licencerbqs.Statut 
             </div>
             
             <div class="col-xl-4 d-flex align-items-center">
                 <label for="IdLicenceRbq" class="me-2">Numéro</label>
-                <input type="text" class="form-control w-auto" id="IdLicenceRbq" value="@Licencerbq.IdLicenceRbq">
+                <input type="text" class="form-control w-auto" id="IdLicenceRbq" value="@licencerbqs.IdLicenceRbq">
             </div>
 
             <div class="col-xl-4 d-flex align-items-center">
                 <label for="TypeLicencerbq" class="me-2">Type de licence</label>
-                <input type="text" class="form-control w-auto" id="TypeLicencerbq" value="@Licencerbq.Type">
+                <input type="text" class="form-control w-auto" id="TypeLicencerbq" value="@licencerbqs.Type">
             </div>
         </div>
-        }
+        
 
         @if (selectedLicencerbqs != null)
         {
@@ -486,8 +485,10 @@
             //selectedFournisseurProduitservices = await _context.Fournisseurproduitservices.Where(p => p.IdFournisseur == 1).ToListAsync();
             //Get données dans produits services
             licencerbqs = await _context.Licencerbqs.SingleAsync(c => c.Fournisseur == 1);
-            selectedCategorieRBQ = await _context.Categorierbqs.Where(c => licencerbqs.IdCategorieRbqs.Any(l => l.CodeSousCategorie == c.CodeSousCategorie)).ToListAsync();
+            //selectedCategorieRBQ = await _context.Categorierbqs.Where(c => IdLicenceRbqs.Any(l => l.CodeSousCategorie == c.CodeSousCategorie)).ToListAsync();
+            selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
             selectedLicencerbqs = await _context.Licencerbqs.Where(l => l.Fournisseur == 1).Include(l => l.IdCategorieRbqs).ToListAsync();
+            
             //selectedCategorieRBQ = await _context.Licencerbqs.Where(l => c.)
             //selectedLicencerbqs = await _context.Licencerbqs.Where(l => l.Fournisseur == 1).Include(l => l.CodeSousCategorie).ToListAsync();
             //selectedLicencerbqs = await _context.Licencerbqs.Include(l => l.CodeSousCategories).Where(c => c.IdFournisseur == 1).ToListAsync();
@@ -498,8 +499,9 @@
                 Nature = p.Nature 
             }).ToList(); 
 
-                if (selectedFournisseur != null)
+                if (coordonnee != null && identification != null)
                 {
+                    Console.WriteLine("info not null");
                     // Map the Fournisseur entity to FournisseurFormModel
                     combinedFormModel.FournisseurFormModel.NoEntreprise = coordonnee.NoCivique;
                     combinedFormModel.FournisseurFormModel.RueEntreprise = coordonnee.Rue;
@@ -517,6 +519,10 @@
                     combinedFormModel.IdentificationFormModel.CourrielEntreprise = identification.AdresseCourriel;
                     combinedFormModel.IdentificationFormModel.MotDePasse = identification.MotDePasse;
                     combinedFormModel.IdentificationFormModel.ConfirmationMotDePasse = identification.MotDePasse;
+                }
+                else
+                {
+                    Console.WriteLine("info null");
                 }
         }
         catch (Exception ex)
