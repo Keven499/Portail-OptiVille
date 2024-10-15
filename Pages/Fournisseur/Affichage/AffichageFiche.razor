@@ -193,10 +193,10 @@
         </div>
         
 
-        @if (selectedLicencerbqs != null)
+        @if (selectedCategorieRBQ != null)
         {
             var groupedCategories = GroupCategoriesByType();
-            
+                
             <div class="row">
                 <div class="col-xl-6 mb-3">
                     <h3>Type: Général</h3>
@@ -205,7 +205,7 @@
                         <ul>
                             @foreach (var categorie in groupedCategories["Général"])
                             {
-                                <li>Catégorie: @categorie.NomCategorie</li>
+                                <li>@categorie.CodeSousCategorie - @categorie.TravauxPermis</li>
                             }
                         </ul>
                     }
@@ -223,7 +223,7 @@
                         <ul>
                             @foreach (var categorie in groupedCategories["Spécialisé"])
                             {
-                                <li>Catégorie: @categorie.NomCategorie</li>
+                                <li>@categorie.CodeSousCategorie - @categorie.TravauxPermis</li>
                             }
                         </ul>
                     }
@@ -429,17 +429,18 @@
     {
         var groupedCategories = new Dictionary<string, List<Categorierbq>>();
 
-            foreach (var categorie in selectedCategorieRBQ)
+        foreach (var categorie in selectedCategorieRBQ)
+        {
+            if (!groupedCategories.ContainsKey(categorie.NomCategorie))
             {
-                if (!groupedCategories.ContainsKey(categorie.NomCategorie))
-                {
-                    groupedCategories[categorie.NomCategorie] = new List<Categorierbq>();
-                }
-                groupedCategories[categorie.NomCategorie].Add(categorie);
+                groupedCategories[categorie.NomCategorie] = new List<Categorierbq>();
             }
-        
+            groupedCategories[categorie.NomCategorie].Add(categorie);
+        }
+
         return groupedCategories;
     }
+
 
     @* protected override async Task OnAfterRenderAsync(bool firstRender){
         try{
@@ -482,8 +483,20 @@
             //selectedFournisseurProduitservices = await _context.Fournisseurproduitservices.Where(p => p.IdFournisseur == 1).ToListAsync();
             //Get données dans produits services
             licencerbqs = await _context.Licencerbqs.SingleAsync(c => c.Fournisseur == 1);
-            //selectedCategorieRBQ = await _context.Categorierbqs.Where(c => IdLicenceRbqs.Any(l => l.CodeSousCategorie == c.CodeSousCategorie)).ToListAsync();
             selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
+            //selectedFournisseurProduitservices = await _context.Fournisseurproduitservices.Where(c => c.IdFournisseur.Any(l => l.IdFournisseur == selectedFournisseur.IdFournisseur)).ToListAsync();
+            var fournisseurProduitIds = await _context.Database
+    .SqlQueryRaw<string>(@"
+        SELECT idProduitService 
+        FROM FournisseurProduitService 
+        WHERE idFournisseur = {0}", selectedFournisseur.IdFournisseur)
+    .ToListAsync();
+
+// Now, query the actual product services based on the codes fetched from the pivot table
+var selectedFournisseurProduitservices = await _context.Produitservices
+    .Where(p => fournisseurProduitIds.Contains(p.CodeUnspsc)) // Ensure CodeUnspsc is string here
+    .ToListAsync();
+    
             selectedLicencerbqs = await _context.Licencerbqs.Where(l => l.Fournisseur == 1).Include(l => l.IdCategorieRbqs).ToListAsync();
             
             //selectedCategorieRBQ = await _context.Licencerbqs.Where(l => c.)
@@ -498,7 +511,7 @@
 
                 if (coordonnee != null && identification != null)
                 {
-                    Console.WriteLine("info not null");
+                    
                     // Map the Fournisseur entity to FournisseurFormModel
                     combinedFormModel.FournisseurFormModel.NoEntreprise = coordonnee.NoCivique;
                     combinedFormModel.FournisseurFormModel.RueEntreprise = coordonnee.Rue;
@@ -516,10 +529,6 @@
                     combinedFormModel.IdentificationFormModel.CourrielEntreprise = identification.AdresseCourriel;
                     combinedFormModel.IdentificationFormModel.MotDePasse = identification.MotDePasse;
                     combinedFormModel.IdentificationFormModel.ConfirmationMotDePasse = identification.MotDePasse;
-                }
-                else
-                {
-                    Console.WriteLine("info null");
                 }
         }
         catch (Exception ex)
