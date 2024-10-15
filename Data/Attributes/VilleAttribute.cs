@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
 namespace Portail_OptiVille.Data.Attributes
@@ -10,24 +9,24 @@ namespace Portail_OptiVille.Data.Attributes
         {
             if (string.IsNullOrWhiteSpace(value?.ToString()))
             {
-                return new ValidationResult("Ville requise");
+                return new ValidationResult("Ville requise", new[] { validationContext.MemberName });
             }
 
             string stringValue = value.ToString();
             if (stringValue.StartsWith("-") || stringValue.EndsWith("-"))
             {
-                return new ValidationResult("Pas de - en début et fin");
+                return new ValidationResult("Pas de - en début et fin", new[] { validationContext.MemberName });
             }
 
             var regex = new Regex(@"^[a-zA-Z-]+$");
             if (!regex.IsMatch(stringValue))
             {
-                return new ValidationResult("Que des lettres et tirets");
+                return new ValidationResult("Que des lettres et tirets", new[] { validationContext.MemberName });
             }
 
             if (Regex.IsMatch(stringValue, @"[^a-zA-Z-]"))
             {
-                return new ValidationResult("Caractères interdits");
+                return new ValidationResult("Caractères interdits", new[] { validationContext.MemberName });
             }
 
             return ValidationResult.Success;

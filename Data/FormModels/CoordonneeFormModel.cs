@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
-using Mysqlx;
 using Portail_OptiVille.Data.Attributes;
 
 namespace Portail_OptiVille.Data.FormModels
 {
-    public class FournisseurFormModel
+    public class CoordonneeFormModel
     {
-        public FournisseurFormModel() {
+        public CoordonneeFormModel() {
             PhoneList = new List<TelephoneFormModel>();
         }
 

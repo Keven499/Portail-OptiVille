@@ -9,7 +9,6 @@
 @using Microsoft.AspNetCore.Components.Web
 @inject A2024420517riGr1Eq6Context _context
 @inject IJSRuntime JS
-@implements IDisposable
 
 <PageTitle>Demande fournisseur</PageTitle>
 <div class="form-group container-fluid ">
@@ -50,7 +49,7 @@
                                 @currentStep sur @totalSteps
                             </div>
                         </div>
-                        <div class="card" @onkeyup="HandleKeyUp">
+                        <div class="card">
                             @Components[currentIndex]
                             <div class="card-footer bg-bleuFonce d-flex justify-content-center">
                                 <button @onclick="ShowPrevious" disabled="@isFirstComponent" class="btn bg-bleu text-white texte-medium" style="width: 200px;">
@@ -91,7 +90,7 @@
     private IdenticationFormModel identicationFormModel = new IdenticationFormModel();
     private IdentificationForm? identificationRef;
 
-    private FournisseurFormModel FournisseurFormModel = new FournisseurFormModel(); 
+    private CoordonneeFormModel coordonneeFormModel = new CoordonneeFormModel();
     private CoordonneeForm? coordoneeRef;
 
     private ContactHosterFormModel contactHosterFormModel = new ContactHosterFormModel();
@@ -155,7 +154,7 @@
             {
                 builder.OpenComponent<CoordonneeForm>(1);
                 builder.AddAttribute(1, "AssignReference", (Action<CoordonneeForm>)(coordonneeForm => coordoneeRef = coordonneeForm));
-                builder.AddAttribute(2, "FournisseurFormModel", FournisseurFormModel);
+                builder.AddAttribute(2, "CoordonneeFormModel", coordonneeFormModel);
                 builder.CloseComponent();
             },
             // FORMULAIRE CONTACT 3
@@ -204,16 +203,6 @@
         StopLoading();
     }
 
-    private async Task HandleKeyUp(KeyboardEventArgs e)
-    {
-        if (e.Key == "Enter")
-        {
-            await Task.Delay(200); 
-            ShowNext();
-        }
-    }
-
-
     private void OnLoadingTimerElapsed(object sender, ElapsedEventArgs e)
     {
         showMessage = true;
@@ -225,11 +214,6 @@
         isLoading = false; 
         loadingTimer?.Stop(); 
         loadingTimer?.Dispose(); 
-    }
-
-    public void Dispose()
-    {
-        JS.InvokeVoidAsync("window.removeEventListener", "keydown", DotNetObjectReference.Create(this));
     }
 
     private async Task ShowNext()

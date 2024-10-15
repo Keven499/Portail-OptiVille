@@ -59,7 +59,7 @@
                     </div>
                     <div class="col-xl-6 p-1">
                         <label for="inputPassword4">Adresse</label>
-                        <input type="text" class="form-control" id="inputPassword4" @bind="@combinedFormModel.FournisseurFormModel.FullAddressPart1" readonly="@modificationInfo">
+                        <input type="text" class="form-control" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.FullAddressPart1" readonly="@modificationInfo">
                     </div>
                 </div>
                 <div class="row">
@@ -69,7 +69,7 @@
                     </div>
                     <div class="col-xl-6 p-1">
                         <label for="inputPassword4"></label>
-                        <input type="text" class="form-control" id="inputPassword4" @bind="@combinedFormModel.FournisseurFormModel.FullAddressPart2" readonly="@modificationInfo">
+                        <input type="text" class="form-control" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.FullAddressPart2" readonly="@modificationInfo">
                     </div>
                 </div>
                 <div class="row">
@@ -79,7 +79,7 @@
                     </div>
                     <div class="col-xl-6 p-1">
                         <label for="inputPassword4">Site Web</label>
-                        <input type="text" class="form-control" id="inputPassword4" @bind="@combinedFormModel.FournisseurFormModel.SiteWebEntreprise" readonly="@modificationInfo">
+                        <input type="text" class="form-control" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.SiteWebEntreprise" readonly="@modificationInfo">
                     </div>
                 </div>
             <div class="row">
@@ -346,12 +346,12 @@
 
     public class CombinedFormModel
     {
-        public FournisseurFormModel FournisseurFormModel { get; set; }
+        public CoordonneeFormModel CoordonneeFormModel { get; set; }
         public IdenticationFormModel IdentificationFormModel { get; set; }
 
         public CombinedFormModel()
         {
-            FournisseurFormModel = new FournisseurFormModel();
+            CoordonneeFormModel = new CoordonneeFormModel();
             IdentificationFormModel = new IdenticationFormModel();
         }
     }
@@ -371,15 +371,15 @@
         // Validate the form data
             // Replace selectedFournisseur data with contactFormModel data
             identification.Neq = combinedFormModel.IdentificationFormModel.NEQ;
-            coordonnee.NoCivique = combinedFormModel.FournisseurFormModel.NoEntreprise; // Ensure this property is available
-            coordonnee.Rue = combinedFormModel.FournisseurFormModel.RueEntreprise; // Ensure this property is available
-            coordonnee.Bureau = combinedFormModel.FournisseurFormModel.BureauEntreprise; // Ensure this property is available
+            coordonnee.NoCivique = combinedFormModel.CoordonneeFormModel.NoEntreprise; // Ensure this property is available
+            coordonnee.Rue = combinedFormModel.CoordonneeFormModel.RueEntreprise; // Ensure this property is available
+            coordonnee.Bureau = combinedFormModel.CoordonneeFormModel.BureauEntreprise; // Ensure this property is available
             identification.NomEntreprise = combinedFormModel.IdentificationFormModel.NomEntreprise;
-            coordonnee.Ville = combinedFormModel.FournisseurFormModel.VilleEntreprise; // Ensure this property is available
-            coordonnee.Province = combinedFormModel.FournisseurFormModel.ProvinceEntreprise; // Ensure this property is available
-            coordonnee.CodePostal = combinedFormModel.FournisseurFormModel.CodePostalEntreprise; // Ensure this property is available
+            coordonnee.Ville = combinedFormModel.CoordonneeFormModel.VilleEntreprise; // Ensure this property is available
+            coordonnee.Province = combinedFormModel.CoordonneeFormModel.ProvinceEntreprise; // Ensure this property is available
+            coordonnee.CodePostal = combinedFormModel.CoordonneeFormModel.CodePostalEntreprise; // Ensure this property is available
             identification.AdresseCourriel = combinedFormModel.IdentificationFormModel.CourrielEntreprise;
-            coordonnee.SiteInternet = combinedFormModel.FournisseurFormModel.SiteWebEntreprise;
+            coordonnee.SiteInternet = combinedFormModel.CoordonneeFormModel.SiteWebEntreprise;
             
 
             Console.WriteLine(identification.Neq);
@@ -502,14 +502,14 @@
                 {
                     
                     // Map the Fournisseur entity to FournisseurFormModel
-                    combinedFormModel.FournisseurFormModel.NoEntreprise = coordonnee.NoCivique;
-                    combinedFormModel.FournisseurFormModel.RueEntreprise = coordonnee.Rue;
-                    combinedFormModel.FournisseurFormModel.BureauEntreprise = coordonnee.Bureau;
-                    combinedFormModel.FournisseurFormModel.VilleEntreprise = coordonnee.Ville;
-                    combinedFormModel.FournisseurFormModel.ProvinceEntreprise = coordonnee.Province;
-                    combinedFormModel.FournisseurFormModel.CodePostalEntreprise = coordonnee.CodePostal;
-                    combinedFormModel.FournisseurFormModel.RegionAdmEntreprise = coordonnee.RegionAdministrative;
-                    combinedFormModel.FournisseurFormModel.SiteWebEntreprise = coordonnee.SiteInternet;
+                    combinedFormModel.CoordonneeFormModel.NoEntreprise = coordonnee.NoCivique;
+                    combinedFormModel.CoordonneeFormModel.RueEntreprise = coordonnee.Rue;
+                    combinedFormModel.CoordonneeFormModel.BureauEntreprise = coordonnee.Bureau;
+                    combinedFormModel.CoordonneeFormModel.VilleEntreprise = coordonnee.Ville;
+                    combinedFormModel.CoordonneeFormModel.ProvinceEntreprise = coordonnee.Province;
+                    combinedFormModel.CoordonneeFormModel.CodePostalEntreprise = coordonnee.CodePostal;
+                    combinedFormModel.CoordonneeFormModel.RegionAdmEntreprise = coordonnee.RegionAdministrative;
+                    combinedFormModel.CoordonneeFormModel.SiteWebEntreprise = coordonnee.SiteInternet;
                     //combinedFormModel.FournisseurFormModel.PhoneList = selectedFournisseur.Telephones.Select(t => new TelephoneFormModel{// Populate the phone details here}).ToList();
 
                     // Map the Fournisseur entity to IdentificationFormModel
