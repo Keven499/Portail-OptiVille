@@ -329,16 +329,12 @@
     private Fichier? selectedFile;
     List<Portail_OptiVille.Data.Models.Contact> selectedContacts = new List<Portail_OptiVille.Data.Models.Contact>();
     List<Fichier> selectedFichiers = new List<Fichier>();
-    //List<Fournisseur> selectedFournisseurs = new List<Fournisseur>();
     List<Historique> selectedHistoriques = new List<Historique>();
     private Historique? closestHistorique;
     List<Licencerbq> selectedLicencerbqs = new List<Licencerbq>();
     List<Coordonnee> selectedCoordonnes = new List<Coordonnee>();
-    List<Produitservice> selectedProduitservices = new List<Produitservice>();
-    List<Finance> selectedFinances = new List<Finance>();
     List<Telephone> selectedTelephones = new List<Telephone>();
     List<Telephone> selectedTelephonesContacts = new List<Telephone>();
-    List<Identification> selectedIdentifications = new List<Identification>();
     Fournisseur selectedFournisseur = new Fournisseur();
     Identification identification = new Identification();
     List<Categorierbq> selectedCategorieRBQ = new List<Categorierbq>();
@@ -480,28 +476,21 @@
             identification = await _context.Identifications.SingleAsync(c => c.Fournisseur == 1);
             selectedFichiers = await _context.Fichiers.Where(c => c.Fournisseur == 1).ToListAsync();
             selectedHistoriques = await _context.Historiques.Where(c => c.Fournisseur == 1).ToListAsync();
-            //selectedFournisseurProduitservices = await _context.Fournisseurproduitservices.Where(p => p.IdFournisseur == 1).ToListAsync();
-            //Get données dans produits services
             licencerbqs = await _context.Licencerbqs.SingleAsync(c => c.Fournisseur == 1);
             selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
-            //selectedFournisseurProduitservices = await _context.Fournisseurproduitservices.Where(c => c.IdFournisseur.Any(l => l.IdFournisseur == selectedFournisseur.IdFournisseur)).ToListAsync();
             var fournisseurProduitIds = await _context.Database
-    .SqlQueryRaw<string>(@"
-        SELECT idProduitService 
-        FROM FournisseurProduitService 
-        WHERE idFournisseur = {0}", selectedFournisseur.IdFournisseur)
-    .ToListAsync();
+            .SqlQueryRaw<string>(@"
+                SELECT idProduitService 
+                FROM FournisseurProduitService 
+                WHERE idFournisseur = {0}", selectedFournisseur.IdFournisseur)
+            .ToListAsync();
 
-// Now, query the actual product services based on the codes fetched from the pivot table
-var selectedFournisseurProduitservices = await _context.Produitservices
-    .Where(p => fournisseurProduitIds.Contains(p.CodeUnspsc)) // Ensure CodeUnspsc is string here
-    .ToListAsync();
+            // Now, query the actual product services based on the codes fetched from the pivot table
+            var selectedProduitservices = await _context.Produitservices
+                .Where(p => fournisseurProduitIds.Contains(p.CodeUnspsc)) // Ensure CodeUnspsc is string here
+                .ToListAsync();
     
             selectedLicencerbqs = await _context.Licencerbqs.Where(l => l.Fournisseur == 1).Include(l => l.IdCategorieRbqs).ToListAsync();
-            
-            //selectedCategorieRBQ = await _context.Licencerbqs.Where(l => c.)
-            //selectedLicencerbqs = await _context.Licencerbqs.Where(l => l.Fournisseur == 1).Include(l => l.CodeSousCategorie).ToListAsync();
-            //selectedLicencerbqs = await _context.Licencerbqs.Include(l => l.CodeSousCategories).Where(c => c.IdFournisseur == 1).ToListAsync();
             closestHistorique = selectedHistoriques.Where(h => h.DateEtatChanged.HasValue).OrderBy(h => Math.Abs((h.DateEtatChanged.Value - DateTime.UtcNow).TotalDays)).FirstOrDefault();
             groupedServices = selectedProduitservices.GroupBy(p => new GroupKey 
             { 
