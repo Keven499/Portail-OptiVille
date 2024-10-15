@@ -25,7 +25,7 @@
             <select class="form-select input-bleu texte-light" @onchange="OnCategorieChange">
                 <option>Toutes les catégories</option>
                     @foreach (var categorie in CategorieUNSPSC) {
-                        <option>@categorie.CodeCategorie - @categorie.Categorie</option>
+                    <option>@categorie.Categorie - @categorie.Categorie</option>
                     }
             </select>
         </div>
@@ -151,7 +151,7 @@
         }
         if (selectedCategorie != null && !selectedCategorie.Equals("Toutes les catégories")) {
             produitServiceCatego = AllProduitServices
-                .Where(c => c.CodeCategorie == selectedCategorie.Substring(0, selectedCategorie.IndexOf(" - ")))
+                .Where(c => c.CategorieUnspsc == selectedCategorie.Substring(0, selectedCategorie.IndexOf(" - ")))
                 .ToList();
         }
         else {
