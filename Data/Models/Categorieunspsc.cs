@@ -5,7 +5,7 @@ namespace Portail_OptiVille.Data.Models;
 
 public partial class Categorieunspsc
 {
-    public string CodeCategorie { get; set; } = null!;
+    public string CategoUnsid { get; set; } = null!;
 
     public string? Categorie { get; set; }
 

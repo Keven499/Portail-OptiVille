@@ -11,9 +11,9 @@ public partial class Produitservice
 
     public string? Description { get; set; }
 
-    public string? CodeCategorie { get; set; }
+    public string? CategorieUnspsc { get; set; }
 
-    public virtual Categorieunspsc? CodeCategorieNavigation { get; set; }
+    public virtual Categorieunspsc? CategorieUnspscNavigation { get; set; }
 
-    public virtual ICollection<Fournisseur> IdFournisseurs { get; set; } = new List<Fournisseur>();
+    public virtual ICollection<Fournisseurproduitservice> Fournisseurproduitservices { get; set; } = new List<Fournisseurproduitservice>();
 }

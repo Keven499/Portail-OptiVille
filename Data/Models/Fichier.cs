@@ -15,7 +15,7 @@ public partial class Fichier
 
     public DateTime? DateCreation { get; set; }
 
-    public int? IdFournisseur { get; set; }
+    public int? Fournisseur { get; set; }
 
-    public virtual Fournisseur? IdFournisseurNavigation { get; set; }
+    public virtual Fournisseur? FournisseurNavigation { get; set; }
 }

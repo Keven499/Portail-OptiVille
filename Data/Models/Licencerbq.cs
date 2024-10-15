@@ -11,11 +11,9 @@ public partial class Licencerbq
 
     public string? Type { get; set; }
 
-    public string? TravauxPermis { get; set; }
+    public int? Fournisseur { get; set; }
 
-    public int? IdFournisseur { get; set; }
+    public virtual Fournisseur? FournisseurNavigation { get; set; }
 
-    public virtual Fournisseur? IdFournisseurNavigation { get; set; }
-
-    public virtual ICollection<Categorierbq> CodeSousCategories { get; set; } = new List<Categorierbq>();
+    public virtual ICollection<Categorierbq> IdCategorieRbqs { get; set; } = new List<Categorierbq>();
 }

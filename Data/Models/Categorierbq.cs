@@ -7,7 +7,7 @@ public partial class Categorierbq
 {
     public string CodeSousCategorie { get; set; } = null!;
 
-    public string? Nom { get; set; }
+    public string? TravauxPermis { get; set; }
 
     public string? NomCategorie { get; set; }
 

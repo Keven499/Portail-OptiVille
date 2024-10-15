@@ -22,13 +22,21 @@ public partial class A2024420517riGr1Eq6Context : DbContext
 
     public virtual DbSet<Contact> Contacts { get; set; }
 
+    public virtual DbSet<Coordonnee> Coordonnees { get; set; }
+
     public virtual DbSet<Employe> Employes { get; set; }
 
     public virtual DbSet<Fichier> Fichiers { get; set; }
 
+    public virtual DbSet<Finance> Finances { get; set; }
+
     public virtual DbSet<Fournisseur> Fournisseurs { get; set; }
 
+    public virtual DbSet<Fournisseurproduitservice> Fournisseurproduitservices { get; set; }
+
     public virtual DbSet<Historique> Historiques { get; set; }
+
+    public virtual DbSet<Identification> Identifications { get; set; }
 
     public virtual DbSet<Licencerbq> Licencerbqs { get; set; }
 
@@ -55,49 +63,25 @@ public partial class A2024420517riGr1Eq6Context : DbContext
             entity.Property(e => e.CodeSousCategorie)
                 .HasMaxLength(10)
                 .HasColumnName("codeSousCategorie");
-            entity.Property(e => e.Nom)
-                .HasMaxLength(150)
-                .HasColumnName("nom");
             entity.Property(e => e.NomCategorie)
                 .HasMaxLength(50)
                 .HasColumnName("nomCategorie");
-
-            entity.HasMany(d => d.IdLicenceRbqs).WithMany(p => p.CodeSousCategories)
-                .UsingEntity<Dictionary<string, object>>(
-                    "Licencerbqcategorie",
-                    r => r.HasOne<Licencerbq>().WithMany()
-                        .HasForeignKey("IdLicenceRbq")
-                        .HasConstraintName("licencerbqcategorie_ibfk_2"),
-                    l => l.HasOne<Categorierbq>().WithMany()
-                        .HasForeignKey("CodeSousCategorie")
-                        .HasConstraintName("licencerbqcategorie_ibfk_1"),
-                    j =>
-                    {
-                        j.HasKey("CodeSousCategorie", "IdLicenceRbq")
-                            .HasName("PRIMARY")
-                            .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
-                        j.ToTable("licencerbqcategorie");
-                        j.HasIndex(new[] { "IdLicenceRbq" }, "idLicenceRBQ");
-                        j.IndexerProperty<string>("CodeSousCategorie")
-                            .HasMaxLength(10)
-                            .HasColumnName("codeSousCategorie");
-                        j.IndexerProperty<string>("IdLicenceRbq")
-                            .HasMaxLength(12)
-                            .HasColumnName("idLicenceRBQ");
-                    });
+            entity.Property(e => e.TravauxPermis)
+                .HasMaxLength(150)
+                .HasColumnName("travauxPermis");
         });
 
         modelBuilder.Entity<Categorieunspsc>(entity =>
         {
-            entity.HasKey(e => e.CodeCategorie).HasName("PRIMARY");
+            entity.HasKey(e => e.CategoUnsid).HasName("PRIMARY");
 
             entity.ToTable("categorieunspsc");
 
-            entity.Property(e => e.CodeCategorie)
+            entity.Property(e => e.CategoUnsid)
                 .HasMaxLength(10)
-                .HasColumnName("codeCategorie");
+                .HasColumnName("categoUNSID");
             entity.Property(e => e.Categorie)
-                .HasMaxLength(50)
+                .HasMaxLength(75)
                 .HasColumnName("categorie");
         });
 
@@ -107,7 +91,7 @@ public partial class A2024420517riGr1Eq6Context : DbContext
 
             entity.ToTable("contact");
 
-            entity.HasIndex(e => e.IdFournisseur, "idFournisseur");
+            entity.HasIndex(e => e.Fournisseur, "fournisseur");
 
             entity.Property(e => e.IdContact)
                 .HasColumnType("int(11)")
@@ -118,29 +102,69 @@ public partial class A2024420517riGr1Eq6Context : DbContext
             entity.Property(e => e.Fonction)
                 .HasMaxLength(32)
                 .HasColumnName("fonction");
-            entity.Property(e => e.IdFournisseur)
+            entity.Property(e => e.Fournisseur)
                 .HasColumnType("int(11)")
-                .HasColumnName("idFournisseur");
+                .HasColumnName("fournisseur");
             entity.Property(e => e.Nom)
                 .HasMaxLength(32)
                 .HasColumnName("nom");
-            entity.Property(e => e.Poste)
-                .HasMaxLength(6)
-                .HasColumnName("poste");
             entity.Property(e => e.Prenom)
                 .HasMaxLength(32)
                 .HasColumnName("prenom");
-            entity.Property(e => e.Telephone)
-                .HasMaxLength(10)
-                .HasColumnName("telephone");
-            entity.Property(e => e.TypeTelephone)
-                .HasColumnType("enum('Bureau','Télécopieur','Cellulaire')")
-                .HasColumnName("typeTelephone");
 
-            entity.HasOne(d => d.IdFournisseurNavigation).WithMany(p => p.Contacts)
-                .HasForeignKey(d => d.IdFournisseur)
+            entity.HasOne(d => d.FournisseurNavigation).WithMany(p => p.Contacts)
+                .HasForeignKey(d => d.Fournisseur)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("contact_ibfk_1");
+        });
+
+        modelBuilder.Entity<Coordonnee>(entity =>
+        {
+            entity.HasKey(e => e.IdCoordonnee).HasName("PRIMARY");
+
+            entity.ToTable("coordonnee");
+
+            entity.HasIndex(e => e.Fournisseur, "fournisseur");
+
+            entity.Property(e => e.IdCoordonnee)
+                .HasColumnType("int(11)")
+                .HasColumnName("idCoordonnee");
+            entity.Property(e => e.Bureau)
+                .HasMaxLength(8)
+                .HasColumnName("bureau");
+            entity.Property(e => e.CodePostal)
+                .HasMaxLength(6)
+                .HasColumnName("codePostal");
+            entity.Property(e => e.CodeRegionAdministrative)
+                .HasMaxLength(2)
+                .HasColumnName("codeRegionAdministrative");
+            entity.Property(e => e.Fournisseur)
+                .HasColumnType("int(11)")
+                .HasColumnName("fournisseur");
+            entity.Property(e => e.NoCivique)
+                .HasMaxLength(8)
+                .HasColumnName("noCivique");
+            entity.Property(e => e.Province)
+                .HasDefaultValueSql("'Québec'")
+                .HasColumnType("enum('Ontario','Québec','Nouvelle-Écosse','Nouveau-Brunswick','Manitoba','Colombie-Britannique','Île-du-Prince-Édouard','Saskatchewan','Alberta','Terre-Neuve-et-Labrador','Territoires du Nord-Ouest','Yukon','Nunavut')")
+                .HasColumnName("province");
+            entity.Property(e => e.RegionAdministrative)
+                .HasMaxLength(50)
+                .HasColumnName("regionAdministrative");
+            entity.Property(e => e.Rue)
+                .HasMaxLength(64)
+                .HasColumnName("rue");
+            entity.Property(e => e.SiteInternet)
+                .HasMaxLength(64)
+                .HasColumnName("siteInternet");
+            entity.Property(e => e.Ville)
+                .HasMaxLength(64)
+                .HasColumnName("ville");
+
+            entity.HasOne(d => d.FournisseurNavigation).WithMany(p => p.Coordonnees)
+                .HasForeignKey(d => d.Fournisseur)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("coordonnee_ibfk_1");
         });
 
         modelBuilder.Entity<Employe>(entity =>
@@ -166,7 +190,7 @@ public partial class A2024420517riGr1Eq6Context : DbContext
 
             entity.ToTable("fichier");
 
-            entity.HasIndex(e => e.IdFournisseur, "idFournisseur");
+            entity.HasIndex(e => e.Fournisseur, "fournisseur");
 
             entity.Property(e => e.IdFichier)
                 .HasColumnType("int(11)")
@@ -175,9 +199,9 @@ public partial class A2024420517riGr1Eq6Context : DbContext
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("datetime")
                 .HasColumnName("dateCreation");
-            entity.Property(e => e.IdFournisseur)
+            entity.Property(e => e.Fournisseur)
                 .HasColumnType("int(11)")
-                .HasColumnName("idFournisseur");
+                .HasColumnName("fournisseur");
             entity.Property(e => e.Nom)
                 .HasMaxLength(32)
                 .HasColumnName("nom");
@@ -188,10 +212,46 @@ public partial class A2024420517riGr1Eq6Context : DbContext
                 .HasMaxLength(10)
                 .HasColumnName("type");
 
-            entity.HasOne(d => d.IdFournisseurNavigation).WithMany(p => p.Fichiers)
-                .HasForeignKey(d => d.IdFournisseur)
+            entity.HasOne(d => d.FournisseurNavigation).WithMany(p => p.Fichiers)
+                .HasForeignKey(d => d.Fournisseur)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("fichier_ibfk_1");
+        });
+
+        modelBuilder.Entity<Finance>(entity =>
+        {
+            entity.HasKey(e => e.IdFinance).HasName("PRIMARY");
+
+            entity.ToTable("finance");
+
+            entity.HasIndex(e => e.Fournisseur, "fournisseur");
+
+            entity.Property(e => e.IdFinance)
+                .HasColumnType("int(11)")
+                .HasColumnName("idFinance");
+            entity.Property(e => e.ConditionPaiement)
+                .HasMaxLength(100)
+                .HasColumnName("conditionPaiement");
+            entity.Property(e => e.Devise)
+                .HasColumnType("enum('CAD','USD')")
+                .HasColumnName("devise");
+            entity.Property(e => e.Fournisseur)
+                .HasColumnType("int(11)")
+                .HasColumnName("fournisseur");
+            entity.Property(e => e.ModeCommunication)
+                .HasColumnType("enum('Courriel','Courrier régulier')")
+                .HasColumnName("modeCommunication");
+            entity.Property(e => e.NumeroTps)
+                .HasMaxLength(15)
+                .HasColumnName("numeroTPS");
+            entity.Property(e => e.NumeroTvq)
+                .HasMaxLength(15)
+                .HasColumnName("numeroTVQ");
+
+            entity.HasOne(d => d.FournisseurNavigation).WithMany(p => p.Finances)
+                .HasForeignKey(d => d.Fournisseur)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("finance_ibfk_1");
         });
 
         modelBuilder.Entity<Fournisseur>(entity =>
@@ -200,26 +260,9 @@ public partial class A2024420517riGr1Eq6Context : DbContext
 
             entity.ToTable("fournisseur");
 
-            entity.HasIndex(e => e.Neq, "neq").IsUnique();
-
             entity.Property(e => e.IdFournisseur)
                 .HasColumnType("int(11)")
                 .HasColumnName("idFournisseur");
-            entity.Property(e => e.AdresseCourriel)
-                .HasMaxLength(64)
-                .HasColumnName("adresseCourriel");
-            entity.Property(e => e.Bureau)
-                .HasMaxLength(8)
-                .HasColumnName("bureau");
-            entity.Property(e => e.CodePostal)
-                .HasMaxLength(6)
-                .HasColumnName("codePostal");
-            entity.Property(e => e.CodeRegionAdministrative)
-                .HasMaxLength(2)
-                .HasColumnName("codeRegionAdministrative");
-            entity.Property(e => e.ConditionPaiement)
-                .HasMaxLength(100)
-                .HasColumnName("conditionPaiement");
             entity.Property(e => e.DateCreation)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("datetime")
@@ -229,73 +272,35 @@ public partial class A2024420517riGr1Eq6Context : DbContext
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("datetime")
                 .HasColumnName("dateLastChanged");
-            entity.Property(e => e.Details)
-                .HasMaxLength(500)
-                .HasColumnName("details");
-            entity.Property(e => e.Devise)
-                .HasColumnType("enum('CAD','USD')")
-                .HasColumnName("devise");
-            entity.Property(e => e.ModeCommunication)
-                .HasColumnType("enum('Courriel','Courrier régulier')")
-                .HasColumnName("modeCommunication");
-            entity.Property(e => e.MotDePasse)
-                .HasMaxLength(256)
-                .HasColumnName("motDePasse");
-            entity.Property(e => e.Neq)
-                .HasMaxLength(10)
-                .HasColumnName("neq");
-            entity.Property(e => e.NoCivique)
-                .HasMaxLength(8)
-                .HasColumnName("noCivique");
-            entity.Property(e => e.NomEntreprise)
-                .HasMaxLength(64)
-                .HasColumnName("nomEntreprise");
-            entity.Property(e => e.NumeroTps)
-                .HasMaxLength(15)
-                .HasColumnName("numeroTps");
-            entity.Property(e => e.NumeroTvq)
-                .HasMaxLength(15)
-                .HasColumnName("numeroTvq");
-            entity.Property(e => e.Province)
-                .HasDefaultValueSql("'Québec'")
-                .HasColumnType("enum('Ontario','Québec','Nouvelle-Écosse','Nouveau-Brunswick','Manitoba','Colombie-Britannique','Île-du-Prince-Édouard','Saskatchewan','Alberta','Terre-Neuve-et-Labrador','Territoires du Nord-Ouest','Yukon','Nunavut')")
-                .HasColumnName("province");
-            entity.Property(e => e.RegionAdministrative)
-                .HasMaxLength(50)
-                .HasColumnName("regionAdministrative");
-            entity.Property(e => e.Rue)
-                .HasMaxLength(64)
-                .HasColumnName("rue");
-            entity.Property(e => e.SiteInternet)
-                .HasMaxLength(64)
-                .HasColumnName("siteInternet");
-            entity.Property(e => e.Ville)
-                .HasMaxLength(64)
-                .HasColumnName("ville");
+        });
 
-            entity.HasMany(d => d.CodeUnspscs).WithMany(p => p.IdFournisseurs)
-                .UsingEntity<Dictionary<string, object>>(
-                    "Fournisseurproduitservice",
-                    r => r.HasOne<Produitservice>().WithMany()
-                        .HasForeignKey("CodeUnspsc")
-                        .HasConstraintName("fournisseurproduitservice_ibfk_2"),
-                    l => l.HasOne<Fournisseur>().WithMany()
-                        .HasForeignKey("IdFournisseur")
-                        .HasConstraintName("fournisseurproduitservice_ibfk_1"),
-                    j =>
-                    {
-                        j.HasKey("IdFournisseur", "CodeUnspsc")
-                            .HasName("PRIMARY")
-                            .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
-                        j.ToTable("fournisseurproduitservice");
-                        j.HasIndex(new[] { "CodeUnspsc" }, "codeUNSPSC");
-                        j.IndexerProperty<int>("IdFournisseur")
-                            .HasColumnType("int(11)")
-                            .HasColumnName("idFournisseur");
-                        j.IndexerProperty<string>("CodeUnspsc")
-                            .HasMaxLength(8)
-                            .HasColumnName("codeUNSPSC");
-                    });
+        modelBuilder.Entity<Fournisseurproduitservice>(entity =>
+        {
+            entity.HasKey(e => new { e.IdFournisseur, e.IdProduitService })
+                .HasName("PRIMARY")
+                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+
+            entity.ToTable("fournisseurproduitservice");
+
+            entity.HasIndex(e => e.IdProduitService, "idProduitService");
+
+            entity.Property(e => e.IdFournisseur)
+                .HasColumnType("int(11)")
+                .HasColumnName("idFournisseur");
+            entity.Property(e => e.IdProduitService)
+                .HasMaxLength(8)
+                .HasColumnName("idProduitService");
+            entity.Property(e => e.DetailSpecification)
+                .HasMaxLength(500)
+                .HasColumnName("detailSpecification");
+
+            entity.HasOne(d => d.IdFournisseurNavigation).WithMany(p => p.Fournisseurproduitservices)
+                .HasForeignKey(d => d.IdFournisseur)
+                .HasConstraintName("fournisseurproduitservice_ibfk_1");
+
+            entity.HasOne(d => d.IdProduitServiceNavigation).WithMany(p => p.Fournisseurproduitservices)
+                .HasForeignKey(d => d.IdProduitService)
+                .HasConstraintName("fournisseurproduitservice_ibfk_2");
         });
 
         modelBuilder.Entity<Historique>(entity =>
@@ -304,7 +309,7 @@ public partial class A2024420517riGr1Eq6Context : DbContext
 
             entity.ToTable("historique");
 
-            entity.HasIndex(e => e.IdFournisseur, "idFournisseur");
+            entity.HasIndex(e => e.Fournisseur, "fournisseur");
 
             entity.Property(e => e.IdHistorique)
                 .HasColumnType("int(11)")
@@ -315,17 +320,52 @@ public partial class A2024420517riGr1Eq6Context : DbContext
             entity.Property(e => e.EtatDemande)
                 .HasColumnType("enum('Accepté','Refusé','En attente','À reviser')")
                 .HasColumnName("etatDemande");
-            entity.Property(e => e.IdFournisseur)
+            entity.Property(e => e.Fournisseur)
                 .HasColumnType("int(11)")
-                .HasColumnName("idFournisseur");
+                .HasColumnName("fournisseur");
             entity.Property(e => e.RaisonRefus)
                 .HasMaxLength(500)
                 .HasColumnName("raisonRefus");
 
-            entity.HasOne(d => d.IdFournisseurNavigation).WithMany(p => p.Historiques)
-                .HasForeignKey(d => d.IdFournisseur)
+            entity.HasOne(d => d.FournisseurNavigation).WithMany(p => p.Historiques)
+                .HasForeignKey(d => d.Fournisseur)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("historique_ibfk_1");
+        });
+
+        modelBuilder.Entity<Identification>(entity =>
+        {
+            entity.HasKey(e => e.IdIdentification).HasName("PRIMARY");
+
+            entity.ToTable("identification");
+
+            entity.HasIndex(e => e.Fournisseur, "fournisseur");
+
+            entity.HasIndex(e => e.Neq, "neq").IsUnique();
+
+            entity.Property(e => e.IdIdentification)
+                .HasColumnType("int(11)")
+                .HasColumnName("idIdentification");
+            entity.Property(e => e.AdresseCourriel)
+                .HasMaxLength(64)
+                .HasColumnName("adresseCourriel");
+            entity.Property(e => e.Fournisseur)
+                .HasColumnType("int(11)")
+                .HasColumnName("fournisseur");
+            entity.Property(e => e.MotDePasse)
+                .HasMaxLength(256)
+                .HasColumnName("motDePasse");
+            entity.Property(e => e.Neq)
+                .HasMaxLength(10)
+                .HasColumnName("neq");
+            entity.Property(e => e.NomEntreprise)
+                .HasMaxLength(64)
+                .HasColumnName("nomEntreprise");
+
+            entity.HasOne(d => d.FournisseurNavigation).WithMany(p => p.Identifications)
+                .HasForeignKey(d => d.Fournisseur)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("identification_ibfk_1");
         });
 
         modelBuilder.Entity<Licencerbq>(entity =>
@@ -334,28 +374,49 @@ public partial class A2024420517riGr1Eq6Context : DbContext
 
             entity.ToTable("licencerbq");
 
-            entity.HasIndex(e => e.IdFournisseur, "idFournisseur");
+            entity.HasIndex(e => e.Fournisseur, "fournisseur");
 
             entity.Property(e => e.IdLicenceRbq)
                 .HasMaxLength(10)
                 .HasColumnName("idLicenceRBQ");
-            entity.Property(e => e.IdFournisseur)
+            entity.Property(e => e.Fournisseur)
                 .HasColumnType("int(11)")
-                .HasColumnName("idFournisseur");
+                .HasColumnName("fournisseur");
             entity.Property(e => e.Statut)
                 .HasColumnType("enum('Valide','Valide avec restriction','Non valide')")
                 .HasColumnName("statut");
-            entity.Property(e => e.TravauxPermis)
-                .HasMaxLength(255)
-                .HasColumnName("travauxPermis");
             entity.Property(e => e.Type)
                 .HasMaxLength(50)
                 .HasColumnName("type");
 
-            entity.HasOne(d => d.IdFournisseurNavigation).WithMany(p => p.Licencerbqs)
-                .HasForeignKey(d => d.IdFournisseur)
+            entity.HasOne(d => d.FournisseurNavigation).WithMany(p => p.Licencerbqs)
+                .HasForeignKey(d => d.Fournisseur)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("licencerbq_ibfk_1");
+
+            entity.HasMany(d => d.IdCategorieRbqs).WithMany(p => p.IdLicenceRbqs)
+                .UsingEntity<Dictionary<string, object>>(
+                    "Fournisseurlicencerbq",
+                    r => r.HasOne<Categorierbq>().WithMany()
+                        .HasForeignKey("IdCategorieRbq")
+                        .HasConstraintName("fournisseurlicencerbq_ibfk_2"),
+                    l => l.HasOne<Licencerbq>().WithMany()
+                        .HasForeignKey("IdLicenceRbq")
+                        .HasConstraintName("fournisseurlicencerbq_ibfk_1"),
+                    j =>
+                    {
+                        j.HasKey("IdLicenceRbq", "IdCategorieRbq")
+                            .HasName("PRIMARY")
+                            .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+                        j.ToTable("fournisseurlicencerbq");
+                        j.HasIndex(new[] { "IdCategorieRbq" }, "idCategorieRBQ");
+                        j.IndexerProperty<string>("IdLicenceRbq")
+                            .HasMaxLength(10)
+                            .HasColumnName("idLicenceRBQ");
+                        j.IndexerProperty<string>("IdCategorieRbq")
+                            .HasMaxLength(10)
+                            .HasColumnName("idCategorieRBQ");
+                    });
         });
 
         modelBuilder.Entity<Produitservice>(entity =>
@@ -364,14 +425,14 @@ public partial class A2024420517riGr1Eq6Context : DbContext
 
             entity.ToTable("produitservice");
 
-            entity.HasIndex(e => e.CodeCategorie, "codeCategorie");
+            entity.HasIndex(e => e.CategorieUnspsc, "categorieUNSPSC");
 
             entity.Property(e => e.CodeUnspsc)
                 .HasMaxLength(8)
                 .HasColumnName("codeUNSPSC");
-            entity.Property(e => e.CodeCategorie)
+            entity.Property(e => e.CategorieUnspsc)
                 .HasMaxLength(10)
-                .HasColumnName("codeCategorie");
+                .HasColumnName("categorieUNSPSC");
             entity.Property(e => e.Description)
                 .HasMaxLength(255)
                 .HasColumnName("description");
@@ -379,8 +440,8 @@ public partial class A2024420517riGr1Eq6Context : DbContext
                 .HasColumnType("enum('Approvisionnement','Services','Travaux de construction','Autres natures de contrat','Concession','Vente de biens immeubles','Indéterminée')")
                 .HasColumnName("nature");
 
-            entity.HasOne(d => d.CodeCategorieNavigation).WithMany(p => p.Produitservices)
-                .HasForeignKey(d => d.CodeCategorie)
+            entity.HasOne(d => d.CategorieUnspscNavigation).WithMany(p => p.Produitservices)
+                .HasForeignKey(d => d.CategorieUnspsc)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("produitservice_ibfk_1");
         });
@@ -391,14 +452,19 @@ public partial class A2024420517riGr1Eq6Context : DbContext
 
             entity.ToTable("telephone");
 
-            entity.HasIndex(e => e.IdFournisseur, "idFournisseur");
+            entity.HasIndex(e => e.Contact, "contact");
+
+            entity.HasIndex(e => e.Coordonnee, "coordonnee");
 
             entity.Property(e => e.IdTelephone)
                 .HasColumnType("int(11)")
                 .HasColumnName("idTelephone");
-            entity.Property(e => e.IdFournisseur)
+            entity.Property(e => e.Contact)
                 .HasColumnType("int(11)")
-                .HasColumnName("idFournisseur");
+                .HasColumnName("contact");
+            entity.Property(e => e.Coordonnee)
+                .HasColumnType("int(11)")
+                .HasColumnName("coordonnee");
             entity.Property(e => e.NumTelephone)
                 .HasMaxLength(10)
                 .HasColumnName("numTelephone");
@@ -409,10 +475,15 @@ public partial class A2024420517riGr1Eq6Context : DbContext
                 .HasColumnType("enum('Bureau','Télécopieur','Cellulaire')")
                 .HasColumnName("type");
 
-            entity.HasOne(d => d.IdFournisseurNavigation).WithMany(p => p.Telephones)
-                .HasForeignKey(d => d.IdFournisseur)
+            entity.HasOne(d => d.ContactNavigation).WithMany(p => p.Telephones)
+                .HasForeignKey(d => d.Contact)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("telephone_ibfk_1");
+
+            entity.HasOne(d => d.CoordonneeNavigation).WithMany(p => p.Telephones)
+                .HasForeignKey(d => d.Coordonnee)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("telephone_ibfk_2");
         });
 
         OnModelCreatingPartial(modelBuilder);

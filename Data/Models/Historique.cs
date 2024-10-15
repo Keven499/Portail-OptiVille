@@ -13,7 +13,7 @@ public partial class Historique
 
     public DateTime? DateEtatChanged { get; set; }
 
-    public int? IdFournisseur { get; set; }
+    public int? Fournisseur { get; set; }
 
-    public virtual Fournisseur? IdFournisseurNavigation { get; set; }
+    public virtual Fournisseur? FournisseurNavigation { get; set; }
 }

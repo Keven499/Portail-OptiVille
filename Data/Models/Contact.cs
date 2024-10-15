@@ -15,13 +15,9 @@ public partial class Contact
 
     public string? AdresseCourriel { get; set; }
 
-    public string TypeTelephone { get; set; } = null!;
+    public int? Fournisseur { get; set; }
 
-    public string? Telephone { get; set; }
+    public virtual Fournisseur? FournisseurNavigation { get; set; }
 
-    public string? Poste { get; set; }
-
-    public int? IdFournisseur { get; set; }
-
-    public virtual Fournisseur? IdFournisseurNavigation { get; set; }
+    public virtual ICollection<Telephone> Telephones { get; set; } = new List<Telephone>();
 }
