@@ -99,9 +99,12 @@
         <button type="button" class="btn btn-warning">Modifier</button>
     </div>
     <div class="card-body">
-        @foreach(var contact in selectedContacts)
+        @foreach(var contactPhone in contactPhoneInfo)
         {
-            foreach(var telephone in selectedTelephonesContacts)
+            var contact = contactPhone.Contact;
+            var telephones = contactPhone.PhoneNumbers;
+
+            foreach(var telephone in telephones)
             {
                 <div class="row">
                     <div class="col-xl-6 p-1">
@@ -125,6 +128,7 @@
                 </div>
             }
         }
+
     </div>
     <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Produits et services</h3>
@@ -341,6 +345,7 @@
     Finance finance = new Finance();
     Coordonnee coordonnee = new Coordonnee();
     Licencerbq licencerbqs = new Licencerbq();
+    List<ContactPhoneInfo> contactPhoneInfo = new List<ContactPhoneInfo>();
 
     List<IGrouping<GroupKey, Produitservice>>? groupedServices;
 
@@ -452,7 +457,11 @@
         }
 
     } *@
-
+    public class ContactPhoneInfo
+    {
+        public Contact Contact { get; set; }
+        public List<Telephone> PhoneNumbers { get; set; }
+    }
     protected override async Task OnInitializedAsync()
     {
         try
@@ -460,10 +469,21 @@
             selectedFournisseur = await _context.Fournisseurs.FindAsync(1);
             selectedContacts = await _context.Contacts.Where(c => c.Fournisseur == 1).ToListAsync();
 
-            foreach(var contactTelephone in selectedContacts)
+
+            // Step 3: Iterate through each contact and retrieve their phone information
+            foreach (var contact in selectedContacts)
             {
-                selectedTelephonesContacts = await _context.Telephones.Where(c => c.Contact == contactTelephone.IdContact).ToListAsync();
-                //selectedTelephones = await _context.Telephones.Where(c => c.Fournisseur == 1).ToListAsync();
+                // Fetch phone numbers associated with the current contact
+                var phoneNumbers = await _context.Telephones
+                    .Where(t => t.Contact == contact.IdContact) // Adjust this according to your model
+                    .ToListAsync();
+
+                // Add the contact and their phone numbers to the list
+                contactPhoneInfo.Add(new ContactPhoneInfo
+                {
+                    Contact = contact,
+                    PhoneNumbers = phoneNumbers
+                });
             }
             coordonnee = await _context.Coordonnees.SingleAsync(c => c.Fournisseur == 1);
 
