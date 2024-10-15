@@ -65,7 +65,7 @@
                 <div class="row">
                     <div class="col-xl-6 p-1">
                         <label for="inputEmail4">Nom de l'entreprise</label>
-                        <input type="text" class="form-control" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.NomEntreprise" readonly="@modificationInfo">
+                        <input type="text" class="form-control" id="inputEmail4" @bind="@identification.NomEntreprise" readonly="@modificationInfo">
                     </div>
                     <div class="col-xl-6 p-1">
                         <label for="inputPassword4"></label>
@@ -101,26 +101,29 @@
     <div class="card-body">
         @foreach(var contact in selectedContacts)
         {
-        <div class="row">
-            <div class="col-xl-6 p-1">
-                <label for="inputEmail4">Nom, Prénom</label>
-                <input type="text" class="form-control" id="inputEmail4" value="@contact.Nom, @contact.Prenom">
-            </div>
-            <div class="col-xl-6 p-1">
-                <label for="inputPassword4">Fonction</label>
-                <input type="text" class="form-control" id="inputPassword4" value="@contact.Fonction">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xl-6 p-1">
-                <label for="inputEmail4">Adresse courriel</label>
-                <input type="text" class="form-control" id="inputEmail4" value="@contact.AdresseCourriel">
-            </div>
-            <div class="col-xl-6 p-1">
-                <label for="inputPassword4">Numéro de téléphone (@contact.TypeTelephone)</label>
-                <input type="text" class="form-control" id="inputPassword4" value="@contact.Telephone.Insert(3, "-").Insert(7, "-") #@contact.Poste">
-            </div>
-        </div>
+            foreach(var telephone in selectedTelephonesContacts)
+            {
+                <div class="row">
+                    <div class="col-xl-6 p-1">
+                        <label for="inputEmail4">Nom, Prénom</label>
+                        <input type="text" class="form-control" id="inputEmail4" value="@contact.Nom, @contact.Prenom">
+                    </div>
+                    <div class="col-xl-6 p-1">
+                        <label for="inputPassword4">Fonction</label>
+                        <input type="text" class="form-control" id="inputPassword4" value="@contact.Fonction">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-6 p-1">
+                        <label for="inputEmail4">Adresse courriel</label>
+                        <input type="text" class="form-control" id="inputEmail4" value="@contact.AdresseCourriel">
+                    </div>
+                    <div class="col-xl-6 p-1">
+                        <label for="inputPassword4">Numéro de téléphone (@telephone.Type)</label>
+                        <input type="text" class="form-control" id="inputPassword4" value="@telephone.NumTelephone.Insert(3, "-").Insert(7, "-") #@telephone.Poste">
+                    </div>
+                </div>
+            }
         }
     </div>
     <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
@@ -161,7 +164,7 @@
             </div>
             <div class="col-xl-6 d-flex flex-column">
                 <label for="TextAreaProduitService" class="form-label">Détails et spécifications</label>
-                <textarea class="form-control flex-grow-1" id="TextAreaProduitService" style="resize: none;">@selectedFournisseur.Details</textarea>
+                <textarea class="form-control flex-grow-1" id="TextAreaProduitService" style="resize: none;">@selectedFournisseur.DetailSpecification</textarea>
             </div>
         </div>
         
@@ -203,7 +206,7 @@
                         <ul>
                             @foreach (var categorie in groupedCategories["Général"])
                             {
-                                <li>Catégorie: @categorie.Nom</li>
+                                <li>Catégorie: @categorie.NomCategorie</li>
                             }
                         </ul>
                     }
@@ -221,7 +224,7 @@
                         <ul>
                             @foreach (var categorie in groupedCategories["Spécialisé"])
                             {
-                                <li>Catégorie: @categorie.Nom</li>
+                                <li>Catégorie: @categorie.NomCategorie</li>
                             }
                         </ul>
                     }
@@ -291,27 +294,27 @@
         <div class="row">
             <div class="col-xl-6 p-1">
                 <label for="inputEmail4">TPS</label>
-                <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.NumeroTps" readonly="@modificationFinances">
+                <input type="text" class="form-control" id="inputEmail4" value="@finance.NumeroTps" readonly="@modificationFinances">
             </div>
             <div class="col-xl-6 p-1">
                 <label for="inputPassword4">TVQ</label>
-                <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.NumeroTvq" readonly="@modificationFinances">
+                <input type="text" class="form-control" id="inputPassword4" value="@finance.NumeroTvq" readonly="@modificationFinances">
             </div>
         </div>
         <div class="row">
             <div class="col-xl-6 p-1">
                 <label for="inputEmail4">Conditions de paiement</label>
-                <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.ConditionPaiement" readonly="@modificationFinances">
+                <input type="text" class="form-control" id="inputEmail4" value="@finance.ConditionPaiement" readonly="@modificationFinances">
             </div>
             <div class="col-xl-6 p-1">
                 <label for="inputPassword4">Devise</label>
-                <input type="text" class="form-control" id="inputPassword4" value="@selectedFournisseur.Devise" readonly="@modificationFinances">
+                <input type="text" class="form-control" id="inputPassword4" value="@finance.Devise" readonly="@modificationFinances">
             </div>
         </div>
         <div class="row justify-content-center">
             <div class="col-xl-6 p-1">
                 <label for="inputEmail4">Mode de communication</label>
-                <input type="text" class="form-control" id="inputEmail4" value="@selectedFournisseur.ModeCommunication" readonly="@modificationFinances">
+                <input type="text" class="form-control" id="inputEmail4" value="@finance.ModeCommunication" readonly="@modificationFinances">
             </div>
             
         </div>
@@ -331,9 +334,22 @@
     List<Historique> selectedHistoriques = new List<Historique>();
     private Historique? closestHistorique;
     List<Licencerbq> selectedLicencerbqs = new List<Licencerbq>();
+    List<Coordonnee> selectedCoordonnes = new List<Coordonnee>();
     List<Produitservice> selectedProduitservices = new List<Produitservice>();
+
+    List<Finance> selectedFinances = new List<Finance>();
+
+    List<Fournisseurproduitservice> selectedFournisseurProduitservices = new List<Fournisseurproduitservice>();
     List<Telephone> selectedTelephones = new List<Telephone>();
+    List<Telephone> selectedTelephonesContacts = new List<Telephone>();
+    List<Identification> selectedIdentifications = new List<Identification>();
     Fournisseur selectedFournisseur = new Fournisseur();
+    Identification identification = new Identification();
+        List<Categorierbq> selectedCategorieRBQ = new List<Categorierbq>();
+    Finance finance = new Finance();
+    Coordonnee coordonnee = new Coordonnee();
+    Licencerbq licencerbqs = new Licencerbq();
+
     List<IGrouping<GroupKey, Produitservice>>? groupedServices;
 
     public class CombinedFormModel
@@ -362,28 +378,28 @@
     {
         // Validate the form data
             // Replace selectedFournisseur data with contactFormModel data
-            selectedFournisseur.Neq = combinedFormModel.IdentificationFormModel.NEQ;
-            selectedFournisseur.NoCivique = combinedFormModel.FournisseurFormModel.NoEntreprise; // Ensure this property is available
-            selectedFournisseur.Rue = combinedFormModel.FournisseurFormModel.RueEntreprise; // Ensure this property is available
-            selectedFournisseur.Bureau = combinedFormModel.FournisseurFormModel.BureauEntreprise; // Ensure this property is available
-            selectedFournisseur.NomEntreprise = combinedFormModel.IdentificationFormModel.NomEntreprise;
-            selectedFournisseur.Ville = combinedFormModel.FournisseurFormModel.VilleEntreprise; // Ensure this property is available
-            selectedFournisseur.Province = combinedFormModel.FournisseurFormModel.ProvinceEntreprise; // Ensure this property is available
-            selectedFournisseur.CodePostal = combinedFormModel.FournisseurFormModel.CodePostalEntreprise; // Ensure this property is available
-            selectedFournisseur.AdresseCourriel = combinedFormModel.IdentificationFormModel.CourrielEntreprise;
-            selectedFournisseur.SiteInternet = combinedFormModel.FournisseurFormModel.SiteWebEntreprise;
+            identification.Neq = combinedFormModel.IdentificationFormModel.NEQ;
+            coordonnee.NoCivique = combinedFormModel.FournisseurFormModel.NoEntreprise; // Ensure this property is available
+            coordonnee.Rue = combinedFormModel.FournisseurFormModel.RueEntreprise; // Ensure this property is available
+            coordonnee.Bureau = combinedFormModel.FournisseurFormModel.BureauEntreprise; // Ensure this property is available
+            identification.NomEntreprise = combinedFormModel.IdentificationFormModel.NomEntreprise;
+            coordonnee.Ville = combinedFormModel.FournisseurFormModel.VilleEntreprise; // Ensure this property is available
+            coordonnee.Province = combinedFormModel.FournisseurFormModel.ProvinceEntreprise; // Ensure this property is available
+            coordonnee.CodePostal = combinedFormModel.FournisseurFormModel.CodePostalEntreprise; // Ensure this property is available
+            identification.AdresseCourriel = combinedFormModel.IdentificationFormModel.CourrielEntreprise;
+            coordonnee.SiteInternet = combinedFormModel.FournisseurFormModel.SiteWebEntreprise;
             
 
-            Console.WriteLine(selectedFournisseur.Neq);
-            Console.WriteLine(selectedFournisseur.NoCivique);
-            Console.WriteLine(selectedFournisseur.Rue);
-            Console.WriteLine(selectedFournisseur.Bureau);
-            Console.WriteLine(selectedFournisseur.NomEntreprise);
-            Console.WriteLine(selectedFournisseur.Ville);
-            Console.WriteLine(selectedFournisseur.Province);
-            Console.WriteLine(selectedFournisseur.CodePostal);
-            Console.WriteLine(selectedFournisseur.AdresseCourriel);
-            Console.WriteLine(selectedFournisseur.SiteInternet);
+            Console.WriteLine(identification.Neq);
+            Console.WriteLine(coordonnee.NoCivique);
+            Console.WriteLine(coordonnee.Rue);
+            Console.WriteLine(coordonnee.Bureau);
+            Console.WriteLine(identification.NomEntreprise);
+            Console.WriteLine(coordonnee.Ville);
+            Console.WriteLine(coordonnee.Province);
+            Console.WriteLine(coordonnee.CodePostal);
+            Console.WriteLine(identification.AdresseCourriel);
+            Console.WriteLine(coordonnee.SiteInternet);
 
 
             // Save changes to the database
@@ -417,9 +433,7 @@
     {
         var groupedCategories = new Dictionary<string, List<Categorierbq>>();
 
-        foreach (var licence in selectedLicencerbqs)
-        {
-            foreach (var categorie in licence.CodeSousCategories)
+            foreach (var categorie in selectedCategorieRBQ)
             {
                 if (!groupedCategories.ContainsKey(categorie.NomCategorie))
                 {
@@ -427,7 +441,7 @@
                 }
                 groupedCategories[categorie.NomCategorie].Add(categorie);
             }
-        }
+        
         return groupedCategories;
     }
 
@@ -451,38 +465,58 @@
         try
         {
             selectedFournisseur = await _context.Fournisseurs.FindAsync(1);
-            selectedContacts = await _context.Contacts.Where(c => c.IdFournisseur == 1).ToListAsync();
-            selectedHistoriques = await _context.Historiques.Where(c => c.IdFournisseur == 1).ToListAsync();
-            selectedFichiers = await _context.Fichiers.Where(c => c.IdFournisseur == 1).ToListAsync();
-            selectedProduitservices = await _context.Produitservices.Where(p => p.IdFournisseurs.Any(f => f.IdFournisseur == 1)).ToListAsync();
-            selectedTelephones = await _context.Telephones.Where(c => c.IdFournisseur == 1).ToListAsync();
-            selectedLicencerbqs = await _context.Licencerbqs.Include(l => l.CodeSousCategories).Where(c => c.IdFournisseur == 1).ToListAsync();
+            selectedContacts = await _context.Contacts.Where(c => c.Fournisseur == 1).ToListAsync();
+
+            foreach(var contactTelephone in selectedContacts)
+            {
+                selectedTelephonesContacts = await _context.Telephones.Where(c => c.Contact == contactTelephone.IdContact).ToListAsync();
+                //selectedTelephones = await _context.Telephones.Where(c => c.Fournisseur == 1).ToListAsync();
+            }
+            coordonnee = await _context.Coordonnees.SingleAsync(c => c.Fournisseur == 1);
+
+            foreach(var coordonneeTelephone in selectedCoordonnes)
+            {
+                selectedTelephones = await _context.Telephones.Where(c => c.Contact == coordonneeTelephone.IdCoordonnee).ToListAsync();
+
+            }
+            finance = await _context.Finances.SingleAsync(c => c.Fournisseur == 1);
+            identification = await _context.Identifications.SingleAsync(c => c.Fournisseur == 1);
+            selectedFichiers = await _context.Fichiers.Where(c => c.Fournisseur == 1).ToListAsync();
+            selectedHistoriques = await _context.Historiques.Where(c => c.Fournisseur == 1).ToListAsync();
+            //selectedFournisseurProduitservices = await _context.Fournisseurproduitservices.Where(p => p.IdFournisseur == 1).ToListAsync();
+            //Get données dans produits services
+            licencerbqs = await _context.Licencerbqs.SingleAsync(c => c.Fournisseur == 1);
+            selectedCategorieRBQ = await _context.Categorierbqs.Where(c => licencerbqs.IdCategorieRbqs.Any(l => l.CodeSousCategorie == c.CodeSousCategorie)).ToListAsync();
+            selectedLicencerbqs = await _context.Licencerbqs.Where(l => l.Fournisseur == 1).Include(l => l.IdCategorieRbqs).ToListAsync();
+            //selectedCategorieRBQ = await _context.Licencerbqs.Where(l => c.)
+            //selectedLicencerbqs = await _context.Licencerbqs.Where(l => l.Fournisseur == 1).Include(l => l.CodeSousCategorie).ToListAsync();
+            //selectedLicencerbqs = await _context.Licencerbqs.Include(l => l.CodeSousCategories).Where(c => c.IdFournisseur == 1).ToListAsync();
             closestHistorique = selectedHistoriques.Where(h => h.DateEtatChanged.HasValue).OrderBy(h => Math.Abs((h.DateEtatChanged.Value - DateTime.UtcNow).TotalDays)).FirstOrDefault();
             groupedServices = selectedProduitservices.GroupBy(p => new GroupKey 
             { 
-                CodeCategorie = p.CodeCategorie, 
+                CodeCategorie = p.CategorieUnspsc, 
                 Nature = p.Nature 
             }).ToList(); 
 
                 if (selectedFournisseur != null)
                 {
                     // Map the Fournisseur entity to FournisseurFormModel
-                    combinedFormModel.FournisseurFormModel.NoEntreprise = selectedFournisseur.NoCivique;
-                    combinedFormModel.FournisseurFormModel.RueEntreprise = selectedFournisseur.Rue;
-                    combinedFormModel.FournisseurFormModel.BureauEntreprise = selectedFournisseur.Bureau;
-                    combinedFormModel.FournisseurFormModel.VilleEntreprise = selectedFournisseur.Ville;
-                    combinedFormModel.FournisseurFormModel.ProvinceEntreprise = selectedFournisseur.Province;
-                    combinedFormModel.FournisseurFormModel.CodePostalEntreprise = selectedFournisseur.CodePostal;
-                    combinedFormModel.FournisseurFormModel.RegionAdmEntreprise = selectedFournisseur.RegionAdministrative;
-                    combinedFormModel.FournisseurFormModel.SiteWebEntreprise = selectedFournisseur.SiteInternet;
+                    combinedFormModel.FournisseurFormModel.NoEntreprise = coordonnee.NoCivique;
+                    combinedFormModel.FournisseurFormModel.RueEntreprise = coordonnee.Rue;
+                    combinedFormModel.FournisseurFormModel.BureauEntreprise = coordonnee.Bureau;
+                    combinedFormModel.FournisseurFormModel.VilleEntreprise = coordonnee.Ville;
+                    combinedFormModel.FournisseurFormModel.ProvinceEntreprise = coordonnee.Province;
+                    combinedFormModel.FournisseurFormModel.CodePostalEntreprise = coordonnee.CodePostal;
+                    combinedFormModel.FournisseurFormModel.RegionAdmEntreprise = coordonnee.RegionAdministrative;
+                    combinedFormModel.FournisseurFormModel.SiteWebEntreprise = coordonnee.SiteInternet;
                     //combinedFormModel.FournisseurFormModel.PhoneList = selectedFournisseur.Telephones.Select(t => new TelephoneFormModel{// Populate the phone details here}).ToList();
 
                     // Map the Fournisseur entity to IdentificationFormModel
-                    combinedFormModel.IdentificationFormModel.NEQ = selectedFournisseur.Neq;
-                    combinedFormModel.IdentificationFormModel.NomEntreprise = selectedFournisseur.NomEntreprise;
-                    combinedFormModel.IdentificationFormModel.CourrielEntreprise = selectedFournisseur.AdresseCourriel;
-                    combinedFormModel.IdentificationFormModel.MotDePasse = selectedFournisseur.MotDePasse;
-                    combinedFormModel.IdentificationFormModel.ConfirmationMotDePasse = selectedFournisseur.MotDePasse;
+                    combinedFormModel.IdentificationFormModel.NEQ = identification.Neq;
+                    combinedFormModel.IdentificationFormModel.NomEntreprise = identification.NomEntreprise;
+                    combinedFormModel.IdentificationFormModel.CourrielEntreprise = identification.AdresseCourriel;
+                    combinedFormModel.IdentificationFormModel.MotDePasse = identification.MotDePasse;
+                    combinedFormModel.IdentificationFormModel.ConfirmationMotDePasse = identification.MotDePasse;
                 }
         }
         catch (Exception ex)
@@ -524,7 +558,7 @@
             {
                 EtatDemande = "En attente",
                 DateEtatChanged = DateTime.UtcNow,
-                IdFournisseur = closestHistorique.IdFournisseur
+                Fournisseur = closestHistorique.Fournisseur
             };
             _context.Historiques.Add(newHistorique);
             closestHistorique.EtatDemande = "En attente";
@@ -538,7 +572,7 @@
         {
             EtatDemande = "Refusé",
             DateEtatChanged = DateTime.UtcNow,
-            IdFournisseur = closestHistorique.IdFournisseur
+            Fournisseur = closestHistorique.Fournisseur
         };
         _context.Historiques.Add(newHistorique);
         closestHistorique.EtatDemande = "Refusé";
