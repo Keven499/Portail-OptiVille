@@ -7,6 +7,7 @@ using Portail_OptiVille.Data.Utilities;
 using static Portail_OptiVille.Data.Utilities.MailManager;
 using System.Net.Http;
 using Microsoft.AspNetCore.Components.Authorization;
+using Portail_OptiVille.Data.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,16 @@ builder.Services.AddScoped<LicenceService>();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<NEQManager>();
+
+#region Add services for saving in DB
+builder.Services.AddScoped<FournisseurService>();
+builder.Services.AddScoped<ContactsService>();
+builder.Services.AddScoped<CoordonneeService>();
+builder.Services.AddScoped<FichierService>();
+builder.Services.AddScoped<IdentificationService>();
+builder.Services.AddScoped<LicenceRBQService>();
+builder.Services.AddScoped<ProduitServiceService>();
+#endregion
 
 #region Load Config from Setting.json
 var configFilePath = Path.Combine(builder.Environment.WebRootPath, "Setting.json");

@@ -4,11 +4,20 @@
 @using Portail_OptiVille.Pages.Fournisseur.Inscription.Coordonnee
 @using Portail_OptiVille.Pages.Fournisseur.Inscription
 @using Portail_OptiVille.Data.Models
+@using Portail_OptiVille.Data.Services
 @using Microsoft.EntityFrameworkCore;
 @using System.Timers
 @using Microsoft.AspNetCore.Components.Web
 @inject A2024420517riGr1Eq6Context _context
 @inject IJSRuntime JS
+@inject FournisseurService FournisseurService
+@inject ContactsService ContactsService
+@inject CoordonneeService CoordonneeService
+@inject FichierService FichierService
+@inject IdentificationService IdentificationService
+@inject LicenceRBQService LicenceRBQService
+@inject ProduitServiceService ProduitServiceService
+
 
 <PageTitle>Demande fournisseur</PageTitle>
 <div class="form-group container-fluid ">
@@ -315,4 +324,23 @@
             return false;
         }
     }
+
+    private async void SaveDataToDB()
+    {
+        try
+        {
+            await FournisseurService.SaveFournisseurData(produitServiceFormModel);
+            await IdentificationService.SaveIdentificationData(identicationFormModel);
+            await CoordonneeService.SaveCoordonneeData(coordonneeFormModel);
+            await ContactsService.SaveContactsData(contactHosterFormModel);
+            await ProduitServiceService.SaveProduitServiceData(produitServiceFormModel);
+            await LicenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
+            await FichierService.SaveFichierData(pieceJointeFormModel);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors de la sauvegarde des données : {ex.Message}");
+        }
+    }
+
 }

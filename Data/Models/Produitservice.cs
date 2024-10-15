@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Portail_OptiVille.Data.Models;
+﻿namespace Portail_OptiVille.Data.Models;
 
 public partial class Produitservice
 {
