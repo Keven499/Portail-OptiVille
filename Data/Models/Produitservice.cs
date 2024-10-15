@@ -15,5 +15,5 @@ public partial class Produitservice
 
     public virtual Categorieunspsc? CategorieUnspscNavigation { get; set; }
 
-    public virtual ICollection<Fournisseurproduitservice> Fournisseurproduitservices { get; set; } = new List<Fournisseurproduitservice>();
+    public virtual ICollection<Fournisseur> IdFournisseurs { get; set; } = new List<Fournisseur>();
 }

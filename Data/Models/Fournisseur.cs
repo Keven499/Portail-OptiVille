@@ -7,6 +7,8 @@ public partial class Fournisseur
 {
     public int IdFournisseur { get; set; }
 
+    public string? DetailSpecification { get; set; }
+
     public DateTime? DateCreation { get; set; }
 
     public DateTime? DateLastChanged { get; set; }
@@ -19,11 +21,11 @@ public partial class Fournisseur
 
     public virtual ICollection<Finance> Finances { get; set; } = new List<Finance>();
 
-    public virtual ICollection<Fournisseurproduitservice> Fournisseurproduitservices { get; set; } = new List<Fournisseurproduitservice>();
-
     public virtual ICollection<Historique> Historiques { get; set; } = new List<Historique>();
 
     public virtual ICollection<Identification> Identifications { get; set; } = new List<Identification>();
 
     public virtual ICollection<Licencerbq> Licencerbqs { get; set; } = new List<Licencerbq>();
+
+    public virtual ICollection<Produitservice> IdProduitServices { get; set; } = new List<Produitservice>();
 }

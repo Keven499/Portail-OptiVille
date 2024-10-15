@@ -32,8 +32,6 @@ public partial class A2024420517riGr1Eq6Context : DbContext
 
     public virtual DbSet<Fournisseur> Fournisseurs { get; set; }
 
-    public virtual DbSet<Fournisseurproduitservice> Fournisseurproduitservices { get; set; }
-
     public virtual DbSet<Historique> Historiques { get; set; }
 
     public virtual DbSet<Identification> Identifications { get; set; }
@@ -272,35 +270,33 @@ public partial class A2024420517riGr1Eq6Context : DbContext
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("datetime")
                 .HasColumnName("dateLastChanged");
-        });
-
-        modelBuilder.Entity<Fournisseurproduitservice>(entity =>
-        {
-            entity.HasKey(e => new { e.IdFournisseur, e.IdProduitService })
-                .HasName("PRIMARY")
-                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
-
-            entity.ToTable("fournisseurproduitservice");
-
-            entity.HasIndex(e => e.IdProduitService, "idProduitService");
-
-            entity.Property(e => e.IdFournisseur)
-                .HasColumnType("int(11)")
-                .HasColumnName("idFournisseur");
-            entity.Property(e => e.IdProduitService)
-                .HasMaxLength(8)
-                .HasColumnName("idProduitService");
             entity.Property(e => e.DetailSpecification)
                 .HasMaxLength(500)
                 .HasColumnName("detailSpecification");
 
-            entity.HasOne(d => d.IdFournisseurNavigation).WithMany(p => p.Fournisseurproduitservices)
-                .HasForeignKey(d => d.IdFournisseur)
-                .HasConstraintName("fournisseurproduitservice_ibfk_1");
-
-            entity.HasOne(d => d.IdProduitServiceNavigation).WithMany(p => p.Fournisseurproduitservices)
-                .HasForeignKey(d => d.IdProduitService)
-                .HasConstraintName("fournisseurproduitservice_ibfk_2");
+            entity.HasMany(d => d.IdProduitServices).WithMany(p => p.IdFournisseurs)
+                .UsingEntity<Dictionary<string, object>>(
+                    "Fournisseurproduitservice",
+                    r => r.HasOne<Produitservice>().WithMany()
+                        .HasForeignKey("IdProduitService")
+                        .HasConstraintName("fournisseurproduitservice_ibfk_2"),
+                    l => l.HasOne<Fournisseur>().WithMany()
+                        .HasForeignKey("IdFournisseur")
+                        .HasConstraintName("fournisseurproduitservice_ibfk_1"),
+                    j =>
+                    {
+                        j.HasKey("IdFournisseur", "IdProduitService")
+                            .HasName("PRIMARY")
+                            .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+                        j.ToTable("fournisseurproduitservice");
+                        j.HasIndex(new[] { "IdProduitService" }, "idProduitService");
+                        j.IndexerProperty<int>("IdFournisseur")
+                            .HasColumnType("int(11)")
+                            .HasColumnName("idFournisseur");
+                        j.IndexerProperty<string>("IdProduitService")
+                            .HasMaxLength(8)
+                            .HasColumnName("idProduitService");
+                    });
         });
 
         modelBuilder.Entity<Historique>(entity =>
