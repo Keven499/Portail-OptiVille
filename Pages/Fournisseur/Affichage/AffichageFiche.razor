@@ -83,13 +83,17 @@
                     </div>
                 </div>
             <div class="row">
-                @foreach(var telephone in selectedTelephones)
+                
+                @foreach(var telephone in combinedFormModel.CoordonneeFormModel.PhoneList)
                 {
                 <div class="col-xl-6 p-1">
-                    <label for="inputEmail4">Numéro de téléphone (@telephone.Type)</label>
-                    <input type="text" class="form-control" id="inputEmail4" value="@($"{telephone.NumTelephone.Insert(3, "-").Insert(7, "-")} #{telephone.Poste}")">
+                    <label for="inputEmail4">Numéro de téléphone (@telephone.TypeTelEntreprise)</label>
+                    <input type="text" class="form-control" id="inputEmail4" @bind="telephone.NoTelEntreprise">
                 </div>
-
+                <div class="col-xl-6 p-1">
+                        <label for="inputPassword4">Poste</label>
+                        <input type="text" class="form-control" id="inputEmail4" @bind="telephone.PosteTelEntreprise">
+                    </div>
                 }
             </div>
         </div>
@@ -325,6 +329,7 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 @code{
+    private static int FournisseurID = 24;
     private bool modificationFinances = true;
     private bool modificationInfo = true;
     public int sizeTotal { get; set; } = 0;
@@ -466,8 +471,8 @@
     {
         try
         {
-            selectedFournisseur = await _context.Fournisseurs.FindAsync(1);
-            selectedContacts = await _context.Contacts.Where(c => c.Fournisseur == 1).ToListAsync();
+            selectedFournisseur = await _context.Fournisseurs.FindAsync(FournisseurID);
+            selectedContacts = await _context.Contacts.Where(c => c.Fournisseur == FournisseurID).ToListAsync();
 
 
             // Step 3: Iterate through each contact and retrieve their phone information
@@ -485,19 +490,40 @@
                     PhoneNumbers = phoneNumbers
                 });
             }
-            coordonnee = await _context.Coordonnees.SingleAsync(c => c.Fournisseur == 1);
-
-            foreach(var coordonneeTelephone in selectedCoordonnes)
+            coordonnee = await _context.Coordonnees.SingleAsync(c => c.Fournisseur == FournisseurID);
+            if (coordonnee == null)
             {
-                selectedTelephones = await _context.Telephones.Where(c => c.Contact == coordonneeTelephone.IdCoordonnee).ToListAsync();
-
+                Console.WriteLine("No coordonnee found for the given FournisseurID.");
             }
-            finance = await _context.Finances.SingleAsync(c => c.Fournisseur == 1);
-            identification = await _context.Identifications.SingleAsync(c => c.Fournisseur == 1);
-            selectedFichiers = await _context.Fichiers.Where(c => c.Fournisseur == 1).ToListAsync();
-            selectedHistoriques = await _context.Historiques.Where(c => c.Fournisseur == 1).ToListAsync();
-            licencerbqs = await _context.Licencerbqs.SingleAsync(c => c.Fournisseur == 1);
-            selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
+            selectedTelephones = await _context.Telephones.Where(t => t.Coordonnee == coordonnee.IdCoordonnee).ToListAsync();
+
+            try
+            {
+                finance = await _context.Finances.SingleAsync(c => c.Fournisseur == FournisseurID);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Erreur lors de la récupération des informations: {ex.Message}"); 
+            }
+            identification = await _context.Identifications.SingleAsync(c => c.Fournisseur == FournisseurID);
+            selectedFichiers = await _context.Fichiers.Where(c => c.Fournisseur == FournisseurID).ToListAsync();
+            selectedHistoriques = await _context.Historiques.Where(c => c.Fournisseur == FournisseurID).ToListAsync();
+            try
+            {
+                licencerbqs = await _context.Licencerbqs.SingleAsync(c => c.Fournisseur == FournisseurID);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Erreur lors de la récupération des informations: {ex.Message}"); 
+            }
+            if (licencerbqs != null)
+            {
+                selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
+            }
+            else
+            {
+                Console.WriteLine("Licencerbqs is null or does not have a valid IdLicenceRbq.");
+            }
             var fournisseurProduitIds = await _context.Database
             .SqlQueryRaw<string>(@"
                 SELECT idProduitService 
@@ -510,7 +536,14 @@
                 .Where(p => fournisseurProduitIds.Contains(p.CodeUnspsc)) // Ensure CodeUnspsc is string here
                 .ToListAsync();
     
-            selectedLicencerbqs = await _context.Licencerbqs.Where(l => l.Fournisseur == 1).Include(l => l.IdCategorieRbqs).ToListAsync();
+            try
+            {
+                selectedLicencerbqs = await _context.Licencerbqs.Where(l => l.Fournisseur == FournisseurID).Include(l => l.IdCategorieRbqs).ToListAsync();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Erreur lors de la récupération des informations: {ex.Message}"); 
+            }
             closestHistorique = selectedHistoriques.Where(h => h.DateEtatChanged.HasValue).OrderBy(h => Math.Abs((h.DateEtatChanged.Value - DateTime.UtcNow).TotalDays)).FirstOrDefault();
             groupedServices = selectedProduitservices.GroupBy(p => new GroupKey 
             { 
@@ -530,8 +563,11 @@
                     combinedFormModel.CoordonneeFormModel.CodePostalEntreprise = coordonnee.CodePostal;
                     combinedFormModel.CoordonneeFormModel.RegionAdmEntreprise = coordonnee.RegionAdministrative;
                     combinedFormModel.CoordonneeFormModel.SiteWebEntreprise = coordonnee.SiteInternet;
-                    //combinedFormModel.FournisseurFormModel.PhoneList = selectedFournisseur.Telephones.Select(t => new TelephoneFormModel{// Populate the phone details here}).ToList();
-
+                    combinedFormModel.CoordonneeFormModel.PhoneList = selectedTelephones.Select(t => new TelephoneFormModel{
+                    NoTelEntreprise = t.NumTelephone,
+                    TypeTelEntreprise = t.Type,
+                    PosteTelEntreprise = t.Poste
+                    }).ToList();
                     // Map the Fournisseur entity to IdentificationFormModel
                     combinedFormModel.IdentificationFormModel.NEQ = identification.Neq;
                     combinedFormModel.IdentificationFormModel.NomEntreprise = identification.NomEntreprise;
@@ -543,6 +579,7 @@
         catch (Exception ex)
         {
             Console.WriteLine($"Erreur lors de la récupération des informations: {ex.Message}");
+            Console.WriteLine($"Erreur lors de la récupération des informations(Fetch Crash): {ex.Message}");
         }
     }
 
