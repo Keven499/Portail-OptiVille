@@ -330,14 +330,14 @@
     {
         try
         {
-            //await FournisseurService.SaveFournisseurData(produitServiceFormModel);
+            await FournisseurService.SaveFournisseurData(produitServiceFormModel);
             //await IdentificationService.SaveIdentificationData(identicationFormModel);
             //await CoordonneeService.SaveCoordonneeData(coordonneeFormModel);
             //await ContactsService.SaveContactsData(contactHosterFormModel);
             //await ProduitServiceService.SaveProduitServiceData(produitServiceFormModel);
             //await LicenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
             // EVERYTHING WORKS FINE UNTILS THOSE SERVICES
-            //await FichierService.SaveFichierData(pieceJointeFormModel);
+            await FichierService.SaveFichierData(pieceJointeFormModel);
         }
         catch (Exception ex)
         {

@@ -19,10 +19,11 @@ namespace Portail_OptiVille.Data.Services
             var fichiers = new List<Fichier>();
             foreach (var fichierFromList in pieceJointeFormModelDto.ListFichiers)
             {
+                var fileExtension = Path.GetExtension(fichierFromList.Name).ToLower();
                 var fichier = new Fichier
                 {
                     Nom = fichierFromList.Name,
-                    Type = fichierFromList.ContentType,
+                    Type = fileExtension,
                     Taille = (int)fichierFromList.Size,
                     DateCreation = DateTime.Now,
                     Fournisseur = lastFournisseurId
