@@ -16,9 +16,6 @@ namespace Portail_OptiVille.Data.Services
         public async Task SaveContactsData(ContactHosterFormModel contactHosterFormModelDto)
         {
             var lastFournisseurId = await _context.Fournisseurs.MaxAsync(f => (int?)f.IdFournisseur);
-            var lastCoordonneId = await _context.Coordonnees.MaxAsync(f => (int?)f.IdCoordonnee);
-            var contacts = new List<Contact>();
-            var telephones = new List<Telephone>();
             foreach (var contactFromList in contactHosterFormModelDto.ContactList)
             {
                 var contact = new Contact
@@ -30,28 +27,35 @@ namespace Portail_OptiVille.Data.Services
                     Fournisseur = lastFournisseurId 
                 };
 
+                try
+                {
+                    _context.Contacts.Add(contact);
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Une erreur est survenue lors de la sauvegarde du contact", ex);
+                }
+
+                var lastContactId = await _context.Contacts.MaxAsync(f => (int?)f.IdContact);
                 var telephone = new Telephone
                 {
                     Type = contactFromList.TypeTelephone,
                     NumTelephone = contactFromList.Telephone,
                     Poste = contactFromList.Poste,
-                    Contact = null,
-                    Coordonnee = lastCoordonneId
+                    Contact = lastContactId,
+                    Coordonnee = null
                 };
 
-                telephones.Add(telephone);
-                contacts.Add(contact);
-            }
-
-            try
-            {
-                await _context.Telephones.AddRangeAsync(telephones);
-                await _context.Contacts.AddRangeAsync(contacts);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Une erreur est survenue lors de la sauvegarde des contacts", ex);
+                try
+                {
+                    _context.Telephones.Add(telephone);
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Une erreur est survenue lors de la sauvegarde du téléphone", ex);
+                }
             }
         }
     }

@@ -16,7 +16,6 @@ namespace Portail_OptiVille.Data.Services
         public async Task SaveCoordonneeData(CoordonneeFormModel coordonneeFormModelDto)
         {
             var lastFournisseurId = await _context.Fournisseurs.MaxAsync(f => (int?)f.IdFournisseur);
-            var lastCoordonneId = await _context.Coordonnees.MaxAsync(f => (int?)f.IdCoordonnee);
             var coordonnee = new Coordonnee
             {
                 NoCivique = coordonneeFormModelDto.NoEntreprise,
@@ -33,7 +32,18 @@ namespace Portail_OptiVille.Data.Services
                 Fournisseur = lastFournisseurId
             };
 
+            try
+            {
+                _context.Coordonnees.Add(coordonnee);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Une erreur est survenue lors de la sauvegarde des coordonnées", ex);
+            }
+
             var telephones = new List<Telephone>();
+            var lastCoordonneId = await _context.Coordonnees.MaxAsync(f => (int?)f.IdCoordonnee);
             foreach (var telephoneFromList in coordonneeFormModelDto.PhoneList)
             {
                 var telephone = new Telephone
@@ -51,12 +61,11 @@ namespace Portail_OptiVille.Data.Services
             try
             {
                 await _context.Telephones.AddRangeAsync(telephones);
-                _context.Coordonnees.Add(coordonnee);
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                throw new Exception("Une erreur est survenue lors de la sauvegarde des coordonnées", ex);
+                throw new Exception("Une erreur est survenue lors de la sauvegarde des téléphones dans coordonnées", ex);
             }
         }
     }
