@@ -126,7 +126,6 @@
 
     protected override void OnInitialized()
     {
-        Console.WriteLine($"Value of LicenceRBQFormModel.Readonly in LicenceRBQ.razor: {LicenceRBQFormModel.Disabled}");
         bool isDisabled = LicenceRBQFormModel.Disabled;
         inputAttributes = isDisabled
             ? new Dictionary<string, object> { { "disabled", "disabled" } }

@@ -297,6 +297,7 @@
             {
                 return;
             }
+            SaveDataToDB();
         }
 
         if (currentIndex < Components.Count - 1)
@@ -333,9 +334,10 @@
             await IdentificationService.SaveIdentificationData(identicationFormModel);
             await CoordonneeService.SaveCoordonneeData(coordonneeFormModel);
             await ContactsService.SaveContactsData(contactHosterFormModel);
-            await ProduitServiceService.SaveProduitServiceData(produitServiceFormModel);
-            await LicenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
-            await FichierService.SaveFichierData(pieceJointeFormModel);
+            // EVERYTHING WORKS FINE UNTILS THOSE SERVICES
+            //await ProduitServiceService.SaveProduitServiceData(produitServiceFormModel);
+            //await LicenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
+            //await FichierService.SaveFichierData(pieceJointeFormModel);
         }
         catch (Exception ex)
         {

@@ -18,16 +18,17 @@ namespace Portail_OptiVille.Data.Attributes
                 return new ValidationResult("Pas de - en début et fin", new[] { validationContext.MemberName });
             }
 
-            var regex = new Regex(@"^[a-zA-Z-]+$");
+            var regex = new Regex(@"^[a-zA-ZÀ-ÿ\-]+$");
             if (!regex.IsMatch(stringValue))
             {
                 return new ValidationResult("Que des lettres et tirets", new[] { validationContext.MemberName });
             }
 
-            if (Regex.IsMatch(stringValue, @"[^a-zA-Z-]"))
+            if (Regex.IsMatch(stringValue, @"[^a-zA-ZÀ-ÿ\-]"))
             {
                 return new ValidationResult("Caractères interdits", new[] { validationContext.MemberName });
             }
+
 
             return ValidationResult.Success;
         }

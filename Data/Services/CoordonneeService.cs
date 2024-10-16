@@ -24,7 +24,7 @@ namespace Portail_OptiVille.Data.Services
                 Bureau = coordonneeFormModelDto.BureauEntreprise,
                 Ville = coordonneeFormModelDto.VilleEntreprise,
                 Province = coordonneeFormModelDto.ProvinceEntreprise,
-                CodePostal = coordonneeFormModelDto.CodePostalEntreprise,
+                CodePostal = coordonneeFormModelDto.CodePostalEntreprise.Replace(" ", ""),
                 CodeRegionAdministrative = coordonneeFormModelDto.RegionAdmEntreprise?.Substring(coordonneeFormModelDto.RegionAdmEntreprise.IndexOf('(')
                                                                                      + 1, coordonneeFormModelDto.RegionAdmEntreprise.IndexOf(')')
                                                                                      - coordonneeFormModelDto.RegionAdmEntreprise.IndexOf('(') - 1),
