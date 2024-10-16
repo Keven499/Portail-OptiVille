@@ -331,13 +331,14 @@
         try
         {
             await FournisseurService.SaveFournisseurData(produitServiceFormModel);
-            //await IdentificationService.SaveIdentificationData(identicationFormModel);
-            //await CoordonneeService.SaveCoordonneeData(coordonneeFormModel);
-            //await ContactsService.SaveContactsData(contactHosterFormModel);
-            //await ProduitServiceService.SaveProduitServiceData(produitServiceFormModel);
-            //await LicenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
-            // EVERYTHING WORKS FINE UNTILS THOSE SERVICES
+            await IdentificationService.SaveIdentificationData(identicationFormModel);
+            await CoordonneeService.SaveCoordonneeData(coordonneeFormModel);
+            await ContactsService.SaveContactsData(contactHosterFormModel);
+            await ProduitServiceService.SaveProduitServiceData(produitServiceFormModel);
+            await LicenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
             await FichierService.SaveFichierData(pieceJointeFormModel);
+            Console.WriteLine("Compte créé avec succès");
+            // IL RESTE PLUS QU'A LE REDIRIGER VERS SA FICHE FOURNISSEUR SUR SON PROPRE COMPTE OU VERS LOGIN
         }
         catch (Exception ex)
         {

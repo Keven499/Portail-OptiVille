@@ -15,36 +15,39 @@ namespace Portail_OptiVille.Data.Services
 
         public async Task SaveLicenceRBQData(LicenceRBQFormModel licenceRBQFormModelDto)
         {
-            var lastFournisseurId = await _context.Fournisseurs.MaxAsync(f => (int?)f.IdFournisseur);
-            var licenceRBQ = new Licencerbq
+            if (licenceRBQFormModelDto.NumeroLicence != null)
             {
-                IdLicenceRbq = licenceRBQFormModelDto.NumeroLicence?.Replace("-", string.Empty),
-                Type = licenceRBQFormModelDto.TypeLicence,
-                Statut = licenceRBQFormModelDto.StatutLicence,
-                Fournisseur = lastFournisseurId
-            };
-
-            try
-            {
-                _context.Licencerbqs.Add(licenceRBQ);
-                await _context.SaveChangesAsync();
-
-                foreach (var codeSousCategorie in licenceRBQFormModelDto.CodeSousCategorie)
+                var lastFournisseurId = await _context.Fournisseurs.MaxAsync(f => (int?)f.IdFournisseur);
+                var licenceRBQ = new Licencerbq
                 {
-                    var categorieRBq = await _context.Categorierbqs
-                        .FirstOrDefaultAsync(p => p.CodeSousCategorie == codeSousCategorie);
+                    IdLicenceRbq = licenceRBQFormModelDto.NumeroLicence?.Replace("-", string.Empty),
+                    Type = licenceRBQFormModelDto.TypeLicence,
+                    Statut = licenceRBQFormModelDto.StatutLicence,
+                    Fournisseur = lastFournisseurId
+                };
 
-                    if (categorieRBq != null && !licenceRBQ.IdCategorieRbqs.Contains(categorieRBq))
+                try
+                {
+                    _context.Licencerbqs.Add(licenceRBQ);
+                    await _context.SaveChangesAsync();
+
+                    foreach (var codeSousCategorie in licenceRBQFormModelDto.CodeSousCategorie)
                     {
-                        licenceRBQ.IdCategorieRbqs.Add(categorieRBq);
-                    }
-                }
+                        var categorieRBq = await _context.Categorierbqs
+                            .FirstOrDefaultAsync(p => p.CodeSousCategorie == codeSousCategorie);
 
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Une erreur est survenue lors de la sauvegarde de la licence RBQ", ex);
+                        if (categorieRBq != null && !licenceRBQ.IdCategorieRbqs.Contains(categorieRBq))
+                        {
+                            licenceRBQ.IdCategorieRbqs.Add(categorieRBq);
+                        }
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Une erreur est survenue lors de la sauvegarde de la licence RBQ", ex);
+                }
             }
         }
     }
