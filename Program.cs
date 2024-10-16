@@ -28,6 +28,7 @@ builder.Services.AddScoped<FichierService>();
 builder.Services.AddScoped<IdentificationService>();
 builder.Services.AddScoped<LicenceRBQService>();
 builder.Services.AddScoped<ProduitServiceService>();
+builder.Services.AddScoped<HistoriqueService>();
 #endregion
 
 #region Load Config from Setting.json

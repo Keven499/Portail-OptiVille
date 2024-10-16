@@ -5,6 +5,8 @@ namespace Portail_OptiVille.Data.FormModels
 {
     public class CoordonneeFormModel
     {
+
+        public int IdCoordonnee { get; set; }
         public CoordonneeFormModel() {
             PhoneList = new List<TelephoneFormModel>();
         }
@@ -31,6 +33,8 @@ namespace Portail_OptiVille.Data.FormModels
 
         [Required(ErrorMessage = "Région adm. requise")]
         public string? RegionAdmEntreprise { get; set; }
+
+        public string? CodeRegionAdmEntreprise { get; set; }
 
         public string? SiteWebEntreprise { get; set; }
 

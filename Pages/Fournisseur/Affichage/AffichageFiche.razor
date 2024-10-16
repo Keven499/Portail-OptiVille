@@ -6,9 +6,14 @@
 @inject A2024420517riGr1Eq6Context _context
 @using Portail_OptiVille.Data.FormModels
 @using Portail_OptiVille.Data.Exceptions
+@using Portail_OptiVille.Data.Services
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager navigationManager
+@inject FichierService fichierService
+@inject HistoriqueService historiqueService
+@inject CoordonneeService coordonneeService
+@inject IdentificationService identificationService
 
 <div class="container-fluid card p-0 m-0">
     <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
@@ -359,6 +364,29 @@
         public CoordonneeFormModel CoordonneeFormModel { get; set; }
         public IdenticationFormModel IdentificationFormModel { get; set; }
 
+        public void FillData(Coordonnee coordonnee, Identification identification, List<Telephone> telephones)
+        {
+            CoordonneeFormModel.NoEntreprise = coordonnee.NoCivique;
+            CoordonneeFormModel.RueEntreprise = coordonnee.Rue;
+            CoordonneeFormModel.BureauEntreprise = coordonnee.Bureau;
+            CoordonneeFormModel.VilleEntreprise = coordonnee.Ville;
+            CoordonneeFormModel.ProvinceEntreprise = coordonnee.Province;
+            CoordonneeFormModel.CodePostalEntreprise = coordonnee.CodePostal;
+            CoordonneeFormModel.RegionAdmEntreprise = coordonnee.RegionAdministrative;
+            CoordonneeFormModel.SiteWebEntreprise = coordonnee.SiteInternet;
+            CoordonneeFormModel.PhoneList = telephones.Select(t => new TelephoneFormModel
+            {
+                NoTelEntreprise = t.NumTelephone,
+                TypeTelEntreprise = t.Type,
+                PosteTelEntreprise = t.Poste
+            }).ToList();
+            IdentificationFormModel.IdIdentification = identification.IdIdentification;
+            IdentificationFormModel.NEQ = identification.Neq;
+            IdentificationFormModel.NomEntreprise = identification.NomEntreprise;
+            IdentificationFormModel.CourrielEntreprise = identification.AdresseCourriel;
+            IdentificationFormModel.MotDePasse = identification.MotDePasse;
+        }
+
         public CombinedFormModel()
         {
             CoordonneeFormModel = new CoordonneeFormModel();
@@ -378,35 +406,25 @@
 
     private async Task SaveModifcationInfo()
     {
-        // Validate the form data
-            // Replace selectedFournisseur data with contactFormModel data
-            identification.Neq = combinedFormModel.IdentificationFormModel.NEQ;
-            coordonnee.NoCivique = combinedFormModel.CoordonneeFormModel.NoEntreprise; // Ensure this property is available
-            coordonnee.Rue = combinedFormModel.CoordonneeFormModel.RueEntreprise; // Ensure this property is available
-            coordonnee.Bureau = combinedFormModel.CoordonneeFormModel.BureauEntreprise; // Ensure this property is available
-            identification.NomEntreprise = combinedFormModel.IdentificationFormModel.NomEntreprise;
-            coordonnee.Ville = combinedFormModel.CoordonneeFormModel.VilleEntreprise; // Ensure this property is available
-            coordonnee.Province = combinedFormModel.CoordonneeFormModel.ProvinceEntreprise; // Ensure this property is available
-            coordonnee.CodePostal = combinedFormModel.CoordonneeFormModel.CodePostalEntreprise; // Ensure this property is available
-            identification.AdresseCourriel = combinedFormModel.IdentificationFormModel.CourrielEntreprise;
-            coordonnee.SiteInternet = combinedFormModel.CoordonneeFormModel.SiteWebEntreprise;
-            
+        await identificationService.UpdateIdentificationData(combinedFormModel.IdentificationFormModel);
+        await coordonneeService.UpdateCoordonneeData(combinedFormModel.CoordonneeFormModel);
+        @* coordonnee.NoCivique = combinedFormModel.CoordonneeFormModel.NoEntreprise;
+        coordonnee.Rue = combinedFormModel.CoordonneeFormModel.RueEntreprise;
+        coordonnee.Bureau = combinedFormModel.CoordonneeFormModel.BureauEntreprise;
 
-            Console.WriteLine(identification.Neq);
-            Console.WriteLine(coordonnee.NoCivique);
-            Console.WriteLine(coordonnee.Rue);
-            Console.WriteLine(coordonnee.Bureau);
-            Console.WriteLine(identification.NomEntreprise);
-            Console.WriteLine(coordonnee.Ville);
-            Console.WriteLine(coordonnee.Province);
-            Console.WriteLine(coordonnee.CodePostal);
-            Console.WriteLine(identification.AdresseCourriel);
-            Console.WriteLine(coordonnee.SiteInternet);
+        coordonnee.Ville = combinedFormModel.CoordonneeFormModel.VilleEntreprise;
+        coordonnee.Province = combinedFormModel.CoordonneeFormModel.ProvinceEntreprise;
+        coordonnee.CodePostal = combinedFormModel.CoordonneeFormModel.CodePostalEntreprise;
 
-
-            // Save changes to the database
-            _context.Update(selectedFournisseur);
-            //await _context.SaveChangesAsync();
+        coordonnee.SiteInternet = combinedFormModel.CoordonneeFormModel.SiteWebEntreprise; *@
+        
+        @* Console.WriteLine(coordonnee.NoCivique);
+        Console.WriteLine(coordonnee.Rue);
+        Console.WriteLine(coordonnee.Bureau);
+        Console.WriteLine(coordonnee.Ville);
+        Console.WriteLine(coordonnee.Province);
+        Console.WriteLine(coordonnee.CodePostal);
+        Console.WriteLine(coordonnee.SiteInternet); *@
 
         // Reset modificationInfo after saving
         modificationInfo = true;
@@ -472,7 +490,7 @@
         try
         {
             selectedFournisseur = await _context.Fournisseurs.FindAsync(FournisseurID);
-            selectedContacts = await _context.Contacts.Where(c => c.Fournisseur == FournisseurID).ToListAsync();
+            selectedContacts = await _context.Contacts.Where(c => c.Fournisseur == selectedFournisseur.IdFournisseur).ToListAsync();
 
 
             // Step 3: Iterate through each contact and retrieve their phone information
@@ -490,39 +508,26 @@
                     PhoneNumbers = phoneNumbers
                 });
             }
-            coordonnee = await _context.Coordonnees.SingleAsync(c => c.Fournisseur == FournisseurID);
-            if (coordonnee == null)
-            {
-                Console.WriteLine("No coordonnee found for the given FournisseurID.");
-            }
+            coordonnee = await _context.Coordonnees.SingleAsync(c => c.Fournisseur == selectedFournisseur.IdFournisseur);
             selectedTelephones = await _context.Telephones.Where(t => t.Coordonnee == coordonnee.IdCoordonnee).ToListAsync();
-
             try
             {
-                finance = await _context.Finances.SingleAsync(c => c.Fournisseur == FournisseurID);
+                finance = await _context.Finances.SingleAsync(c => c.Fournisseur == selectedFournisseur.IdFournisseur);
             }
             catch(Exception ex)
             {
                 Console.WriteLine($"Erreur lors de la récupération des informations: {ex.Message}"); 
             }
-            identification = await _context.Identifications.SingleAsync(c => c.Fournisseur == FournisseurID);
-            selectedFichiers = await _context.Fichiers.Where(c => c.Fournisseur == FournisseurID).ToListAsync();
+            identification = await _context.Identifications.SingleAsync(c => c.Fournisseur == selectedFournisseur.IdFournisseur);
+            selectedFichiers = await _context.Fichiers.Where(c => c.Fournisseur == selectedFournisseur.IdFournisseur).ToListAsync();
             selectedHistoriques = await _context.Historiques.Where(c => c.Fournisseur == FournisseurID).ToListAsync();
-            try
+            closestHistorique = selectedHistoriques.Where(h => h.DateEtatChanged.HasValue).OrderBy(h => Math.Abs((h.DateEtatChanged.Value - DateTime.UtcNow).TotalDays)).FirstOrDefault();
+            //closestHistorique = await _context.Historiques.Where(h => h.Fournisseur == selectedFournisseur.IdFournisseur && h.DateEtatChanged.HasValue).OrderBy(h => Math.Abs((h.DateEtatChanged.Value - DateTime.UtcNow).TotalDays)).FirstOrDefaultAsync();
+            if(identification.Neq != null)
             {
-                licencerbqs = await _context.Licencerbqs.SingleAsync(c => c.Fournisseur == FournisseurID);
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine($"Erreur lors de la récupération des informations: {ex.Message}"); 
-            }
-            if (licencerbqs != null)
-            {
+                licencerbqs = await _context.Licencerbqs.SingleAsync(c => c.Fournisseur == selectedFournisseur.IdFournisseur);
                 selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
-            }
-            else
-            {
-                Console.WriteLine("Licencerbqs is null or does not have a valid IdLicenceRbq.");
+                selectedLicencerbqs = await _context.Licencerbqs.Where(l => l.Fournisseur == selectedFournisseur.IdFournisseur).Include(l => l.IdCategorieRbqs).ToListAsync();
             }
             var fournisseurProduitIds = await _context.Database
             .SqlQueryRaw<string>(@"
@@ -536,49 +541,17 @@
                 .Where(p => fournisseurProduitIds.Contains(p.CodeUnspsc)) // Ensure CodeUnspsc is string here
                 .ToListAsync();
     
-            try
-            {
-                selectedLicencerbqs = await _context.Licencerbqs.Where(l => l.Fournisseur == FournisseurID).Include(l => l.IdCategorieRbqs).ToListAsync();
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine($"Erreur lors de la récupération des informations: {ex.Message}"); 
-            }
-            closestHistorique = selectedHistoriques.Where(h => h.DateEtatChanged.HasValue).OrderBy(h => Math.Abs((h.DateEtatChanged.Value - DateTime.UtcNow).TotalDays)).FirstOrDefault();
             groupedServices = selectedProduitservices.GroupBy(p => new GroupKey 
             { 
                 CodeCategorie = p.CategorieUnspsc, 
                 Nature = p.Nature 
             }).ToList(); 
 
-                if (coordonnee != null && identification != null)
-                {
-                    
-                    // Map the Fournisseur entity to FournisseurFormModel
-                    combinedFormModel.CoordonneeFormModel.NoEntreprise = coordonnee.NoCivique;
-                    combinedFormModel.CoordonneeFormModel.RueEntreprise = coordonnee.Rue;
-                    combinedFormModel.CoordonneeFormModel.BureauEntreprise = coordonnee.Bureau;
-                    combinedFormModel.CoordonneeFormModel.VilleEntreprise = coordonnee.Ville;
-                    combinedFormModel.CoordonneeFormModel.ProvinceEntreprise = coordonnee.Province;
-                    combinedFormModel.CoordonneeFormModel.CodePostalEntreprise = coordonnee.CodePostal;
-                    combinedFormModel.CoordonneeFormModel.RegionAdmEntreprise = coordonnee.RegionAdministrative;
-                    combinedFormModel.CoordonneeFormModel.SiteWebEntreprise = coordonnee.SiteInternet;
-                    combinedFormModel.CoordonneeFormModel.PhoneList = selectedTelephones.Select(t => new TelephoneFormModel{
-                    NoTelEntreprise = t.NumTelephone,
-                    TypeTelEntreprise = t.Type,
-                    PosteTelEntreprise = t.Poste
-                    }).ToList();
-                    // Map the Fournisseur entity to IdentificationFormModel
-                    combinedFormModel.IdentificationFormModel.NEQ = identification.Neq;
-                    combinedFormModel.IdentificationFormModel.NomEntreprise = identification.NomEntreprise;
-                    combinedFormModel.IdentificationFormModel.CourrielEntreprise = identification.AdresseCourriel;
-                    combinedFormModel.IdentificationFormModel.MotDePasse = identification.MotDePasse;
-                    combinedFormModel.IdentificationFormModel.ConfirmationMotDePasse = identification.MotDePasse;
-                }
+            combinedFormModel.FillData(coordonnee, identification, selectedTelephones);
+
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Erreur lors de la récupération des informations: {ex.Message}");
             Console.WriteLine($"Erreur lors de la récupération des informations(Fetch Crash): {ex.Message}");
         }
     }
@@ -626,33 +599,20 @@
     }
     private async Task DeleteFiche()
     {
-        var newHistorique = new Historique
-        {
-            EtatDemande = "Refusé",
-            DateEtatChanged = DateTime.UtcNow,
-            Fournisseur = closestHistorique.Fournisseur
-        };
-        _context.Historiques.Add(newHistorique);
-        closestHistorique.EtatDemande = "Refusé";
-        closestHistorique.DateEtatChanged = DateTime.UtcNow;
-
-        foreach (var fichier in selectedFichiers.ToList())
-        {
-            _context.Fichiers.Remove(fichier);
-        }
-        selectedFichiers.Clear();
-
-        
-        Console.WriteLine("La fiche a été supprimé");
-        await _context.SaveChangesAsync();
+        await historiqueService.AddHistoriqueRefuser(selectedFournisseur.IdFournisseur, "Vous avez supprimé votre fiche");//A mettre un message que l'admin peut changer
+        await fichierService.DeleteAllFichiersData(selectedFichiers);
+        //closestHistorique.EtatDemande = "Refusé";
+        //closestHistorique.DateEtatChanged = DateTime.UtcNow;
+        selectedFichiers.Clear();// A enlever si on peut changer les donnnes sans refresh la page
     }
     private void OpenConfirmationModal(Fichier file)
     {
         selectedFile = file;
     }
-    private void OnDeleteFile(Fichier file)
+    private async Task OnDeleteFile(Fichier file)
     {
-        selectedFichiers.Remove(file);
+        await fichierService.DeleteOneFichierData(file);
+        selectedFichiers.Remove(file);// A enlever si on peut changer les donnnes sans refresh la page
         GetFormatSize();
     }
 }

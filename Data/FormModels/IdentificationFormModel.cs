@@ -5,6 +5,8 @@ namespace Portail_OptiVille.Data.FormModels
 {
     public class IdenticationFormModel
     {
+        public int IdIdentification { get; set; }
+        
         [NEQRegex] 
         public string? NEQ { get; set; }
 

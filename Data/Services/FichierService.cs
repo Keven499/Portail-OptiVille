@@ -42,5 +42,18 @@ namespace Portail_OptiVille.Data.Services
                 throw new Exception("Une erreur est survenue lors de la sauvegarde des fichiers", ex);
             }
         }
+        public async Task DeleteAllFichiersData(List<Fichier> Listfichiers)
+        {
+            foreach (var fichier in Listfichiers)
+            {
+                _context.Fichiers.Remove(fichier);
+            }
+            await _context.SaveChangesAsync();
+        }
+        public async Task DeleteOneFichierData(Fichier fichier)
+        {
+            _context.Fichiers.Remove(fichier);
+            await _context.SaveChangesAsync();
+        }
     }
 }

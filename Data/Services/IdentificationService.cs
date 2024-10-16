@@ -52,5 +52,17 @@ namespace Portail_OptiVille.Data.Services
                 throw new Exception("Une erreur est survenue lors de la sauvegarde de l'identification", ex);
             }
         }
+
+        public async Task UpdateIdentificationData(IdenticationFormModel identicationFormModel)
+        {
+            var identification = await _context.Identifications.FindAsync(identicationFormModel.IdIdentification);
+            identification.Neq = identicationFormModel.NEQ;
+            identification.NomEntreprise = identicationFormModel.NomEntreprise;
+            identification.AdresseCourriel = identicationFormModel.CourrielEntreprise;
+            identification.MotDePasse = identicationFormModel.MotDePasse;
+
+            _context.Identifications.Update(identification);
+            await _context.SaveChangesAsync();
+        }
     }
 }

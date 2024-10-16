@@ -68,5 +68,22 @@ namespace Portail_OptiVille.Data.Services
                 throw new Exception("Une erreur est survenue lors de la sauvegarde des téléphones dans coordonnées", ex);
             }
         }
+
+        public async Task UpdateCoordonneeData(CoordonneeFormModel coordonneeFormModel)
+        {
+            var coordonnee = await _context.Coordonnees.FindAsync(coordonneeFormModel.IdCoordonnee);
+            coordonnee.NoCivique = coordonneeFormModel.NoEntreprise;
+            coordonnee.Rue = coordonneeFormModel.RueEntreprise;
+            coordonnee.Bureau = coordonneeFormModel.BureauEntreprise;
+            coordonnee.Ville = coordonneeFormModel.VilleEntreprise;
+            coordonnee.Province = coordonneeFormModel.ProvinceEntreprise;
+            coordonnee.CodePostal = coordonneeFormModel.CodePostalEntreprise;
+            coordonnee.CodeRegionAdministrative = coordonneeFormModel.CodeRegionAdmEntreprise;
+            coordonnee.RegionAdministrative = coordonneeFormModel.RegionAdmEntreprise;
+            coordonnee.SiteInternet = coordonneeFormModel.SiteWebEntreprise;
+
+            _context.Coordonnees.Update(coordonnee);
+            await _context.SaveChangesAsync();
+        }
     }
 }
