@@ -17,5 +17,7 @@ namespace Portail_OptiVille.Data.FormModels
         public Dictionary<string, bool> SousCategoSelected { get; set; } = new Dictionary<string, bool>();
 
         public bool Disabled = false;
+
+        public List<string> CodeSousCategorie { get; set; } = new List<string>();
     }
 }

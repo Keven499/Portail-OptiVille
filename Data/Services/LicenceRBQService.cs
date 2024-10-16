@@ -18,7 +18,7 @@ namespace Portail_OptiVille.Data.Services
             var lastFournisseurId = await _context.Fournisseurs.MaxAsync(f => (int?)f.IdFournisseur);
             var licenceRBQ = new Licencerbq
             {
-                IdLicenceRbq = licenceRBQFormModelDto.NumeroLicence,
+                IdLicenceRbq = licenceRBQFormModelDto.NumeroLicence?.Replace("-", string.Empty),
                 Type = licenceRBQFormModelDto.TypeLicence,
                 Statut = licenceRBQFormModelDto.StatutLicence,
                 Fournisseur = lastFournisseurId
@@ -28,15 +28,16 @@ namespace Portail_OptiVille.Data.Services
             {
                 _context.Licencerbqs.Add(licenceRBQ);
                 await _context.SaveChangesAsync();
-                var licenceId = licenceRBQ.IdLicenceRbq;
-                var selectedCategoryIds = licenceRBQFormModelDto.SousCategoSelected.Keys;
-                var categories = await _context.Categorierbqs
-                    .Where(c => selectedCategoryIds.Contains(c.CodeSousCategorie)) 
-                    .ToListAsync();
 
-                foreach (var category in categories)
+                foreach (var codeSousCategorie in licenceRBQFormModelDto.CodeSousCategorie)
                 {
-                    licenceRBQ.IdCategorieRbqs.Add(category);
+                    var categorieRBq = await _context.Categorierbqs
+                        .FirstOrDefaultAsync(p => p.CodeSousCategorie == codeSousCategorie);
+
+                    if (categorieRBq != null && !licenceRBQ.IdCategorieRbqs.Contains(categorieRBq))
+                    {
+                        licenceRBQ.IdCategorieRbqs.Add(categorieRBq);
+                    }
                 }
 
                 await _context.SaveChangesAsync();

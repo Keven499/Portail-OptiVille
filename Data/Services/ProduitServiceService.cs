@@ -14,7 +14,7 @@ namespace Portail_OptiVille.Data.Services
         }
 
         public async Task SaveProduitServiceData(ProduitServiceFormModel produitServiceFormModelDto)
-        {   
+        {
             var lastFournisseurId = await _context.Fournisseurs.MaxAsync(f => (int?)f.IdFournisseur);
             var fournisseur = await _context.Fournisseurs
                 .Include(f => f.IdProduitServices)
@@ -28,13 +28,16 @@ namespace Portail_OptiVille.Data.Services
             try
             {
                 fournisseur.DetailSpecification = produitServiceFormModelDto.Message;
-                var selectedProduitIds = produitServiceFormModelDto.SousProduitSelected.Keys;
-                var produitServices = await _context.Produitservices
-                    .Where(p => selectedProduitIds.Contains(p.CodeUnspsc))
-                    .ToListAsync();
-                foreach (var produitService in produitServices)
+
+                foreach (var codeUNSPSC in produitServiceFormModelDto.CodeUNSPSC)
                 {
-                    fournisseur.IdProduitServices.Add(produitService);
+                    var produitService = await _context.Produitservices 
+                        .FirstOrDefaultAsync(p => p.CodeUnspsc == codeUNSPSC);
+
+                    if (produitService != null && !fournisseur.IdProduitServices.Contains(produitService))
+                    {
+                        fournisseur.IdProduitServices.Add(produitService);
+                    }
                 }
 
                 await _context.SaveChangesAsync();

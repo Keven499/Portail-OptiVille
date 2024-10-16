@@ -112,7 +112,7 @@
     private string GetInputClass<TField> (Expression<Func<TField>> fieldExpression)
     {
         if (!isSubmit) {
-           return "";
+            return "";
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
         var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
@@ -122,7 +122,7 @@
     private string GetValidationHTML<TField> (Expression<Func<TField>> fieldExpression) 
     {
         if (!isSubmit) {
-           return "";
+            return "";
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
         var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
@@ -136,14 +136,24 @@
         StateHasChanged();
         return editContext.Validate();
     }
-    
+
     private void OnCheckboxChange(string codeUNSPSC, ChangeEventArgs e)
     {
         if (e.Value is bool isChecked)
         {
-            ProduitServiceFormModel.SousProduitSelected[codeUNSPSC] = (bool)e.Value;
+            ProduitServiceFormModel.SousProduitSelected[codeUNSPSC] = isChecked;
+
+            if (isChecked)
+            {
+                ProduitServiceFormModel.CodeUNSPSC.Add(codeUNSPSC);
+            }
+            else
+            {
+                ProduitServiceFormModel.CodeUNSPSC.Remove(codeUNSPSC);
+            }
         }
     }
+
 
     private void OnCategorieChange(ChangeEventArgs e) {
         if (e.Value != null) {
@@ -160,8 +170,6 @@
     }
 
     private void OnSearch() {
-        Console.WriteLine($"Search input: {searchBarValue}");
-        Console.WriteLine($"Category input: {selectedCategorie}");
         if (!string.IsNullOrEmpty(searchBarValue) && char.IsDigit(searchBarValue[0]) && selectedCategorie != null)
         {
             if (!selectedCategorie.Equals("Toutes les catégories")) {

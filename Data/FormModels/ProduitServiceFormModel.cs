@@ -12,6 +12,6 @@ namespace Portail_OptiVille.Data.FormModels
         [NothingSelected(ErrorMessage = "Aucune case n'a été coché")]
         public Dictionary<string, bool> SousProduitSelected { get; set; } = new Dictionary<string, bool>();
 
-        public string? CategrorieUNSPSC { get; set; }
+        public List<string> CodeUNSPSC { get; set; } = new List<string>();
     }
 }
