@@ -41,14 +41,6 @@
     private EditContext editContext { get; set; }
     private bool isSubmit = false;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSRuntime.InvokeVoidAsync("disableEnterKey");
-        }
-    }
-
     protected override void OnInitialized()
     {
         editContext = new EditContext(ContactHosterFormModel);

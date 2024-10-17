@@ -109,14 +109,6 @@
         "(11) Gaspésie-Îles-de-la-Madeleine", "(12) Chaudière-Appalaches", "(13) Laval", "(14) Lanaudière", "(15) Laurentides", "(16) Montérégie",
         "(17) Centre-du-Québec"};
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await JSRuntime.InvokeVoidAsync("disableEnterKey");
-        }
-    }
-
     protected override void OnInitialized()
     {
         editContext = new EditContext(CoordonneeFormModel);

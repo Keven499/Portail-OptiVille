@@ -5,48 +5,6 @@
 @using System.IO
 @inject IJSRuntime _jsRuntime
 
-<style>
-    ul 
-    {
-        list-style-type: none;
-    }
-    li 
-    {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    input[type="file"]::file-selector-button 
-    {
-        background-color: rgb(11, 35, 65);
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-    .drag-drop-area 
-    {
-        border: 2px dashed rgb(11, 35, 65);
-        background-color: rgb(0, 118, 213, 0.2);
-        border-radius: 10px;
-        padding: 50px;
-        text-align: center;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        width: 100%;
-        max-width: 500px; 
-    }
-    .drag-drop-area:hover 
-    {
-        background-color: rgba(11, 35, 65, 0.132);
-    }
-    .dragging {
-        background-color: #e9f5e9;
-        border-color: #4CAF50;
-    }
-</style>
-
 <PageTitle>Étape 6 Pièces jointes</PageTitle>
 <EditForm EditContext="@editContext">
     <DataAnnotationsValidator />
@@ -54,15 +12,18 @@
         <h3 class="py-2 p-0 my-0 text-white titre-bold">Carte d'affaires et brochures</h3>
     </div>
         <div class="card-body py-1 border-bleuFonce d-flex justify-content-center">
-            <div id="dropArea" class="drag-drop-area @GetInputClass(() => PieceJointeFormModel.Fichier)">
-                <label for="fileInput">
-                    <h4 class="texte-bold">Faites glisser et déposez les fichiers ici</h4>
-                    <p class="texte-medium">ou cliquez pour sélectionner les fichiers</p>
-                </label>
+            <div class="d-flex flex-column text-center">
+            <div class="texte-medium">.doc .docx .pdf .xls .xlsx .jpg .jpeg .png</div>
+                <div id="dropArea" class="drag-drop-area @GetInputClass(() => PieceJointeFormModel.Fichier)">
+                    <label for="fileInput">
+                        <h4 class="texte-bold">Faites glisser et déposez les fichiers ici</h4>
+                        <p class="texte-medium">ou cliquez pour sélectionner les fichiers</p>
+                    </label>
+                </div>
+                <InputFile id="fileInput" OnChange="HandleFileChange" multiple 
+                        accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" 
+                        style="display: none;" />
             </div>
-            <InputFile id="fileInput" OnChange="HandleFileChange" multiple 
-                    accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" 
-                    style="display: none;" />
         </div>
         @((MarkupString)GetValidationHTML(() => PieceJointeFormModel.Fichier))
         <div class="card-header py-2 bg-bleuFonce titre-bold">
@@ -96,13 +57,46 @@
 </EditForm>
 
 <style>
+    ul {
+        list-style-type: none;
+    }
+    li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    input[type="file"]::file-selector-button {
+        background-color: rgb(11, 35, 65);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .drag-drop-area {
+        border: 2px dashed rgb(11, 35, 65);
+        background-color: rgb(0, 118, 213, 0.2);
+        border-radius: 10px;
+        padding: 50px;
+        text-align: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 100%;
+        max-width: 500px;
+    }
+    .drag-drop-area:hover {
+        background-color: rgba(11, 35, 65, 0.132);
+    }
+    .dragging {
+        background-color: #e9f5e9;
+        border-color: #4CAF50;
+    }
     .valid {
         outline: 1px solid #26b050;
     }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="js/dragdrop.js"></script>
 
 @code{
     [Parameter]
@@ -111,6 +105,7 @@
     public PieceJointeFormModel PieceJointeFormModel { get; set; }
     private EditContext editContext;
     private ValidationMessageStore validationMessageStore;
+    private string[] allowedExtensions = new[] { ".doc", ".docx", ".pdf", ".xls", ".xlsx", ".jpg", ".jpeg", ".png" };
     private bool isFileInputTouched = false;
     public long sizeTotal { get; set; } = 0;
     public long MaxSize = 75;
@@ -127,10 +122,30 @@
     {
         if (firstRender)
         {
-            await Task.Delay(100);
-            await _jsRuntime.InvokeVoidAsync("dragAndDrop.initialize", "dropArea", "fileInput");
+            bool initialized = false;
+            int retries = 5;
+
+            while (!initialized && retries > 0)
+            {
+                try
+                {
+                    await _jsRuntime.InvokeVoidAsync("dragAndDrop.initialize", "dropArea", "fileInput");
+                    initialized = true;
+                }
+                catch (JSException ex)
+                {
+                    retries--;
+                    await Task.Delay(200);
+                }
+            }
+
+            if (!initialized)
+            {
+                Console.WriteLine("N'a pu initialisé drag and drop");
+            }
         }
     }
+
 
     private string GetFormatSizeFile(long size)
     {
@@ -146,7 +161,7 @@
 
     private string GetFormatSize()
     {
-        if (sizeTotal >= 1048576) // 1 MB = 1048576 bytes (1 * 1024 * 1024)
+        if (sizeTotal >= 1048576)
         {
             return $"{(sizeTotal / 1048576.0):F2} MB / {MaxSize}MB";
         }
@@ -165,7 +180,6 @@
     {
         isFileInputTouched = true;
         validationMessageStore.Clear();
-        var allowedExtensions = new[] { ".doc", ".docx", ".pdf", ".xls", ".xlsx", ".jpg", ".jpeg", ".png" };
 
         foreach (var file in e.GetMultipleFiles())
         {
@@ -232,66 +246,4 @@
         StateHasChanged();
         return isValid;
     }
-
-        /*
-    // Ensure the folder exists
-    var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "{(idPERUser)}");
-    Directory.CreateDirectory(folderPath);
-
-    // Combine the folder path and the file name
-    var filePath = Path.Combine(folderPath, uploadedFileName);
-
-    // Open a stream for the uploaded file
-    using (var fileStream = new FileStream(filePath, FileMode.Create))
-    {
-        // Save the file to a folder on the server
-        await fichier.OpenReadStream(maxAllowedSize: 4096000).CopyToAsync(fileStream);
-
-        // Reset the position of the stream to the beginning
-        Stream StreamFile = fichier.OpenReadStream(maxAllowedSize: 4096000);
-
-        // Instantiate ProfilePictureService with the folder path
-        var profilePictureService = new ProfilePictureService(folderPath);
-
-        // Pass the file stream to the UploadAndRenameProfilePicture method
-        var profilePicturePath = await profilePictureService.UploadAndRenameProfilePicture(username, uploadedFileName, StreamFile);
-        //[ERREUR]
-        userData.ImagePath = profilePicturePath;
-
-        // Instantiate UserService
-        var userService = new UserService(userData);
-
-        // Now you can update the user's profile in the database with the new profile picture path
-        await userService.UpdateUserProfilePicture(username, profilePicturePath);
-*/
-
-    
-/*
-    public class ProfilePictureService
-    {
-        private readonly string _profilePicturesFolderPath;
-
-        public ProfilePictureService(string profilePicturesFolderPath)
-        {
-            _profilePicturesFolderPath = profilePicturesFolderPath;
-        }
-
-        public async Task<string> UploadAndRenameProfilePicture(string username, string fileName, Stream fileStream)
-        {
-            // Ensure the folder exists
-            Directory.CreateDirectory(_profilePicturesFolderPath);
-
-            // Generate a unique file name based on the user's matricule
-            string uniqueFileName = $"{username}_profile{Path.GetExtension(fileName)}";
-
-            // Combine the folder path and the unique file name
-            string filePath = Path.Combine(_profilePicturesFolderPath, uniqueFileName);
-
-            string relativeFilePath = Path.Combine("profilepictures", uniqueFileName);
-            return relativeFilePath; // Return the path where the file is saved
-        }
-    }
-*/
-
-    // path = wwwroot\profilepictures\ (nompicture)
 }

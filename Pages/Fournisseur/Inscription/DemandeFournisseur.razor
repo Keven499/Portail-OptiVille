@@ -336,7 +336,7 @@
             await ContactsService.SaveContactsData(contactHosterFormModel);
             await ProduitServiceService.SaveProduitServiceData(produitServiceFormModel);
             await LicenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
-            await FichierService.SaveFichierData(pieceJointeFormModel);
+            await FichierService.SaveFichierData(pieceJointeFormModel, identicationFormModel);
             Console.WriteLine("Compte créé avec succès");
             // IL RESTE PLUS QU'A LE REDIRIGER VERS SA FICHE FOURNISSEUR SUR SON PROPRE COMPTE OU VERS LOGIN
         }
