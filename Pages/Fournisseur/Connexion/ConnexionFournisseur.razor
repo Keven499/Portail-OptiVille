@@ -2,7 +2,7 @@
 @using System.ComponentModel.DataAnnotations
 @using Portail_OptiVille.Data.Models
 @using Microsoft.AspNetCore.Components.Forms
-@using Konscious.Security.Cryptography;
+@using System.Security.Cryptography;
 @using System.Text;
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @inject ProtectedSessionStorage ProtectedSessionStore
@@ -88,30 +88,11 @@
             await JsRuntime.InvokeVoidAsync("alert", "Une erreur est survenue !");
             NavigationManager.NavigateTo("/", true);
         }
-     }
-
-
-    public string HashPassword(string password)
-    {
-        // Définir les paramètres de hachage
-        int iterations = 4; // Nombre d'itérations
-        int memorySize = 65536; // Taille de la mémoire (en Ko)
-        int degreeOfParallelism = 8; // Niveau de parallélisme
-
-        // Convertir le mot de passe en bytes
-        byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
-
-        using (var hasher = new Argon2id(passwordBytes))
-        {
-            hasher.Iterations = iterations;
-            hasher.MemorySize = memorySize / 1024; // Convertir en Mo
-            hasher.DegreeOfParallelism = degreeOfParallelism;
-
-            // Hachage du mot de passe
-            byte[] hashBytes = hasher.GetBytes(32); // Taille du hachage
-            return Convert.ToBase64String(hashBytes); // Convertir en base64 pour le stockage
-        }
     }
+
+
+    static string HashPassword(string input)
+        => Convert.ToHexString(SHA1.HashData(Encoding.UTF8.GetBytes(input)));
 
     public bool VerifyPassword(string password, string hashedPassword)
     {
