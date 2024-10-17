@@ -203,6 +203,9 @@ public partial class A2024420517riGr1Eq6Context : DbContext
             entity.Property(e => e.Nom)
                 .HasMaxLength(32)
                 .HasColumnName("nom");
+            entity.Property(e => e.Path)
+                .HasMaxLength(100)
+                .HasColumnName("path");
             entity.Property(e => e.Taille)
                 .HasColumnType("int(11)")
                 .HasColumnName("taille");

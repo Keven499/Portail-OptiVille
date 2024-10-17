@@ -17,5 +17,7 @@ public partial class Fichier
 
     public int? Fournisseur { get; set; }
 
+    public string? Path { get; set; }
+
     public virtual Fournisseur? FournisseurNavigation { get; set; }
 }
