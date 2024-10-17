@@ -8,8 +8,16 @@ using static Portail_OptiVille.Data.Utilities.MailManager;
 using System.Net.Http;
 using Microsoft.AspNetCore.Components.Authorization;
 using Portail_OptiVille.Data.Services;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
+
+#region Upload max size
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 75 * 1024 * 1024; // Set the maximum allowed size for the entire request
+});
+#endregion
 
 #region Configuration des services
 builder.Services.AddScoped<LicenceService>();
