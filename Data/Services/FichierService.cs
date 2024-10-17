@@ -17,7 +17,10 @@ namespace Portail_OptiVille.Data.Services
         {
             var lastFournisseurId = await _context.Fournisseurs.MaxAsync(f => (int?)f.IdFournisseur);
             var fichiers = new List<Fichier>();
-            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files", lastFournisseurId.ToString() + identificationFormModelDto.NomEntreprise);
+            var sanitizedFolderName = string.Join("_", identificationFormModelDto.NomEntreprise.Split(Path.GetInvalidFileNameChars()))
+                                .Replace(" ", "_")
+                                .ToLower();
+            var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files", lastFournisseurId.ToString() + sanitizedFolderName);
             Directory.CreateDirectory(folderPath);
 
             foreach (var fichierFromList in pieceJointeFormModelDto.ListFichiers)
@@ -38,6 +41,7 @@ namespace Portail_OptiVille.Data.Services
                     Type = fileExtension,
                     Taille = (int)fichierFromList.Size, // IN BYTES
                     DateCreation = DateTime.Now,
+                    Path = filePath,
                     Fournisseur = lastFournisseurId
                 };
 
