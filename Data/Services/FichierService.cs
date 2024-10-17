@@ -17,52 +17,59 @@ namespace Portail_OptiVille.Data.Services
         {
             var lastFournisseurId = await _context.Fournisseurs.MaxAsync(f => (int?)f.IdFournisseur);
             var fichiers = new List<Fichier>();
-
-            // CREATE USER-SPECIFIC FOLDER
             var sanitizedFolderName = string.Join("_", identificationFormModelDto.NomEntreprise.Split(Path.GetInvalidFileNameChars()))
                                         .Replace(" ", "_")
                                         .ToLower();
+
             var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files", lastFournisseurId.ToString() + sanitizedFolderName);
-            Directory.CreateDirectory(folderPath); // Create the folder if it doesn't exist
+            Directory.CreateDirectory(folderPath);
 
             foreach (var fichierFromList in pieceJointeFormModelDto.ListFichiers)
             {
                 try
                 {
+                    if (fichierFromList == null)
+                    {
+                        Console.WriteLine("File is null, skipping.");
+                        continue;
+                    }
                     var filePath = Path.Combine(folderPath, fichierFromList.Name).ToLower();
+                    if (File.Exists(filePath))
+                    {
+                        continue;
+                    }
                     using (var fileStream = fichierFromList.OpenReadStream(maxAllowedSize: 75 * 1024 * 1024)) // 75 MB limit
                     {
+                        if (fileStream == null)
+                        {
+                            Console.WriteLine($"File stream is null for {fichierFromList.Name}. Skipping.");
+                            continue;
+                        }
                         using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                         {
                             await fileStream.CopyToAsync(stream);
                         }
                     }
-
-                    // After file is saved, add file information to the database model
                     var fileExtension = Path.GetExtension(fichierFromList.Name).ToLower();
                     var fichier = new Fichier
                     {
                         Nom = fichierFromList.Name,
                         Type = fileExtension,
-                        Taille = (int)fichierFromList.Size,  // File size in bytes
+                        Taille = (int)fichierFromList.Size, // File size in bytes
                         DateCreation = DateTime.Now,
                         Path = Path.Combine("files", lastFournisseurId.ToString() + identificationFormModelDto.NomEntreprise, fichierFromList.Name).ToLower(),
                         Fournisseur = lastFournisseurId
                     };
 
-                    fichiers.Add(fichier); // Add file data to the list for DB insert
-
+                    fichiers.Add(fichier); 
                 }
                 catch (Exception ex)
                 {
-                    // LOG the error (you can use a logging framework or simply log to console for now)
-                    Console.WriteLine($"Error saving file {fichierFromList.Name}: {ex.Message}");
-                    // Continue to the next file without breaking the loop
-                    continue;
+                    Console.WriteLine($"Error saving file {fichierFromList?.Name}: {ex.Message}");
+                    continue; 
                 }
             }
 
-            // SAVE FILE DATA TO THE DATABASE AFTER ALL FILES ARE HANDLED
             try
             {
                 if (fichiers.Count > 0)
@@ -73,12 +80,9 @@ namespace Portail_OptiVille.Data.Services
             }
             catch (Exception ex)
             {
-                // LOG or HANDLE DATABASE ERROR
                 throw new Exception("Une erreur est survenue lors de la sauvegarde des fichiers dans la base de données", ex);
             }
         }
-
-
 
         public async Task DeleteAllFichiersData(List<Fichier> Listfichiers)
         {

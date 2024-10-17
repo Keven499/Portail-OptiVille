@@ -20,9 +20,8 @@
                         <p class="texte-medium">ou cliquez pour sélectionner les fichiers</p>
                     </label>
                 </div>
-                <InputFile id="fileInput" OnChange="HandleFileChange" multiple 
-                        accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" 
-                        style="display: none;" />
+                <InputFile id="fileInput" OnChange="HandleFileChange" multiple
+                           accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" style="display: none;" />
             </div>
         </div>
         @((MarkupString)GetValidationHTML(() => PieceJointeFormModel.Fichier))
@@ -43,14 +42,14 @@
                 </thead>
                 <tbody>
                 @foreach (var file in PieceJointeFormModel.ListFichiers)
-                    {
-                        <tr>
-                        <th scope="row" class="texte-bold">@(PieceJointeFormModel.ListFichiers.IndexOf(file) + 1)</th>
-                            <td class="texte-light">@file.Name</td>
-                            <td class="texte-light">@GetFormatSizeFile(file.Size)</td>
-                            <td><button class="btn btn-danger texte-bold" type="button" @onclick="() => RemoveFile(file)"><i class="bi bi-trash"></i> Effacer</button></td>
-                        </tr>
-                    }
+                {
+                    <tr>
+                    <th scope="row" class="texte-bold">@(PieceJointeFormModel.ListFichiers.IndexOf(file) + 1)</th>
+                        <td class="texte-light">@file.Name</td>
+                        <td class="texte-light">@GetFormatSizeFile(file.Size)</td>
+                        <td><button class="btn btn-danger texte-bold" type="button" @onclick="() => RemoveFile(file)"><i class="bi bi-trash"></i> Effacer</button></td>
+                    </tr>
+                }
                 </tbody>
             </table>
         </div>
@@ -178,15 +177,13 @@
 
     private void HandleFileChange(InputFileChangeEventArgs e)
     {
-        isFileInputTouched = true;
-        validationMessageStore.Clear();
+        var newFiles = e.GetMultipleFiles();
 
-        foreach (var file in e.GetMultipleFiles())
+        foreach (var file in newFiles)
         {
             var fileExtension = Path.GetExtension(file.Name).ToLower();
             if (!allowedExtensions.Contains(fileExtension))
             {
-                Console.WriteLine("Extension type file not accepted");
                 validationMessageStore.Add(() => PieceJointeFormModel.Fichier, $"Le fichier {file.Name} a un format non valide");
                 continue;
             }
@@ -194,7 +191,11 @@
             {
                 if (!PieceJointeFormModel.ListFichiers.Any(f => f.Name == file.Name && f.Size == file.Size))
                 {
-                    PieceJointeFormModel.ListFichiers.Add(file);
+                    PieceJointeFormModel.ListFichiers.Add(file); // Add file
+                }
+                else
+                {
+                    validationMessageStore.Add(() => PieceJointeFormModel.Fichier, $"Le fichier {file.Name} est déjà ajouté.");
                 }
             }
             else
@@ -202,9 +203,13 @@
                 validationMessageStore.Add(() => PieceJointeFormModel.Fichier, $"Le fichier {file.Name} dépasse la taille maximale autorisée");
             }
         }
+
+        StateHasChanged();
         editContext.NotifyValidationStateChanged();
         CalculTotalSize();
     }
+
+
 
     private void RemoveFile(IBrowserFile file)
     {
