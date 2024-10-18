@@ -14,13 +14,13 @@
         <div class="card-body py-1 border-bleuFonce d-flex justify-content-center">
             <div class="d-flex flex-column text-center">
             <div class="texte-medium">.doc .docx .pdf .xls .xlsx .jpg .jpeg .png</div>
-                <div id="dropArea" class="drag-drop-area @GetInputClass(() => PieceJointeFormModel.Fichier)">
-                    <label for="fileInput">
-                        <h4 class="texte-bold">Faites glisser et déposez les fichiers ici</h4>
-                        <p class="texte-medium">ou cliquez pour sélectionner les fichiers</p>
-                    </label>
-                </div>
-                <InputFile id="fileInput" OnChange="HandleFileChange" multiple
+                <label for="fileInput">
+                    <div id="dropArea" class="drag-drop-area p-4 @GetInputClass(() => PieceJointeFormModel.Fichier)">
+                            <h4 class="texte-bold">Faites glisser et déposez les fichiers ici</h4>
+                            <p class="texte-medium">ou cliquez pour sélectionner les fichiers</p>
+                    </div>
+                </label>
+                <InputFile id="fileInput" OnChange="HandleFileChange"
                            accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" style="display: none;" />
             </div>
         </div>
@@ -64,6 +64,9 @@
         justify-content: space-between;
         align-items: center;
     }
+    label:hover {
+        cursor: pointer;
+    }
     input[type="file"]::file-selector-button {
         background-color: rgb(11, 35, 65);
         color: white;
@@ -90,8 +93,8 @@
         background-color: #e9f5e9;
         border-color: #4CAF50;
     }
-    .valid {
-        outline: 1px solid #26b050;
+    .invalid {
+        outline: 1px solid red;
     }
 </style>
 
@@ -177,39 +180,45 @@
 
     private void HandleFileChange(InputFileChangeEventArgs e)
     {
-        var newFiles = e.GetMultipleFiles();
-
-        foreach (var file in newFiles)
+        if (e.File == null)
         {
-            var fileExtension = Path.GetExtension(file.Name).ToLower();
+            return;
+        }
+        validationMessageStore.Clear();
+        try
+        {
+            var fileExtension = Path.GetExtension(e.File.Name).ToLower();
             if (!allowedExtensions.Contains(fileExtension))
             {
-                validationMessageStore.Add(() => PieceJointeFormModel.Fichier, $"Le fichier {file.Name} a un format non valide");
-                continue;
+                validationMessageStore.Add(() => PieceJointeFormModel.Fichier, $"Le fichier {e.File.Name} a un format non valide");
+                return;
             }
-            if (sizeTotal + file.Size <= MaxSize * 1024 * 1024)
+            if (sizeTotal + e.File.Size <= MaxSize * 1024 * 1024)
             {
-                if (!PieceJointeFormModel.ListFichiers.Any(f => f.Name == file.Name && f.Size == file.Size))
+                if (!PieceJointeFormModel.ListFichiers.Any(f => f.Name == e.File.Name && f.Size == e.File.Size))
                 {
-                    PieceJointeFormModel.ListFichiers.Add(file); // Add file
+                    PieceJointeFormModel.ListFichiers.Add(e.File);
+                    isFileInputTouched = true;
                 }
                 else
                 {
-                    validationMessageStore.Add(() => PieceJointeFormModel.Fichier, $"Le fichier {file.Name} est déjà ajouté.");
+                    validationMessageStore.Add(() => PieceJointeFormModel.Fichier, $"Le fichier {e.File.Name} est déjà ajouté.");
+                    return;
                 }
             }
             else
             {
-                validationMessageStore.Add(() => PieceJointeFormModel.Fichier, $"Le fichier {file.Name} dépasse la taille maximale autorisée");
+                validationMessageStore.Add(() => PieceJointeFormModel.Fichier, $"Le fichier {e.File.Name} dépasse la taille maximale autorisée");
+                return;
             }
         }
-
+        catch (InvalidOperationException ex) {
+            validationMessageStore.Add(() => PieceJointeFormModel.Fichier, $"Sélection multiple non permise");
+        }
         StateHasChanged();
         editContext.NotifyValidationStateChanged();
         CalculTotalSize();
     }
-
-
 
     private void RemoveFile(IBrowserFile file)
     {
@@ -226,7 +235,7 @@
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
         var validationMessages = editContext.GetValidationMessages(fieldIdentifier);
         var isValid = !validationMessages.Any();
-        return isValid ? "valid" : "invalid";
+        return isValid ? "" : "invalid";
     }
 
     private string GetValidationHTML<TField>(Expression<Func<TField>> fieldExpression)

@@ -328,22 +328,14 @@
 
     private async void SaveDataToDB()
     {
-        try
-        {
-            await FournisseurService.SaveFournisseurData(produitServiceFormModel);
-            await IdentificationService.SaveIdentificationData(identicationFormModel);
-            await CoordonneeService.SaveCoordonneeData(coordonneeFormModel);
-            await ContactsService.SaveContactsData(contactHosterFormModel);
-            await ProduitServiceService.SaveProduitServiceData(produitServiceFormModel);
-            await LicenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
-            await FichierService.SaveFichierData(pieceJointeFormModel, identicationFormModel);
-            Console.WriteLine("Compte créé avec succès");
-            // IL RESTE PLUS QU'A LE REDIRIGER VERS SA FICHE FOURNISSEUR SUR SON PROPRE COMPTE OU VERS LOGIN
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Erreur lors de la sauvegarde des données : {ex.Message}");
-        }
+        await FournisseurService.SaveFournisseurData(produitServiceFormModel);
+        await IdentificationService.SaveIdentificationData(identicationFormModel);
+        await CoordonneeService.SaveCoordonneeData(coordonneeFormModel);
+        await ContactsService.SaveContactsData(contactHosterFormModel);
+        await ProduitServiceService.SaveProduitServiceData(produitServiceFormModel);
+        await LicenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
+        await FichierService.SaveFichierData(pieceJointeFormModel, identicationFormModel);
+        // IL RESTE PLUS QU'A LE REDIRIGER VERS SA FICHE FOURNISSEUR SUR SON PROPRE COMPTE OU VERS LOGIN
     }
 
 }
