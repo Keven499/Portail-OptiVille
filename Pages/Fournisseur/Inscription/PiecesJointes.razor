@@ -6,8 +6,7 @@
 @inject IJSRuntime _jsRuntime
 
 <PageTitle>Étape 6 Pièces jointes</PageTitle>
-<EditForm EditContext="@editContext">
-    <DataAnnotationsValidator />
+<EditForm Model="PieceJointeFormModel">
     <div class="card-header py-2 bg-bleuFonce">
         <h3 class="py-2 p-0 my-0 text-white titre-bold">Carte d'affaires et brochures</h3>
     </div>
@@ -15,7 +14,7 @@
             <div class="d-flex flex-column text-center">
             <div class="texte-medium">.doc .docx .pdf .xls .xlsx .jpg .jpeg .png</div>
                 <label for="fileInput">
-                    <div id="dropArea" class="drag-drop-area p-4 @GetInputClass(() => PieceJointeFormModel.Fichier)">
+                    <div id="dropArea" class="drag-drop-area p-4 pt-5 pb-5 @GetInputClass()">
                             <h4 class="texte-bold">Faites glisser et déposez les fichiers ici</h4>
                             <p class="texte-medium">ou cliquez pour sélectionner les fichiers</p>
                     </div>
@@ -24,7 +23,11 @@
                            accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" style="display: none;" />
             </div>
         </div>
-        @((MarkupString)GetValidationHTML(() => PieceJointeFormModel.Fichier))
+        @foreach (var error in errorTable)
+        {
+            int index = 0;
+        @((MarkupString)GetValidationHTML((index++)))
+        }
         <div class="card-header py-2 bg-bleuFonce titre-bold">
             <h3 class="py-2 p-0 my-0 text-white">Fichiers téléversés (Total: @GetFormatSize())</h3>
         </div>
@@ -102,23 +105,12 @@
 
 @code{
     [Parameter]
-    public Action<PiecesJointes>? AssignReference { get; set; }
-    [Parameter]
     public PieceJointeFormModel PieceJointeFormModel { get; set; }
-    private EditContext editContext;
-    private ValidationMessageStore validationMessageStore;
     private string[] allowedExtensions = new[] { ".doc", ".docx", ".pdf", ".xls", ".xlsx", ".jpg", ".jpeg", ".png" };
     private bool isFileInputTouched = false;
-    public long sizeTotal { get; set; } = 0;
-    public long MaxSize = 75;
-
-    protected override void OnInitialized()
-    {
-        editContext = new EditContext(PieceJointeFormModel);
-        editContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
-        validationMessageStore = new ValidationMessageStore(editContext);
-        AssignReference?.Invoke(this);
-    }
+    private List<String> errorTable = new List<String>();
+    private long sizeTotal { get; set; } = 0;
+    private long MaxSize = 75;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -126,7 +118,6 @@
         {
             bool initialized = false;
             int retries = 5;
-
             while (!initialized && retries > 0)
             {
                 try
@@ -140,7 +131,6 @@
                     await Task.Delay(200);
                 }
             }
-
             if (!initialized)
             {
                 Console.WriteLine("N'a pu initialisé drag and drop");
@@ -180,43 +170,40 @@
 
     private void HandleFileChange(InputFileChangeEventArgs e)
     {
-        if (e.File == null)
+        var fileList = e.GetMultipleFiles();
+        if (fileList == null)
         {
             return;
         }
-        validationMessageStore.Clear();
-        try
+        else
         {
-            var fileExtension = Path.GetExtension(e.File.Name).ToLower();
+            PieceJointeFormModel.ListFichiers.Clear();
+            errorTable.Clear();
+            if (PieceJointeFormModel.ListFichiers.Count == 1 && fileList.Count < 2)
+            {
+                errorTable.Add("Utilisez la sélection multiple en vous servant de la combinaison de touches CTRL + clic gauche (souris) pour ajouter plus d'un fichier");
+            }
+        }
+        foreach (var file in fileList)
+        {
+            var fileExtension = Path.GetExtension(file.Name).ToLower();
             if (!allowedExtensions.Contains(fileExtension))
             {
-                validationMessageStore.Add(() => PieceJointeFormModel.Fichier, $"Le fichier {e.File.Name} a un format non valide");
-                return;
+                errorTable.Add($"L'extension {fileExtension} n'est pas autorisée");
             }
-            if (sizeTotal + e.File.Size <= MaxSize * 1024 * 1024)
+            if (sizeTotal + file.Size <= MaxSize * 1024 * 1024)
             {
-                if (!PieceJointeFormModel.ListFichiers.Any(f => f.Name == e.File.Name && f.Size == e.File.Size))
+                if (!PieceJointeFormModel.ListFichiers.Any(f => f.Name == file.Name && f.Size == file.Size))
                 {
-                    PieceJointeFormModel.ListFichiers.Add(e.File);
+                    PieceJointeFormModel.ListFichiers.Add(file);
                     isFileInputTouched = true;
-                }
-                else
-                {
-                    validationMessageStore.Add(() => PieceJointeFormModel.Fichier, $"Le fichier {e.File.Name} est déjà ajouté.");
-                    return;
                 }
             }
             else
             {
-                validationMessageStore.Add(() => PieceJointeFormModel.Fichier, $"Le fichier {e.File.Name} dépasse la taille maximale autorisée");
-                return;
+                errorTable.Add($"{file.Name} dépasse la taille autorisée");
             }
         }
-        catch (InvalidOperationException ex) {
-            validationMessageStore.Add(() => PieceJointeFormModel.Fichier, $"Sélection multiple non permise");
-        }
-        StateHasChanged();
-        editContext.NotifyValidationStateChanged();
         CalculTotalSize();
     }
 
@@ -226,38 +213,26 @@
         CalculTotalSize();
     }
 
-    private string GetInputClass<TField>(Expression<Func<TField>> fieldExpression)
+    private string GetInputClass()
     {
         if (!isFileInputTouched)
         {
             return "";
         }
-        var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
-        var validationMessages = editContext.GetValidationMessages(fieldIdentifier);
-        var isValid = !validationMessages.Any();
+        var isValid = !errorTable.Any();
         return isValid ? "" : "invalid";
     }
 
-    private string GetValidationHTML<TField>(Expression<Func<TField>> fieldExpression)
+    private string GetValidationHTML(int indexTable)
     {
-        var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
-        var validationMessages = editContext.GetValidationMessages(fieldIdentifier);
-        var isValid = !validationMessages.Any();
+        var isValid = !errorTable.Any();
         return isValid
         ? ""
         : "<div style=\"display: flex; justify-content: center;\">" +  
           "<span style=\"display: flex; align-items: center; border-radius: 0; background: none; border: none;\" class=\"input-group-text text-danger\">" +
           "<i class=\"bi bi-x-circle me-2\"></i>" +
-          $"<span style=\"letter-spacing: 1px;\">{validationMessages.FirstOrDefault()}</span>" +
+          $"<span class=\"text-wrap\" style=\"letter-spacing: 1px;\">{errorTable[indexTable]}</span>" +
           "</span>" +
           "</div>";
-    }
-
-    public bool TriggerValidation()
-    {
-        bool isValid = false;
-        isValid = editContext.Validate();
-        StateHasChanged();
-        return isValid;
     }
 }

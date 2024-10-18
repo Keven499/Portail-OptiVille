@@ -109,7 +109,6 @@
     private ProduitsServices? produitServiceRef;
 
     private PieceJointeFormModel pieceJointeFormModel = new PieceJointeFormModel();
-    private PiecesJointes? piecesJointesRef;
 
     private List<Produitservice> allProduitService = new List<Produitservice>();
     private List<Categorieunspsc> categorieUNSPSC = new List<Categorieunspsc>();
@@ -197,8 +196,7 @@
             builder =>
             {
                 builder.OpenComponent<PiecesJointes>(5);
-                builder.AddAttribute(1, "AssignReference", (Action<PiecesJointes>)(piecesJointes => piecesJointesRef = piecesJointes));
-                builder.AddAttribute(2, "PieceJointeFormModel", pieceJointeFormModel);
+                builder.AddAttribute(1, "PieceJointeFormModel", pieceJointeFormModel);
                 builder.CloseComponent();
             }
         };
@@ -207,7 +205,6 @@
         contactHosterRef = new ContactFormHoster();
         produitServiceRef = new ProduitsServices();
         licenceRBQRef = new LicenceRBQ();
-        piecesJointesRef = new PiecesJointes();
         isLoading = false;
         StopLoading();
     }
@@ -290,13 +287,8 @@
         }
 
         // CASE PIÈCES JOINTES 6
-        if (currentIndex == 5 && piecesJointesRef != null)
+        if (currentIndex == 5)
         {
-            bool isValid = piecesJointesRef.TriggerValidation();
-            if (!isValid)
-            {
-                return;
-            }
             SaveDataToDB();
         }
 

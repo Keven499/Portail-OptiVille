@@ -47,7 +47,6 @@ namespace Portail_OptiVille.Data.Services
                         }
                         using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                         {
-                            Console.WriteLine($"---------------------------{stream.Name}---------------------------");
                             await fileStream.CopyToAsync(stream);
                         }
                     }
