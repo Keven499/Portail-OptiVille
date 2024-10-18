@@ -177,12 +177,13 @@
         }
         else
         {
-            PieceJointeFormModel.ListFichiers.Clear();
             errorTable.Clear();
             if (PieceJointeFormModel.ListFichiers.Count == 1 && fileList.Count < 2)
             {
                 errorTable.Add("Utilisez la sélection multiple en vous servant de la combinaison de touches CTRL + clic gauche (souris) pour ajouter plus d'un fichier");
+                return;
             }
+            PieceJointeFormModel.ListFichiers.Clear();
         }
         foreach (var file in fileList)
         {
@@ -201,7 +202,7 @@
             }
             else
             {
-                errorTable.Add($"{file.Name} dépasse la taille autorisée");
+                errorTable.Add($"En ajoutant {file.Name}, vous dépassez la taille maximale autorisée");
             }
         }
         CalculTotalSize();
