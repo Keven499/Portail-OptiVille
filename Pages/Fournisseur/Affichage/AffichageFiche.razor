@@ -14,6 +14,7 @@
 @inject HistoriqueService historiqueService
 @inject CoordonneeService coordonneeService
 @inject IdentificationService identificationService
+@inject FinanceService financeService
 
 <div class="container-fluid card p-0 m-0">
     <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
@@ -63,18 +64,38 @@
                         <input type="text" class="form-control" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.NEQ" readonly="@modificationInfo">
                     </div>
                     <div class="col-xl-6 p-1">
-                        <label for="inputPassword4">Adresse</label>
-                        <input type="text" class="form-control" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.FullAddressPart1" readonly="@modificationInfo">
+                        <label for="inputEmail4">Nom de l'entreprise</label>
+                        <input type="text" class="form-control" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.NomEntreprise" readonly="@modificationInfo">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xl-6 p-1">
-                        <label for="inputEmail4">Nom de l'entreprise</label>
-                        <input type="text" class="form-control" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.NomEntreprise" readonly="@modificationInfo">
+                        <label for="inputPassword4">No Civique</label>
+                        <input type="text" class="form-control" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.NoEntreprise" readonly="@modificationInfo">
                     </div>
                     <div class="col-xl-6 p-1">
-                        <label for="inputPassword4"></label>
-                        <input type="text" class="form-control" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.FullAddressPart2" readonly="@modificationInfo">
+                        <label for="inputPassword4">Rue</label>
+                        <input type="text" class="form-control" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.RueEntreprise" readonly="@modificationInfo">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-6 p-1">
+                        <label for="inputPassword4">Bureau</label>
+                        <input type="text" class="form-control" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.BureauEntreprise" readonly="@modificationInfo">
+                    </div>
+                    <div class="col-xl-6 p-1">
+                        <label for="inputPassword4">Code Postal</label>
+                        <input type="text" class="form-control" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.CodePostalEntreprise" readonly="@modificationInfo">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-6 p-1">
+                        <label for="inputPassword4">Ville</label>
+                        <input type="text" class="form-control" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.VilleEntreprise" readonly="@modificationInfo">
+                    </div>
+                    <div class="col-xl-6 p-1">
+                        <label for="inputPassword4">Province</label>
+                        <input type="text" class="form-control" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.ProvinceEntreprise" readonly="@modificationInfo">
                     </div>
                 </div>
                 <div class="row">
@@ -89,7 +110,7 @@
                 </div>
             <div class="row">
                 
-                @foreach(var telephone in combinedFormModel.CoordonneeFormModel.PhoneList)
+                @foreach(var telephone in combinedFormModel.CoordonneeFormModel.PhoneList!)
                 {
                 <div class="col-xl-6 p-1">
                     <label for="inputEmail4">Numéro de téléphone (@telephone.TypeTelEntreprise)</label>
@@ -108,34 +129,48 @@
         <button type="button" class="btn btn-warning">Modifier</button>
     </div>
     <div class="card-body">
-        @foreach(var contactPhone in contactPhoneInfo)
+        @for (int i = 0; i < contactPhoneInfo.Count; i++)
         {
-            var contact = contactPhone.Contact;
-            var telephones = contactPhone.PhoneNumbers;
+            var contact = contactPhoneInfo[i].Contact;
+            var telephones = contactPhoneInfo[i].PhoneNumbers;
 
             foreach(var telephone in telephones)
             {
                 <div class="row">
                     <div class="col-xl-6 p-1">
-                        <label for="inputEmail4">Nom, Prénom</label>
-                        <input type="text" class="form-control" id="inputEmail4" value="@contact.Nom, @contact.Prenom">
+                        <label for="inputEmail4">Prénom</label>
+                        <input type="text" class="form-control" id="inputEmail4" value="@contact.Prenom">
                     </div>
                     <div class="col-xl-6 p-1">
-                        <label for="inputPassword4">Fonction</label>
-                        <input type="text" class="form-control" id="inputPassword4" value="@contact.Fonction">
+                        <label for="inputPassword4">Nom</label>
+                        <input type="text" class="form-control" id="inputPassword4" value="@contact.Nom">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-xl-6 p-1">
+                        <label for="inputEmail4">Fonction</label>
+                        <input type="text" class="form-control" id="inputEmail4" value="@contact.Fonction">
+                    </div>
+                    <div class="col-xl-6 p-1">
                         <label for="inputEmail4">Adresse courriel</label>
                         <input type="text" class="form-control" id="inputEmail4" value="@contact.AdresseCourriel">
                     </div>
+                </div>
+                <div class="row">
                     <div class="col-xl-6 p-1">
                         <label for="inputPassword4">Numéro de téléphone (@telephone.Type)</label>
-                        <input type="text" class="form-control" id="inputPassword4" value="@telephone.NumTelephone.Insert(3, "-").Insert(7, "-") #@telephone.Poste">
+                        <input type="text" class="form-control" id="inputPassword4" value="@telephone.NumTelephone!.Insert(3, "-").Insert(7, "-")">
+                    </div>
+                    <div class="col-xl-6 p-1">
+                        <label for="inputEmail4">Poste</label>
+                        <input type="text" class="form-control" id="inputEmail4" value="@telephone.Poste">
                     </div>
                 </div>
             }
+                if (i < contactPhoneInfo.Count() - 1)
+                {
+                    <hr>
+                }
         }
 
     </div>
@@ -261,84 +296,105 @@
     </div>
     <div class="card-body">
         <div class="table-responsive">
-        <table class="table border-bleuFonce table-bordered my-0">
-            <thead>
-                <tr>
-                    <th scope="col" class="col-1 texte-bold">Fichier</th>
-                    <th scope="col" class="texte-bold">Nom</th>
-                    <th scope="col" class="col-1 texte-bold">Taille</th>
-                    <th scope="col" class="col-2 texte-bold">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var file in selectedFichiers)
-                {
+            <table class="table border-bleuFonce table-bordered my-0">
+                <thead>
                     <tr>
-                        <th scope="row" class="texte-bold">@(selectedFichiers.IndexOf(file)+1)</th>
-                        <td class="texte-light">@file.Nom@file.Type</td>
-                        <td class="texte-light">@GetFormatSizeFile(file.Taille)</td>
-                        <td><button class="btn btn-danger texte-bold" type="button" data-bs-target="#ModalConfirmation" data-bs-toggle="modal" @onclick="() => OpenConfirmationModal(file)"><i class="bi bi-trash"></i> Effacer</button></td>
+                        <th scope="col" class="col-1 texte-bold">Fichier</th>
+                        <th scope="col" class="texte-bold">Nom</th>
+                        <th scope="col" class="col-1 texte-bold">Taille</th>
+                        <th scope="col" class="col-2 texte-bold">Action</th>
                     </tr>
-                }
-            </tbody>
+                </thead>
+                <tbody>
+                    @foreach (var file in selectedFichiers)
+                    {
+                        <tr>
+                            <th scope="row" class="texte-bold">@(selectedFichiers.IndexOf(file)+1)</th>
+                            <td class="texte-light">@file.Nom@file.Type</td>
+                            <td class="texte-light">@GetFormatSizeFile(file.Taille)</td>
+                            <td><button class="btn btn-danger texte-bold" type="button" data-bs-target="#ModalConfirmation" data-bs-toggle="modal" @onclick="() => OpenConfirmationModal(file)"><i class="bi bi-trash"></i> Effacer</button></td>
+                        </tr>
+                    }
+                </tbody>
                     <div class="modal fade" id="ModalConfirmation" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                        <div class="modal-header border-0 text-center w-100">
-                            <h1 class="modal-title fs-5 mx-auto" id="exampleModalLabel">Êtes-vous sûre de vouloir effacer ce fichier </h1>
-                        </div>
-                        <div class="modal-footer border-0 d-flex justify-content-center">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="()=>OnDeleteFile(selectedFile)">Confirmer</button>
-                        </div>
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header border-0 text-center w-100">
+                                    <h1 class="modal-title fs-5 mx-auto" id="exampleModalLabel">Êtes-vous sûre de vouloir effacer ce fichier </h1>
+                                </div>
+                                <div class="modal-footer border-0 d-flex justify-content-center">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="()=>OnDeleteFile(selectedFile)">Confirmer</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    </div>
-        </table>
-</div>
-    </div>
-
-    <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
-        <h3 class="py-2 p-0 my-0 text-white">Finances</h3>
-        <button type="button" class="btn btn-warning" @onclick="ModifcationFinances">Modifier</button>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-xl-6 p-1">
-                <label for="inputEmail4">TPS</label>
-                <input type="text" class="form-control" id="inputEmail4" value="@finance.NumeroTps" readonly="@modificationFinances">
-            </div>
-            <div class="col-xl-6 p-1">
-                <label for="inputPassword4">TVQ</label>
-                <input type="text" class="form-control" id="inputPassword4" value="@finance.NumeroTvq" readonly="@modificationFinances">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xl-6 p-1">
-                <label for="inputEmail4">Conditions de paiement</label>
-                <input type="text" class="form-control" id="inputEmail4" value="@finance.ConditionPaiement" readonly="@modificationFinances">
-            </div>
-            <div class="col-xl-6 p-1">
-                <label for="inputPassword4">Devise</label>
-                <input type="text" class="form-control" id="inputPassword4" value="@finance.Devise" readonly="@modificationFinances">
-            </div>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col-xl-6 p-1">
-                <label for="inputEmail4">Mode de communication</label>
-                <input type="text" class="form-control" id="inputEmail4" value="@finance.ModeCommunication" readonly="@modificationFinances">
-            </div>
-            
+            </table>
         </div>
     </div>
+    @if(financeFormModel != null){
+        // Mettre que si on doit ajouter nos finances show alert a la place et voir si sa crash pas 
+    <EditForm Model="financeFormModel" OnValidSubmit="SaveModifcationInfo">
+        <DataAnnotationsValidator />
+        <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
+            <h3 class="py-2 p-0 my-0 text-white">Finances</h3>
+            @if(modificationFinances)
+            {
+                <button type="button" class="btn btn-warning" @onclick="ModifcationFinances">Modifier</button>
+            }
+            else
+            {
+            <button type="button" class="btn btn-success" @onclick="SaveModifcationFinances">Sauvegarder</button> 
+            }
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-xl-6 p-1">
+                    <label for="inputTPS">TPS</label>
+                    <input type="text" class="form-control" id="inputTPS" @bind="@financeFormModel.NumeroTps" readonly="@modificationFinances">
+                </div>
+                <div class="col-xl-6 p-1">
+                    <label for="inputTVQ">TVQ</label>
+                    <input type="text" class="form-control" id="inputTVQ" @bind="@financeFormModel.NumeroTvq" readonly="@modificationFinances">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-6 p-1">
+                    <label for="inputCondPaiement">Conditions de paiement</label>
+                    <input type="text" class="form-control" id="inputCondPaiement" @bind="@financeFormModel.ConditionPaiement" readonly="@modificationFinances">
+                </div>
+                <div class="col-xl-6 p-1">
+                    <label for="inputDevise">Devise</label>
+                    <select class="form-select" id="inputDevise" @bind="@financeFormModel.Devise" 
+                            style="@(modificationFinances ? "pointer-events: none; background-color: #ffffff;" : null)">
+                        <option value="CAD">CAD</option>
+                        <option value="USD">USD</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-xl-6 p-1">
+                    <label for="inputModeComm">Mode de communication</label>
+                    <select class="form-select" id="inputModeComm" @bind="@financeFormModel.ModeCommunication" 
+                            style="@(modificationFinances ? "pointer-events: none; background-color: #ffffff;" : null)">
+                        <option value="Courriel">Courriel</option>
+                        <option value="Courrier régulier">Courrier régulier</option>
+                    </select>
+                </div>
+                
+            </div>
+        </div>
+    </EditForm>
+    }
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 @code{
-    private static int FournisseurID = 24;
+    private static int FournisseurID = 63;
     private bool modificationFinances = true;
     private bool modificationInfo = true;
     public int sizeTotal { get; set; } = 0;
     private CombinedFormModel combinedFormModel = new CombinedFormModel();
+    private FinanceFormModel financeFormModel = new FinanceFormModel();
     public int MaxSize = 75;
     private Fichier? selectedFile;
     List<Portail_OptiVille.Data.Models.Contact> selectedContacts = new List<Portail_OptiVille.Data.Models.Contact>();
@@ -366,6 +422,7 @@
 
         public void FillData(Coordonnee coordonnee, Identification identification, List<Telephone> telephones)
         {
+            CoordonneeFormModel.IdCoordonnee = coordonnee.IdCoordonnee;
             CoordonneeFormModel.NoEntreprise = coordonnee.NoCivique;
             CoordonneeFormModel.RueEntreprise = coordonnee.Rue;
             CoordonneeFormModel.BureauEntreprise = coordonnee.Bureau;
@@ -403,30 +460,17 @@
     {
         modificationInfo = false;
     }
+    private async Task SaveModifcationFinances()
+    {
+        await financeService.UpdateFinanceData(financeFormModel, selectedFournisseur.IdFournisseur);
 
+        modificationFinances = true;
+    }
     private async Task SaveModifcationInfo()
     {
         await identificationService.UpdateIdentificationData(combinedFormModel.IdentificationFormModel);
         await coordonneeService.UpdateCoordonneeData(combinedFormModel.CoordonneeFormModel);
-        @* coordonnee.NoCivique = combinedFormModel.CoordonneeFormModel.NoEntreprise;
-        coordonnee.Rue = combinedFormModel.CoordonneeFormModel.RueEntreprise;
-        coordonnee.Bureau = combinedFormModel.CoordonneeFormModel.BureauEntreprise;
 
-        coordonnee.Ville = combinedFormModel.CoordonneeFormModel.VilleEntreprise;
-        coordonnee.Province = combinedFormModel.CoordonneeFormModel.ProvinceEntreprise;
-        coordonnee.CodePostal = combinedFormModel.CoordonneeFormModel.CodePostalEntreprise;
-
-        coordonnee.SiteInternet = combinedFormModel.CoordonneeFormModel.SiteWebEntreprise; *@
-        
-        @* Console.WriteLine(coordonnee.NoCivique);
-        Console.WriteLine(coordonnee.Rue);
-        Console.WriteLine(coordonnee.Bureau);
-        Console.WriteLine(coordonnee.Ville);
-        Console.WriteLine(coordonnee.Province);
-        Console.WriteLine(coordonnee.CodePostal);
-        Console.WriteLine(coordonnee.SiteInternet); *@
-
-        // Reset modificationInfo after saving
         modificationInfo = true;
     }
     public class GroupKey
@@ -513,6 +557,7 @@
             try
             {
                 finance = await _context.Finances.SingleAsync(c => c.Fournisseur == selectedFournisseur.IdFournisseur);
+                financeFormModel.FillData(finance);
             }
             catch(Exception ex)
             {
@@ -548,7 +593,6 @@
             }).ToList(); 
 
             combinedFormModel.FillData(coordonnee, identification, selectedTelephones);
-
         }
         catch (Exception ex)
         {

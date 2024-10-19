@@ -39,35 +39,5 @@ namespace Portail_OptiVille.Data.FormModels
         public string? SiteWebEntreprise { get; set; }
 
         public List<TelephoneFormModel>? PhoneList { get ; set; }
-
-        public string FullAddressPart1
-        {
-            get
-            {
-                return $"{NoEntreprise} {RueEntreprise} {BureauEntreprise}";
-            }
-            set
-            {
-                var parts = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length > 0) NoEntreprise = parts[0];
-                if (parts.Length > 1) RueEntreprise = parts[1];
-                if (parts.Length > 2) BureauEntreprise = parts[2];
-            }
-        }
-
-        public string FullAddressPart2
-        {
-            get
-            {
-                return $"{VilleEntreprise} {ProvinceEntreprise} {CodePostalEntreprise}";
-            }
-            set
-            {
-                var parts = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length > 0) VilleEntreprise = parts[0];
-                if (parts.Length > 1) ProvinceEntreprise = parts[1];
-                if (parts.Length > 2) CodePostalEntreprise = parts[2];
-            }
-        }
     }
 }

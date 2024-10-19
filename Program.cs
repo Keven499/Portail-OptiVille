@@ -37,6 +37,7 @@ builder.Services.AddScoped<IdentificationService>();
 builder.Services.AddScoped<LicenceRBQService>();
 builder.Services.AddScoped<ProduitServiceService>();
 builder.Services.AddScoped<HistoriqueService>();
+builder.Services.AddScoped<FinanceService>();
 #endregion
 
 #region Load Config from Setting.json
