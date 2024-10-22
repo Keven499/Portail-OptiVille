@@ -37,17 +37,17 @@
                         <div>
                             @if (!isEditing)
                             {
-                                <button class="btn bg-vert texte-medium vertFonce" @onclick="EditConfig">Modifier</button>
+                                <button class="btn bg-vert texte-medium vertFonce" style="width: 200px;" @onclick="EditConfig"><i class="bi bi-pencil me-1"></i>Modifier</button>
                             }
                             else
                             {
-                                <button class="btn bg-vert texte-medium vertFonce" @onclick="SaveConfig">Sauvegarder</button>
+                                <button class="btn bg-vert texte-medium vertFonce" style="width: 200px;" @onclick="SaveConfig"><i class="bi bi-floppy me-1"></i>Sauvegarder</button>
                             }
                         </div>
                     </div>
                     @if (saveSuccess)
                     {
-                        <div class="alert alert-success mt-3">Configuration saved successfully!</div>
+                        <div class="alert alert-success mt-3">La configuration a été sauvegardée!</div>
                     }
             </div>
         </div>
