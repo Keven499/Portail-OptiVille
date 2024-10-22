@@ -1,4 +1,8 @@
-﻿<div class="top-row ps-3 navbar navbar-bleu navbar-expand-lg">
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage ProtectedSessionStorage
+@inject NavigationManager NavigationManager
+
+<div class="top-row ps-3 navbar navbar-bleu navbar-expand-lg">
     <div class="container-fluid">
         <a class="navbar-brand" href="https://www.v3r.net"><img src="/images/v3r-logo-avec-carre-blanc.png" style="height: 100px;" alt="V3R"></a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -34,7 +38,7 @@
                 <button class="btn bg-vert texte-bold" style="width: 200px">Approvisionnement</button>
             </div>
             <div class="nav-item px-3">
-                <button class="btn bg-bleu text-white texte-bold" style="width: 200px">Déconnexion</button>
+                <button class="btn bg-bleu text-white texte-bold" style="width: 200px" @onclick="Deconnexion">Déconnexion</button>
             </div>
         </div>
     </nav>
@@ -48,5 +52,10 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+    private async Task Deconnexion()
+    {
+        await ProtectedSessionStorage.DeleteAsync("Email");
+        NavigationManager.NavigateTo("/", true);
     }
 }
