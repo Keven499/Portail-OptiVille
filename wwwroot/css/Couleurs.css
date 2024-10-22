@@ -249,6 +249,12 @@ input[type="checkbox"]:checked+.check-blanc:before {
     font-size: 85px;
 }
 
+.titre-30bold
+{
+    font-family: 'Alumni Extra Bold';
+    font-size: 30px;
+}
+
 .titre-medium
 {
     font-family: 'Alumni Medium';
