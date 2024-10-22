@@ -18,13 +18,13 @@
         <h3 class="py-2 p-0 my-0 text-white titre-bold">Licence RBQ</h3>
     </div>
     <div class="card-body border-bleuFonce py-1">
-        <div class="col-xl-4 col-lg-4 col-6 col-sm-6 py-2 ms-xl-3 ms-lg-3">
+        <div class="col-4 py-2">
             <label class="bleuFonce texte-bold" for="noLicenceRBQ">Numéro<i class="bi bi-braces text-success ms-1"></i> </label>
             <input type="text" @attributes="inputAttributes" id="noLicenceRBQ" placeholder="0000-0000-00 ou 0000000000" class="form-control @GetInputClass(() => LicenceRBQFormModel.NumeroLicence) input-bleu texte-light" @bind="LicenceRBQFormModel.NumeroLicence" />
             @((MarkupString)GetValidationHTML(() => LicenceRBQFormModel.NumeroLicence))
         </div>
         <div class="row">
-            <div class="col-xl-5 col-lg-5 col-6 col-sm-6 py-2 ms-xl-3 ms-lg-3">
+            <div class="col-5 py-2">
                 <label class="bleuFonce texte-bold" for="statut">Statut<i class="bi bi-braces-asterisk text-danger ms-1"></i></label>
                 <select class="form-select @GetInputClass(() => LicenceRBQFormModel.StatutLicence) input-bleu texte-light" @attributes="inputAttributes" id="statut" @bind="LicenceRBQFormModel.StatutLicence">
                     @if (LicenceRBQFormModel.StatutLicence == null)
@@ -37,7 +37,7 @@
                 </select>         
                 @((MarkupString)GetValidationHTML(() => LicenceRBQFormModel.StatutLicence))                               
             </div>
-            <div class="col-xl-5 col-lg-5 col-6 col-sm-6 py-2">
+            <div class="col-5 py-2">
                 <label class="bleuFonce texte-bold" for="licenceType">Type<i class="bi bi-braces-asterisk text-danger ms-1"></i></label>
                 <select class="form-select @GetInputClass(() => LicenceRBQFormModel.TypeLicence) input-bleu texte-light" @attributes="inputAttributes" id="licenceType" @bind="LicenceRBQFormModel.TypeLicence">
                      <option value="" disabled selected>Veuillez choisir un type</option>
@@ -47,7 +47,7 @@
                 @((MarkupString)GetValidationHTML(() => LicenceRBQFormModel.TypeLicence))        
             </div>                    
         </div>
-        <div class="col-xl-10 col-lg-10 col-12 col-sm-12 py-2 ms-xl-3 ms-lg-3">
+        <div class="col-12 py-2">
             <label class="texte-bold">Entrepeneur général<i class="bi bi-braces-asterisk text-danger ms-1"></i></label>               
             <div class="@GetInputClass(() => LicenceRBQFormModel.SousCategoSelected) overflow-auto box-bleu card">
             @{
@@ -71,7 +71,7 @@
             }
             </div>
         </div>    
-        <div class="col-xl-10 col-lg-10 col-12 col-sm-12 py-2 ms-xl-3 ms-lg-3">
+        <div class="col-12 py-2">
             <label class="texte-bold">Entrepeneur spécialisé</label>
             <div class="@GetInputClass(() => LicenceRBQFormModel.SousCategoSelected) overflow-auto box-bleu card">
             @foreach (var categorie in categorieSpecialise)
@@ -134,8 +134,6 @@
         editContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
         validationMessageStore = new ValidationMessageStore(editContext);
         AssignReference?.Invoke(this);
-
-
         try
         {
             categorieGeneral = AllCategories

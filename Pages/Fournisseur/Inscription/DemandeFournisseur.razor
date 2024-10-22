@@ -42,7 +42,7 @@
             else
             {
                 <div class="row d-flex justify-content-center mb-1">
-                    <div class="col-xl-8 col-lg-8 col-12 col-sm-12">
+                    <div class="col-xl-5 col-lg-8 col-12 col-sm-12">
                         <div class="d-flex">  
                             <div class="texte-bold me-1">Légende</div>
                             <div class="texte-medium">- Optionnel: <i class="bi bi-braces text-success"></i>  /  Obligatoire: <i class="bi bi-braces-asterisk text-danger"></i></div> 
@@ -51,7 +51,7 @@
                 </div>
                 
                 <div class="row d-flex justify-content-center">
-                    <div class="col-xl-8 col-lg-8 col-12 col-sm-12">
+                    <div class="col-xl-5 col-lg-8 col-12 col-sm-12">
                         <div class="progress mb-2 texte-bold">
                             <div class="bg-bleuFonce progress-bar progress-bar-striped rounded text-white texte-medium" role="progressbar" 
                                 style="width: @ProgressPercentage%;" aria-valuenow="@ProgressPercentage" aria-valuemin="0" aria-valuemax="100">
@@ -64,7 +64,7 @@
                                 <button @onclick="ShowPrevious" disabled="@isFirstComponent" class="btn bg-bleu text-white texte-medium" style="width: 200px;">
                                     <i class="bi bi-arrow-left-circle"></i> Précédent 
                                 </button>
-                                @if (IsCanSkipRBQ() && currentIndex == 4)
+                                @if (currentIndex == 4)
                                 {
                                     <button @onclick="ShowNext" class="btn text-white texte-medium ms-2" style="width: 200px; background-color: #FFC300;">
                                         Passer
@@ -91,7 +91,6 @@
     private bool isLoading = true;
     private bool showMessage = false;
     private Timer loadingTimer;
-
     private LicenceRBQFormModel licenceRBQFormModel = new LicenceRBQFormModel();
     private LicenceRBQ? licenceRBQRef;
     private List<Categorierbq> allCategories = new List<Categorierbq>();
@@ -258,14 +257,6 @@
         // CASE PRODUITS ET SERVICES 4
         if (currentIndex == 3 && produitServiceRef != null)
         {
-            if (IsCanSkipRBQ())
-            {
-                licenceRBQFormModel.Disabled = true;
-            }
-            else
-            {
-                licenceRBQFormModel.Disabled = false;
-            }
             bool isValid = produitServiceRef.TriggerValidation();
             if (!isValid)
             {
@@ -276,13 +267,10 @@
         // CASE LICENCE RBQ 5
         if (currentIndex == 4 && licenceRBQRef != null)
         {
-            if (!IsCanSkipRBQ())
+            bool isValid = await licenceRBQRef.TriggerValidation();
+            if (!isValid)
             {
-                bool isValid = await licenceRBQRef.TriggerValidation();
-                if (!isValid)
-                {
-                    return;
-                }
+                return;
             }
         }
 
@@ -303,18 +291,6 @@
         if (currentIndex > 0)
         {
             currentIndex--;
-        }
-    }
-
-    private bool IsCanSkipRBQ()
-    {
-        if ((currentIndex == 4 || currentIndex == 3) && string.IsNullOrEmpty(identicationFormModel.NEQ))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
         }
     }
 
