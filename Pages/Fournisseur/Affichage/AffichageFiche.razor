@@ -159,6 +159,16 @@
                 <div class="row">
                     <div class="col-xl-6 p-1">
                         <label for="inputPassword4">Numéro de téléphone (@telephone.Type)</label>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Dropdown button
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="#">Action</a>
+                                <a class="dropdown-item" href="#">Another action</a>
+                                <a class="dropdown-item" href="#">Something else here</a>
+                            </div>
+                            </div>
                         <input type="text" class="form-control" id="inputPassword4" value="@telephone.NumTelephone!.Insert(3, "-").Insert(7, "-")">
                     </div>
                     <div class="col-xl-6 p-1">
@@ -644,7 +654,7 @@
     private async Task DeleteFiche()
     {
         await historiqueService.AddHistoriqueRefuser(selectedFournisseur.IdFournisseur, "Vous avez supprimé votre fiche");//A mettre un message que l'admin peut changer
-        await fichierService.DeleteAllFichiersData(selectedFichiers);
+        await fichierService.DeleteAllFichiersData(selectedFichiers, selectedFournisseur.IdFournisseur);
         //closestHistorique.EtatDemande = "Refusé";
         //closestHistorique.DateEtatChanged = DateTime.UtcNow;
         selectedFichiers.Clear();// A enlever si on peut changer les donnnes sans refresh la page
@@ -655,7 +665,7 @@
     }
     private async Task OnDeleteFile(Fichier file)
     {
-        await fichierService.DeleteOneFichierData(file);
+        await fichierService.DeleteOneFichierData(file, selectedFournisseur.IdFournisseur);
         selectedFichiers.Remove(file);// A enlever si on peut changer les donnnes sans refresh la page
         GetFormatSize();
     }
