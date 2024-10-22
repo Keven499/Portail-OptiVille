@@ -114,6 +114,17 @@ body
     border-bottom: 2px solid rgb(11, 35, 65);
 }
 
+.border-vert
+{
+    border: 2px solid rgb(0, 118, 213);
+}
+
+.input-vert
+{
+    background-color: rgb(197, 216, 0, 0.2);
+    border-bottom: 2px solid rgb(30, 73, 45);
+}
+
 .box-bleu 
 {
     background-color: rgb(0, 118, 213, 0.2); 
