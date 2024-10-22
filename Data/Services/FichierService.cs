@@ -59,7 +59,7 @@ namespace Portail_OptiVille.Data.Services
                         Type = fileExtension,
                         Taille = (int)fichierFromList.Size, // File size in bytes
                         DateCreation = DateTime.Now,
-                        Path = Path.Combine("files", lastFournisseurId.ToString() + identificationFormModelDto.NomEntreprise, fichierFromList.Name).ToLower(),
+                        Path = Path.Combine("files", lastFournisseurId.ToString() + sanitizedFolderName, fichierFromList.Name).ToLower(),
                         Fournisseur = lastFournisseurId
                     };
                     fichiers.Add(fichier); 
