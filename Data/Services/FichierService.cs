@@ -51,8 +51,10 @@ namespace Portail_OptiVille.Data.Services
                         }
                     }
                     var fileExtension = Path.GetExtension(fichierFromList.Name).ToLower();
+                    Console.WriteLine(fichierFromList.Name);
                     var fichier = new Fichier
                     {
+                        // NE PAS METTRE L'EXTENSION DANS LE NOM
                         Nom = fichierFromList.Name,
                         Type = fileExtension,
                         Taille = (int)fichierFromList.Size, // File size in bytes
@@ -60,7 +62,6 @@ namespace Portail_OptiVille.Data.Services
                         Path = Path.Combine("files", lastFournisseurId.ToString() + identificationFormModelDto.NomEntreprise, fichierFromList.Name).ToLower(),
                         Fournisseur = lastFournisseurId
                     };
-
                     fichiers.Add(fichier); 
                 }
                 catch (Exception ex)
@@ -84,19 +85,65 @@ namespace Portail_OptiVille.Data.Services
             }
         }
 
-        public async Task DeleteAllFichiersData(List<Fichier> Listfichiers)
+        public async Task DeleteAllFichiersData(List<Fichier> listFichiers)
         {
-            foreach (var fichier in Listfichiers)
+            foreach (var fichier in listFichiers)
             {
-                _context.Fichiers.Remove(fichier);
+                try
+                {
+                    // Construct the full file path on the server based on the stored path in the database
+                    var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", fichier.Path.Replace("\\", Path.DirectorySeparatorChar.ToString()));
+
+                    // Check if the file exists on the server
+                    if (File.Exists(fullPath))
+                    {
+                        // Delete the file from the server
+                        File.Delete(fullPath);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"File not found: {fullPath}, skipping deletion from server.");
+                    }
+
+                    // Remove the file entry from the database
+                    _context.Fichiers.Remove(fichier);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error deleting file {fichier.Nom}: {ex.Message}");
+                    continue;
+                }
             }
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("An error occurred while saving changes to the database during bulk file deletion.", ex);
+            }
         }
 
         public async Task DeleteOneFichierData(Fichier fichier)
         {
-            _context.Fichiers.Remove(fichier);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", fichier.Path.Replace("\\", Path.DirectorySeparatorChar.ToString()));
+                if (File.Exists(fullPath))
+                {
+                    File.Delete(fullPath);
+                }
+                else
+                {
+                    Console.WriteLine($"File not found: {fullPath}, skipping deletion from server.");
+                }
+                _context.Fichiers.Remove(fichier);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An error occurred while deleting the file {fichier.Nom} from the server or database.", ex);
+            }
         }
     }
 }
