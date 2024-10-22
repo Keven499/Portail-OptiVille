@@ -85,7 +85,7 @@ namespace Portail_OptiVille.Data.Services
             }
         }
 
-        public async Task DeleteAllFichiersData(List<Fichier> listFichiers, int idFournisseur)
+        public async Task DeleteAllFichiersData(List<Fichier> listFichiers)
         {
             foreach (var fichier in listFichiers)
             {

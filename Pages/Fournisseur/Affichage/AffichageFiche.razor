@@ -654,7 +654,7 @@
     private async Task DeleteFiche()
     {
         await historiqueService.AddHistoriqueRefuser(selectedFournisseur.IdFournisseur, "Vous avez supprimé votre fiche");//A mettre un message que l'admin peut changer
-        await fichierService.DeleteAllFichiersData(selectedFichiers, selectedFournisseur.IdFournisseur);
+        await fichierService.DeleteAllFichiersData(selectedFichiers);
         //closestHistorique.EtatDemande = "Refusé";
         //closestHistorique.DateEtatChanged = DateTime.UtcNow;
         selectedFichiers.Clear();// A enlever si on peut changer les donnnes sans refresh la page
@@ -665,7 +665,7 @@
     }
     private async Task OnDeleteFile(Fichier file)
     {
-        await fichierService.DeleteOneFichierData(file, selectedFournisseur.IdFournisseur);
+        await fichierService.DeleteOneFichierData(file);
         selectedFichiers.Remove(file);// A enlever si on peut changer les donnnes sans refresh la page
         GetFormatSize();
     }
