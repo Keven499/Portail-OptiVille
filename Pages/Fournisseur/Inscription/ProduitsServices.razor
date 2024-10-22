@@ -11,7 +11,7 @@
         <h3 class="py-2 p-0 my-0 text-white titre-bold">Produits et services</h3>
     </div>
     <div class="card-body border-bleuFonce py-1">
-        <div class="col-xl-9 col-lg-9 col-12 col-sm-12 py-2 ms-xl-3 ms-lg-3">
+        <div class="col-12 py-2">
             <label class="texte-bold">Chercher un produit ou un service</label>
             <div class="input-group">
                 <input @bind="searchBarValue" type="text" class="form-control input-bleu texte-light" placeholder="Recherchez..">
@@ -20,7 +20,7 @@
                 </button>
             </div>
         </div>
-        <div class="col-xl-9 col-lg-9 col-12 col-sm-12 py-2 ms-xl-3 ms-lg-3">
+        <div class="col-12 py-2">
             <label class="texte-bold" for="statut">Catégorie <i class="bi bi-braces text-success"></i> </label>
             <select class="form-select input-bleu texte-light" @onchange="OnCategorieChange">
                 <option>Toutes les catégories</option>
@@ -29,7 +29,7 @@
                     }
             </select>
         </div>
-        <div class="col-xl-9 col-lg-9 col-12 col-sm-12 py-2 ms-xl-3 ms-lg-3">
+        <div class="col-12 py-2">
             <label class="texte-bold">Produits et services <i class="bi bi-braces-asterisk text-danger"></i></label>
             <div class="@GetInputClass(() => ProduitServiceFormModel.SousProduitSelected) overflow-auto box-bleu card">
                 @{
@@ -54,7 +54,7 @@
             </div>
             @((MarkupString)GetValidationHTML(() => ProduitServiceFormModel.SousProduitSelected))
         </div>
-        <div class="col-xl-9 col-lg-9 col-12 col-sm-12 py-2 ms-xl-3 ms-lg-3">
+        <div class="col-12 py-2">
             <label for="details" class="texte-bold" form="message">Détails et spécifications <i class="bi bi-braces-asterisk text-danger"></i> </label>
             <textarea id="message" oninput="countCharacters(this)" class="form-control @GetInputClass(() => ProduitServiceFormModel.Message) texte-light box-bleu" rows="6" placeholder="Entrez les détails ici.." style="resize: none;" @bind="ProduitServiceFormModel.Message" />
             @((MarkupString)GetValidationHTML(() => ProduitServiceFormModel.Message))
