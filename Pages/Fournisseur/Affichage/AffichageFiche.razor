@@ -15,6 +15,7 @@
 @inject CoordonneeService coordonneeService
 @inject IdentificationService identificationService
 @inject FinanceService financeService
+@using Portail_OptiVille.Pages.Fournisseur.Inscription
 
 <div class="container-fluid card p-0 m-0">
     <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
@@ -112,8 +113,18 @@
                 
                 @foreach(var telephone in combinedFormModel.CoordonneeFormModel.PhoneList!)
                 {
+                    
                 <div class="col-xl-6 p-1">
-                    <label for="inputEmail4">Numéro de téléphone (@telephone.TypeTelEntreprise)</label>
+                        <div class="d-flex align-items-center">
+                            <label for="inputPassword4" class="me-2">
+                                Numéro de téléphone 
+                            </label>
+                            <select class="form-select w-auto" id="telephoneType" @bind="@telephone.TypeTelEntreprise" style="@(modificationInfo ? "pointer-events: none; background-color: #ffffff;" : null)">
+                                <option value="Bureau">Bureau</option>
+                                <option value="Télécopieur">Télécopieur</option>
+                                <option value="Cellulaire">Cellulaire</option>
+                            </select>
+                        </div>
                     <input type="text" class="form-control" id="inputEmail4" @bind="telephone.NoTelEntreprise">
                 </div>
                 <div class="col-xl-6 p-1">
@@ -158,17 +169,16 @@
                 </div>
                 <div class="row">
                     <div class="col-xl-6 p-1">
-                        <label for="inputPassword4">Numéro de téléphone (@telephone.Type)</label>
-                        <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Dropdown button
-                            </button>
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <a class="dropdown-item" href="#">Something else here</a>
-                            </div>
-                            </div>
+                        <div class="d-flex align-items-center">
+                            <label for="inputPassword4" class="me-2">
+                                Numéro de téléphone 
+                            </label>
+                            <select class="form-select w-auto" id="telephoneType" value="@telephone.Type" disabled>
+                                <option value="Bureau">Bureau</option>
+                                <option value="Télécopieur">Télécopieur</option>
+                                <option value="Cellulaire">Cellulaire</option>
+                            </select>
+                        </div>
                         <input type="text" class="form-control" id="inputPassword4" value="@telephone.NumTelephone!.Insert(3, "-").Insert(7, "-")">
                     </div>
                     <div class="col-xl-6 p-1">
@@ -187,6 +197,29 @@
     <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Produits et services</h3>
         <button type="button" class="btn btn-warning">Modifier</button>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+    <div class="modal-content">
+      <div class="modal-body">
+            <ProduitsServices AssignReference="AssignReference" AllProduitServices="allProduitService" ProduitServiceFormModel="produitServiceFormModel" CategorieUNSPSC="categorieUNSPSC"></ProduitsServices>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+        </div>
     </div>
     <div class="card-body">
         <div class="row h-100">
@@ -397,14 +430,17 @@
     </EditForm>
     }
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="@popperScript"></script>
 @code{
+
     private static int FournisseurID = 63;
     private bool modificationFinances = true;
+    private string popperScript = "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js";
     private bool modificationInfo = true;
     public int sizeTotal { get; set; } = 0;
     private CombinedFormModel combinedFormModel = new CombinedFormModel();
     private FinanceFormModel financeFormModel = new FinanceFormModel();
+    Produitservice produitService = new Produitservice();
     public int MaxSize = 75;
     private Fichier? selectedFile;
     List<Portail_OptiVille.Data.Models.Contact> selectedContacts = new List<Portail_OptiVille.Data.Models.Contact>();
@@ -443,6 +479,7 @@
             CoordonneeFormModel.SiteWebEntreprise = coordonnee.SiteInternet;
             CoordonneeFormModel.PhoneList = telephones.Select(t => new TelephoneFormModel
             {
+                IdTelephone = t.IdTelephone,
                 NoTelEntreprise = t.NumTelephone,
                 TypeTelEntreprise = t.Type,
                 PosteTelEntreprise = t.Poste
@@ -539,6 +576,12 @@
         public Contact Contact { get; set; }
         public List<Telephone> PhoneNumbers { get; set; }
     }
+    private ProduitServiceFormModel produitServiceFormModel = new ProduitServiceFormModel();
+    private List<Produitservice> allProduitService = new List<Produitservice>();
+    private List<Categorieunspsc> categorieUNSPSC = new List<Categorieunspsc>();
+    private ProduitsServices produitServiceRef;    
+    private Action<ProduitsServices> AssignReference => (produitsServices) => produitServiceRef = produitsServices;
+    
     protected override async Task OnInitializedAsync()
     {
         try
@@ -590,12 +633,23 @@
                 FROM FournisseurProduitService 
                 WHERE idFournisseur = {0}", selectedFournisseur.IdFournisseur)
             .ToListAsync();
-
+            produitServiceFormModel = new ProduitServiceFormModel{
+                Message = selectedFournisseur.DetailSpecification
+            };
+            allProduitService = await _context.Produitservices.ToListAsync();
+            if (allProduitService != null && allProduitService.Any())
+            {
+                produitServiceFormModel.SousProduitSelected = allProduitService.ToDictionary(c => c.CodeUnspsc, c => false);
+            }
+            categorieUNSPSC = await _context.Categorieunspscs.ToListAsync();
             // Now, query the actual product services based on the codes fetched from the pivot table
             var selectedProduitservices = await _context.Produitservices
                 .Where(p => fournisseurProduitIds.Contains(p.CodeUnspsc)) // Ensure CodeUnspsc is string here
                 .ToListAsync();
-    
+            foreach(var item in selectedProduitservices)
+            {
+                //produitServiceFormModel.SousProduitSelected[item.CodeUnspsc];
+            }
             groupedServices = selectedProduitservices.GroupBy(p => new GroupKey 
             { 
                 CodeCategorie = p.CategorieUnspsc, 
@@ -603,6 +657,7 @@
             }).ToList(); 
 
             combinedFormModel.FillData(coordonnee, identification, selectedTelephones);
+
         }
         catch (Exception ex)
         {

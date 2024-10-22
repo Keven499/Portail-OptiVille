@@ -82,6 +82,15 @@ namespace Portail_OptiVille.Data.Services
             coordonnee.RegionAdministrative = coordonneeFormModel.RegionAdmEntreprise;
             coordonnee.SiteInternet = coordonneeFormModel.SiteWebEntreprise;
 
+            foreach (var telephoneFromList in coordonneeFormModel.PhoneList)
+            {
+                var telephone = await _context.Telephones.FindAsync(telephoneFromList.IdTelephone);
+                telephone.NumTelephone = telephoneFromList.NoTelEntreprise; 
+                telephone.Type = telephoneFromList.TypeTelEntreprise; 
+                telephone.Poste = telephoneFromList.PosteTelEntreprise; 
+                _context.Telephones.Update(telephone);
+            }
+
             _context.Coordonnees.Update(coordonnee);
             await _context.SaveChangesAsync();
         }
