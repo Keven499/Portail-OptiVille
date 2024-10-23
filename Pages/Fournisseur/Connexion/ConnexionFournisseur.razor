@@ -6,11 +6,12 @@
 @using System.Security.Cryptography;
 @using System.Text;
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Portail_OptiVille.Data.Utilities
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 @inject A2024420517riGr1Eq6Context _context
 @inject IJSRuntime JsRuntime
-
+@inject ICookie cookie
 <EditForm Model="@logInModel" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="ValidateInput">
     <!-- OnValidSubmit="HandleValidSubmit" -->
     <div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
@@ -68,6 +69,8 @@
                 {
                     // Redirection si les informations sont correctes
                     await ProtectedSessionStore.SetAsync("Email", fournisseur.AdresseCourriel);
+                    //CookieService.("MyCookie", "TestValue", 30); // Expire dans 30 minutes
+                    await cookie.SetValue("MyCookie", "TestValue", 3);
 
                     NavigationManager.NavigateTo("/index", true);
                 }
@@ -86,7 +89,7 @@
         }catch
         {
             await JsRuntime.InvokeVoidAsync("alert", "Une erreur est survenue !");
-            NavigationManager.NavigateTo("/", true);
+            NavigationManager.NavigateTo("/");
             
         }
     }

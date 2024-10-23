@@ -9,6 +9,7 @@ using System.Net.Http;
 using Microsoft.AspNetCore.Components.Authorization;
 using Portail_OptiVille.Data.Services;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +28,7 @@ builder.Services.AddScoped<LicenceService>();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<NEQManager>();
-
+builder.Services.AddScoped<ICookie, CookieService>();
 #region Add services for saving in DB
 builder.Services.AddScoped<FournisseurService>();
 builder.Services.AddScoped<ContactsService>();
