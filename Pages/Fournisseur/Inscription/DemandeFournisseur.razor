@@ -114,11 +114,11 @@
 
     private List<RenderFragment> Components { get; set; } = new List<RenderFragment>();
     private bool isFirstComponent => currentIndex == 0;
+    private bool isRBQAnyFieldChange { get; set; }
     private int currentIndex = 0;
     private int currentStep => currentIndex + 1;
     private int totalSteps => Components.Count;
     private string ProgressPercentage => ((double)currentStep / totalSteps * 100).ToString("F2").Replace(',', '.');
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -232,6 +232,14 @@
             {
                 return;
             }
+            if (string.IsNullOrEmpty(identicationFormModel.NEQ)) 
+            {
+                licenceRBQFormModel.Disabled = true;
+            }
+            else 
+            {
+                licenceRBQFormModel.Disabled = false;
+            }
         }
 
         // CASE COORDONNEE 2
@@ -305,5 +313,4 @@
         await FichierService.SaveFichierData(pieceJointeFormModel, identicationFormModel);
         // IL RESTE PLUS QU'A LE REDIRIGER VERS SA FICHE FOURNISSEUR SUR SON PROPRE COMPTE OU VERS LOGIN
     }
-
 }

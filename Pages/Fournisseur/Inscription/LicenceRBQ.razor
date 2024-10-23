@@ -233,4 +233,33 @@
         }
         return input;
     }
+
+    // DÈS QUE UN DES CHAMPS (NUMÉRO, STATUT, TYPE ET CATÉGORIE) N'EST PLUS NULL OU VIDE, LE BOUTON PASSER DOIT DEVENIR SUIVANT
+    
+
+    // DÈS QUE TOUS LES CHAMPS (NUMÉRO, STATUT, TYPE ET CATÉGORIE) SONT VIDES, LE BOUTON SUIVANT DOIT DEVENIR PASSER
+    public bool isEveryFieldEmpty() {
+        bool isFieldsEmpty = true;
+        if (string.IsNullOrEmpty(LicenceRBQFormModel.NumeroLicence))
+        {
+            isFieldsEmpty = false;
+            return isFieldsEmpty;
+        }
+        if (string.IsNullOrEmpty(LicenceRBQFormModel.StatutLicence))
+        {
+            isFieldsEmpty = false;
+            return isFieldsEmpty;
+        }
+        if (string.IsNullOrEmpty(LicenceRBQFormModel.TypeLicence))
+        {
+            isFieldsEmpty = false;
+            return isFieldsEmpty;
+        }
+        if (!ValidateSelection()) 
+        {
+            isFieldsEmpty = false;
+            return isFieldsEmpty;
+        }
+        return isFieldsEmpty;
+    }
 }
