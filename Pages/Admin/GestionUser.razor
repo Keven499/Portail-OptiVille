@@ -17,103 +17,102 @@
 
 <PageTitle>Gestion des rôles</PageTitle>
     <div class="row d-flex justify-content-center">
-        <div class="col-xl-6 col-xl-6 col-lg-6 col-10 col-sm-10 ms-xl-3 ms-lg-3 py-2">
+        <div class="col-xl-7 col-lg-6 col-sm-12 col-12 p-0">
             <div class="card">
                 <div class="card-header py-2 bg-vertFonce">
                     <h3 class="py-2 my-0 text-white titre-bold">Gestion des utilisateurs</h3>
                 </div>
-            <div class="card-body border-vertFonce py-1">
-                <div class="table-responsive">
-                    <table class="table table-borderless">
-                        <thead>
-                            <tr>
-                                <th scope="col">Utilisateur</th>
-                                <th scope="col" class="col-3">Rôle</th>
-                                <th scope="col" class="col-1"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var employe in allEmployes)
-                            {
-                                <tr>
-                                    <th scope="row">@employe.Courriel</th>
-                                    <td>
-                                        <select class="form-select" @onchange="(e) => OnRoleChange(employe, e.Value!.ToString()!)">
-                                            @foreach (var value in Roles)
-                                            {
-                                                <option value="@value" selected="@((employe.Role == value))">@value</option>
-                                            }
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-link" @onclick="() => OnDeleteUser(employe)">Supprimer</button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+            <div class="card-body border-vertFonce">
+                <div class="row">
+                    <div class="col-xl-4">
+                        <div class="titre-medium fs-3">Utilisateur</div>
+                    </div>
+                    <div class="col-xl-4">
+                        <div class="titre-medium fs-3">Rôle</div>
+                    </div>
                 </div>
-        <div class="">
-        @if (!formAjouter)
-        {
-            <div class="row justify-content-center">
-                <div class="col-xl-6 text-center">
-                    <button type="submit" class="btn btn-primary" @onclick="ShowForm">Ajouter un utilisateur</button>
+                <div class="row d-flex justify-content-center">
+                    @foreach (var employe in allEmployes)
+                    {
+                        <div class="row d-flex align-items-center pb-2">
+                            <div class="col-xl-4 col-12">
+                                <div class="texte-light fs-6 fw-bold">@employe.Courriel</div>
+                            </div>
+                            <div class="col-xl-6 col-6 py-1">
+                                <select class="form-select" @onchange="(e) => OnRoleChange(employe, e.Value!.ToString()!)">
+                                    @foreach (var value in Roles)
+                                    {
+                                        <option value="@value" class="texte-light fs-6 fw-bold" selected="@((employe.Role == value))">@value</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-xl-2 col-6">
+                                <button type="button" class="btn btn-danger w-100" @onclick="() => OnDeleteUser(employe)"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="">
+                @if (!formAjouter)
+                {
+                    <div class="row justify-content-center">
+                        <div class="col-xl-6 text-center">
+                            <button type="submit" class="btn btn-success" style="width: 200px;" @onclick="ShowForm"><i class="bi bi-plus-circle"></i> Ajouter</button>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <EditForm Model="@userModel" OnValidSubmit="@AjoutUtilisateur">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="row mb-3 justify-content-center">
+                            <div class="col-xl-12">
+                                <label for="emailNewUser">Email:</label>
+                                <InputText class="form-control" id="emailNewUser" @bind-Value="userModel.email" />
+                                <ValidationMessage For="@(() => userModel.email)" />
+                            </div>
+                        </div>
+
+                        <div class="row mb-3 justify-content-center">
+                            <div class="col-xl-12">
+                                <label for="roleNewUser">Role:</label>
+                                <select class="form-select" @bind="userModel.role" id="roleNewUser" selected="@((userModel.role == "Commis"))">
+                                    @foreach (var value in Roles)
+                                    {
+                                        <option value="@value">@value</option>
+                                    }
+                                </select>
+                                <ValidationMessage For="@(() => userModel.role)" />
+                            </div>
+                        </div>
+
+                        <div class="row justify-content-center">
+                            <div class="col-xl-6 text-center">
+                                <button type="submit" class="btn btn-primary">Ajouter un utilisateur</button>
+                            </div>
+                        </div>
+                    </EditForm>
+                }
                 </div>
             </div>
-        }
-        else
-        {
-            <EditForm Model="@userModel" OnValidSubmit="@AjoutUtilisateur">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
-
-                <div class="row mb-3 justify-content-center">
-                    <div class="col-xl-12">
-                        <label for="emailNewUser">Email:</label>
-                        <InputText class="form-control" id="emailNewUser" @bind-Value="userModel.email" />
-                        <ValidationMessage For="@(() => userModel.email)" />
+            <div class="card-footer bg-vertFonce">
+                @if (!string.IsNullOrEmpty(validationError))
+                {
+                <div class="d-flex justify-content-center align-items-center">
+                    <div class="col-xl-6 alert alert-danger custom-alert fade show m-1" role="alert">
+                        <span class="text-center flex-grow-1">
+                            @((MarkupString)validationError)
+                        </span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" @onclick="ClearMessageError"></button>
                     </div>
                 </div>
-
-                <div class="row mb-3 justify-content-center">
-                    <div class="col-xl-12">
-                        <label for="roleNewUser">Role:</label>
-                        <select class="form-select" @bind="userModel.role" id="roleNewUser" selected="@((userModel.role == "Commis"))">
-                            @foreach (var value in Roles)
-                            {
-                                <option value="@value">@value</option>
-                            }
-                        </select>
-                        <ValidationMessage For="@(() => userModel.role)" />
-                    </div>
-                </div>
-
-                <div class="row justify-content-center">
-                    <div class="col-xl-6 text-center">
-                        <button type="submit" class="btn btn-primary">Ajouter un utilisateur</button>
-                    </div>
-                </div>
-            </EditForm>
-        }
-        </div>
-    </div>
-    <div class="card-footer">
-        @if (!string.IsNullOrEmpty(validationError))
-        {
-        <div class="d-flex justify-content-center align-items-center">
-            <div class="col-xl-6 alert alert-danger custom-alert fade show m-1" role="alert">
-                <span class="text-center flex-grow-1">
-                    @((MarkupString)validationError)
-                </span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" @onclick="ClearMessageError"></button>
+                }
+                <button type="submit" class="btn btn-success w-100" @onclick="SubmitChanges">Sauvegarder</button>
             </div>
         </div>
-        }
-        <button type="submit" class="btn btn-success w-100" @onclick="SubmitChanges">Sauvegarder</button>
     </div>
-</div>
-</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
@@ -206,7 +205,6 @@
             validationError = "Cet utilisateur n'existe pas";
         }
     }
-
 
     private void SubmitChanges()
     {
