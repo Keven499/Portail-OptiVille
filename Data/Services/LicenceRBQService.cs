@@ -55,38 +55,28 @@ namespace Portail_OptiVille.Data.Services
             }
             else
             {
-                var currentCategories = await _context.Categorierbqs.Where(c => licenceRBQdata.IdCategorieRbqs.Select(id => id.IdLicenceRbqs).Contains(c.IdLicenceRbqs)).ToListAsync();
-                licenceRBQdata.Fournisseur = licenceRBQdata.Fournisseur;
-                licenceRBQdata.IdLicenceRbq = licenceRBQFormModelDto.NumeroLicence;
-                licenceRBQdata.Statut = licenceRBQFormModelDto.StatutLicence;
-                licenceRBQdata.Type = licenceRBQFormModelDto.TypeLicence;
+                    licenceRBQdata.Fournisseur = licenceRBQdata.Fournisseur;
+                    licenceRBQdata.IdLicenceRbq = licenceRBQFormModelDto.NumeroLicence;
+                    licenceRBQdata.Statut = licenceRBQFormModelDto.StatutLicence;
+                    licenceRBQdata.Type = licenceRBQFormModelDto.TypeLicence;
 
-                foreach (var codeSousCategorie in licenceRBQFormModelDto.CodeSousCategorie)
-                {
-                    var categorieRBq = await _context.Categorierbqs
-                        .FirstOrDefaultAsync(p => p.CodeSousCategorie == codeSousCategorie);
+                    var selectedCategorieRBQIds = licenceRBQFormModelDto.SousCategoSelected.Where(x => x.Value).Select(x => x.Key).ToList();
+                    var existingProduitServiceIds = licenceRBQdata.IdCategorieRbqs.Select(crbq => crbq.CodeSousCategorie).ToList();
+                    var CategorieRBQToAdd = await _context.Categorierbqs.Where(crbq => selectedCategorieRBQIds.Contains(crbq.CodeSousCategorie) && !existingProduitServiceIds.Contains(crbq.CodeSousCategorie)).ToListAsync();
+                    var CategorieRBQToRemove = licenceRBQdata.IdCategorieRbqs.Where(crbq => !selectedCategorieRBQIds.Contains(crbq.CodeSousCategorie)).ToList();
 
-                    if (categorieRBq != null && !licenceRBQdata.IdCategorieRbqs.Contains(categorieRBq))
+                    foreach (var categorieRBQ in CategorieRBQToAdd)
                     {
-                        licenceRBQdata.IdCategorieRbqs.Add(categorieRBq);
+                        licenceRBQdata.IdCategorieRbqs.Add(categorieRBQ);
                     }
-                }
-            
-                foreach (var existingCategory in currentCategories.ToList())
-                {
-                    if (!licenceRBQFormModelDto.CodeSousCategorie.Contains(existingCategory.CodeSousCategorie))
-                    {
-                        var categoryToRemove = licenceRBQdata.IdCategorieRbqs
-                            .FirstOrDefault(c => c.IdLicenceRbqs == existingCategory.IdLicenceRbqs);
-                        if (categoryToRemove != null)
-                        {
-                            licenceRBQdata.IdCategorieRbqs.Remove(categoryToRemove);
-                        }
-                    }
-                }
 
-                _context.Licencerbqs.Update(licenceRBQdata);
-                await _context.SaveChangesAsync();
+                    foreach (var categorieRBQ in CategorieRBQToRemove)
+                    {
+                        licenceRBQdata.IdCategorieRbqs.Remove(categorieRBQ);
+                    }
+
+                    _context.Licencerbqs.Update(licenceRBQdata);
+                    await _context.SaveChangesAsync();
             }
         }
     }
