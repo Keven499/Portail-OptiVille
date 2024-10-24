@@ -116,7 +116,7 @@
     [Parameter]
     public Action<LicenceRBQ>? AssignReference { get; set; }
     [Parameter]
-    public List<Categorierbq> AllCategories { get; set; }
+    public List<Categorierbq> AllCategories { get; set; }  = new List<Categorierbq>();
     [Parameter]
     public LicenceRBQFormModel LicenceRBQFormModel { get; set; }
     [Parameter]
@@ -143,7 +143,25 @@
         { 1, "Entrepreneur" },
         { 2, "Constructeur-Propriétaire" }
     };
-
+    protected override void OnParametersSet()
+    {
+        try
+        {
+            //Console.WriteLine($"AllCategories: {AllCategories.Count}");
+            categorieGeneral = AllCategories
+            .Where(c => c.NomCategorie == "Général")
+            .ToList();
+            //Console.WriteLine($"categorieGeneral: {categorieGeneral.Count}");
+            categorieSpecialise = AllCategories
+            .Where(c => c.NomCategorie == "Spécialisé")
+            .ToList();
+            //Console.WriteLine($"categorieSpecialise: {categorieSpecialise.Count}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors de la récupération des personnes: {ex.Message}");
+        }
+    }
     protected override void OnInitialized()
     {
         isDisabled = LicenceRBQFormModel.Disabled;
@@ -154,20 +172,7 @@
         editContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
         validationMessageStore = new ValidationMessageStore(editContext);
         AssignReference?.Invoke(this);
-        try
-        {
-            categorieGeneral = AllCategories
-            .Where(c => c.NomCategorie == "Général")
-            .ToList();
 
-            categorieSpecialise = AllCategories
-            .Where(c => c.NomCategorie == "Spécialisé")
-            .ToList();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Erreur lors de la récupération des personnes: {ex.Message}");
-        }
     }
 
     private string GetInputClass<TField> (Expression<Func<TField>> fieldExpression)

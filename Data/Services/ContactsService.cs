@@ -58,5 +58,56 @@ namespace Portail_OptiVille.Data.Services
                 }
             }
         }
+        public async Task UpdateContactsData(ContactHosterFormModel contactHosterFormModel)
+        {
+
+            foreach (var contactFromList in contactHosterFormModel.ContactList!)
+            {
+                var existingContact = await _context.Contacts.FirstAsync(c => c.IdContact == contactFromList.IdContact);
+                if (existingContact != null)
+                {
+                    existingContact.IdContact = contactFromList.IdContact;
+                    existingContact.Prenom = contactFromList.Prenom;
+                    existingContact.Nom = contactFromList.Nom;
+                    existingContact.Fonction = contactFromList.Fonction;
+                    existingContact.AdresseCourriel = contactFromList.AdresseCourriel;
+
+                    try
+                    {
+                        _context.Contacts.Update(existingContact);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception("Une erreur est survenue lors de la mise à jour du contact", ex);
+                    }
+
+                    var existingTelephone = await _context.Telephones.FirstAsync(t => t.Contact == existingContact.IdContact);
+
+                    if (existingTelephone != null)
+                    {
+                        existingTelephone.Contact = contactFromList.IdContact;
+                        existingTelephone.Type = contactFromList.TypeTelephone;
+                        existingTelephone.NumTelephone = contactFromList.Telephone;
+                        existingTelephone.Poste = contactFromList.Poste;   
+                        
+                        try
+                        {
+                            _context.Telephones.Update(existingTelephone);
+                            await _context.SaveChangesAsync();
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception("Une erreur est survenue lors de la mise à jour du téléphone du contact", ex);
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("existingContact == null");
+                }
+            }
+        }
+
     }
 }

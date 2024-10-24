@@ -84,7 +84,8 @@
     [Parameter]
     public Action<ProduitsServices>? AssignReference { get; set; }
     [Parameter]
-    public List<Produitservice> AllProduitServices { get; set; }
+    public List<Produitservice> AllProduitServices { get; set; } = new List<Produitservice>();
+
     [Parameter]
     public ProduitServiceFormModel ProduitServiceFormModel { get; set; }
     [Parameter]
@@ -94,19 +95,22 @@
     private bool isSubmit = false;
     private string? searchBarValue;
     private string? selectedCategorie = "Toutes les catégories"; 
-    protected override void OnInitialized()
-    {
-        editContext = new EditContext(ProduitServiceFormModel);
-        editContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
-        AssignReference?.Invoke(this);
+    protected override void OnParametersSet()
+    {   
         try
         {
             produitServiceCatego = AllProduitServices.Take(500).ToList();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Erreur lors de la récupération des personnes: {ex.Message}");
+            Console.WriteLine($"Erreur lors de la récupération des produits et services: {ex.Message}");
         }
+    }
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(ProduitServiceFormModel);
+        editContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
+        AssignReference?.Invoke(this);
     }
 
     private string GetInputClass<TField> (Expression<Func<TField>> fieldExpression)

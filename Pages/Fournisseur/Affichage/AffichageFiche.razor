@@ -15,8 +15,12 @@
 @inject CoordonneeService coordonneeService
 @inject IdentificationService identificationService
 @inject FinanceService financeService
+@inject ProduitServiceService produitServiceService
+@inject LicenceRBQService licenceRBQService
+@inject ContactsService contactsService
 @using Portail_OptiVille.Pages.Fournisseur.Inscription
-
+@inject IJSRuntime JSRuntime
+<PageTitle>Fiche Fournisseur</PageTitle>
 <div class="container-fluid card p-0 m-0">
     <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Demande</h3>
@@ -43,6 +47,13 @@
             <li>Création @(selectedFournisseur.DateCreation.HasValue ? selectedFournisseur.DateCreation.Value.ToString("yyyy-MM-dd") : "N/A")</li>
             <li>Modification @(selectedFournisseur.DateLastChanged.HasValue ? selectedFournisseur.DateLastChanged.Value.ToString("yyyy-MM-dd") : "N/A")</li>
         </ul>
+        @if(FinanceInfoNull){
+        <div class="alert alert-warning alert-dismissible fade show text-center d-flex justify-content-center align-items-center" role="alert">
+            <strong>Veuillez entrer vos informations financières! <a href="/affichage#FinanceDest">(Cliquez ici)</a></strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        }
+
     </div>
     <EditForm Model="combinedFormModel" OnValidSubmit="SaveModifcationInfo">
         <DataAnnotationsValidator />
@@ -54,7 +65,7 @@
             }
             else
             {
-            <button type="button" class="btn btn-success" @onclick="SaveModifcationInfo">Sauvegarder</button> 
+            <button type="submit" class="btn btn-success">Sauvegarder</button> 
             }
         </div>
         <div class="card-body">
@@ -135,90 +146,100 @@
             </div>
         </div>
     </EditForm>
+<EditForm Model="contactHosterFormModel" OnValidSubmit="SaveContact">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    
     <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Contacts</h3>
-        <button type="button" class="btn btn-warning">Modifier</button>
-    </div>
-    <div class="card-body">
-        @for (int i = 0; i < contactPhoneInfo.Count; i++)
+        @if (modificationContact)
         {
-            var contact = contactPhoneInfo[i].Contact;
-            var telephones = contactPhoneInfo[i].PhoneNumbers;
-
-            foreach(var telephone in telephones)
-            {
-                <div class="row">
-                    <div class="col-xl-6 p-1">
-                        <label for="inputEmail4">Prénom</label>
-                        <input type="text" class="form-control" id="inputEmail4" value="@contact.Prenom">
-                    </div>
-                    <div class="col-xl-6 p-1">
-                        <label for="inputPassword4">Nom</label>
-                        <input type="text" class="form-control" id="inputPassword4" value="@contact.Nom">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xl-6 p-1">
-                        <label for="inputEmail4">Fonction</label>
-                        <input type="text" class="form-control" id="inputEmail4" value="@contact.Fonction">
-                    </div>
-                    <div class="col-xl-6 p-1">
-                        <label for="inputEmail4">Adresse courriel</label>
-                        <input type="text" class="form-control" id="inputEmail4" value="@contact.AdresseCourriel">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xl-6 p-1">
-                        <div class="d-flex align-items-center">
-                            <label for="inputPassword4" class="me-2">
-                                Numéro de téléphone 
-                            </label>
-                            <select class="form-select w-auto" id="telephoneType" value="@telephone.Type" disabled>
-                                <option value="Bureau">Bureau</option>
-                                <option value="Télécopieur">Télécopieur</option>
-                                <option value="Cellulaire">Cellulaire</option>
-                            </select>
-                        </div>
-                        <input type="text" class="form-control" id="inputPassword4" value="@telephone.NumTelephone!.Insert(3, "-").Insert(7, "-")">
-                    </div>
-                    <div class="col-xl-6 p-1">
-                        <label for="inputEmail4">Poste</label>
-                        <input type="text" class="form-control" id="inputEmail4" value="@telephone.Poste">
-                    </div>
-                </div>
-            }
-                if (i < contactPhoneInfo.Count() - 1)
-                {
-                    <hr>
-                }
+            <button type="button" class="btn btn-warning" @onclick="ModificationContact">Modifier</button>
         }
-
+        else
+        {
+            <button type="submit" class="btn btn-success">Sauvegarder</button> 
+        }
     </div>
+
+    <div class="card-body">
+        @for (int i = 0; i < contactHosterFormModel.ContactList!.Count; i++)
+        {
+            var contact = contactHosterFormModel.ContactList[i]; // Access each contact
+
+            <div class="row">
+                <div class="col-xl-6 p-1">
+                    <label for="prenomInput">Prénom</label>
+                    <InputText id="prenomInput" class="form-control" @bind-Value="contact.Prenom" />
+                    <ValidationMessage For="@(() => contact.Prenom)" />
+                </div>
+                <div class="col-xl-6 p-1">
+                    <label for="nomInput">Nom</label>
+                    <InputText id="nomInput" class="form-control" @bind-Value="contact.Nom" />
+                    <ValidationMessage For="@(() => contact.Nom)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-6 p-1">
+                    <label for="fonctionInput">Fonction</label>
+                    <InputText id="fonctionInput" class="form-control" @bind-Value="contact.Fonction" />
+                    <ValidationMessage For="@(() => contact.Fonction)" />
+                </div>
+                <div class="col-xl-6 p-1">
+                    <label for="courrielInput">Adresse courriel</label>
+                    <InputText id="courrielInput" class="form-control" @bind-Value="contact.AdresseCourriel" />
+                    <ValidationMessage For="@(() => contact.AdresseCourriel)" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xl-6 p-1">
+                    <div class="d-flex align-items-center">
+                        <label for="telephoneType" class="me-2">Numéro de téléphone</label>
+                        <InputSelect id="telephoneType" class="form-select w-auto" @bind-Value="contact.TypeTelephone" style="@(modificationContact ? "pointer-events: none; background-color: #ffffff;" : null)">
+                            <option value="Bureau">Bureau</option>
+                            <option value="Télécopieur">Télécopieur</option>
+                            <option value="Cellulaire">Cellulaire</option>
+                        </InputSelect>
+                        <ValidationMessage For="@(() => contact.TypeTelephone)" />
+                    </div>
+                    <InputText id="telephoneInput" class="form-control" @bind-Value="contact.Telephone" />
+                    <ValidationMessage For="@(() => contact.Telephone)" />
+                </div>
+                <div class="col-xl-6 p-1">
+                    <label for="posteInput">Poste</label>
+                    <InputText id="posteInput" class="form-control" @bind-Value="contact.Poste" />
+                    <ValidationMessage For="@(() => contact.Poste)" />
+                </div>
+            </div>
+
+            @if (i < contactHosterFormModel.ContactList.Count - 1)
+            {
+                <hr />
+            }
+        }
+    </div>
+</EditForm>
+
+
     <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Produits et services</h3>
-        <button type="button" class="btn btn-warning">Modifier</button>
+        <button type="button" class="btn btn-warning" onclick="showModal('exampleModal')">Modifier</button>
     </div>
     <div class="card-body">
         <div class="row">
-            <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-  Launch demo modal
-</button>
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
-    <div class="modal-content">
-      <div class="modal-body">
-            <ProduitsServices AssignReference="AssignReference" AllProduitServices="allProduitService" ProduitServiceFormModel="produitServiceFormModel" CategorieUNSPSC="categorieUNSPSC"></ProduitsServices>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
+            <div class="modal fade" tabindex="-1" role="dialog" id="exampleModal" data-bs-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                                <ProduitsServices AssignReference="AssignReferenceProduitsServices" AllProduitServices="allProduitService" ProduitServiceFormModel="produitServiceFormModel" CategorieUNSPSC="categorieUNSPSC"></ProduitsServices>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" @onclick="SaveModifcationProduitServices">Sauvegarder</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="card-body">
@@ -262,7 +283,25 @@
     </div>
     <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Licence RBQ</h3>
-        <button type="button" class="btn btn-warning">Modifier</button>
+        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#ModifierModalLicence">Modifier</button>
+        @*LicenceRBQInfoNull*@
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="modal fade" id="ModifierModalLicence" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                                <LicenceRBQ AssignReference="AssignReferenceLicenceRBQ" AllCategories="allCategories" LicenceRBQFormModel="licenceRBQFormModel"></LicenceRBQ>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" @onclick="SaveModifcationLicenceRBQ">Sauvegarder</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="card-body">
         
@@ -379,67 +418,101 @@
         // Mettre que si on doit ajouter nos finances show alert a la place et voir si sa crash pas 
     <EditForm Model="financeFormModel" OnValidSubmit="SaveModifcationInfo">
         <DataAnnotationsValidator />
-        <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
-            <h3 class="py-2 p-0 my-0 text-white">Finances</h3>
-            @if(modificationFinances)
-            {
-                <button type="button" class="btn btn-warning" @onclick="ModifcationFinances">Modifier</button>
-            }
-            else
-            {
-            <button type="button" class="btn btn-success" @onclick="SaveModifcationFinances">Sauvegarder</button> 
-            }
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-xl-6 p-1">
-                    <label for="inputTPS">TPS</label>
-                    <input type="text" class="form-control" id="inputTPS" @bind="@financeFormModel.NumeroTps" readonly="@modificationFinances">
-                </div>
-                <div class="col-xl-6 p-1">
-                    <label for="inputTVQ">TVQ</label>
-                    <input type="text" class="form-control" id="inputTVQ" @bind="@financeFormModel.NumeroTvq" readonly="@modificationFinances">
-                </div>
+        <div class="card" id="FinanceDest">
+            <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
+                <h3 class="py-2 p-0 my-0 text-white">Finances</h3>
+                @if(modificationFinances)
+                {
+                    <button type="button" class="btn btn-warning" @onclick="ModifcationFinances">Modifier</button>
+                }
+                else
+                {
+                <button type="submit" class="btn btn-success">Sauvegarder</button> 
+                }
             </div>
-            <div class="row">
-                <div class="col-xl-6 p-1">
-                    <label for="inputCondPaiement">Conditions de paiement</label>
-                    <input type="text" class="form-control" id="inputCondPaiement" @bind="@financeFormModel.ConditionPaiement" readonly="@modificationFinances">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-xl-6 p-1">
+                        <label for="inputTPS">TPS</label>
+                        <input type="text" class="form-control" id="inputTPS" @bind="@financeFormModel.NumeroTps" readonly="@modificationFinances">
+                    </div>
+                    <div class="col-xl-6 p-1">
+                        <label for="inputTVQ">TVQ</label>
+                        <input type="text" class="form-control" id="inputTVQ" @bind="@financeFormModel.NumeroTvq" readonly="@modificationFinances">
+                    </div>
                 </div>
-                <div class="col-xl-6 p-1">
-                    <label for="inputDevise">Devise</label>
-                    <select class="form-select" id="inputDevise" @bind="@financeFormModel.Devise" 
-                            style="@(modificationFinances ? "pointer-events: none; background-color: #ffffff;" : null)">
-                        <option value="CAD">CAD</option>
-                        <option value="USD">USD</option>
-                    </select>
+                <div class="row">
+                    <div class="col-xl-6 p-1">
+                        <label for="inputCondPaiement">Conditions de paiement</label>
+                        <input type="text" class="form-control" id="inputCondPaiement" @bind="@financeFormModel.ConditionPaiement" readonly="@modificationFinances">
+                    </div>
+                    <div class="col-xl-6 p-1">
+                        <label for="inputDevise">Devise</label>
+                        <select class="form-select" id="inputDevise" @bind="@financeFormModel.Devise" 
+                                style="@(modificationFinances ? "pointer-events: none; background-color: #ffffff;" : null)">
+                            <option value="CAD">CAD</option>
+                            <option value="USD">USD</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-xl-6 p-1">
-                    <label for="inputModeComm">Mode de communication</label>
-                    <select class="form-select" id="inputModeComm" @bind="@financeFormModel.ModeCommunication" 
-                            style="@(modificationFinances ? "pointer-events: none; background-color: #ffffff;" : null)">
-                        <option value="Courriel">Courriel</option>
-                        <option value="Courrier régulier">Courrier régulier</option>
-                    </select>
+                <div class="row justify-content-center">
+                    <div class="col-xl-6 p-1">
+                        <label for="inputModeComm">Mode de communication</label>
+                        <select class="form-select" id="inputModeComm" @bind="@financeFormModel.ModeCommunication" 
+                                style="@(modificationFinances ? "pointer-events: none; background-color: #ffffff;" : null)">
+                            <option value="Courriel">Courriel</option>
+                            <option value="Courrier régulier">Courrier régulier</option>
+                        </select>
+                    </div>
+                    
                 </div>
-                
             </div>
         </div>
     </EditForm>
     }
+    
 </div>
-<script src="@popperScript"></script>
-@code{
 
+<script src="@popperScript"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+<script>
+    function hideModal(modalId) {
+        var modalElement = document.getElementById(modalId);
+        if (modalElement) {
+            var modal = bootstrap.Modal.getInstance(modalElement); // Get instance
+            if (modal) {
+                modal.hide(); // Hide the modal
+            }
+        }
+    }
+    function showModal(modalId) {
+        var modalElement = document.getElementById(modalId);
+        if (modalElement) {
+            // Set up the modal hidden event listener
+            modalElement.addEventListener('hidden.bs.modal', function () {
+                var backdropElement = document.querySelector('.modal-backdrop');
+                if (backdropElement) {
+                    backdropElement.remove(); // Remove the backdrop
+                }
+            });
+            // Now show the modal
+            var modal = new bootstrap.Modal(modalElement);
+            modal.show();
+        }
+    }
+</script>
+@code{
     private static int FournisseurID = 63;
     private bool modificationFinances = true;
     private string popperScript = "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js";
     private bool modificationInfo = true;
+    private bool FinanceInfoNull = false;
+    private bool LicenceRBQInfoNull = false;
+    private bool modificationContact = true;
     public int sizeTotal { get; set; } = 0;
     private CombinedFormModel combinedFormModel = new CombinedFormModel();
     private FinanceFormModel financeFormModel = new FinanceFormModel();
+    private ContactHosterFormModel contactHosterFormModel = new ContactHosterFormModel();
     Produitservice produitService = new Produitservice();
     public int MaxSize = 75;
     private Fichier? selectedFile;
@@ -459,6 +532,10 @@
     Licencerbq licencerbqs = new Licencerbq();
     List<ContactPhoneInfo> contactPhoneInfo = new List<ContactPhoneInfo>();
 
+    private List<Categorierbq> allCategories = new List<Categorierbq>();
+    private LicenceRBQFormModel licenceRBQFormModel = new LicenceRBQFormModel();
+    private LicenceRBQ LicenceRBQRef;   
+    private Action<LicenceRBQ> AssignReferenceLicenceRBQ => (licenceRBQ) => LicenceRBQRef = licenceRBQ;
     List<IGrouping<GroupKey, Produitservice>>? groupedServices;
 
     public class CombinedFormModel
@@ -490,7 +567,6 @@
             IdentificationFormModel.CourrielEntreprise = identification.AdresseCourriel;
             IdentificationFormModel.MotDePasse = identification.MotDePasse;
         }
-
         public CombinedFormModel()
         {
             CoordonneeFormModel = new CoordonneeFormModel();
@@ -502,16 +578,45 @@
     {
         modificationFinances = false;
     }
+    private void ModificationContact()
+    {
+        modificationContact = false;
+    }
 
     private void ModifcationInfo()
     {
         modificationInfo = false;
     }
+
+    private async Task SaveModifcationLicenceRBQ()
+    {
+        // A Ajouter
+        //await licenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
+        // Y'a un monde ou sa marche du premier coup pcq moi = genie 
+    }
+    private async Task SaveModifcationProduitServices()
+    {
+        await produitServiceService.UpdateProduitServiceData(produitServiceFormModel, selectedFournisseur.IdFournisseur);
+
+        selectedProduitservices = allProduitService
+        .Where(p => produitServiceFormModel.SousProduitSelected.ContainsKey(p.CodeUnspsc) &&
+                    produitServiceFormModel.SousProduitSelected[p.CodeUnspsc])
+        .ToList();
+        GetGroupProduitService();
+        await JSRuntime.InvokeVoidAsync("hideModal", "exampleModal");
+    }
+
     private async Task SaveModifcationFinances()
     {
         await financeService.UpdateFinanceData(financeFormModel, selectedFournisseur.IdFournisseur);
 
         modificationFinances = true;
+    }
+    private async Task SaveContact()
+    {
+        await contactsService.UpdateContactsData(contactHosterFormModel);
+
+        modificationContact = true;
     }
     private async Task SaveModifcationInfo()
     {
@@ -546,11 +651,11 @@
 
         foreach (var categorie in selectedCategorieRBQ)
         {
-            if (!groupedCategories.ContainsKey(categorie.NomCategorie))
+            if (!groupedCategories.ContainsKey(categorie.NomCategorie!))
             {
-                groupedCategories[categorie.NomCategorie] = new List<Categorierbq>();
+                groupedCategories[categorie.NomCategorie!] = new List<Categorierbq>();
             }
-            groupedCategories[categorie.NomCategorie].Add(categorie);
+            groupedCategories[categorie.NomCategorie!].Add(categorie);
         }
 
         return groupedCategories;
@@ -578,9 +683,12 @@
     }
     private ProduitServiceFormModel produitServiceFormModel = new ProduitServiceFormModel();
     private List<Produitservice> allProduitService = new List<Produitservice>();
+    private List<Produitservice>? selectedProduitservices = new List<Produitservice>();
     private List<Categorieunspsc> categorieUNSPSC = new List<Categorieunspsc>();
     private ProduitsServices produitServiceRef;    
-    private Action<ProduitsServices> AssignReference => (produitsServices) => produitServiceRef = produitsServices;
+    List<string>? fournisseurProduitIds = new List<string>();
+    private Action<ProduitsServices> AssignReferenceProduitsServices => (produitsServices) => produitServiceRef = produitsServices;
+
     
     protected override async Task OnInitializedAsync()
     {
@@ -589,28 +697,34 @@
             selectedFournisseur = await _context.Fournisseurs.FindAsync(FournisseurID);
             selectedContacts = await _context.Contacts.Where(c => c.Fournisseur == selectedFournisseur.IdFournisseur).ToListAsync();
 
-
-            // Step 3: Iterate through each contact and retrieve their phone information
             foreach (var contact in selectedContacts)
             {
-                // Fetch phone numbers associated with the current contact
-                var phoneNumbers = await _context.Telephones
-                    .Where(t => t.Contact == contact.IdContact) // Adjust this according to your model
-                    .ToListAsync();
+                var phoneNumber = await _context.Telephones.Where(t => t.Contact == contact.IdContact).FirstAsync();
 
-                // Add the contact and their phone numbers to the list
-                contactPhoneInfo.Add(new ContactPhoneInfo
+                var contactFormModel = new ContactFormModel
                 {
-                    Contact = contact,
-                    PhoneNumbers = phoneNumbers
-                });
+                    IdContact = contact.IdContact,
+                    Prenom = contact.Prenom,
+                    Nom = contact.Nom,
+                    Fonction = contact.Fonction,
+                    AdresseCourriel = contact.AdresseCourriel,
+                    TypeTelephone = phoneNumber.Type, 
+                    Telephone = phoneNumber.NumTelephone,
+                    Poste = phoneNumber.Poste
+                };
+                contactHosterFormModel.ContactList.Add(contactFormModel);
             }
+
             coordonnee = await _context.Coordonnees.SingleAsync(c => c.Fournisseur == selectedFournisseur.IdFournisseur);
             selectedTelephones = await _context.Telephones.Where(t => t.Coordonnee == coordonnee.IdCoordonnee).ToListAsync();
             try
             {
                 finance = await _context.Finances.SingleAsync(c => c.Fournisseur == selectedFournisseur.IdFournisseur);
                 financeFormModel.FillData(finance);
+                if(finance == null)
+                {
+                    FinanceInfoNull = true;
+                }
             }
             catch(Exception ex)
             {
@@ -626,38 +740,44 @@
                 licencerbqs = await _context.Licencerbqs.SingleAsync(c => c.Fournisseur == selectedFournisseur.IdFournisseur);
                 selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
                 selectedLicencerbqs = await _context.Licencerbqs.Where(l => l.Fournisseur == selectedFournisseur.IdFournisseur).Include(l => l.IdCategorieRbqs).ToListAsync();
+                if(licencerbqs == null && selectedCategorieRBQ == null)
+                {
+                    LicenceRBQInfoNull = true;
+                }
             }
-            var fournisseurProduitIds = await _context.Database
+            //allCategories = await _context.Categorierbqs.ToListAsync();
+            fournisseurProduitIds = await _context.Database
             .SqlQueryRaw<string>(@"
                 SELECT idProduitService 
                 FROM FournisseurProduitService 
                 WHERE idFournisseur = {0}", selectedFournisseur.IdFournisseur)
             .ToListAsync();
-            produitServiceFormModel = new ProduitServiceFormModel{
+            produitServiceFormModel = new ProduitServiceFormModel
+            {
                 Message = selectedFournisseur.DetailSpecification
             };
             allProduitService = await _context.Produitservices.ToListAsync();
+            Console.WriteLine($"allProduitService count in parent: {allProduitService.Count}");
             if (allProduitService != null && allProduitService.Any())
             {
                 produitServiceFormModel.SousProduitSelected = allProduitService.ToDictionary(c => c.CodeUnspsc, c => false);
             }
             categorieUNSPSC = await _context.Categorieunspscs.ToListAsync();
-            // Now, query the actual product services based on the codes fetched from the pivot table
-            var selectedProduitservices = await _context.Produitservices
-                .Where(p => fournisseurProduitIds.Contains(p.CodeUnspsc)) // Ensure CodeUnspsc is string here
+
+            selectedProduitservices = await _context.Produitservices
+                .Where(p => fournisseurProduitIds.Contains(p.CodeUnspsc))
                 .ToListAsync();
             foreach(var item in selectedProduitservices)
             {
-                //produitServiceFormModel.SousProduitSelected[item.CodeUnspsc];
+                if (produitServiceFormModel.SousProduitSelected.ContainsKey(item.CodeUnspsc))
+                {
+                    produitServiceFormModel.SousProduitSelected[item.CodeUnspsc] = true;
+                }
             }
-            groupedServices = selectedProduitservices.GroupBy(p => new GroupKey 
-            { 
-                CodeCategorie = p.CategorieUnspsc, 
-                Nature = p.Nature 
-            }).ToList(); 
+            GetGroupProduitService();
 
             combinedFormModel.FillData(coordonnee, identification, selectedTelephones);
-
+            
         }
         catch (Exception ex)
         {
@@ -665,6 +785,14 @@
         }
     }
 
+    private void GetGroupProduitService()
+    {
+        groupedServices = selectedProduitservices.GroupBy(p => new GroupKey 
+            { 
+                CodeCategorie = p.CategorieUnspsc, 
+                Nature = p.Nature 
+            }).ToList(); 
+    }
     private string GetFormatSizeFile(int? size)
     {
         if (size >= 1048576)
