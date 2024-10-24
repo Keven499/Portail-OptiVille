@@ -17,10 +17,10 @@
 
 <PageTitle>Gestion des rôles</PageTitle>
     <div class="row d-flex justify-content-center">
-        <div class="col-xl-7 col-lg-6 col-sm-12 col-12 p-0">
+        <div class="col-xl-7 col-lg-10 col-sm-12 col-12 p-0">
             <div class="card">
-                <div class="card-header py-2 bg-vertFonce">
-                    <h3 class="py-2 my-0 text-white titre-bold">Gestion des utilisateurs</h3>
+                <div class="card-header py-2 bg-vertFonce d-flex align-items-center">
+                <h3 class="py-2 my-0 text-white titre-bold">Gestion des utilisateurs</h3>
                 </div>
             <div class="card-body border-vertFonce">
                 <div class="row">
@@ -31,27 +31,26 @@
                         <div class="titre-medium fs-3">Rôle</div>
                     </div>
                 </div>
-                <div class="row d-flex justify-content-center">
-                    @foreach (var employe in allEmployes)
-                    {
-                        <div class="row d-flex align-items-center pb-2">
-                            <div class="col-xl-4 col-12">
-                                <div class="texte-light fs-6 fw-bold">@employe.Courriel</div>
-                            </div>
-                            <div class="col-xl-6 col-6 py-1">
-                                <select class="form-select" @onchange="(e) => OnRoleChange(employe, e.Value!.ToString()!)">
-                                    @foreach (var value in Roles)
-                                    {
-                                        <option value="@value" class="texte-light fs-6 fw-bold" selected="@((employe.Role == value))">@value</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="col-xl-2 col-6">
-                                <button type="button" class="btn btn-danger w-100" @onclick="() => OnDeleteUser(employe)"><i class="bi bi-trash"></i></button>
-                            </div>
+                @foreach (var employe in allEmployes)
+                {
+                    <div class="row d-flex align-items-center pb-2 ">
+                        <div class="col-xl-4 col-12">
+                            <div class="texte-light fs-6 fw-bold">@employe.Courriel</div>
                         </div>
-                    }
-                </div>
+                        <div class="col-xl-6 col-6">
+                            <select class="form-select input-vert texte-light" @onchange="(e) => OnRoleChange(employe, e.Value!.ToString()!)">
+                                @foreach (var value in Roles)
+                                {
+                                    <option value="@value" selected="@((employe.Role == value))">@value</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-xl-2 col-6">
+                            <button type="button" class="btn btn-danger w-100" @onclick="() => OnDeleteUser(employe)"><i class="bi bi-trash"></i></button>
+                        </div>
+                        <hr class="mt-2 mb-0"/>
+                    </div>
+                }
                 <div class="">
                 @if (!formAjouter)
                 {
@@ -69,16 +68,16 @@
 
                         <div class="row mb-3 justify-content-center">
                             <div class="col-xl-12">
-                                <label for="emailNewUser">Email:</label>
-                                <InputText class="form-control" id="emailNewUser" @bind-Value="userModel.email" />
+                                    <label class="vertFonce texte-bold" for="emailNewUser">Courriel <i class="bi bi-braces-asterisk text-danger"></i></label>
+                                    <InputText class="form-control input-vert texte-light" id="emailNewUser" @bind-Value="userModel.email" placeholder="courriel@votre-entreprise.extension" />
                                 <ValidationMessage For="@(() => userModel.email)" />
                             </div>
                         </div>
 
                         <div class="row mb-3 justify-content-center">
                             <div class="col-xl-12">
-                                <label for="roleNewUser">Role:</label>
-                                <select class="form-select" @bind="userModel.role" id="roleNewUser" selected="@((userModel.role == "Commis"))">
+                                    <label class="vertFonce texte-bold" for="roleNewUser">Rôle <i class="bi bi-braces-asterisk text-danger"></i></label>
+                                <select class="form-select input-vert texte-light" @bind="userModel.role" id="roleNewUser" selected="@((userModel.role == "Commis"))">
                                     @foreach (var value in Roles)
                                     {
                                         <option value="@value">@value</option>
@@ -120,7 +119,7 @@
     private UserModele userModel = new UserModele() { role = "Commis" };
     private bool formAjouter = false;
     private string? validationError = null;
-    List<string> Roles = new() { "Administrateur", "Responsable", "Commis" };
+    List<string> Roles = new() { "Commis", "Responsable", "Administrateur" };
     private List<Employe> allEmployes = new List<Employe>();
     private List<Employe> allNonUsers = new List<Employe>();
     public class UserModele
@@ -175,6 +174,7 @@
         validationError = "";
     }
 
+    // THIS METHOD SHOULD CALL GestionUserService AND UPDATE THE ROLE OF THE EMPLOYE TO "AUCUN"
     private async Task OnDeleteUser(Employe employe)
     {
         Console.WriteLine($"User: {userModel.email} Role: {userModel.role} (retiré)");

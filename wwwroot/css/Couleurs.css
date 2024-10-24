@@ -211,6 +211,10 @@ input[type="checkbox"]:checked+.check-blanc:before {
     color: rgb(99, 188, 85);
 }
 
+.vertFonce {
+    color: rgb(30, 73, 45);
+}
+
 .bg-vert
 {
     background-color: rgb(99, 188, 85);
