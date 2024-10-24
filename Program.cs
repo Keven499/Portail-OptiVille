@@ -61,6 +61,12 @@ builder.Services.Configure<DefaultMail>(builder.Configuration.GetSection("Defaul
 builder.Services.AddScoped<MailManager>();
 #endregion
 
+#region JWT
+//Injection de d�pendance pour la g�n�ration de token JWT
+builder.Services.Configure<JwtTokenGeneratorOptions>(builder.Configuration.GetSection("JWT"));
+builder.Services.AddScoped<JwtTokenGenerator>();
+#endregion
+
 #region Database
 //Injection de d�pendance pour la connexion � la base de donn�es
 builder.Services.AddDbContext<A2024420517riGr1Eq6Context>(options =>
