@@ -64,7 +64,7 @@
                 {
                     <div class="row m-0">
                         <div class="col-auto p-0">
-                            <label for="categorie@(i)">
+                            <label>
                                 <input type="checkbox" id="categorie@(i)"
                                     checked="@LicenceRBQFormModel.SousCategoSelected[categorie.CodeSousCategorie]"
                                     @attributes="inputAttributes"
@@ -95,7 +95,6 @@
                             <span class="texte-14bold">@categorie.CodeSousCategorie - @categorie.TravauxPermis</span>
                         </label>
                     </div>
-                    
                 </div>
                 i++;
             }
