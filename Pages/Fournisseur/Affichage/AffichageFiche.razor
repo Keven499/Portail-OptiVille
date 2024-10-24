@@ -740,12 +740,17 @@
                 licencerbqs = await _context.Licencerbqs.SingleAsync(c => c.Fournisseur == selectedFournisseur.IdFournisseur);
                 selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
                 selectedLicencerbqs = await _context.Licencerbqs.Where(l => l.Fournisseur == selectedFournisseur.IdFournisseur).Include(l => l.IdCategorieRbqs).ToListAsync();
+                licenceRBQFormModel.NumeroLicence = licencerbqs.IdLicenceRbq;
+                licenceRBQFormModel.StatutLicence = licencerbqs.Statut;
+                licenceRBQFormModel.TypeLicence = licencerbqs.Type;
                 if(licencerbqs == null && selectedCategorieRBQ == null)
                 {
                     LicenceRBQInfoNull = true;
                 }
             }
             //allCategories = await _context.Categorierbqs.ToListAsync();
+            
+            Console.WriteLine("allCategoriesRBQ.count:" + allCategories.Count);
             fournisseurProduitIds = await _context.Database
             .SqlQueryRaw<string>(@"
                 SELECT idProduitService 
@@ -777,7 +782,7 @@
             GetGroupProduitService();
 
             combinedFormModel.FillData(coordonnee, identification, selectedTelephones);
-            
+            Console.WriteLine("Fin Fetch Data");
         }
         catch (Exception ex)
         {
