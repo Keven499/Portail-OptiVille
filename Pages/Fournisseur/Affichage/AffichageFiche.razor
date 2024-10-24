@@ -282,12 +282,12 @@
     </div>
     <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Licence RBQ</h3>
-        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#ModifierModalLicence">Modifier</button>
+        <button type="button" class="btn btn-warning" onclick="showModal('ModifierModalLicence')">Modifier</button>
         @*LicenceRBQInfoNull*@
     </div>
     <div class="card-body">
         <div class="row">
-            <div class="modal fade" id="ModifierModalLicence" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade" id="ModifierModalLicence" tabindex="-1" role="dialog" data-bs-backdrop="static">
                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
                     <div class="modal-content">
                         <div class="modal-body">
@@ -324,7 +324,10 @@
 
         @if (selectedCategorieRBQ != null)
         {
-            var groupedCategories = GroupCategoriesByType();
+            if(groupedCategories == null)
+            {
+                groupedCategories = GroupCategoriesByType();
+            }
                 
             <div class="row">
                 <div class="col-xl-6 mb-3">
@@ -527,6 +530,7 @@
     Identification identification = new Identification();
     List<Categorierbq> selectedCategorieRBQ = new List<Categorierbq>();
     Finance finance = new Finance();
+    Dictionary<string, List<Categorierbq>>? groupedCategories;
     Coordonnee coordonnee = new Coordonnee();
     Licencerbq licencerbqs = new Licencerbq();
     List<ContactPhoneInfo> contactPhoneInfo = new List<ContactPhoneInfo>();
@@ -590,9 +594,11 @@
 
     private async Task SaveModifcationLicenceRBQ()
     {
-        // A Ajouter
+
         await licenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
-        // Y'a un monde ou sa marche du premier coup pcq moi = genie 
+        selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
+        GroupCategoriesByType();
+        await JSRuntime.InvokeVoidAsync("hideModal", "ModifierModalLicence");
     }
     private async Task SaveModifcationProduitServices()
     {
@@ -648,7 +654,6 @@
     private Dictionary<string, List<Categorierbq>> GroupCategoriesByType()
     {
         var groupedCategories = new Dictionary<string, List<Categorierbq>>();
-
         foreach (var categorie in selectedCategorieRBQ)
         {
             if (!groupedCategories.ContainsKey(categorie.NomCategorie!))
@@ -689,7 +694,6 @@
     private ProduitsServices produitServiceRef;    
     List<string>? fournisseurProduitIds = new List<string>();
     private Action<ProduitsServices> AssignReferenceProduitsServices => (produitsServices) => produitServiceRef = produitsServices;
-
     
     protected override async Task OnInitializedAsync()
     {
@@ -809,7 +813,7 @@
                 }
             }
             GetGroupProduitService();
-
+            groupedCategories = GroupCategoriesByType();
             combinedFormModel.FillData(coordonnee, identification, selectedTelephones);
             Console.WriteLine("Fin Fetch Data");
         }
