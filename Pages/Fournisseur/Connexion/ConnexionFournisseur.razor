@@ -12,6 +12,7 @@
 @inject A2024420517riGr1Eq6Context _context
 @inject IJSRuntime JsRuntime
 @inject ICookie cookie
+@inject JwtTokenGenerator tokenGenerator
 <EditForm Model="@logInModel" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="ValidateInput">
     <!-- OnValidSubmit="HandleValidSubmit" -->
     <div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
@@ -70,7 +71,10 @@
                     // Redirection si les informations sont correctes
                     await ProtectedSessionStore.SetAsync("Email", fournisseur.AdresseCourriel);
                     //CookieService.("MyCookie", "TestValue", 30); // Expire dans 30 minutes
-                    await cookie.SetValue("MyCookie", "TestValue", 3);
+                    
+                    string token = tokenGenerator.GenerateToken("fournisseur.AdresseCourriel");
+
+                    await cookie.SetValue("STokken", token, 3);
 
                     NavigationManager.NavigateTo("/index", true);
                 }
