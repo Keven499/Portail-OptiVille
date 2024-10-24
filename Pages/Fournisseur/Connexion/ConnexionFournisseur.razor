@@ -74,7 +74,7 @@
                     
                     string token = tokenGenerator.GenerateToken("fournisseur.AdresseCourriel");
 
-                    await cookie.SetValue("STokken", token, 3);
+                    await cookie.SetValue("SToken", token, 3);
 
                     NavigationManager.NavigateTo("/index", true);
                 }
