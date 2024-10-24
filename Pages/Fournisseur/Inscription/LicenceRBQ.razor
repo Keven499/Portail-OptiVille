@@ -20,17 +20,20 @@
     <div class="card-body border-bleuFonce py-1">
         <div class="col-4 py-2">
             <label class="bleuFonce texte-bold" for="noLicenceRBQ">Numéro<i class="bi bi-braces text-success ms-1"></i> </label>
-            <input type="text" @attributes="inputAttributes" id="noLicenceRBQ" placeholder="0000-0000-00 ou 0000000000" class="form-control @GetInputClass(() => LicenceRBQFormModel.NumeroLicence) input-bleu texte-light" @bind="LicenceRBQFormModel.NumeroLicence" />
+            <input type="text" @attributes="inputAttributes" id="noLicenceRBQ" placeholder="0000-0000-00 ou 0000000000" class="form-control 
+                @GetInputClass(() => LicenceRBQFormModel.NumeroLicence) input-bleu texte-light"
+                @oninput="@(e => ButtonLogicChange(e, "NumeroLicence"))"
+                @bind="LicenceRBQFormModel.NumeroLicence" />
             @((MarkupString)GetValidationHTML(() => LicenceRBQFormModel.NumeroLicence))
         </div>
         <div class="row">
             <div class="col-5 py-2">
                 <label class="bleuFonce texte-bold" for="statut">Statut<i class="bi bi-braces-asterisk text-danger ms-1"></i></label>
-                <select class="form-select @GetInputClass(() => LicenceRBQFormModel.StatutLicence) input-bleu texte-light" @attributes="inputAttributes" id="statut" @bind="LicenceRBQFormModel.StatutLicence">
-                    @if (LicenceRBQFormModel.StatutLicence == null)
-                    {
-                        <option value="">Veuillez choisir un statut</option>
-                    }
+                <select class="form-select @GetInputClass(() => LicenceRBQFormModel.StatutLicence) input-bleu texte-light" 
+                    @attributes="inputAttributes" id="statut"
+                        @oninput="@(e => ButtonLogicChange(e, "StatutLicence"))"
+                    @bind="LicenceRBQFormModel.StatutLicence">
+                    <option value="">Veuillez choisir un statut</option>
                     <option value="1">Valide</option>
                     <option value="2">Valide avec restriction</option>
                     <option value="3">Non valide</option>
@@ -39,8 +42,11 @@
             </div>
             <div class="col-5 py-2">
                 <label class="bleuFonce texte-bold" for="licenceType">Type<i class="bi bi-braces-asterisk text-danger ms-1"></i></label>
-                <select class="form-select @GetInputClass(() => LicenceRBQFormModel.TypeLicence) input-bleu texte-light" @attributes="inputAttributes" id="licenceType" @bind="LicenceRBQFormModel.TypeLicence">
-                     <option value="" disabled selected>Veuillez choisir un type</option>
+                <select class="form-select @GetInputClass(() => LicenceRBQFormModel.TypeLicence) input-bleu texte-light" 
+                    @attributes="inputAttributes" id="licenceType"
+                        @oninput="@(e => ButtonLogicChange(e, "TypeLicence"))"
+                    @bind="LicenceRBQFormModel.TypeLicence">
+                    <option value="">Veuillez choisir un type</option>
                     <option value="1">Entrepreneur</option>
                     <option value="2">Constructeur-Propriétaire</option>
                 </select>
@@ -104,6 +110,10 @@
     public List<Categorierbq> AllCategories { get; set; }
     [Parameter]
     public LicenceRBQFormModel LicenceRBQFormModel { get; set; }
+    [Parameter]
+    public bool IsRBQAnyFieldChange { get; set; }
+    [Parameter]
+    public EventCallback<bool> IsRBQAnyFieldChangeChanged { get; set; }
     private EditContext editContext;
     private ValidationMessageStore validationMessageStore;
     private List<Categorierbq> categorieGeneral = new List<Categorierbq>();
@@ -153,12 +163,10 @@
     private string GetInputClass<TField> (Expression<Func<TField>> fieldExpression)
     {
         if (!isSubmit) {
-           return "";
+            return "";
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
         var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
-
-        // THERE'S PROBABLY A BETTER WAY TO DO THIS.
         if (fieldIdentifier.FieldName.Equals("NumeroLicence")) {
             return isValid ? "" : "invalid";
         }
@@ -169,12 +177,10 @@
     private string GetValidationHTML<TField> (Expression<Func<TField>> fieldExpression) 
     {
         if (!isSubmit) {
-           return "";
+            return "";
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
         var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
-
-        // THERE'S PROBABLY A BETTER WAY TO DO THIS.
         if (fieldIdentifier.FieldName.Equals("NumeroLicence")) {
             return isValid ? "" : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
         }
@@ -204,7 +210,6 @@
         if (e.Value is bool isChecked)
         {
             LicenceRBQFormModel.SousCategoSelected[codeSousCategorie] = (bool)e.Value;
-
             if (isChecked)
             {
                 LicenceRBQFormModel.CodeSousCategorie.Add(codeSousCategorie);
@@ -214,6 +219,7 @@
                 LicenceRBQFormModel.CodeSousCategorie.Remove(codeSousCategorie);
             }
         }
+        ButtonLogicChange(null, "");
     }
 
     private bool ValidateSelection()
@@ -234,28 +240,55 @@
         return input;
     }
 
-    // DÈS QUE UN DES CHAMPS (NUMÉRO, STATUT, TYPE ET CATÉGORIE) N'EST PLUS NULL OU VIDE, LE BOUTON PASSER DOIT DEVENIR SUIVANT
-    
+    public void ButtonLogicChange(ChangeEventArgs e, string propertyName)
+    {
+        if (e != null)
+        {
+            var value = e.Value?.ToString();
+            switch (propertyName)
+            {
+                case "NumeroLicence":
+                    LicenceRBQFormModel.NumeroLicence = e.Value.ToString();
+                    break;
 
-    // DÈS QUE TOUS LES CHAMPS (NUMÉRO, STATUT, TYPE ET CATÉGORIE) SONT VIDES, LE BOUTON SUIVANT DOIT DEVENIR PASSER
+                case "StatutLicence":
+                    LicenceRBQFormModel.StatutLicence = e.Value.ToString();
+                    break;
+
+                case "TypeLicence":
+                    LicenceRBQFormModel.TypeLicence = e.Value.ToString();
+                    break;
+            }
+        }
+        if (!isEveryFieldEmpty())
+        {
+            IsRBQAnyFieldChange = true;
+        }
+        else
+        {
+            IsRBQAnyFieldChange = false;
+        }
+        IsRBQAnyFieldChangeChanged.InvokeAsync(IsRBQAnyFieldChange);
+    }
+
     public bool isEveryFieldEmpty() {
         bool isFieldsEmpty = true;
-        if (string.IsNullOrEmpty(LicenceRBQFormModel.NumeroLicence))
+        if (!string.IsNullOrEmpty(LicenceRBQFormModel.NumeroLicence))
         {
             isFieldsEmpty = false;
             return isFieldsEmpty;
         }
-        if (string.IsNullOrEmpty(LicenceRBQFormModel.StatutLicence))
+        if (!string.IsNullOrEmpty(LicenceRBQFormModel.StatutLicence))
         {
             isFieldsEmpty = false;
             return isFieldsEmpty;
         }
-        if (string.IsNullOrEmpty(LicenceRBQFormModel.TypeLicence))
+        if (!string.IsNullOrEmpty(LicenceRBQFormModel.TypeLicence))
         {
             isFieldsEmpty = false;
             return isFieldsEmpty;
         }
-        if (!ValidateSelection()) 
+        if (ValidateSelection()) 
         {
             isFieldsEmpty = false;
             return isFieldsEmpty;

@@ -18,7 +18,6 @@
 @inject LicenceRBQService LicenceRBQService
 @inject ProduitServiceService ProduitServiceService
 
-
 <PageTitle>Demande fournisseur</PageTitle>
 <div class="form-group container-fluid ">
     <div class="row">
@@ -64,7 +63,7 @@
                                 <button @onclick="ShowPrevious" disabled="@isFirstComponent" class="btn bg-bleu text-white texte-medium" style="width: 200px;">
                                     <i class="bi bi-arrow-left-circle"></i> Précédent 
                                 </button>
-                                @if (currentIndex == 4)
+                                @if (currentIndex == 4 && !IsRBQAnyFieldChange)
                                 {
                                     <button @onclick="ShowNext" class="btn text-white texte-medium ms-2" style="width: 200px; background-color: #FFC300;">
                                         Passer
@@ -114,7 +113,19 @@
 
     private List<RenderFragment> Components { get; set; } = new List<RenderFragment>();
     private bool isFirstComponent => currentIndex == 0;
-    private bool isRBQAnyFieldChange { get; set; }
+    private bool _isRBQAnyFieldChange = false;
+    public bool IsRBQAnyFieldChange
+    {
+        get => _isRBQAnyFieldChange;
+        set
+        {
+            if (_isRBQAnyFieldChange != value)
+            {
+                _isRBQAnyFieldChange = value;
+                StateHasChanged();
+            }
+        }
+    }
     private int currentIndex = 0;
     private int currentStep => currentIndex + 1;
     private int totalSteps => Components.Count;
@@ -183,12 +194,14 @@
                 builder.CloseComponent();
             },
             // FORMULAIRE LICENCE RBQ 5
-             builder =>
+            builder =>
             {
                 builder.OpenComponent<LicenceRBQ>(4);
                 builder.AddAttribute(1, "AssignReference", (Action<LicenceRBQ>)(licenceRBQ => licenceRBQRef = licenceRBQ));
                 builder.AddAttribute(2, "AllCategories", allCategories); 
                 builder.AddAttribute(3, "LicenceRBQFormModel", licenceRBQFormModel);
+                builder.AddAttribute(4, "IsRBQAnyFieldChange", IsRBQAnyFieldChange);
+                builder.AddAttribute(5, "IsRBQAnyFieldChangeChanged", EventCallback.Factory.Create<bool>(this, OnIsRBQAnyFieldChangeChanged));
                 builder.CloseComponent();
             },
             // FORMULAIRE PIÈCES JOINTES 6
@@ -212,6 +225,11 @@
     {
         showMessage = true;
         InvokeAsync(StateHasChanged); 
+    }
+
+    private void OnIsRBQAnyFieldChangeChanged(bool newValue)
+    {
+        IsRBQAnyFieldChange = newValue;
     }
 
     private void StopLoading()
@@ -275,10 +293,13 @@
         // CASE LICENCE RBQ 5
         if (currentIndex == 4 && licenceRBQRef != null)
         {
-            bool isValid = await licenceRBQRef.TriggerValidation();
-            if (!isValid)
+            if (IsRBQAnyFieldChange)
             {
-                return;
+                bool isValid = await licenceRBQRef.TriggerValidation();
+                if (!isValid)
+                {
+                    return;
+                }
             }
         }
 
