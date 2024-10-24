@@ -29,7 +29,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<NEQManager>();
 builder.Services.AddScoped<ICookie, CookieService>();
-#region Add services for saving in DB
+
+#region Add services for DB management
 builder.Services.AddScoped<FournisseurService>();
 builder.Services.AddScoped<ContactsService>();
 builder.Services.AddScoped<CoordonneeService>();
@@ -39,6 +40,7 @@ builder.Services.AddScoped<LicenceRBQService>();
 builder.Services.AddScoped<ProduitServiceService>();
 builder.Services.AddScoped<HistoriqueService>();
 builder.Services.AddScoped<FinanceService>();
+builder.Services.AddScoped<GestionUserService>();
 #endregion
 
 #region Load Config from Setting.json
