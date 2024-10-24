@@ -36,9 +36,9 @@
                         @oninput="@(e => ButtonLogicChange(e, "StatutLicence"))"
                     @bind="LicenceRBQFormModel.StatutLicence">
                     <option value="">Veuillez choisir un statut</option>
-                    <option value="1">Valide</option>
-                    <option value="2">Valide avec restriction</option>
-                    <option value="3">Non valide</option>
+                    <option value="Valide">Valide</option>
+                    <option value="Valide avec restriction">Valide avec restriction</option>
+                    <option value="Non valide">Non valide</option>
                 </select>         
                 @((MarkupString)GetValidationHTML(() => LicenceRBQFormModel.StatutLicence))                               
             </div>
@@ -49,8 +49,8 @@
                         @oninput="@(e => ButtonLogicChange(e, "TypeLicence"))"
                     @bind="LicenceRBQFormModel.TypeLicence">
                     <option value="">Veuillez choisir un type</option>
-                    <option value="1">Entrepreneur</option>
-                    <option value="2">Constructeur-Propriétaire</option>
+                    <option value="Entrepreneur">Entrepreneur</option>
+                    <option value="Constructeur-Propriétaire">Constructeur-Propriétaire</option>
                 </select>
                 @((MarkupString)GetValidationHTML(() => LicenceRBQFormModel.TypeLicence))        
             </div>                    
@@ -130,36 +130,30 @@
     private Dictionary<string, object> inputAttributes;
     private bool isSubmit = false;
     bool isDisabled = false;
-
-    private Dictionary<int, string> statutLicenceText = new Dictionary<int, string>
-    {
-        { 1, "Valide" },
-        { 2, "Valide avec restriction" },
-        { 3, "Non valide" }
-    };
-
-    private Dictionary<int, string> typeLicenceText = new Dictionary<int, string>
-    {
-        { 1, "Entrepreneur" },
-        { 2, "Constructeur-Propriétaire" }
-    };
     protected override void OnParametersSet()
     {
-        try
+        if (AllCategories != null && AllCategories.Any())
         {
-            //Console.WriteLine($"AllCategories: {AllCategories.Count}");
-            categorieGeneral = AllCategories
-            .Where(c => c.NomCategorie == "Général")
-            .ToList();
-            //Console.WriteLine($"categorieGeneral: {categorieGeneral.Count}");
-            categorieSpecialise = AllCategories
-            .Where(c => c.NomCategorie == "Spécialisé")
-            .ToList();
-            //Console.WriteLine($"categorieSpecialise: {categorieSpecialise.Count}");
-        }
-        catch (Exception ex)
+            try
+            {
+                //Console.WriteLine($"AllCategories: {AllCategories.Count}");
+                categorieGeneral = AllCategories
+                .Where(c => c.NomCategorie == "Général")
+                .ToList();
+                //Console.WriteLine($"categorieGeneral: {categorieGeneral.Count}");
+                categorieSpecialise = AllCategories
+                .Where(c => c.NomCategorie == "Spécialisé")
+                .ToList();
+                //Console.WriteLine($"categorieSpecialise: {categorieSpecialise.Count}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erreur lors de la récupération des personnes: {ex.Message}");
+            }
+            }
+        else
         {
-            Console.WriteLine($"Erreur lors de la récupération des personnes: {ex.Message}");
+            Console.WriteLine("AllCategories is either null or empty.");
         }
     }
     protected override void OnInitialized()
@@ -167,7 +161,7 @@
         isDisabled = LicenceRBQFormModel.Disabled;
         inputAttributes = isDisabled
             ? new Dictionary<string, object> { { "disabled", "disabled" } }
-            : new Dictionary<string, object>();
+            : new Dictionary<string, object>(); 
         editContext = new EditContext(LicenceRBQFormModel);
         editContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
         validationMessageStore = new ValidationMessageStore(editContext);

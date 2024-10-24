@@ -292,7 +292,7 @@
                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
                     <div class="modal-content">
                         <div class="modal-body">
-                                <LicenceRBQ AssignReference="AssignReferenceLicenceRBQ" AllCategories="allCategories" LicenceRBQFormModel="licenceRBQFormModel"></LicenceRBQ>
+                                <LicenceRBQ AssignReference="AssignReferenceLicenceRBQ" LicenceRBQFormModel="licenceRBQFormModel" ></LicenceRBQ>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -392,7 +392,7 @@
                     {
                         <tr>
                             <th scope="row" class="texte-bold">@(selectedFichiers.IndexOf(file)+1)</th>
-                            <td class="texte-light">@file.Nom@file.Type</td>
+                            <td class="texte-light">@file.Nom</td>
                             <td class="texte-light">@GetFormatSizeFile(file.Taille)</td>
                             <td><button class="btn btn-danger texte-bold" type="button" data-bs-target="#ModalConfirmation" data-bs-toggle="modal" @onclick="() => OpenConfirmationModal(file)"><i class="bi bi-trash"></i> Effacer</button></td>
                         </tr>
@@ -533,11 +533,12 @@
     List<ContactPhoneInfo> contactPhoneInfo = new List<ContactPhoneInfo>();
 
     private List<Categorierbq> allCategories = new List<Categorierbq>();
+    private List<Categorierbq> allCategoriesForm = new List<Categorierbq>();
     private LicenceRBQFormModel licenceRBQFormModel = new LicenceRBQFormModel();
     private LicenceRBQ LicenceRBQRef;   
     private Action<LicenceRBQ> AssignReferenceLicenceRBQ => (licenceRBQ) => LicenceRBQRef = licenceRBQ;
     List<IGrouping<GroupKey, Produitservice>>? groupedServices;
-
+    private Dictionary<string, bool> selectedCurrentCategorieRBQ = new Dictionary<string, bool>();
     public class CombinedFormModel
     {
         public CoordonneeFormModel CoordonneeFormModel { get; set; }
@@ -685,6 +686,7 @@
     private List<Produitservice> allProduitService = new List<Produitservice>();
     private List<Produitservice>? selectedProduitservices = new List<Produitservice>();
     private List<Categorieunspsc> categorieUNSPSC = new List<Categorieunspsc>();
+    private List<string> AllCodeSousCategorie = new List<string>();
     private ProduitsServices produitServiceRef;    
     List<string>? fournisseurProduitIds = new List<string>();
     private Action<ProduitsServices> AssignReferenceProduitsServices => (produitsServices) => produitServiceRef = produitsServices;
@@ -739,17 +741,31 @@
             {
                 licencerbqs = await _context.Licencerbqs.SingleAsync(c => c.Fournisseur == selectedFournisseur.IdFournisseur);
                 selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
+                foreach(var item in selectedCategorieRBQ)
+                {
+                    selectedCurrentCategorieRBQ.Add(item.CodeSousCategorie,true);
+                }
                 selectedLicencerbqs = await _context.Licencerbqs.Where(l => l.Fournisseur == selectedFournisseur.IdFournisseur).Include(l => l.IdCategorieRbqs).ToListAsync();
-                licenceRBQFormModel.NumeroLicence = licencerbqs.IdLicenceRbq;
-                licenceRBQFormModel.StatutLicence = licencerbqs.Statut;
-                licenceRBQFormModel.TypeLicence = licencerbqs.Type;
+                allCategoriesForm = await _context.Categorierbqs.ToListAsync();
+                foreach(var categorie in allCategoriesForm)
+                {
+                    AllCodeSousCategorie.Add(categorie.CodeSousCategorie);
+                }
+                licenceRBQFormModel = new LicenceRBQFormModel
+                {
+                    NumeroLicence = licencerbqs.IdLicenceRbq,
+                    StatutLicence = licencerbqs.Statut,
+                    TypeLicence = licencerbqs.Type,
+                    CodeSousCategorie = AllCodeSousCategorie ?? new List<string>(),
+                    SousCategoSelected = selectedCurrentCategorieRBQ ?? new Dictionary<string, bool>()
+                };
+
                 if(licencerbqs == null && selectedCategorieRBQ == null)
                 {
                     LicenceRBQInfoNull = true;
                 }
             }
-            //allCategories = await _context.Categorierbqs.ToListAsync();
-            
+                //allCategories = await _context.Categorierbqs.ToListAsync();
             Console.WriteLine("allCategoriesRBQ.count:" + allCategories.Count);
             fournisseurProduitIds = await _context.Database
             .SqlQueryRaw<string>(@"
