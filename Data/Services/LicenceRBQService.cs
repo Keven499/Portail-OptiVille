@@ -85,8 +85,8 @@ namespace Portail_OptiVille.Data.Services
                     }
                 }
 
-            _context.Licencerbqs.Update(licenceRBQdata);
-            await _context.SaveChangesAsync();
+                _context.Licencerbqs.Update(licenceRBQdata);
+                await _context.SaveChangesAsync();
             }
         }
     }

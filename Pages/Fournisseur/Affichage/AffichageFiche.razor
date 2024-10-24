@@ -292,7 +292,7 @@
                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
                     <div class="modal-content">
                         <div class="modal-body">
-                                <LicenceRBQ AssignReference="AssignReferenceLicenceRBQ" LicenceRBQFormModel="licenceRBQFormModel" ></LicenceRBQ>
+                                <LicenceRBQ AssignReference="AssignReferenceLicenceRBQ" LicenceRBQFormModel="licenceRBQFormModel" AllCategories="allCategories"></LicenceRBQ>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -592,7 +592,7 @@
     private async Task SaveModifcationLicenceRBQ()
     {
         // A Ajouter
-        //await licenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
+        await licenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
         // Y'a un monde ou sa marche du premier coup pcq moi = genie 
     }
     private async Task SaveModifcationProduitServices()
@@ -744,9 +744,13 @@
                 foreach(var item in selectedCategorieRBQ)
                 {
                     selectedCurrentCategorieRBQ.Add(item.CodeSousCategorie,true);
+
                 }
                 selectedLicencerbqs = await _context.Licencerbqs.Where(l => l.Fournisseur == selectedFournisseur.IdFournisseur).Include(l => l.IdCategorieRbqs).ToListAsync();
                 allCategoriesForm = await _context.Categorierbqs.ToListAsync();
+                selectedCurrentCategorieRBQ = allCategoriesForm.ToDictionary(c => c.CodeSousCategorie, c => false);
+            
+                allCategories = await _context.Categorierbqs.ToListAsync(); 
                 foreach(var categorie in allCategoriesForm)
                 {
                     AllCodeSousCategorie.Add(categorie.CodeSousCategorie);
@@ -756,9 +760,19 @@
                     NumeroLicence = licencerbqs.IdLicenceRbq,
                     StatutLicence = licencerbqs.Statut,
                     TypeLicence = licencerbqs.Type,
-                    CodeSousCategorie = AllCodeSousCategorie ?? new List<string>(),
-                    SousCategoSelected = selectedCurrentCategorieRBQ ?? new Dictionary<string, bool>()
+                    CodeSousCategorie = AllCodeSousCategorie,
+                    SousCategoSelected = allCategories.ToDictionary(c => c.CodeSousCategorie, c => false)
                 };
+                foreach(var item in selectedCurrentCategorieRBQ)
+                {
+                    foreach(var cate in selectedCategorieRBQ)
+                    {
+                        if (cate.CodeSousCategorie == item.Key)
+                        {
+                            licenceRBQFormModel.SousCategoSelected[item.Key] = true;
+                        }
+                    }
+                }
 
                 if(licencerbqs == null && selectedCategorieRBQ == null)
                 {
