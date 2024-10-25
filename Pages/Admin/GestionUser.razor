@@ -17,10 +17,10 @@
             <div class="card-body border-vertFonce">
                 <div class="row">
                     <div class="col-xl-4">
-                        <div class="titre-medium fs-3">Utilisateur</div>
+                        <div class="titre-medium vert fs-3">Utilisateur</div>
                     </div>
                     <div class="col-xl-4">
-                        <div class="titre-medium fs-3">Rôle</div>
+                        <div class="titre-medium vert fs-3">Rôle</div>
                     </div>
                 </div>
                 @foreach (var employe in allEmployes)
@@ -38,7 +38,7 @@
                             </select>
                         </div>
                         <div class="col-xl-2 col-6">
-                            <button type="button" class="btn btn-danger w-100" @onclick="() => OnDeleteUser(employe)"><i class="bi bi-trash"></i></button>
+                            <button type="button" class="btn btn-danger w-100" @onclick="() => OnDeleteUser(employe)"><i class="bi bi-trash me-1"></i>Supprimer</button>
                         </div>
                         <hr class="mt-2 mb-0"/>
                     </div>
@@ -77,7 +77,7 @@
                         </div>
                         <div class="row justify-content-center">
                             <div class="col-xl-6 text-center">
-                                    <button type="submit" style="width: 200px" class="btn btn-success text-white texte-bold" @onclick="AjoutUtilisateur">Confirmer</button>
+                                <button type="submit" style="width: 200px" class="btn btn-success text-white texte-bold" @onclick="AjoutUtilisateur">Confirmer</button>
                                 <button type="button" class="btn bg-danger text-white texte-bold" @onclick="ShowForm" style="width: 200px;">Annuler</button>
                             </div>
                         </div>

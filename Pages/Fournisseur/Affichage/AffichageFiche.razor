@@ -20,20 +20,21 @@
 @inject ContactsService contactsService
 @using Portail_OptiVille.Pages.Fournisseur.Inscription
 @inject IJSRuntime JSRuntime
+
 <PageTitle>Fiche Fournisseur</PageTitle>
 <div class="container-fluid card p-0 m-0">
     <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
-        <h3 class="py-2 p-0 my-0 text-white">Demande</h3>
-        <button type="button" class="btn btn-danger" data-bs-target="#ModalConfirmationDeleteFiche" data-bs-toggle="modal">Supprimer la fiche</button>
+        <h3 class="py-2 p-0 my-0 titre-30bold text-white">Demande</h3>
+        <button type="button" class="btn bg-danger text-white texte-bold" data-bs-target="#ModalConfirmationDeleteFiche" data-bs-toggle="modal"><i class="bi bi-trash me-1"></i>Supprimer la fiche</button>
         <div class="modal fade" id="ModalConfirmationDeleteFiche" tabindex="-1" aria-labelledby="ModalConfirmationDeleteFiche" aria-hidden="true" data-bs-backdrop="static">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    <div class="modal-header border-0 text-center w-100">
-                        <h1 class="modal-title fs-5 mx-auto" id="ModalConfirmationDeleteFiche">Êtes-vous sûre de vouloir effacer la fiche</h1>
+                    <div class="modal-header border-0 text-center w-100 bg-bleu">
+                        <h1 class="modal-title fs-5 mx-auto texte-bold text-white" id="ModalConfirmationDeleteFiche">Êtes-vous sûre de vouloir effacer la fiche?</h1>
                     </div>
-                    <div class="modal-footer border-0 d-flex justify-content-center">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="DeleteFiche">Confirmer</button>
+                    <div class="modal-footer border-0 d-flex justify-content-center bg-bleuPale">
+                        <button type="button" class="btn bg-bleu texte-bold text-white" data-bs-dismiss="modal" @onclick="DeleteFiche"><i class="bi bi-check-circle me-1"></i>Confirmer</button>
+                        <button type="button" class="btn bg-bleu texte-bold text-white" data-bs-dismiss="modal"><i class="bi bi-x-circle me-1"></i>Annuler</button>
                     </div>
                 </div>
             </div>
