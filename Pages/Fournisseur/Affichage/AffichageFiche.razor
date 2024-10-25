@@ -19,6 +19,7 @@
 @inject LicenceRBQService licenceRBQService
 @inject ContactsService contactsService
 @using Portail_OptiVille.Pages.Fournisseur.Inscription
+@using Portail_OptiVille.Pages.Fournisseur.Inscription.Contact
 @inject IJSRuntime JSRuntime
 
 <PageTitle>Fiche Fournisseur</PageTitle>
@@ -152,6 +153,7 @@
     
     <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
         <h3 class="py-2 p-0 my-0 text-white">Contacts</h3>
+        @*<button type="button" class="btn btn-warning" onclick="showModal('ContactModal')">Modifier</button>*@
         @if (modificationContact)
         {
             <button type="button" class="btn btn-warning" @onclick="ModificationContact">Modifier</button>
@@ -162,6 +164,23 @@
         }
     </div>
 
+        @*
+        <div class="row">
+            <div class="modal fade" tabindex="-1" role="dialog" id="ContactModal" data-bs-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                                <ContactFormHoster AssignReference="AssignReferenceContactFormHoster" ContactHosterFormModel="contactHosterFormModel"></ContactFormHoster>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary" @onclick="SaveContact">Sauvegarder</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        *@
     <div class="card-body">
         @for (int i = 0; i < contactHosterFormModel.ContactList!.Count; i++)
         {
@@ -540,6 +559,8 @@
     private List<Categorierbq> allCategoriesForm = new List<Categorierbq>();
     private LicenceRBQFormModel licenceRBQFormModel = new LicenceRBQFormModel();
     private LicenceRBQ LicenceRBQRef;   
+    private ContactFormHoster ContactFormHosterRef; 
+    public Action<ContactFormHoster>? AssignReferenceContactFormHoster => (contactFormHoster) => ContactFormHosterRef = contactFormHoster;
     private Action<LicenceRBQ> AssignReferenceLicenceRBQ => (licenceRBQ) => LicenceRBQRef = licenceRBQ;
     List<IGrouping<GroupKey, Produitservice>>? groupedServices;
     private Dictionary<string, bool> selectedCurrentCategorieRBQ = new Dictionary<string, bool>();
@@ -598,7 +619,8 @@
 
         await licenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
         selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
-        GroupCategoriesByType();
+        groupedCategories = GroupCategoriesByType();
+        //
         await JSRuntime.InvokeVoidAsync("hideModal", "ModifierModalLicence");
     }
     private async Task SaveModifcationProduitServices()
@@ -684,7 +706,7 @@
     } *@
     public class ContactPhoneInfo
     {
-        public Contact Contact { get; set; }
+        public Portail_OptiVille.Data.Models.Contact Contact { get; set; }
         public List<Telephone> PhoneNumbers { get; set; }
     }
     private ProduitServiceFormModel produitServiceFormModel = new ProduitServiceFormModel();
@@ -693,6 +715,7 @@
     private List<Categorieunspsc> categorieUNSPSC = new List<Categorieunspsc>();
     private List<string> AllCodeSousCategorie = new List<string>();
     private ProduitsServices produitServiceRef;    
+    ContactFormModel contactFormModel = new ContactFormModel();
     List<string>? fournisseurProduitIds = new List<string>();
     private Action<ProduitsServices> AssignReferenceProduitsServices => (produitsServices) => produitServiceRef = produitsServices;
     
@@ -707,7 +730,7 @@
             {
                 var phoneNumber = await _context.Telephones.Where(t => t.Contact == contact.IdContact).FirstAsync();
 
-                var contactFormModel = new ContactFormModel
+                contactFormModel = new ContactFormModel
                 {
                     IdContact = contact.IdContact,
                     Prenom = contact.Prenom,
@@ -720,7 +743,7 @@
                 };
                 contactHosterFormModel.ContactList.Add(contactFormModel);
             }
-
+            //contactHosterFormModel.ContactList.RemoveAt(0);
             coordonnee = await _context.Coordonnees.SingleAsync(c => c.Fournisseur == selectedFournisseur.IdFournisseur);
             selectedTelephones = await _context.Telephones.Where(t => t.Coordonnee == coordonnee.IdCoordonnee).ToListAsync();
             try
@@ -745,11 +768,6 @@
             {
                 licencerbqs = await _context.Licencerbqs.SingleAsync(c => c.Fournisseur == selectedFournisseur.IdFournisseur);
                 selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
-                foreach(var item in selectedCategorieRBQ)
-                {
-                    selectedCurrentCategorieRBQ.Add(item.CodeSousCategorie,true);
-
-                }
                 selectedLicencerbqs = await _context.Licencerbqs.Where(l => l.Fournisseur == selectedFournisseur.IdFournisseur).Include(l => l.IdCategorieRbqs).ToListAsync();
                 allCategoriesForm = await _context.Categorierbqs.ToListAsync();
                 selectedCurrentCategorieRBQ = allCategoriesForm.ToDictionary(c => c.CodeSousCategorie, c => false);
