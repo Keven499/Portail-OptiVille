@@ -51,6 +51,7 @@
     public IdenticationFormModel IdenticationFormModel { get; set; }
     private EditContext editContext;
     private bool isSubmit = false;
+
     protected override void OnInitialized()
     {
         editContext = new EditContext(IdenticationFormModel);

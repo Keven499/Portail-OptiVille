@@ -1,4 +1,5 @@
-﻿using Portail_OptiVille.Data.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Portail_OptiVille.Data.Models;
 
 namespace Portail_OptiVille.Data.Services
 {
@@ -11,18 +12,16 @@ namespace Portail_OptiVille.Data.Services
             _context = context;
         }
 
-        public async Task SaveUser()
+        public async Task UpdateUserRole(string courriel, string role)
         {
-            // EN FAIT JE CROIS QU'IL VA NOUS FALLOIR UNE SECONDE TABLE QUI DÉTERMINE JUSTE LE RÔLE DES EMPLOYÉS POUR NE PAS SUPPRIMER LES EMPLOYÉS DE LA TABLE, MAIS SEULEMENT LEUR RÔLE
-        }
-
-        public async Task DeleteUser(Employe employe)
-        {
-            var userToDelete = await _context.Employes.FindAsync(employe.Courriel);
-            if (userToDelete != null)
+            var userToUpdate = await _context.Employes.FindAsync(courriel);
+            if (userToUpdate != null)
             {
-                _context.Employes.Remove(userToDelete);
-                await _context.SaveChangesAsync(); 
+                // Update the role field to "Aucun"
+                userToUpdate.Role = role;
+
+                // Save the changes to the database
+                await _context.SaveChangesAsync();
             }
             else
             {
@@ -30,9 +29,25 @@ namespace Portail_OptiVille.Data.Services
             }
         }
 
-        public async Task UpdateUser()
+        public async Task UpdateRoleOfUsers(List<string> employesCourriel, List<string> employesRole)
         {
-            // EN FAIT JE CROIS QU'IL VA NOUS FALLOIR UNE SECONDE TABLE QUI DÉTERMINE JUSTE LE RÔLE DES EMPLOYÉS POUR NE PAS SUPPRIMER LES EMPLOYÉS DE LA TABLE, MAIS SEULEMENT LEUR RÔLE
+            if (employesCourriel.Count != employesRole.Count)
+            {
+                throw new ArgumentException("The lists employesCourriel and employesRole must have the same number of elements.");
+            }
+
+            for (int i = 0; i < employesCourriel.Count; i++)
+            {
+                string courriel = employesCourriel[i];
+                string role = employesRole[i];
+                var employe = await _context.Employes.FirstOrDefaultAsync(e => e.Courriel == courriel);
+
+                if (employe != null)
+                {
+                    employe.Role = role;
+                }
+            }
+            await _context.SaveChangesAsync();
         }
     }
 }

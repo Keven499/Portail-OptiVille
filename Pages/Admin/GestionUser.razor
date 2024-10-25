@@ -3,17 +3,9 @@
 @using Microsoft.EntityFrameworkCore
 @using Portail_OptiVille.Data.Models
 @using Portail_OptiVille.Data.Services
+@using System.Linq.Expressions
 @inject A2024420517riGr1Eq6Context _context
 @inject GestionUserService GestionUserService
-
-<style>
-    .custom-alert {
-        position: relative; /* Ensures it behaves normally in document flow */
-        display: flex; /* Allows flexbox alignment */
-        justify-content: space-between; /* Positions the button at the end */
-        align-items: center; /* Centers content vertically */
-    }
-</style>
 
 <PageTitle>Gestion des rôles</PageTitle>
     <div class="row d-flex justify-content-center">
@@ -56,40 +48,37 @@
                 {
                     <div class="row justify-content-center">
                         <div class="col-xl-6 text-center">
-                            <button type="submit" class="btn btn-success" style="width: 200px;" @onclick="ShowForm"><i class="bi bi-plus-circle"></i> Ajouter</button>
+                                <button type="submit" class="btn btn-success text-white texte-bold" style="width: 200px;" @onclick="ShowForm"><i class="bi bi-plus-circle"></i> Ajouter</button>
                         </div>
                     </div>
                 }
                 else
                 {
-                    <EditForm Model="@userModel" OnValidSubmit="@AjoutUtilisateur">
+                    <EditForm EditContext="editContext">
                         <DataAnnotationsValidator />
-                        <ValidationSummary />
-
                         <div class="row mb-3 justify-content-center">
                             <div class="col-xl-12">
                                     <label class="vertFonce texte-bold" for="emailNewUser">Courriel <i class="bi bi-braces-asterisk text-danger"></i></label>
-                                    <InputText class="form-control input-vert texte-light" id="emailNewUser" @bind-Value="userModel.email" placeholder="courriel@votre-entreprise.extension" />
-                                <ValidationMessage For="@(() => userModel.email)" />
+                                    <input type="text" class="form-control @GetInputClass(() => userModel.courriel) input-vert texte-light" id="emailNewUser" @bind="userModel.courriel" placeholder="courriel@votre-entreprise.extension" />
+                                    @((MarkupString)GetValidationHTML(() => userModel.courriel))
                             </div>
                         </div>
-
                         <div class="row mb-3 justify-content-center">
                             <div class="col-xl-12">
                                     <label class="vertFonce texte-bold" for="roleNewUser">Rôle <i class="bi bi-braces-asterisk text-danger"></i></label>
-                                <select class="form-select input-vert texte-light" @bind="userModel.role" id="roleNewUser" selected="@((userModel.role == "Commis"))">
+                                    <select class="form-select @GetInputClass(() => userModel.role) input-vert texte-light" @bind="userModel.role" id="roleNewUser" selected="@((userModel.role == "Commis"))">
                                     @foreach (var value in Roles)
                                     {
                                         <option value="@value">@value</option>
                                     }
                                 </select>
-                                <ValidationMessage For="@(() => userModel.role)" />
+                                @((MarkupString)GetValidationHTML(() => userModel.role))
                             </div>
                         </div>
-
                         <div class="row justify-content-center">
                             <div class="col-xl-6 text-center">
-                                <button type="submit" class="btn btn-primary">Ajouter un utilisateur</button>
+                                    <button type="submit" style="width: 200px" class="btn btn-success text-white texte-bold" @onclick="AjoutUtilisateur">Confirmer</button>
+                                <button type="button" class="btn bg-danger text-white texte-bold" @onclick="ShowForm" style="width: 200px;">Annuler</button>
                             </div>
                         </div>
                     </EditForm>
@@ -97,45 +86,41 @@
                 </div>
             </div>
             <div class="card-footer bg-vertFonce">
-                @if (!string.IsNullOrEmpty(validationError))
+                <!-- RESTE PLUS QU'À AFFICHER LE BOUTON SAUVEGARDER QUAND UNE MODIFICAITON D'UN RÔLE EST DÉTECTÉ -->
+                @if (isRoleChanged)
                 {
-                <div class="d-flex justify-content-center align-items-center">
-                    <div class="col-xl-6 alert alert-danger custom-alert fade show m-1" role="alert">
-                        <span class="text-center flex-grow-1">
-                            @((MarkupString)validationError)
-                        </span>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" @onclick="ClearMessageError"></button>
-                    </div>
-                </div>
+                    <button type="submit" class="btn btn-success w-100 text-white texte-bold" @onclick="UpdateEmployesRole">Sauvegarder</button>
                 }
-                <button type="submit" class="btn btn-success w-100" @onclick="SubmitChanges">Sauvegarder</button>
             </div>
         </div>
     </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    .valid {
+        outline: 1px solid #26b050;
+    }
+</style>
+
 @code{
-    private UserModele userModel = new UserModele() { role = "Commis" };
+    private UserModel userModel = new UserModel() { role = "Commis" };
     private bool formAjouter = false;
-    private string? validationError = null;
+    private EditContext editContext;
+    private bool isSubmit = false;
+    private bool isRoleChanged = false;
+    private ValidationMessageStore validationMessageStore;
     List<string> Roles = new() { "Commis", "Responsable", "Administrateur" };
     private List<Employe> allEmployes = new List<Employe>();
     private List<Employe> allNonUsers = new List<Employe>();
-    public class UserModele
-    {
-        [Required(ErrorMessage = "Veuillez mettre un courriel")]
-        public string? email { get; set; }
-        [Required(ErrorMessage = "Veuillez mettre un role")]
-        public string? role { get; set; }
-    }
-    private void OnRoleChange(Employe employe, string selectedRole)
-    {
-        employe.Role = selectedRole;
-    }
+    private List<string> employesCourrielUpdate = new List<string>();
+    private List<string> employesRoleUpdate = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
+        editContext = new EditContext(userModel);
+        editContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
+        validationMessageStore = new ValidationMessageStore(editContext);
         try
         {
             allEmployes = await _context.Employes.Where(e => Roles.Contains(e.Role)).ToListAsync();
@@ -147,78 +132,139 @@
         }
     }
 
-    private List<string> validationErrors = new List<string>();
+    public class UserModel
+    {
+        [Required(ErrorMessage = "Courriel requis")]
+        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Format invalide")]
+        public string? courriel { get; set; }
+        [Required(ErrorMessage = "Rôle requis")]
+        public string? role { get; set; }
+    }
+
+    private void OnRoleChange(Employe employe, string selectedRole)
+    {
+        int index = employesCourrielUpdate.IndexOf(employe.Courriel);
+        if (index != -1)
+        {
+            employesRoleUpdate[index] = selectedRole;
+            Employe matchingEmploye = allEmployes.FirstOrDefault(e => e.Courriel == employe.Courriel);
+            if (matchingEmploye != null)
+            {
+                index = employesCourrielUpdate.IndexOf(matchingEmploye.Courriel);
+                if (employesRoleUpdate[index] == matchingEmploye.Role)
+                {
+                    employesCourrielUpdate.Remove(matchingEmploye.Courriel);
+                    employesRoleUpdate.RemoveAt(index);
+                    if (employesCourrielUpdate.Count == 0)
+                    {
+                        isRoleChanged = false;
+                    }
+                }
+            }
+        }
+        else
+        {
+            employesCourrielUpdate.Add(employe.Courriel);
+            employesRoleUpdate.Add(selectedRole);
+            isRoleChanged = true;
+        }
+    }
+
+    private string GetInputClass<TField>(Expression<Func<TField>> fieldExpression)
+    {
+        if (!isSubmit)
+        {
+            return "";
+        }
+        var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
+        var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
+        return isValid ? "valid" : "invalid";
+    }
+
+    private string GetValidationHTML<TField>(Expression<Func<TField>> fieldExpression)
+    {
+        if (!isSubmit)
+        {
+            return "";
+        }
+        var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
+        var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
+        return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-validation\">Valide</span></span>"
+                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
+    }
 
     private bool ValidateRoles()
     {
-        validationError = string.Empty;
-
+        bool isRespectHierarchy = true;
         int adminCount = allEmployes.Count(e => e.Role == "Administrateur");
         int responsableCount = allEmployes.Count(e => e.Role == "Responsable");
-
         if (adminCount != 2)
         {
-            validationError += "Vous devez avoir 2 Administrateurs. <br>";
+            //validationError += "Vous devez avoir 2 Administrateurs. <br>";
+            isRespectHierarchy = false;
+            return isRespectHierarchy;
         }
-
         if (responsableCount < 1)
         {
-            validationError += "Vous devez avoir au moins 1 Responsable.";
+            //validationError += "Vous devez avoir au moins 1 Responsable.";
+            isRespectHierarchy = false;
+            return isRespectHierarchy;
         }
-
-        return string.IsNullOrEmpty(validationError);
-    }
-
-    private void ClearMessageError()
-    {
-        validationError = "";
+        return isRespectHierarchy;
     }
 
     // THIS METHOD SHOULD CALL GestionUserService AND UPDATE THE ROLE OF THE EMPLOYE TO "AUCUN"
     private async Task OnDeleteUser(Employe employe)
     {
-        Console.WriteLine($"User: {userModel.email} Role: {userModel.role} (retiré)");
+        Console.WriteLine($"User: {userModel.courriel} Role: {userModel.role} (retiré)");
         allEmployes.Remove(employe);
-        await GestionUserService.DeleteUser(employe);
+        await GestionUserService.UpdateUserRole(employe.Courriel, "Aucun");
+    }
+
+    private async Task UpdateEmployesRole()
+    {
+        await GestionUserService.UpdateRoleOfUsers(employesCourrielUpdate, employesRoleUpdate);
+        employesCourrielUpdate.Clear();
+        employesRoleUpdate.Clear();
+        isRoleChanged = false;
     }
 
     private void ShowForm()
     {
         formAjouter = !formAjouter;
+        userModel = new UserModel() { role = "Commis" };
+        isSubmit = false;
     }
 
-    private void AjoutUtilisateur()
+    private async Task AjoutUtilisateur()
     {
-       var allNonUsersEmails = allNonUsers.Select(e => e.Courriel).ToList();
-        if (allNonUsersEmails.Contains(userModel.email))
+        if (TriggerValidation() && ValidateRoles())
         {
-        allEmployes.Add(new Employe { Courriel = userModel.email!, Role = userModel.role! });
-
-        Console.WriteLine($"User: {userModel.email} Role: {userModel.role} (ajouté)");
-        
-        userModel = new UserModele() { role = "Commis" };;
-        formAjouter = false;
-        ClearMessageError();
-        }
-        else
-        {
-            validationError = "Cet utilisateur n'existe pas";
-        }
-    }
-
-    private void SubmitChanges()
-    {
-        if(ValidateRoles())
-        {
-            foreach(var employe in allEmployes)
+            var allNonUsersEmails = allNonUsers.Select(e => e.Courriel).ToList();
+            if (allNonUsersEmails.Contains(userModel.courriel))
             {
-                Console.WriteLine($"Employe: {employe.Courriel}, Role: {employe.Role}");
+                var employe = new Employe { Courriel = userModel.courriel!, Role = userModel.role! };
+                allEmployes.Add(employe);
+                ShowForm();
+                await GestionUserService.UpdateUserRole(employe.Courriel, userModel.role);
+                userModel = new UserModel() { role = "Commis" };
+                isSubmit = false;
             }
-            ClearMessageError();
+            else
+            {
+                validationMessageStore.Add(() => userModel.courriel, "Aucune correspondance");
+                editContext.NotifyValidationStateChanged();
+            }
         }
-        else
-        {
-            Console.WriteLine("Error role validation");
-        }
+    }
+
+    public bool TriggerValidation()
+    {
+        validationMessageStore.Clear();
+        isSubmit = true;
+        bool isValid = false;
+        isValid = editContext.Validate();
+        StateHasChanged();
+        return isValid;
     }
 }
