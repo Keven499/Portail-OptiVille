@@ -22,6 +22,12 @@
                     <div class="col-xl-4">
                         <div class="titre-medium vert fs-3">Rôle</div>
                     </div>
+                    <div class="col-xl-12">
+                        @if (!string.IsNullOrEmpty(message))
+                        {
+                            @((MarkupString)GetValidationHTML((message)))
+                        }
+                    </div>
                 </div>
                 @foreach (var employe in allEmployes)
                 {
@@ -38,7 +44,7 @@
                             </select>
                         </div>
                         <div class="col-xl-2 col-6">
-                            <button type="button" class="btn btn-danger w-100" @onclick="() => OnDeleteUser(employe)"><i class="bi bi-trash me-1"></i>Supprimer</button>
+                            <button type="button" class="btn btn-danger w-100" @onclick="() => OnDeleteUser(employe)"><i class="bi bi-trash me-1"></i></button>
                         </div>
                         <hr class="mt-2 mb-0"/>
                     </div>
@@ -58,7 +64,7 @@
                         <DataAnnotationsValidator />
                         <div class="row mb-3 justify-content-center">
                             <div class="col-xl-12">
-                                    <label class="vertFonce texte-bold" for="emailNewUser">Courriel <i class="bi bi-braces-asterisk text-danger"></i></label>
+                                <label class="vertFonce texte-bold" for="emailNewUser">Courriel <i class="bi bi-braces-asterisk text-danger"></i></label>
                                     <input type="text" class="form-control @GetInputClass(() => userModel.courriel) input-vert texte-light" id="emailNewUser" @bind="userModel.courriel" placeholder="courriel@votre-entreprise.extension" />
                                     @((MarkupString)GetValidationHTML(() => userModel.courriel))
                             </div>
@@ -76,9 +82,9 @@
                             </div>
                         </div>
                         <div class="row justify-content-center">
-                            <div class="col-xl-6 text-center">
-                                <button type="submit" style="width: 200px" class="btn btn-success text-white texte-bold" @onclick="AjoutUtilisateur">Confirmer</button>
-                                <button type="button" class="btn bg-danger text-white texte-bold" @onclick="ShowForm" style="width: 200px;">Annuler</button>
+                            <div class="col-xl-12 text-center">
+                                <button type="submit" style="width: 200px" class="btn btn-success text-white texte-bold mb-sm-1" @onclick="AjoutUtilisateur">Confirmer</button>
+                                <button type="button" class="btn bg-danger text-white texte-bold" @onclick="AnnulerBtn" style="width: 200px;">Annuler</button>
                             </div>
                         </div>
                     </EditForm>
@@ -86,7 +92,6 @@
                 </div>
             </div>
             <div class="card-footer bg-vertFonce">
-                <!-- RESTE PLUS QU'À AFFICHER LE BOUTON SAUVEGARDER QUAND UNE MODIFICAITON D'UN RÔLE EST DÉTECTÉ -->
                 @if (isRoleChanged)
                 {
                     <button type="submit" class="btn btn-success w-100 text-white texte-bold" @onclick="UpdateEmployesRole">Sauvegarder</button>
@@ -95,7 +100,7 @@
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+@* <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script> *@
 
 <style>
     .valid {
@@ -108,6 +113,7 @@
     private bool formAjouter = false;
     private EditContext editContext;
     private bool isSubmit = false;
+    private string message;
     private bool isRoleChanged = false;
     private ValidationMessageStore validationMessageStore;
     List<string> Roles = new() { "Commis", "Responsable", "Administrateur" };
@@ -193,30 +199,70 @@
                        : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";
     }
 
-    private bool ValidateRoles()
+    private string GetValidationHTML(string message)
     {
+        var isValid = (message == null);
+        return isValid
+        ? ""
+        : "<div style=\"display: flex; justify-content: center;\">" +
+          "<span style=\"display: flex; align-items: center; border-radius: 0; background: none; border: none;\" class=\"input-group-text text-danger\">" +
+          "<i class=\"bi bi-x-circle me-2\"></i>" +
+          $"<span class=\"text-wrap\" style=\"letter-spacing: 1px;\">{message}</span>" +
+          "</span>" +
+          "</div>";
+    }
+
+    private bool ValidateAdminCount(bool action, string role)
+    {
+        message = string.Empty;
         bool isRespectHierarchy = true;
         int adminCount = allEmployes.Count(e => e.Role == "Administrateur");
-        int responsableCount = allEmployes.Count(e => e.Role == "Responsable");
+        if (action)
+        {
+            if (role.Equals("Administrateur"))
+                adminCount++;
+        }
+        else
+        {
+            if (role.Equals("Administrateur"))
+            {
+                adminCount--;
+            }
+        }
         if (adminCount != 2)
         {
-            //validationError += "Vous devez avoir 2 Administrateurs. <br>";
-            isRespectHierarchy = false;
-            return isRespectHierarchy;
-        }
-        if (responsableCount < 1)
-        {
-            //validationError += "Vous devez avoir au moins 1 Responsable.";
+            message = "2 administrateur en tout temps";
             isRespectHierarchy = false;
             return isRespectHierarchy;
         }
         return isRespectHierarchy;
     }
 
-    // THIS METHOD SHOULD CALL GestionUserService AND UPDATE THE ROLE OF THE EMPLOYE TO "AUCUN"
+    private bool ValidateResponsableCount(string role)
+    {
+        message = string.Empty;
+        bool isRespectHierarchy = true;
+        int responsableCount = allEmployes.Count(e => e.Role == "Responsable");
+        if (role.Equals("Responsable"))
+        {
+            responsableCount--;
+        }
+        if (responsableCount < 1)
+        {
+            message = "1 responsable minimum";
+            isRespectHierarchy = false;
+            return isRespectHierarchy;
+        }
+        return isRespectHierarchy;
+    }
+
     private async Task OnDeleteUser(Employe employe)
     {
-        Console.WriteLine($"User: {userModel.courriel} Role: {userModel.role} (retiré)");
+        if (!ValidateAdminCount(false, employe.Role) || !ValidateResponsableCount(employe.Role))
+        {
+            return;
+        }
+        message = string.Empty;
         allEmployes.Remove(employe);
         await GestionUserService.UpdateUserRole(employe.Courriel, "Aucun");
     }
@@ -232,13 +278,19 @@
     private void ShowForm()
     {
         formAjouter = !formAjouter;
-        userModel = new UserModel() { role = "Commis" };
         isSubmit = false;
+    }
+
+    private void AnnulerBtn()
+    {
+        ShowForm();
+        userModel.courriel = string.Empty;
+        userModel.role = "Commis";
     }
 
     private async Task AjoutUtilisateur()
     {
-        if (TriggerValidation() && ValidateRoles())
+        if (TriggerValidation())
         {
             var allNonUsersEmails = allNonUsers.Select(e => e.Courriel).ToList();
             if (allNonUsersEmails.Contains(userModel.courriel))
@@ -260,6 +312,11 @@
 
     public bool TriggerValidation()
     {
+        message = string.Empty;
+        if (!ValidateAdminCount(true, userModel.role))
+        {
+            return false;
+        }
         validationMessageStore.Clear();
         isSubmit = true;
         bool isValid = false;
