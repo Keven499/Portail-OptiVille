@@ -50,7 +50,7 @@
                     <th scope="row" class="texte-bold">@(PieceJointeFormModel.ListFichiers.IndexOf(file) + 1)</th>
                         <td class="texte-light">@file.Name</td>
                         <td class="texte-light">@GetFormatSizeFile(file.Size)</td>
-                        <td><button class="btn btn-danger texte-bold" type="button" @onclick="() => RemoveFile(file)"><i class="bi bi-trash"></i> Effacer</button></td>
+                        <td><button class="btn btn-danger texte-bold" type="button" @onclick="() => RemoveFile(file)"><i class="bi bi-trash me-1"></i>Effacer</button></td>
                     </tr>
                 }
                 </tbody>

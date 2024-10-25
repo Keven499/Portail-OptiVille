@@ -25,10 +25,10 @@
             <div class="card-body border-vertFonce">
                 <div class="row">
                     <div class="col-xl-4">
-                        <div class="titre-medium fs-3">Utilisateur</div>
+                        <div class="titre-medium vert fs-3">Utilisateur</div>
                     </div>
                     <div class="col-xl-4">
-                        <div class="titre-medium fs-3">Rôle</div>
+                        <div class="titre-medium vert fs-3">Rôle</div>
                     </div>
                 </div>
                 @foreach (var employe in allEmployes)
@@ -46,7 +46,7 @@
                             </select>
                         </div>
                         <div class="col-xl-2 col-6">
-                            <button type="button" class="btn btn-danger w-100" @onclick="() => OnDeleteUser(employe)"><i class="bi bi-trash"></i></button>
+                            <button type="button" class="btn btn-danger w-100" @onclick="() => OnDeleteUser(employe)"><i class="bi bi-trash me-1"></i>Supprimer</button>
                         </div>
                         <hr class="mt-2 mb-0"/>
                     </div>
@@ -56,7 +56,7 @@
                 {
                     <div class="row justify-content-center">
                         <div class="col-xl-6 text-center">
-                            <button type="submit" class="btn btn-success" style="width: 200px;" @onclick="ShowForm"><i class="bi bi-plus-circle"></i> Ajouter</button>
+                            <button type="submit" class="btn btn-success" style="width: 200px;" @onclick="ShowForm"><i class="bi bi-plus-circle me-1"></i>Ajouter</button>
                         </div>
                     </div>
                 }
@@ -89,7 +89,7 @@
 
                         <div class="row justify-content-center">
                             <div class="col-xl-6 text-center">
-                                <button type="submit" class="btn btn-primary">Ajouter un utilisateur</button>
+                                <button type="submit" class="btn bg-vert texte-bold" style="width: 200px;"><i class="bi bi-plus-circle me-1"></i>Ajout utilisateur</button>
                             </div>
                         </div>
                     </EditForm>
@@ -108,7 +108,9 @@
                     </div>
                 </div>
                 }
-                <button type="submit" class="btn btn-success w-100" @onclick="SubmitChanges">Sauvegarder</button>
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn bg-vert texte-bold" style="width: 200px;" @onclick="SubmitChanges"><i class="bi bi-floppy me-1"></i>Sauvegarder</button>
+                </div>
             </div>
         </div>
     </div>
