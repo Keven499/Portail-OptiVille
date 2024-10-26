@@ -7,6 +7,7 @@
 @using System.Text;
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Portail_OptiVille.Data.Utilities
+@using System.Text.RegularExpressions
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager NavigationManager
 @inject A2024420517riGr1Eq6Context _context
@@ -28,9 +29,9 @@
                         <label class="bleuFonce texte-bold" for="Courriel">
                             <i class="bi @GetEmailIcon()"></i> Courriel / NEQ <i class="bi bi-braces text-success"></i>
                         </label>
-                        <InputText type="Email" class="form-control" id="Courriel" @bind-Value="logInModel.Courriel" />
+                        <InputText class="form-control" id="Courriel" @bind-Value="logInModel.Username" />
                         @*Affichage de l'erreur*@
-                        <ValidationMessage For="@(() => logInModel.Courriel)" />
+                        <ValidationMessage For="@(() => logInModel.Username)" />
                     </div>
 
                     <div class="col-xl-12 col-lg-12 py-2">
@@ -58,43 +59,61 @@
 
     private async void HandleValidSubmit()
     {
-        // Récupérer le fournisseur qui a l'adresse courriel
-        Identification? fournisseur = _context.Identifications.FirstOrDefault(f => f.AdresseCourriel == logInModel.Courriel);
-        try
+        if (IsValidInput(logInModel.Username))
         {
 
-            if (fournisseur != null)
+            // Récupérer le fournisseur qui a l'adresse courriel
+            Identification? fournisseur = _context.Identifications.FirstOrDefault(f => f.AdresseCourriel == logInModel.Username);
+            if(fournisseur is null)
             {
-                // Vérification du mot de passe
-                if (VerifyPassword(logInModel.MotDePasse, fournisseur.MotDePasse))
+                fournisseur = _context.Identifications.FirstOrDefault(f => f.Neq == logInModel.Username);
+            }
+
+            try
+            {
+
+                if (fournisseur != null)
                 {
-                    // Redirection si les informations sont correctes
-                    await ProtectedSessionStore.SetAsync("Email", fournisseur.AdresseCourriel);
-                    //CookieService.("MyCookie", "TestValue", 30); // Expire dans 30 minutes
-                    
-                    string token = tokenGenerator.GenerateToken("fournisseur.AdresseCourriel");
+                    // Vérification du mot de passe
+                    if (VerifyPassword(logInModel.MotDePasse, fournisseur.MotDePasse))
+                    {
+                        // Redirection si les informations sont correctes
+                        await ProtectedSessionStore.SetAsync("Email", fournisseur.AdresseCourriel);
+                        //CookieService.("MyCookie", "TestValue", 30); // Expire dans 30 minutes
 
-                    await cookie.SetValue("SToken", token, 3);
+                        string token = tokenGenerator.GenerateToken("fournisseur.AdresseCourriel");
+                        // ajouter le token dans la BD
+                        Usersession usersession = new Usersession { Token = token, OwnerEmail = fournisseur.AdresseCourriel, ExpirationDate = DateTime.Now.AddHours(3) };
+                        _context.Usersessions.Add(usersession);
+                        await _context.SaveChangesAsync();
 
-                    NavigationManager.NavigateTo("/index", true);
+                        await cookie.SetValue("SToken", token, 3);
+
+                        NavigationManager.NavigateTo("/index", true);
+                    }
+                    else
+                    {
+                        // Réinitialisation du mot de passe si incorrect
+                        logInModel.MotDePasse = "";
+                        await JsRuntime.InvokeVoidAsync("alert", "Adresse Courriel / NEQ ou mot de passe incorrect!");
+                    }
                 }
                 else
                 {
-                    // Réinitialisation du mot de passe si incorrect
-                    logInModel.MotDePasse = "";
-                    await JsRuntime.InvokeVoidAsync("alert", "Adresse Courriel ou mot de passe incorrect!");
+                    // Cas où le fournisseur n'est pas trouvé
+                    await JsRuntime.InvokeVoidAsync("alert", "Adresse Courriel / NEQ ou mot de passe incorrect!");
                 }
             }
-            else
+            catch
             {
-                // Cas où le fournisseur n'est pas trouvé
-                await JsRuntime.InvokeVoidAsync("alert", "Adresse Courriel ou mot de passe incorrect!");
+                await JsRuntime.InvokeVoidAsync("alert", "Une erreur est survenue !");
+                NavigationManager.NavigateTo("/");
+
             }
-        }catch
+        }
+        else
         {
-            await JsRuntime.InvokeVoidAsync("alert", "Une erreur est survenue !");
-            NavigationManager.NavigateTo("/");
-            
+            await JsRuntime.InvokeVoidAsync("alert", "Adresse Courriel / NEQ ou mot de passe incorrect!");
         }
     }
 
@@ -117,7 +136,7 @@
 
     private void ValidateInput()
     {
-        if (IsValidEmail(logInModel.Courriel))
+        if (IsValidInput(logInModel.Username))
         {
             emailIconClass = "bi-check-circle text-success"; // Valide
         }
@@ -136,10 +155,12 @@
         }
     }
 
-    private bool IsValidEmail(string email)
+    private bool IsValidInput(string input)
     {
         // Simple validation, tu peux utiliser des expressions régulières pour plus de précision
-        return !string.IsNullOrEmpty(email) && email.Contains("@") && email.Contains(".");
+        Regex rg = new Regex(@"^(11|22|33|88)[4-9]\d{7}$");
+        
+        return (!string.IsNullOrEmpty(input) && input.Contains("@") && input.Contains(".")) || (!string.IsNullOrEmpty(input) && rg.IsMatch(input));
     }
 
     private string GetEmailIcon()
@@ -149,9 +170,9 @@
 
     public class LogInModel
     {
-        [Required(ErrorMessage = "Le courriel est requis")]
-        [EmailAddress(ErrorMessage = "Le courriel n'est pas valide")]
-        public string Courriel { get; set; }
+        [Required(ErrorMessage = "Le courriel/NEQ est requis")]
+        [RegularExpression(@"^(?:((11|22|33|88)[4-9]\d{7})|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}))$", ErrorMessage = "Le courriel/NEQ n'est pas valide")]
+        public string Username { get; set; }
 
         [Required(ErrorMessage = "Le mot de passe est requis")]
         public string MotDePasse { get; set; }

@@ -42,6 +42,8 @@ public partial class A2024420517riGr1Eq6Context : DbContext
 
     public virtual DbSet<Telephone> Telephones { get; set; }
 
+    public virtual DbSet<Usersession> Usersessions { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseMySql("server=cours.cegep3r.info;database=a2024_420517ri_gr1-eq6;user=2263519;password=2263519", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.18-mysql"));
@@ -483,6 +485,23 @@ public partial class A2024420517riGr1Eq6Context : DbContext
                 .HasForeignKey(d => d.Coordonnee)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("telephone_ibfk_2");
+        });
+
+        modelBuilder.Entity<Usersession>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("usersession");
+
+            entity.Property(e => e.Id)
+                .HasColumnType("int(11)")
+                .HasColumnName("id");
+            entity.Property(e => e.ExpirationDate)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("datetime");
+            entity.Property(e => e.OwnerEmail).HasMaxLength(128);
+            entity.Property(e => e.Role).HasMaxLength(16);
+            entity.Property(e => e.Token).HasMaxLength(512);
         });
 
         OnModelCreatingPartial(modelBuilder);

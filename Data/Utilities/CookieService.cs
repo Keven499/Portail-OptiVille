@@ -67,7 +67,7 @@ namespace Portail_OptiVille.Data.Utilities
         }
         public async Task destroy(string name)
         {
-            await SetValue(name, "", -1); // Supprime le cookie en fixant sa durée de vie à -1
+            await SetValue(name, "", -1); // Supprime le cookie en fixant sa durï¿½e de vie ï¿½ -1
         }
 
     }
