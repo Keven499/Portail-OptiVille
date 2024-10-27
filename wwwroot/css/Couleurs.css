@@ -131,6 +131,12 @@ body
     border: 2px solid rgb(11, 35, 65);
 }
 
+.box-vert 
+{
+    background-color: rgb(197, 216, 0, 0.2); 
+    border: 2px solid rgb(11, 35, 65);
+}
+
 .table-bleu
 {
     background-color: rgb(0, 118, 213, 0.2) !important; 
@@ -159,6 +165,31 @@ body
     width: 6px;
     height: 12px;
     border: 1px solid rgb(11, 35, 65);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    opacity: 0;
+}
+
+.check-vert
+{
+    background-color: white;
+    border: 1px solid rgb(30, 73, 45);
+    width: 20px;
+    flex-shrink: 0;
+    height: 20px;
+    border-radius: 3px;
+    position: relative;
+    cursor: pointer;
+}
+
+.check-vert:before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 12px;
+    border: 1px solid rgb(30, 73, 45);
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
     opacity: 0;
@@ -272,6 +303,12 @@ input[type="checkbox"]:checked+.check-blanc:before {
 .texte-medium
 {
     font-family: 'TT Hoves Medium';
+}
+
+.texte-18medium
+{
+    font-family: 'TT Hoves Medium';
+    font-size: 18px;
 }
 
 .texte-bold
