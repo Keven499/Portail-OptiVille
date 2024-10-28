@@ -121,7 +121,7 @@
     </div>
     <EditForm Model="combinedFormModel" OnValidSubmit="SaveModifcationInfo">
         <DataAnnotationsValidator />
-        <div class="main-div position-relative mt-2">
+        <div class="main-div position-relative mt-2 mb-4">
             <div class="out-row row text-white p-0 m-0">
                 <div class="col-xl-4 p-0 ps-3 bg-bleuFonce">
                     <h3 class="py-2 p-0 my-0 titre-bold text-white">Informations générales</h3>
@@ -191,7 +191,6 @@
                     </div>
                 </div>
                 <div class="row mt-1">
-                
                     @foreach(var telephone in combinedFormModel.CoordonneeFormModel.PhoneList!)
                     {
                         <div class="col-xl-6 d-flex justify-content-between align-items-center">
@@ -225,21 +224,100 @@
     </EditForm>
 <EditForm Model="contactHosterFormModel" OnValidSubmit="SaveContact">
     <DataAnnotationsValidator />
-    <ValidationSummary />
-    
-    <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
-        <h3 class="py-2 p-0 my-0 text-white titre-bold">Contacts</h3>
-        @*<button type="button" class="btn btn-warning" onclick="showModal('ContactModal')">Modifier</button>*@
-        @if (modificationContact)
-        {
-            <button type="button" class="btn btn-warning" @onclick="ModificationContact">Modifier</button>
-        }
-        else
-        {
-            <button type="submit" class="btn btn-success">Sauvegarder</button> 
-        }
-    </div>
-
+        <div class="main-div position-relative mt-2 mb-4">
+            <div class="out-row row text-white p-0 m-0">
+                <div class="col-xl-4 p-0 ps-3 bg-bleuFonce">
+                    <h3 class="py-2 p-0 my-0 text-white titre-bold">Contacts</h3>
+                </div>
+                <div class="offset-xl-2 col-xl-6 p-0 d-flex justify-content-end align-items-center">
+                @if (modificationContact)
+                {
+                    <button type="button" class="btn btn-warning rounded-0" @onclick="ModificationContact">Modifier</button>
+                }
+                else
+                {
+                    <button type="submit" class="btn btn-success">Sauvegarder</button>
+                }
+                </div>
+            </div>
+        </div>
+        <div class="card rounded-0">
+            <div class="card-body mt-4">
+                @for (int i = 0; i < contactHosterFormModel.ContactList!.Count; i++)
+                {
+                    var contact = contactHosterFormModel.ContactList[i]; // Access each contact
+                    <div class="row my-1">
+                        <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                            <label for="prenomInput">Prénom</label>
+                            <InputText id="prenomInput" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" @bind-Value="contact.Prenom" />
+                            <ValidationMessage For="@(() => contact.Prenom)" />
+                        </div>
+                        <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                            <label for="nomInput">Nom</label>
+                            <InputText id="nomInput" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" @bind-Value="contact.Nom" />
+                            <ValidationMessage For="@(() => contact.Nom)" />
+                        </div>
+                    </div>
+                    <div class="row my-1">
+                        <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                            <label for="fonctionInput">Fonction</label>
+                            <InputText id="fonctionInput" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" @bind-Value="contact.Fonction" />
+                            <ValidationMessage For="@(() => contact.Fonction)" />
+                        </div>
+                        <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                            <label for="courrielInput">Adresse courriel</label>
+                            <InputText id="courrielInput" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" @bind-Value="contact.AdresseCourriel" />
+                            <ValidationMessage For="@(() => contact.AdresseCourriel)" />
+                        </div>
+                    </div>
+                    <div class="row my-1">
+                        <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                            <label for="fonctionInput">Fonction</label>
+                            <InputText id="fonctionInput" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" @bind-Value="contact.Fonction" />
+                            <ValidationMessage For="@(() => contact.Fonction)" />
+                        </div>
+                        <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                            <label for="courrielInput">Adresse courriel</label>
+                            <InputText id="courrielInput" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" @bind-Value="contact.AdresseCourriel" />
+                            <ValidationMessage For="@(() => contact.AdresseCourriel)" />
+                        </div>
+                    </div>
+                    <div class="row mt-1">
+                        <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                            <div class="row d-flex align-items-center">
+                                <div class="col-xl-12">
+                                    <label for="telephoneType" class="me-2">Numéro de téléphone</label>
+                                    @if (!modificationContact)
+                                    {
+                                        <InputSelect id="telephoneType" style="width: 200px;" class="form-select input-bleu texte-light rounded-0 py-1" @bind-Value="contact.TypeTelephone">
+                                            <option value="Bureau">Bureau</option>
+                                            <option value="Télécopieur">Télécopieur</option>
+                                            <option value="Cellulaire">Cellulaire</option>
+                                        </InputSelect>
+                                        <ValidationMessage For="@(() => contact.TypeTelephone)" />
+                                    }
+                                </div>
+                            </div>
+                            <div class="row d-flex align-items-center">
+                                <div class="col-xl-12">
+                                    <InputText id="telephoneInput" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" @bind-Value="contact.Telephone" />
+                                    <ValidationMessage For="@(() => contact.Telephone)" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                            <label for="posteInput">Poste</label>
+                            <InputText id="posteInput" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" @bind-Value="contact.Poste" />
+                            <ValidationMessage For="@(() => contact.Poste)" />
+                        </div>
+                    </div>
+                    @if (i < contactHosterFormModel.ContactList.Count - 1)
+                    {
+                        <hr />
+                    }
+                }
+            </div>
+        </div>
         @*
         <div class="row">
             <div class="modal fade" tabindex="-1" role="dialog" id="ContactModal" data-bs-backdrop="static">
@@ -257,62 +335,6 @@
             </div>
         </div>
         *@
-    <div class="card-body">
-        @for (int i = 0; i < contactHosterFormModel.ContactList!.Count; i++)
-        {
-            var contact = contactHosterFormModel.ContactList[i]; // Access each contact
-
-            <div class="row">
-                <div class="col-xl-6 p-1">
-                    <label for="prenomInput">Prénom</label>
-                    <InputText id="prenomInput" class="form-control" @bind-Value="contact.Prenom" />
-                    <ValidationMessage For="@(() => contact.Prenom)" />
-                </div>
-                <div class="col-xl-6 p-1">
-                    <label for="nomInput">Nom</label>
-                    <InputText id="nomInput" class="form-control" @bind-Value="contact.Nom" />
-                    <ValidationMessage For="@(() => contact.Nom)" />
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xl-6 p-1">
-                    <label for="fonctionInput">Fonction</label>
-                    <InputText id="fonctionInput" class="form-control" @bind-Value="contact.Fonction" />
-                    <ValidationMessage For="@(() => contact.Fonction)" />
-                </div>
-                <div class="col-xl-6 p-1">
-                    <label for="courrielInput">Adresse courriel</label>
-                    <InputText id="courrielInput" class="form-control" @bind-Value="contact.AdresseCourriel" />
-                    <ValidationMessage For="@(() => contact.AdresseCourriel)" />
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xl-6 p-1">
-                    <div class="d-flex align-items-center">
-                        <label for="telephoneType" class="me-2">Numéro de téléphone</label>
-                        <InputSelect id="telephoneType" class="form-select w-auto" @bind-Value="contact.TypeTelephone" style="@(modificationContact ? "pointer-events: none; background-color: #ffffff;" : null)">
-                            <option value="Bureau">Bureau</option>
-                            <option value="Télécopieur">Télécopieur</option>
-                            <option value="Cellulaire">Cellulaire</option>
-                        </InputSelect>
-                        <ValidationMessage For="@(() => contact.TypeTelephone)" />
-                    </div>
-                    <InputText id="telephoneInput" class="form-control" @bind-Value="contact.Telephone" />
-                    <ValidationMessage For="@(() => contact.Telephone)" />
-                </div>
-                <div class="col-xl-6 p-1">
-                    <label for="posteInput">Poste</label>
-                    <InputText id="posteInput" class="form-control" @bind-Value="contact.Poste" />
-                    <ValidationMessage For="@(() => contact.Poste)" />
-                </div>
-            </div>
-
-            @if (i < contactHosterFormModel.ContactList.Count - 1)
-            {
-                <hr />
-            }
-        }
-    </div>
 </EditForm>
 
 
