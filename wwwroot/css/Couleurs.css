@@ -37,43 +37,10 @@ body
     padding-top: 30px;
 }
 
-.navbar {
-
-    position: relative;
-    padding: 10px 15px;
-    height: 80px; 
-}
-
-.navbar-bleu
-{
-    background-color: rgb(0, 118, 213) !important; 
-}
-
-.navbar-brand {
-    position: relative; 
-    display: inline-block; 
-}
-
-.top-row-barre {
-    top: 0;
-    width: 100%;
-    z-index: 1030;
-    height: 80px;
-    background-color: rgb(0, 118, 213) !important; 
-}
-
-.navbar-brand img {
-    height: auto;
-    padding: auto;
-    margin: auto;
-}
-
-.navbar .navbar-toggler {
-    margin-left: auto; 
-}
-
-.navbar-nav {
-    margin-left: 120px; 
+.btn:hover {
+    background-color: rgb(0, 118, 213, 0.6);
+    color: white;    
+    cursor: pointer;
 }
 
 /* Bleu pâle */
@@ -305,10 +272,10 @@ input[type="checkbox"]:checked+.check-blanc:before {
     font-family: 'TT Hoves Medium';
 }
 
-.texte-18medium
+.texte-13medium
 {
     font-family: 'TT Hoves Medium';
-    font-size: 18px;
+    font-size: 13px;
 }
 
 .texte-bold

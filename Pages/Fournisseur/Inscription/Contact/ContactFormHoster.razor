@@ -21,7 +21,7 @@
         }
     }
     <div class="d-flex justify-content-center pb-2">
-        <button type="button" class="btn bg-success text-white texte-bold me-2" @onclick="AddContact" style="width: 200px;"><i class="bi bi-plus-circle"></i> Ajout</button>
+        <button type="button" class="btn bg-bleu text-white texte-bold me-2" @onclick="AddContact" style="width: 200px;"><i class="bi bi-plus-circle"></i> Ajout</button>
         <button type="button" class="btn bg-danger text-white texte-bold" @onclick="RemoveContact" style="width: 200px;" disabled="@(!(ContactHosterFormModel.ContactList.Count > 1))"><i class="bi bi-trash"></i> Retirer</button>
     </div>
 </div>

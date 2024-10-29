@@ -27,7 +27,7 @@
                     </NavLink>
                 </div> 
             *@
-            <div class="nav-item px-3">
+            <div class="nav-item px-3 mt-2">
                 <NavLink class="nav-link" href="demandeFournisseur">
                     <span class="bi bi-plus-circle me-2" aria-hidden="true"></span> Nouvelle demande
                 </NavLink>
@@ -38,13 +38,10 @@
                 </NavLink>
             </div>
         </div>
-        <div class="">
-            <div class="nav-item px-3">
-                <button class="btn bg-vert texte-bold" style="width: 200px">Approvisionnement</button>
-            </div>
-            <div class="nav-item px-3">
+        <div>
+            @* <div class="nav-item px-3">
                 <button class="btn bg-bleu text-white texte-bold" style="width: 200px" @onclick="Deconnexion">Déconnexion</button>
-            </div>
+            </div> *@
         </div>
     </nav>
 </div>
@@ -58,7 +55,7 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
-    private async Task Deconnexion()
+    @* private async Task Deconnexion()
     {
         Usersession[] usersessions;
         string email;
@@ -94,7 +91,7 @@
             
             await protectedSessionStorage.DeleteAsync("Email");
             await cookie.destroy("SToken");
-        }
+        } 
 
 
         // usersessions = _context.Usersessions.Where(u => u.OwnerEmail == email).ToArray();
@@ -105,7 +102,7 @@
         // await _context.SaveChangesAsync();
         
         NavigationManager.NavigateTo("/", true);
-    }
+    } *@
 }
 
 #line default
