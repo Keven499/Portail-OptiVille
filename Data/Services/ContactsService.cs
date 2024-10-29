@@ -60,10 +60,10 @@ namespace Portail_OptiVille.Data.Services
         }
         public async Task UpdateContactsData(ContactHosterFormModel contactHosterFormModel)
         {
-
-            foreach (var contactFromList in contactHosterFormModel.ContactList!)
+            foreach (var contactFromList in contactHosterFormModel.ContactList)
             {
-                var existingContact = await _context.Contacts.FirstAsync(c => c.IdContact == contactFromList.IdContact);
+                var existingContact = await _context.Contacts.SingleOrDefaultAsync(c => c.IdContact == contactFromList.IdContact);
+                    
                 if (existingContact != null)
                 {
                     existingContact.IdContact = contactFromList.IdContact;
@@ -81,8 +81,8 @@ namespace Portail_OptiVille.Data.Services
                     {
                         throw new Exception("Une erreur est survenue lors de la mise à jour du contact", ex);
                     }
-
-                    var existingTelephone = await _context.Telephones.FirstAsync(t => t.Contact == existingContact.IdContact);
+                
+                    var existingTelephone = await _context.Telephones.SingleOrDefaultAsync(t => t.Contact == existingContact.IdContact);
 
                     if (existingTelephone != null)
                     {
@@ -90,7 +90,7 @@ namespace Portail_OptiVille.Data.Services
                         existingTelephone.Type = contactFromList.TypeTelephone;
                         existingTelephone.NumTelephone = contactFromList.Telephone;
                         existingTelephone.Poste = contactFromList.Poste;   
-                        
+
                         try
                         {
                             _context.Telephones.Update(existingTelephone);
@@ -102,12 +102,8 @@ namespace Portail_OptiVille.Data.Services
                         }
                     }
                 }
-                else
-                {
-                    Console.WriteLine("existingContact == null");
-                }
             }
+            
         }
-
     }
 }
