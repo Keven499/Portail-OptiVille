@@ -58,7 +58,7 @@ builder.Services.AddSingleton(modeles);
 #region Mail
 //Envoie de mail
 builder.Services.Configure<DefaultMail>(builder.Configuration.GetSection("DefaultMail"));
-builder.Services.AddScoped<MailManager>();
+builder.Services.AddTransient<MailManager>();
 #endregion
 
 #region JWT

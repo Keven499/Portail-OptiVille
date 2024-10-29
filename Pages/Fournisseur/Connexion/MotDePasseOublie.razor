@@ -1,0 +1,116 @@
+@page "/MotDePasse"
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Portail_OptiVille.Data.Utilities
+@inject ProtectedSessionStorage protectedSessionStorage
+@inject NavigationManager NavigationManager
+@inject MailManager mailManager
+
+@if (Post)
+{
+    <div class="alert alert-success" role="alert">
+        Un courriel a été envoyé à l'adresse suivante: @logInModel.Username
+    </div>
+}
+@if(!Post){
+
+<EditForm Model="@logInModel" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="ValidateInput">
+    <!-- OnValidSubmit="HandleValidSubmit" -->
+    <div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
+        <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
+            <div class="card w-75 h-75 d-flex justify-content-center p-0 m-0">
+
+                @* Identification *@
+                <div class="card-header py-2 bg-bleuFonce">
+                    <h3 class="py-2 p-0 my-0 text-white titre-bold">Identification</h3>
+                </div>
+                <div class="card-body border-bleuFonce py-1">
+                    <div class="col-xl-12 col-lg-12 py-2">
+                        <label class="bleuFonce texte-bold" for="Courriel">
+                            <i class="bi @GetEmailIcon()"></i> Courriel / NEQ <i class="bi bi-braces text-success"></i>
+                        </label>
+                        <InputText class="form-control" id="Courriel" @bind-Value="logInModel.Username" />
+                        @*Affichage de l'erreur*@
+                        <ValidationMessage For="@(() => logInModel.Username)" />
+                    </div>
+                </div>
+
+                <div class="card-footer py-2 bg-bleuFonce">
+                    <button type="submit" class="btn btn-success w-100">Envoyer un courriel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <DataAnnotationsValidator />
+</EditForm>
+}
+@code {
+
+    private LogInModel logInModel = new LogInModel();
+    bool Post = false;
+
+    private async void HandleValidSubmit()
+    {
+        string contenuMail = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Data", "TemplatesMail", "MailOublie.html"));
+        mailManager.SendMail("kevenmichel721@gmail.com", "Test", contenuMail);
+        Post = true;
+    }
+
+    private string emailIconClass = ""; // Par défaut
+    private string passwordIconClass = ""; // Par défaut
+
+    private void ValidateInput()
+    {
+        if (IsValidInput(logInModel.Username))
+        {
+            emailIconClass = "bi-check-circle text-success"; // Valide
+        }
+        else
+        {
+            emailIconClass = "bi-x-circle text-danger"; // Invalide
+        }
+    }
+
+    private bool IsValidInput(string input)
+    {
+        // Simple validation, tu peux utiliser des expressions régulières pour plus de précision
+        Regex rg = new Regex(@"^(11|22|33|88)\d{8}$");
+        
+        return (!string.IsNullOrEmpty(input) && input.Contains("@") && input.Contains(".")) || (!string.IsNullOrEmpty(input) && rg.IsMatch(input));
+    }
+
+    private string GetEmailIcon()
+    {
+        return emailIconClass;
+    }
+
+
+    public class LogInModel
+    {
+        [Required(ErrorMessage = "Le courriel/NEQ est requis")]
+        [RegularExpression(@"^(?:((11|22|33|88)\d{8})|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}))$", ErrorMessage = "Le courriel/NEQ n'est pas valide")]
+        public string Username { get; set; }
+
+        [Required(ErrorMessage = "Le mot de passe est requis")]
+        public string MotDePasse { get; set; }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender){
+        if(firstRender){
+
+        try{
+            var result = await protectedSessionStorage.GetAsync<string>("Email");
+            if (result.Success || !string.IsNullOrEmpty(result.Value))
+            {
+                Console.WriteLine($"Adresse courriel: {result.Value}");
+                NavigationManager.NavigateTo("/index",true);
+            }
+        }catch
+        {
+            Console.WriteLine($"Erreur lors de la récupération de l'adresse courriel");
+        }
+
+        }
+    } 
+}

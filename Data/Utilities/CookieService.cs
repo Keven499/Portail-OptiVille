@@ -13,6 +13,9 @@ namespace Portail_OptiVille.Data.Utilities
 
     public class CookieService : ICookie
     {
+        const int DefaultCookieDuration = 3; // 3 hours
+
+
         private readonly IJSRuntime _jsRuntime;
 
         public CookieService(IJSRuntime jsRuntime)
@@ -24,7 +27,7 @@ namespace Portail_OptiVille.Data.Utilities
         {
             var expires = (hours != null && hours > 0)
                 ? $"expires={DateToUTC(hours.Value)}"
-                : "";
+                : $"expires={DateToUTC(3)}";
             await _jsRuntime.InvokeVoidAsync("eval", $"document.cookie = \"{key}={value}; {expires}; path=/\"");
         }
 
