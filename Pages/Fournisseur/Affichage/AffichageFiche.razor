@@ -133,7 +133,7 @@
                 }
                 else
                 {
-                <button type="submit" class="btn btn-success">Sauvegarder</button> 
+                <button type="submit" class="btn btn-success rounded-0">Sauvegarder</button> 
                 }
                 </div>
             </div>
@@ -236,7 +236,7 @@
                     }
                     else
                     {
-                        <button type="submit" class="btn btn-success">Sauvegarder</button>
+                        <button type="submit" class="btn btn-success rounded-0">Sauvegarder</button>
                     }
                     </div>
                 </div>
@@ -345,7 +345,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary" @onclick="SaveModifcationProduitServices">Sauvegarder</button>
+                                <button type="submit" class="btn btn-primary rounded-0" @onclick="SaveModifcationProduitServices">Sauvegarder</button>
                             </div>
                         </div>
                     </div>
@@ -408,7 +408,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary" @onclick="SaveModifcationLicenceRBQ">Sauvegarder</button>
+                                <button type="submit" class="btn btn-primary rounded-0" @onclick="SaveModifcationLicenceRBQ">Sauvegarder</button>
                             </div>
                         </div>
                     </div>
@@ -484,105 +484,117 @@
             }
         </div>
     </div>
-    <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
-        <h3 class="py-2 p-0 my-0 text-white titre-bold">Brochures et cartes d'affaires (Total: @GetFormatSize())</h3>
-        <button type="button" class="btn btn-warning">Modifier</button>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table border-bleuFonce table-bordered my-0">
-                <thead>
-                    <tr>
-                        <th scope="col" class="col-1 texte-bold">Fichier</th>
-                        <th scope="col" class="texte-bold">Nom</th>
-                        <th scope="col" class="col-1 texte-bold">Taille</th>
-                        <th scope="col" class="col-2 texte-bold">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var file in selectedFichiers)
-                    {
-                        <tr>
-                            <th scope="row" class="texte-bold">@(selectedFichiers.IndexOf(file)+1)</th>
-                            <td class="texte-light">@file.Nom</td>
-                            <td class="texte-light">@GetFormatSizeFile(file.Taille)</td>
-                            <td><button class="btn btn-danger texte-bold" type="button" data-bs-target="#ModalConfirmation" data-bs-toggle="modal" @onclick="() => OpenConfirmationModal(file)"><i class="bi bi-trash"></i> Effacer</button></td>
-                        </tr>
-                    }
-                </tbody>
-                    <div class="modal fade" id="ModalConfirmation" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header border-0 text-center w-100">
-                                    <h1 class="modal-title fs-5 mx-auto" id="exampleModalLabel">Êtes-vous sûre de vouloir effacer ce fichier </h1>
-                                </div>
-                                <div class="modal-footer border-0 d-flex justify-content-center">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="()=>OnDeleteFile(selectedFile)">Confirmer</button>
+    <div class="main-div position-relative" style="margin-bottom: 24px; margin-top:24px">
+        <div class="out-row row text-white p-0 m-0">
+            <div class="col-xl-6 col-lg-8 p-0 ps-3 bg-bleuFonce">
+                <h3 class="py-2 p-0 my-0 text-white titre-bold">Brochures et cartes d'affaires (Total: @GetFormatSize())</h3>
+            </div>
+            <div class="col-xl-6 col-lg-4 p-0 d-flex justify-content-end align-items-center">
+                <button type="button" class="btn btn-warning rounded-0">Modifier</button>
+            </div>
+        </div>
+        <div class="card rounded-0">
+            <div class="card-body mt-4">
+                <div class="table-responsive">
+                    <table class="table border-bleuFonce table-bordered my-0">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="col-1 texte-bold">Fichier</th>
+                                <th scope="col" class="texte-bold">Nom</th>
+                                <th scope="col" class="col-1 texte-bold">Taille</th>
+                                <th scope="col" class="col-2 texte-bold">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var file in selectedFichiers)
+                            {
+                                <tr>
+                                    <th scope="row" class="texte-bold">@(selectedFichiers.IndexOf(file) + 1)</th>
+                                    <td class="texte-light">@file.Nom</td>
+                                    <td class="texte-light">@GetFormatSizeFile(file.Taille)</td>
+                                    <td><button class="btn btn-danger texte-bold" type="button" data-bs-target="#ModalConfirmation" data-bs-toggle="modal" @onclick="() => OpenConfirmationModal(file)"><i class="bi bi-trash"></i> Effacer</button></td>
+                                </tr>
+                            }
+                        </tbody>
+                        <div class="modal fade" id="ModalConfirmation" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header border-0 text-center w-100">
+                                        <h1 class="modal-title fs-5 mx-auto" id="exampleModalLabel">Êtes-vous sûre de vouloir effacer ce fichier </h1>
+                                    </div>
+                                    <div class="modal-footer border-0 d-flex justify-content-center">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="()=>OnDeleteFile(selectedFile)">Confirmer</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-            </table>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
     @if(financeFormModel != null){
         // Mettre que si on doit ajouter nos finances show alert a la place et voir si sa crash pas 
-    <EditForm Model="financeFormModel" OnValidSubmit="SaveModifcationInfo">
+    <EditForm Model="financeFormModel" OnValidSubmit="SaveModifcationInfo" class="mt-2 mb-4">
         <DataAnnotationsValidator />
-        <div class="card" id="FinanceDest">
-            <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
+        <div class="main-div position-relative" id="FinanceDest">
+            <div class="out-row row text-white p-0 m-0">
+                <div class="col-xl-4 p-0 ps-3 bg-bleuFonce">
                     <h3 class="py-2 p-0 my-0 text-white titre-bold">Finances</h3>
-                @if(modificationFinances)
+                </div>
+                <div class="offset-xl-2 col-xl-6 p-0 d-flex justify-content-end align-items-center">
+                @if (modificationFinances)
                 {
-                    <button type="button" class="btn btn-warning" @onclick="ModifcationFinances">Modifier</button>
+                    <button type="button" class="btn btn-warning rounded-0" @onclick="ModifcationFinances">Modifier</button>
                 }
                 else
                 {
-                <button type="submit" class="btn btn-success">Sauvegarder</button> 
+                    <button type="submit" class="btn btn-success rounded-0">Sauvegarder</button>
                 }
+                </div>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-xl-6 p-1">
-                        <label for="inputTPS">TPS</label>
-                        <input type="text" class="form-control" id="inputTPS" @bind="@financeFormModel.NumeroTps" readonly="@modificationFinances">
+        </div>
+        <div class="card rounded-0">
+            <div class="card-body mt-4">
+                    <div class="row my-1">
+                    <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                        <label for="inputTPS" class="bleuFonce texte-bold">TPS</label>
+                        <input type="text" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" id="inputTPS" @bind="@financeFormModel.NumeroTps" readonly="@modificationFinances">
                     </div>
-                    <div class="col-xl-6 p-1">
-                        <label for="inputTVQ">TVQ</label>
-                        <input type="text" class="form-control" id="inputTVQ" @bind="@financeFormModel.NumeroTvq" readonly="@modificationFinances">
+                    <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                        <label for="inputTVQ" class="bleuFonce texte-bold">TVQ</label>
+                        <input type="text" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" id="inputTVQ" @bind="@financeFormModel.NumeroTvq" readonly="@modificationFinances">
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-xl-6 p-1">
-                        <label for="inputCondPaiement">Conditions de paiement</label>
-                        <input type="text" class="form-control" id="inputCondPaiement" @bind="@financeFormModel.ConditionPaiement" readonly="@modificationFinances">
+                    <div class="row my-1">
+                    <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                        <label for="inputCondPaiement" class="bleuFonce texte-bold">Conditions de paiement</label>
+                        <input type="text" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" id="inputCondPaiement" @bind="@financeFormModel.ConditionPaiement" readonly="@modificationFinances">
                     </div>
-                    <div class="col-xl-6 p-1">
-                        <label for="inputDevise">Devise</label>
-                        <select class="form-select" id="inputDevise" @bind="@financeFormModel.Devise" 
-                                style="@(modificationFinances ? "pointer-events: none; background-color: #ffffff;" : null)">
-                            <option value="CAD">CAD</option>
-                            <option value="USD">USD</option>
+                    <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                        <label for="inputDevise" class="bleuFonce texte-bold">Devise</label>
+                        <select class="form-select input-bleu texte-light rounded-0 py-1" id="inputDevise" @bind="@financeFormModel.Devise"
+                                style="@(modificationFinances ? "pointer-events: none;" : null) width: 200px;">
+                        <option value="CAD">CAD</option>
+                        <option value="USD">USD</option>
                         </select>
                     </div>
                 </div>
-                <div class="row justify-content-center">
-                    <div class="col-xl-6 p-1">
-                        <label for="inputModeComm">Mode de communication</label>
-                        <select class="form-select" id="inputModeComm" @bind="@financeFormModel.ModeCommunication" 
-                                style="@(modificationFinances ? "pointer-events: none; background-color: #ffffff;" : null)">
+                    <div class="row my-1">
+                    <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                        <label for="inputModeComm" class="bleuFonce texte-bold">Mode de communication</label>
+                        <select class="form-select input-bleu texte-light rounded-0 py-1" id="inputModeComm" @bind="@financeFormModel.ModeCommunication"
+                                style="@(modificationFinances ? "pointer-events: none;" : null) width: 200px; ">
                             <option value="Courriel">Courriel</option>
                             <option value="Courrier régulier">Courrier régulier</option>
                         </select>
                     </div>
-                    
                 </div>
             </div>
         </div>
     </EditForm>
     }
-    
 </div>
 
 <script src="@popperScript"></script>
@@ -713,6 +725,7 @@
         //
         await JSRuntime.InvokeVoidAsync("hideModal", "ModifierModalLicence");
     }
+
     private async Task SaveModifcationProduitServices()
     {
         await produitServiceService.UpdateProduitServiceData(produitServiceFormModel, selectedFournisseur.IdFournisseur);
@@ -731,12 +744,14 @@
 
         modificationFinances = true;
     }
+
     private async Task SaveContact()
     {
         await contactsService.UpdateContactsData(contactHosterFormModel);
 
         modificationContact = true;
     }
+
     private async Task SaveModifcationInfo()
     {
         await identificationService.UpdateIdentificationData(combinedFormModel.IdentificationFormModel);
@@ -744,6 +759,7 @@
 
         modificationInfo = true;
     }
+
     public class GroupKey
     {
         public string? CodeCategorie { get; set; }
@@ -779,7 +795,6 @@
         return groupedCategories;
     }
 
-
     @* protected override async Task OnAfterRenderAsync(bool firstRender){
         try{
             var result = await ProtectedSessionStore.GetAsync<string>("Email");
@@ -794,11 +809,13 @@
         }
 
     } *@
+
     public class ContactPhoneInfo
     {
         public Portail_OptiVille.Data.Models.Contact Contact { get; set; }
         public List<Telephone> PhoneNumbers { get; set; }
     }
+
     private ProduitServiceFormModel produitServiceFormModel = new ProduitServiceFormModel();
     private List<Produitservice> allProduitService = new List<Produitservice>();
     private List<Produitservice>? selectedProduitservices = new List<Produitservice>();
@@ -940,6 +957,7 @@
                 Nature = p.Nature 
             }).ToList(); 
     }
+
     private string GetFormatSizeFile(int? size)
     {
         if (size >= 1048576)
@@ -981,6 +999,7 @@
             await _context.SaveChangesAsync();
         }
     }
+
     private async Task DeleteFiche()
     {
         await historiqueService.AddHistoriqueRefuser(selectedFournisseur.IdFournisseur, "Vous avez supprimé votre fiche");//A mettre un message que l'admin peut changer
@@ -989,10 +1008,12 @@
         //closestHistorique.DateEtatChanged = DateTime.UtcNow;
         selectedFichiers.Clear();// A enlever si on peut changer les donnnes sans refresh la page
     }
+
     private void OpenConfirmationModal(Fichier file)
     {
         selectedFile = file;
     }
+
     private async Task OnDeleteFile(Fichier file)
     {
         await fichierService.DeleteOneFichierData(file);
