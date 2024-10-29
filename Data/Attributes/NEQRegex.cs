@@ -7,6 +7,7 @@ namespace Portail_OptiVille.Data.Attributes
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
+            // À MODIFIER, LE TROISIÈME CHIFFRE PEUT ÊTRE ENTRE 0 À 9 FINALEMENT ET PAS ENTRE 3 À 9
             var stringValue = value as string;
             if (stringValue != null)
             {

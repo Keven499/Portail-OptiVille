@@ -30,11 +30,14 @@
     }
     private async Task SendMail()
     {
-        string url = "https://www.registreentreprises.gouv.qc.ca/RQAnonymeGR/GR/GR03/GR03A2_22A_PIU_RecupDonnPub_PC/FichierDonneesOuvertes.aspx";
+        @* string url = "https://www.registreentreprises.gouv.qc.ca/RQAnonymeGR/GR/GR03/GR03A2_22A_PIU_RecupDonnPub_PC/FichierDonneesOuvertes.aspx";
         string outputPath = "Data\\Downloads\\entreprises.zip";
 
         await DownloadService.DownloadFileAsync(url, outputPath);
-        await NEQManager.ManageZIP(outputPath,"Data\\Downloads\\");
+        await NEQManager.ManageZIP(outputPath,"Data\\Downloads\\"); *@
+        string contenuMail = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Data", "TemplatesMail", "MailOublie.html"));
+        Console.WriteLine(contenuMail);
+        _mailManager.SendMail("kevenmichel721@gmail.com", "Test", contenuMail);
     }
 
     private async Task ProcessZipFile()
@@ -148,7 +151,7 @@
 
     string role2 = "";
 
-    protected override async Task OnInitializedAsync()
+    @* protected override async Task OnInitializedAsync()
     {
         try
         {
@@ -172,7 +175,7 @@
         {
             
         }
-    }
+    } *@
 
 
 

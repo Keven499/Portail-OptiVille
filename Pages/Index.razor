@@ -53,6 +53,11 @@ Welcome to your new app.
             Console.WriteLine($"Erreur lors de la récupération de l'adresse courriel : {ex.Message}");
             navigationManager.NavigateTo("/", true);
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur inattendue : {ex.Message}");
+            navigationManager.NavigateTo("/", true);
+        }
     }
 
 }

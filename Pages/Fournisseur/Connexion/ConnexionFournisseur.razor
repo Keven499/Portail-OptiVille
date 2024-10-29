@@ -14,6 +14,11 @@
 @inject IJSRuntime JsRuntime
 @inject ICookie cookie
 @inject JwtTokenGenerator tokenGenerator
+
+@code{
+    public const int COOKIE_EXPIRATION = 3; // 3 Hours
+}
+
 <EditForm Model="@logInModel" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="ValidateInput">
     <!-- OnValidSubmit="HandleValidSubmit" -->
     <div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
@@ -79,15 +84,15 @@
                     {
                         // Redirection si les informations sont correctes
                         await ProtectedSessionStore.SetAsync("Email", fournisseur.AdresseCourriel);
-                        //CookieService.("MyCookie", "TestValue", 30); // Expire dans 30 minutes
+                        await ProtectedSessionStore.SetAsync("IDFournisseur",fournisseur.Fournisseur);
 
                         string token = tokenGenerator.GenerateToken("fournisseur.AdresseCourriel");
                         // ajouter le token dans la BD
-                        Usersession usersession = new Usersession { Token = token, OwnerEmail = fournisseur.AdresseCourriel, ExpirationDate = DateTime.Now.AddHours(3) };
+                        Usersession usersession = new Usersession { Token = token, OwnerEmail = fournisseur.AdresseCourriel, ExpirationDate = DateTime.Now.AddHours(COOKIE_EXPIRATION) };
                         _context.Usersessions.Add(usersession);
                         await _context.SaveChangesAsync();
 
-                        await cookie.SetValue("SToken", token, 3);
+                        await cookie.SetValue("SToken", token, COOKIE_EXPIRATION);
 
                         NavigationManager.NavigateTo("/index", true);
                     }
