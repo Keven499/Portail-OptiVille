@@ -243,14 +243,7 @@
                         <h3 class="py-2 p-0 my-0 text-white titre-bold">Contacts</h3>
                     </div>
                     <div class="offset-xl-2 col-xl-6 p-0 d-flex justify-content-end align-items-center">
-                        @if (modificationContact)
-                        {
-                            <button type="button" class="btn btn-warning rounded-0" onclick="showModal('ContactModal')">Modifier</button>
-                        }
-                        else
-                        {
-                            <button type="submit" class="btn btn-success rounded-0">Sauvegarder</button>
-                        }
+                        <button type="button" class="btn btn-warning rounded-0" @onclick="ShowContactModalAsync">Modifier</button>
                     </div>
                 </div>
             </div>
@@ -318,7 +311,7 @@
                                 <ContactFormHoster AssignReference="AssignReferenceContactFormHoster" ContactHosterFormModel="contactHosterFormModel"></ContactFormHoster>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                                 <button type="submit" class="btn btn-primary" @onclick="SaveContact">Sauvegarder</button>
                             </div>
                         </div>
@@ -496,22 +489,23 @@
                     <button type="button" class="btn btn-warning rounded-0" onclick="showModal('ModifierModalPieceJointe')">Modifier</button>
                 </div>
             </div>
-
-            <div class="modal fade" id="ModifierModalPieceJointe" tabindex="-1" role="dialog" data-bs-backdrop="static">
-                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            <PiecesJointes PieceJointeFormModel="pieceJointeFormModel"></PiecesJointes>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary rounded-0" @onclick="SaveModifcationPieceJointes">Sauvegarder</button>
+            <div class="card rounded-0">
+                <div class="card-body mt-4">
+                    <div class="row">
+                    <div class="modal fade" id="ModifierModalPieceJointe" tabindex="-1" role="dialog" data-bs-backdrop="static">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <PiecesJointes PieceJointeFormModel="pieceJointeFormModel"></PiecesJointes>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary rounded-0" @onclick="SaveModifcationPieceJointes">Sauvegarder</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="card rounded-0">
-                <div class="card-body mt-4">
                     <div class="table-responsive">
 
                         <table class="table border-bleuFonce table-bordered my-0">
@@ -530,7 +524,8 @@
                                         <th scope="row" class="texte-bold">@(selectedFichiers.IndexOf(file) + 1)</th>
                                         <td class="texte-light">@file.Nom</td>
                                         <td class="texte-light">@GetFormatSizeFile(file.Taille)</td>
-                                        <td><button class="btn btn-danger texte-bold" type="button" onclick="showModal('modalConfirmation')" @*onclick="() => OpenConfirmationModal(file)"*@><i class="bi bi-trash"></i> Effacer</button></td>
+                                        @*onclick="() => OpenConfirmationModal(file)"*@
+                                        <td><button class="btn btn-danger texte-bold" type="button" onclick="showModal('modalConfirmation')"><i class="bi bi-trash"></i> Effacer</button></td>
                                     </tr>
                                 }
                             </tbody>
@@ -702,7 +697,7 @@
     modal.hide(); // Hide the modal
     }
     }
-    }
+    };
     function showModal(modalId) {
     var modalElement = document.getElementById(modalId);
     if (modalElement) {
@@ -717,7 +712,23 @@
     var modal = new bootstrap.Modal(modalElement);
     modal.show();
     }
+    };
+        window.showBootstrapModal = (modalId) => {
+            var existingBackdrops = document.querySelectorAll('.modal-backdrop');
+            existingBackdrops.forEach(backdrop => backdrop.remove());
+    var modalElement = document.getElementById(modalId);
+    if (modalElement) {
+        var modalInstance = new bootstrap.Modal(modalElement);
+        modalInstance.show();
+        // Ensure the backdrop is behind the modal
+        setTimeout(() => {
+            var backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.style.zIndex = '1040';
+            }
+        }, 100);
     }
+};
 </script>
 
 @code{
@@ -810,7 +821,14 @@
             IdentificationFormModel = new IdenticationFormModel();
         }
     }
-
+    private async Task ShowContactModalAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("showBootstrapModal", "ContactModal");
+    }
+    private async Task ShowPieceJointesModalAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("showBootstrapModal", "ModifierModalPieceJointe");
+    }
     private void ModifcationFinances()
     {
         modificationFinances = false;
@@ -1041,9 +1059,10 @@
             }
             identification = await _context.Identifications.SingleAsync(c => c.Fournisseur == selectedFournisseur.IdFournisseur);
             selectedFichiers = await _context.Fichiers.Where(c => c.Fournisseur == selectedFournisseur.IdFournisseur).ToListAsync();
-
+            var browserfiles = TransformFichierToBrowserFile(selectedFichiers);
+            // Pt que lister la liste des fichiers sur le serv comme sa deja en ibrowserfile ** A voir**
             pieceJointeFormModel = new PieceJointeFormModel{
-
+                ListFichiers = browserfiles
             };
             selectedHistoriques = await _context.Historiques.Where(c => c.Fournisseur == FournisseurID).ToListAsync();
             closestHistorique = selectedHistoriques.Where(h => h.DateEtatChanged.HasValue).OrderBy(h => Math.Abs((h.DateEtatChanged.Value - DateTime.UtcNow).TotalDays)).FirstOrDefault();
@@ -1229,5 +1248,30 @@
         selectedFichiers.Remove(file);// A enlever si on peut changer les donnnes sans refresh la page
         GetFormatSize();
         await JSRuntime.InvokeVoidAsync("hideModal", "modalConfirmation");
+    }
+
+    public class CustomBrowserFile : IBrowserFile
+    {
+        public string Name { get; set; }
+        public DateTimeOffset LastModified { get; set; }
+        public long Size { get; set; }
+        public string ContentType { get; set; }
+
+        // Example method to simulate getting a Stream for the file content
+        public Stream OpenReadStream(long maxAllowedSize = 512000, CancellationToken cancellationToken = default)
+        {
+            // Implement this method as needed
+            return new MemoryStream();
+        }
+    }
+    public List<IBrowserFile> TransformFichierToBrowserFile(List<Fichier> fichiers)
+    {
+        return fichiers.Select(f => new CustomBrowserFile
+        {
+            Name = f.Nom,
+            LastModified = f.DateCreation.HasValue ? new DateTimeOffset(f.DateCreation.Value) : DateTimeOffset.Now, // Handle null DateTime
+            Size = f.Taille ?? 0, // Handle null int
+            ContentType = f.Type
+        }).ToList<IBrowserFile>();
     }
 }

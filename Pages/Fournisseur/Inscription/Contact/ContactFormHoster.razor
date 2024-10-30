@@ -2,6 +2,7 @@
 @using System.Linq.Expressions
 @inject IJSRuntime JSRuntime
 
+
 <PageTitle>Étape 3 Contacts</PageTitle>
 <div class="card-header py-2 bg-bleuFonce">
     <h3 class="py-2 p-0 my-0 text-white titre-bold">Contacts</h3>
@@ -22,11 +23,12 @@
     }
     <div class="d-flex justify-content-center pb-2">
         <button type="button" class="btn bg-success text-white texte-bold me-2" @onclick="AddContact" style="width: 200px;"><i class="bi bi-plus-circle"></i> Ajout</button>
-        <div class="modal fade" id="ModalConfirmation" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <button type="button" class="btn bg-danger text-white texte-bold" data-bs-target="#ModalConfirmation" @onclick="ShowConfirmationModalAsync" style="width: 200px;" disabled="@(!(ContactHosterFormModel.ContactList.Count > 1))"><i class="bi bi-trash"></i> Retirer</button>
+        <div class="modal fade confirmModal" id="ModalConfirmation" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header border-0 text-center w-100">
-                        <h1 class="modal-title fs-5 mx-auto" id="exampleModalLabel">Êtes-vous sûr de vouloir retirer ce contact</h1>
+                        <h1 class="modal-title fs-5 mx-auto" id="exampleModalLabel">Êtes-vous sûr de vouloir retirer le dernier contact</h1>
                     </div>
                     <div class="modal-footer border-0 d-flex justify-content-center">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
@@ -35,7 +37,6 @@
                 </div>
             </div>
         </div>
-        <button type="button" class="btn bg-danger text-white texte-bold" data-bs-target="# ModalConfirmation" data-bs-toggle="modal" style="width: 200px;" disabled="@(!(ContactHosterFormModel.ContactList.Count > 1))"><i class="bi bi-trash"></i> Retirer</button>
     </div>
 </div>
 
@@ -43,8 +44,23 @@
     .valid {
         outline: 1px solid #26b050;
     }
+    .confirmModal {
+        z-index: 2;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    .modal-backdrop.show {
+        z-index: 1;
+    }
 </style>
-
+<script>
+    window.showBootstrapModal = (modalId) => {
+    var modalElement = document.getElementById(modalId);
+    if (modalElement) {
+        var modalInstance = new bootstrap.Modal(modalElement);
+        modalInstance.show();
+    }
+};
+</script>
 @code {
     [Parameter]
     public Action<ContactFormHoster>? AssignReference { get; set; }
@@ -96,7 +112,10 @@
         }
         return false;
     }
-
+    private async Task ShowConfirmationModalAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("showBootstrapModal", "ModalConfirmation");
+    }
     private void AddContact()
     {
         ContactHosterFormModel.ContactList.Add(new ContactFormModel());
