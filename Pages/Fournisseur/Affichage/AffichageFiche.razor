@@ -26,15 +26,21 @@
 
 <style>
     .main-div {
-    z-index: 1; /* Ensure main div stays below the out-row */
+        z-index: 1; 
     }
     .out-row {
-    position: absolute;
-    top: -25px; /* Adjust this value to control how much it "sticks out" */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%; /* Adjust width as needed */
-    z-index: 2; /* Bring this div in front of the main div */
+        position: absolute;
+        top: -25px; 
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%; 
+        z-index: 2; 
+    }
+    .flex-line {
+        flex-grow: 1;
+        height: 1px;
+        background: linear-gradient(to right, transparent, #b0b0b0, transparent);
+        opacity: 0.6; /* Adjust for transparency level */
     }
 </style>
 
@@ -76,47 +82,54 @@
             <div class="card rounded-0">
                 <div class="card-body mt-4">
                     <div class="row">
-                        <div class="col-xl-6">
+                        <div class="col-xl-6 col-12">
                             <div class="row">
-                                <div class="col-xl-8">
+                                <div class="col-xl-8 col-12 d-flex justify-content-between align-items-center m-xl-0 mt-4">
                                     <div class="row d-flex align-items-center">
-                                        <div class="col-xl-8">
+                                        <div class="col-xl-8 col-6">
                                             <label class="bleuFonce texte-bold" for="selectEtat">État</label>
-                                            <!-- AFFICHER POUR LE RESPONSABLE -->
-                                            @* <select class="form-select input-bleu texte-light rounded-0 py-1" id="selectEtat">
+                                            <!-- À AFFICHER POUR LE RESPONSABLE SURTOUT NE PAS ENLEVER -->
+                                            @* <select class="form-select input-bleu texte-light rounded-0 py-1" style="width: 200px;" id="selectEtat">
                                                 <option value="Accepté">Accepté</option>
                                                 <option value="Refusé">Refusé</option>
                                                 <option value="En attente">En attente</option>
                                                 <option value="À réviser">À réviser</option>
                                             </select> *@
                                         </div>
-                                        <div class="col-xl-4 d-flex justify-content-end">
+                                    </div>
+                                    <span class="flex-line mx-2"></span>
+                                    <div class="row d-flex align-items-center">
+                                        <div class="col-12">
                                             <div class="bleuFonce texte-bold">@(closestHistorique != null ? closestHistorique.EtatDemande : "N/A")</div>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xl-8 d-flex justify-content-between">
-                                    <div class="bleuFonce texte-bold">Dernière modiffication</div>
+                                <div class="col-xl-8 d-flex justify-content-between align-items-center">
+                                    <div class="bleuFonce texte-bold">Dernière modification</div>
+                                    <span class="flex-line mx-2"></span>
                                     <div class="bleuFonce texte-bold">@(closestHistorique != null && closestHistorique.DateEtatChanged.HasValue ? closestHistorique.DateEtatChanged.Value.ToString("yyyy-MM-dd") : "N/A")</div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xl-8 d-flex justify-content-between">
+                                <div class="col-xl-8 d-flex justify-content-between align-items-center">
                                     <div class="bleuFonce texte-bold">Création</div>
+                                    <span class="flex-line mx-2"></span>
                                     <div class="bleuFonce texte-bold">@(selectedFournisseur.DateCreation.HasValue ? selectedFournisseur.DateCreation.Value.ToString("yyyy-MM-dd") : "N/A")</div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xl-8 d-flex justify-content-between">
+                                <div class="col-xl-8 d-flex justify-content-between align-items-center">
                                     <div class="bleuFonce texte-bold">Modification</div>
+                                    <span class="flex-line mx-2"></span>
                                     <div class="bleuFonce texte-bold">@(selectedFournisseur.DateLastChanged.HasValue ? selectedFournisseur.DateLastChanged.Value.ToString("yyyy-MM-dd") : "N/A")</div>
                                 </div>
                             </div>
                         </div>
-                        <!-- DIV POUR RAISON REFUS QUAND RESPONSABLE SUR LA FICHE -->
-                        <div class="col-xl-6">
+                        <!-- DIV POUR RAISON REFUS QUAND RESPONSABLE SUR LA FICHE (MANQUE DONC LE TEXTAREA ET LE CHECKBOX) -->
+                        <div class="col-xl-6 col-12">
                             <div class="bleuFonce texte-bold">
                                 Raison du refus
                             </div>
@@ -153,53 +166,63 @@
             </div>
             <div class="card rounded-0">
                 <div class="card-body mt-4">
-                    <div class="row my-1">
-                        <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                    <div class="row mb-1 mt-1">
+                        <div class="col-xl-6 d-flex justify-content-between align-items-center m-xl-0 mb-xl-0 mb-1 mt-4">
                             <label for="inputEmail4" class="bleuFonce texte-bold">NEQ</label>
+                            <span class="flex-line mx-2"></span>
                             <input type="text" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.NEQ" readonly="@modificationInfo">
                         </div>
                         <div class="col-xl-6 d-flex justify-content-between align-items-center">
                             <label for="inputEmail4" class="bleuFonce texte-bold">Nom de l'entreprise</label>
+                            <span class="flex-line mx-2"></span>
                             <input type="text" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.NomEntreprise" readonly="@modificationInfo">
                         </div>
                     </div>
                     <div class="row my-1">
-                        <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                        <div class="col-xl-6 d-flex justify-content-between align-items-center m-xl-0 mb-xl-0 mb-1">
                             <label for="inputPassword4" class="bleuFonce texte-bold">No Civique</label>
+                            <span class="flex-line mx-2"></span>
                             <input type="text" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.NoEntreprise" readonly="@modificationInfo">
                         </div>
                         <div class="col-xl-6 d-flex justify-content-between align-items-center">
                             <label for="inputPassword4" class="bleuFonce texte-bold">Rue</label>
+                            <span class="flex-line mx-2"></span>
                             <input type="text" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.RueEntreprise" readonly="@modificationInfo">
                         </div>
                     </div>
                     <div class="row my-1">
-                        <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                        <div class="col-xl-6 d-flex justify-content-between align-items-center m-xl-0 mb-xl-0 mb-1">
                             <label for="inputPassword4" class="bleuFonce texte-bold">Bureau</label>
+                            <span class="flex-line mx-2"></span>
                             <input type="text" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.BureauEntreprise" readonly="@modificationInfo">
                         </div>
-                        <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                        <div class="col-xl-6 d-flex justify-content-between align-items-center m-xl-0 mb-xl-0 mb-1">
                             <label for="inputPassword4" class="bleuFonce texte-bold">Code Postal</label>
+                            <span class="flex-line mx-2"></span>
                             <input type="text" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.CodePostalEntreprise" readonly="@modificationInfo">
                         </div>
                     </div>
                     <div class="row my-1">
-                        <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                        <div class="col-xl-6 d-flex justify-content-between align-items-center m-xl-0 mb-xl-0 mb-1">
                             <label for="inputPassword4" class="bleuFonce texte-bold">Ville</label>
+                            <span class="flex-line mx-2"></span>
                             <input type="text" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.VilleEntreprise" readonly="@modificationInfo">
                         </div>
-                        <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                        <div class="col-xl-6 d-flex justify-content-between align-items-center m-xl-0 mb-xl-0 mb-1">
                             <label for="inputPassword4" class="bleuFonce texte-bold">Province</label>
+                            <span class="flex-line mx-2"></span>
                             <input type="text" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.ProvinceEntreprise" readonly="@modificationInfo">
                         </div>
                     </div>
                     <div class="row my-1">
-                        <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                        <div class="col-xl-6 d-flex justify-content-between align-items-center m-xl-0 mb-xl-0 mb-1">
                             <label for="inputEmail4" class="bleuFonce texte-bold">Adresse courriel</label>
+                            <span class="flex-line mx-2"></span>
                             <input type="text" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.CourrielEntreprise" readonly="@modificationInfo">
                         </div>
                         <div class="col-xl-6 d-flex justify-content-between align-items-center">
                             <label for="inputPassword4" class="bleuFonce texte-bold">Site Web</label>
+                            <span class="flex-line mx-2"></span>
                             <input type="text" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.SiteWebEntreprise" readonly="@modificationInfo">
                         </div>
                     </div>
@@ -210,16 +233,14 @@
                                 <div class="row d-flex align-items-center">
                                     <div class="col-xl-12">
                                         <label for="inputPassword4" class="me-2 bleuFonce texte-bold">Numéro de téléphone</label>
-                                        @if (!modificationInfo)
-                                        {
-                                            <select class="form-select input-bleu texte-light rounded-0 py-1" id="telephoneType" @bind="@telephone.TypeTelEntreprise" style="width: 200px;">
-                                                <option value="Bureau">Bureau</option>
-                                                <option value="Télécopieur">Télécopieur</option>
-                                                <option value="Cellulaire">Cellulaire</option>
-                                            </select>
-                                        }
+                                        <select class="form-select input-bleu texte-light rounded-0 py-1" id="telephoneType" @bind="@telephone.TypeTelEntreprise" style="width: 200px;">
+                                            <option value="Bureau">Bureau</option>
+                                            <option value="Télécopieur">Télécopieur</option>
+                                            <option value="Cellulaire">Cellulaire</option>
+                                        </select>
                                     </div>
                                 </div>
+                                <span class="flex-line mx-2"></span>
                                 <div class="row d-flex align-items-center">
                                     <div class="col-xl-12">
                                         <input type="text" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" id="inputEmail4" @bind="telephone.NoTelEntreprise">
@@ -228,6 +249,7 @@
                             </div>
                             <div class="col-xl-6 d-flex justify-content-between align-items-center">
                                 <label for="inputPassword4" class="bleuFonce texte-bold">Poste</label>
+                                <span class="flex-line mx-2"></span>
                                 <input type="text" style="width: 200px;" class="form-control input-bleu texte-light rounded-0 py-1" id="inputEmail4" @bind="telephone.PosteTelEntreprise">
                             </div>
                         }
@@ -251,24 +273,28 @@
                 <div class="card-body mt-4">
                     @for (int i = 0; i < contactHosterFormModel.ContactList!.Count; i++)
                     {
-                        var contact = contactHosterFormModel.ContactList[i]; // Access each contact
-                        <div class="row my-1">
-                            <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                        var contact = contactHosterFormModel.ContactList[i];
+                        <div class="row my-1 mt-1">
+                            <div class="col-xl-6 d-flex justify-content-between align-items-center m-xl-0 mb-xl-0 mb-1 mt-4">
                                 <label for="prenomInput" class="bleuFonce texte-bold">Prénom</label>
+                                <span class="flex-line mx-2"></span>
                                 <InputText id="prenomInput" style="width: 200px; outline: none;" class="form-control input-bleu texte-light rounded-0 py-1" @bind-Value="contact.Prenom" readonly="@modificationContact" />
                             </div>
                             <div class="col-xl-6 d-flex justify-content-between align-items-center">
                                 <label for="nomInput" class="bleuFonce texte-bold">Nom</label>
+                                <span class="flex-line mx-2"></span>
                                 <InputText id="nomInput" style="width: 200px; outline: none;" class="form-control input-bleu texte-light rounded-0 py-1" @bind-Value="contact.Nom" readonly="@modificationContact" />
                             </div>
                         </div>
                         <div class="row my-1">
-                            <div class="col-xl-6 d-flex justify-content-between align-items-center">
+                            <div class="col-xl-6 d-flex justify-content-between align-items-center m-xl-0 mb-xl-0 mb-1">
                                 <label for="fonctionInput" class="bleuFonce texte-bold">Fonction</label>
+                                <span class="flex-line mx-2"></span>
                                 <InputText id="fonctionInput" style="width: 200px; outline: none;" class="form-control input-bleu texte-light rounded-0 py-1" @bind-Value="contact.Fonction" readonly="@modificationContact" />
                             </div>
                             <div class="col-xl-6 d-flex justify-content-between align-items-center">
                                 <label for="courrielInput" class="bleuFonce texte-bold">Adresse courriel</label>
+                                <span class="flex-line mx-2"></span>
                                 <InputText id="courrielInput" style="width: 200px; outline: none;" class="form-control input-bleu texte-light rounded-0 py-1" @bind-Value="contact.AdresseCourriel" readonly="@modificationContact" />
                             </div>
                         </div>
@@ -284,6 +310,7 @@
                                         </InputSelect>
                                     </div>
                                 </div>
+                                <span class="flex-line mx-2"></span>
                                 <div class="row d-flex align-items-center">
                                     <div class="col-xl-12">
                                         <InputText id="telephoneInput" style="width: 200px; outline: none;" class="form-control input-bleu texte-light rounded-0 py-1" @bind-Value="contact.Telephone" readonly="@modificationContact" />
@@ -292,6 +319,7 @@
                             </div>
                             <div class="col-xl-6 d-flex justify-content-between align-items-center">
                                 <label for="posteInput" class="bleuFonce texte-bold">Poste</label>
+                                <span class="flex-line mx-2"></span>
                                 <InputText id="posteInput" style="width: 200px; outline: none;" class="form-control input-bleu texte-light rounded-0 py-1" @bind-Value="contact.Poste" readonly="@modificationContact" />
                             </div>
                         </div>
@@ -410,17 +438,19 @@
                         </div>
                     </div>
                 </div>
-                <div class="row d-flex align-items-center">
-                    <div class="col-xl-2">
+                <div class="row d-flex align-items-center m-xl-0 mt-1">
+                    <div class="col-xxl-1 col-xl-12">
                         <div class="bleuFonce texte-bold">@licencerbqs.Statut</div>
                     </div>
-                    <div class="col-xl-5 d-flex align-items-center">
+                    <div class="col-xxl-5 col-xl-12 d-flex justify-content-between align-items-center mb-1">
                         <label for="IdLicenceRbq" class="me-3 bleuFonce texte-bold">Numéro</label>
+                        <span class="flex-line mx-2"></span>
                         <input type="text" style="width: 300px;" class="form-control input-bleu texte-light rounded-0 py-1" id="IdLicenceRbq" value="@licencerbqs.IdLicenceRbq">
                     </div>
 
-                    <div class="col-xl-5 d-flex align-items-center">
+                    <div class="col-xxl-6 col-xl-12 justify-content-between d-flex align-items-center">
                         <label for="TypeLicencerbq" class="me-3 bleuFonce texte-bold">Type de licence</label>
+                        <span class="flex-line mx-2"></span>
                         <input type="text" style="width: 300px;" class="form-control input-bleu texte-light rounded-0 py-1" id="TypeLicencerbq" value="@licencerbqs.Type">
                     </div>
                 </div>
@@ -482,10 +512,10 @@
         </div>
         <div class="main-div position-relative" style="margin-bottom: 24px; margin-top:24px">
             <div class="out-row row text-white p-0 m-0">
-                <div class="col-xl-6 col-lg-8 p-0 ps-3 bg-bleuFonce">
+                <div class="col-xxl-6 col-xl-7 col-lg-9 p-0 ps-3 bg-bleuFonce">
                     <h3 class="py-2 p-0 my-0 text-white titre-bold">Brochures et cartes d'affaires (Total: @GetFormatSize())</h3>
                 </div>
-                <div class="col-xl-6 col-lg-4 p-0 d-flex justify-content-end align-items-center">
+                <div class="col-xxl-6 col-xl-5 col-lg-3 p-0 d-flex justify-content-end align-items-center">
                     <button type="button" class="btn btn-warning rounded-0" onclick="showModal('ModifierModalPieceJointe')">Modifier</button>
                 </div>
             </div>
@@ -506,9 +536,8 @@
                         </div>
                     </div>
                 </div>
-                    <div class="table-responsive">
-
-                        <table class="table border-bleuFonce table-bordered my-0">
+                    <div class="table-responsive mt-1">
+                        <table class="table border-bleuFonce table-bordered my-0 mt-4">
                             <thead>
                                 <tr>
                                     <th scope="col" class="col-1 texte-bold">Fichier</th>
@@ -529,7 +558,6 @@
                                     </tr>
                                 }
                             </tbody>
-
                             @*
                             <div class="modal fade" tabindex="-1" role="dialog" id="exampleModal" data-bs-backdrop="static">
                                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
@@ -547,21 +575,19 @@
                             *@
                         </table>
                     </div>
-
-                            <div class="modal fade" id="modalConfirmation" tabindex="-1" role="dialog">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-                                        <div class="modal-header border-0 text-center w-100">
-                                            <h1 class="modal-title fs-5 mx-auto">Êtes-vous sûr de vouloir effacer ce fichier </h1>
-                                        </div>
-                                        <div class="modal-footer border-0 d-flex justify-content-center">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                                            <button type="button" class="btn btn-primary" @onclick="()=>OnDeleteFile(selectedFile)">Confirmer</button>
-                                        </div>
-                                    </div>
+                    <div class="modal fade" id="modalConfirmation" tabindex="-1" role="dialog">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header border-0 text-center w-100">
+                                    <h1 class="modal-title fs-5 mx-auto">Êtes-vous sûr de vouloir effacer ce fichier </h1>
+                                </div>
+                                <div class="modal-footer border-0 d-flex justify-content-center">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                    <button type="button" class="btn btn-primary" @onclick="()=>OnDeleteFile(selectedFile)">Confirmer</button>
                                 </div>
                             </div>
-
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -588,12 +614,13 @@
                 </div>
                 <div class="card rounded-0">
                     <div class="card-body mt-4">
-                        <div class="row my-1">
-                            <div class="col-xl-6">
+                        <div class="row my-1 mt-1">
+                            <div class="col-xl-6 m-xl-0 mt-4">
                                 <div class="row">
-                                    <div class="col-xl-12 d-flex justify-content-between align-items-center">
+                                    <div class="col-xl-12 d-flex justify-content-between align-items-center ">
                                         <label for="inputTPS" class="bleuFonce texte-bold">TPS</label>
-                                <input type="text" style="width: 200px;" class="form-control @GetInputClass(() => financeFormModel.NumeroTps) input-bleu texte-light rounded-0 py-1" id="inputTPS" @bind="@financeFormModel.NumeroTps" readonly="@modificationFinances">
+                                        <span class="flex-line mx-2"></span>
+                                        <input type="text" style="width: 200px;" class="form-control @GetInputClass(() => financeFormModel.NumeroTps) input-bleu texte-light rounded-0 py-1 m-xl-0 mb-xl-0 mb-1" id="inputTPS" @bind="@financeFormModel.NumeroTps" readonly="@modificationFinances">
                                     </div>
                                 </div>
                                 <div class="row">
@@ -606,7 +633,8 @@
                                 <div class="row">
                                     <div class="col-xl-12 d-flex justify-content-between align-items-center">
                                         <label for="inputTVQ" class="bleuFonce texte-bold">TVQ</label>
-                                <input type="text" style="width: 200px;" class="form-control @GetInputClass(() => financeFormModel.NumeroTvq) input-bleu texte-light rounded-0 py-1" id="inputTVQ" @bind="@financeFormModel.NumeroTvq" readonly="@modificationFinances">
+                                        <span class="flex-line mx-2"></span>
+                                        <input type="text" style="width: 200px;" class="form-control @GetInputClass(() => financeFormModel.NumeroTvq) input-bleu texte-light rounded-0 py-1" id="inputTVQ" @bind="@financeFormModel.NumeroTvq" readonly="@modificationFinances">
                                     </div>
                                 </div>
                                 <div class="row">
@@ -620,19 +648,13 @@
                             <div class="col-xl-6">
                                 <div class="row">
                                     <div class="col-xl-12 d-flex justify-content-between align-items-center">
-                                        <label for="inputCondPaiement" class="bleuFonce texte-bold">Conditions de paiement</label>
-                                         <select class="form-select @GetInputClass(() => financeFormModel.ConditionPaiement) input-bleu texte-light rounded-0 py-1" id="inputCondPaiement" @bind="@financeFormModel.ConditionPaiement" readonly="@modificationFinances"
-                                            style="@(modificationFinances ? "pointer-events: none;" : null) width: 200px;">
-                                            @foreach (var item in listConditionPaiement)
-                                            {
-                                                <option value="item">@item</option>
-                                            }
+                                        <label for="inputModeComm" class="bleuFonce texte-bold">Mode de communication</label>
+                                        <span class="flex-line mx-2"></span>
+                                        <select class="form-select @GetInputClass(() => financeFormModel.ModeCommunication) input-bleu texte-light rounded-0 py-1 m-xl-0 mb-xl-0 mb-1" id="inputModeComm" @bind="@financeFormModel.ModeCommunication"
+                                                style="@(modificationFinances ? "pointer-events: none;" : null) width: 200px; ">
+                                            <option value="Courriel">Courriel</option>
+                                            <option value="Courrier régulier">Courrier régulier</option>
                                         </select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xl-12 d-flex justify-content-end align-items-center">
-                                        @((MarkupString)GetValidationHTML(() => financeFormModel.ConditionPaiement))
                                     </div>
                                 </div>
                             </div>
@@ -640,41 +662,34 @@
                                 <div class="row">
                                     <div class="col-xl-12 d-flex justify-content-between align-items-center">
                                         <label for="inputDevise" class="bleuFonce texte-bold">Devise</label>
+                                        <span class="flex-line mx-2"></span>
                                         <select class="form-select @GetInputClass(() => financeFormModel.Devise) input-bleu texte-light rounded-0 py-1" id="inputDevise" @bind="@financeFormModel.Devise"
-                                            style="@(modificationFinances ? "pointer-events: none;" : null) width: 200px;">
+                                                style="@(modificationFinances ? "pointer-events: none;" : null) width: 200px;">
                                             <option value="CAD">CAD</option>
                                             <option value="USD">USD</option>
                                         </select>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-xl-12 d-flex justify-content-end align-items-center">
-                                            @((MarkupString)GetValidationHTML(() => financeFormModel.Devise))
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
+                        </div>
                         <div class="row my-1">
                             <div class="col-xl-6">
                                 <div class="row">
-                                    <div class="col-xl-12 d-flex justify-content-between align-items-center">
-                                        <label for="inputModeComm" class="bleuFonce texte-bold">Mode de communication</label>
-                                        <select class="form-select @GetInputClass(() => financeFormModel.ModeCommunication) input-bleu texte-light rounded-0 py-1" id="inputModeComm" @bind="@financeFormModel.ModeCommunication"
-                                            style="@(modificationFinances ? "pointer-events: none;" : null) width: 200px; ">
-                                            <option value="Courriel">Courriel</option>
-                                            <option value="Courrier régulier">Courrier régulier</option>
+                                    <div class="col-xl-12 flex-column align-items-center">
+                                        <label for="inputCondPaiement" class="bleuFonce texte-bold">Conditions de paiement</label>
+                                        <select class="form-select @GetInputClass(() => financeFormModel.ConditionPaiement) input-bleu texte-light rounded-0 py-1" id="inputCondPaiement" @bind="@financeFormModel.ConditionPaiement" readonly="@modificationFinances"
+                                            style="@(modificationFinances ? "pointer-events: none;" : null)">
+                                            @foreach (var item in listConditionPaiement)
+                                            {
+                                                <option value="item">@item</option>
+                                            }
                                         </select>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xl-12 d-flex justify-content-end align-items-center">
-                                            @((MarkupString)GetValidationHTML(() => financeFormModel.ModeCommunication))
-                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                </div>
             </EditForm>
         }
     }
