@@ -53,7 +53,7 @@
     private async void HandleValidSubmit()
     {
         string contenuMail = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Data", "TemplatesMail", "MailOublie.html"));
-        mailManager.SendMail("kevenmichel721@gmail.com", "Test", contenuMail);
+        mailManager.SendMail("kevenmichel721@gmail.com", $"Mot de passe oublié - {logInModel.Username}", contenuMail);
         Post = true;
     }
 
