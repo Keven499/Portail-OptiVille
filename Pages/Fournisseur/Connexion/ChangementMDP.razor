@@ -1,0 +1,175 @@
+@page "/changement-mdp"
+@using System.ComponentModel.DataAnnotations
+@using Portail_OptiVille.Data.Exceptions
+@using Portail_OptiVille.Data.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Security.Cryptography;
+@using System.Text;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using Portail_OptiVille.Data.Utilities
+@using System.Text.RegularExpressions
+@inject ProtectedSessionStorage ProtectedSessionStore
+@inject NavigationManager NavigationManager
+@inject A2024420517riGr1Eq6Context _context
+
+@code {
+    public static string idUtilisateur = "";
+    @* protected override async Task OnAfterRenderAsync(bool firstRender)
+{
+
+try
+{
+var result = await ProtectedSessionStore.GetAsync<string>("username");
+if (result.Success || !string.IsNullOrEmpty(result.Value))
+{
+Console.WriteLine($"Adresse courriel / NEQ: {result.Value}");
+idUtilisateur = result.Value;
+}
+}
+catch
+{
+Console.WriteLine($"Erreur lors de la récupération de l'adresse courriel");
+NavigationManager.NavigateTo("/", true);
+
+}
+
+} *@
+
+    // OnInitizializedAsync
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var result = await ProtectedSessionStore.GetAsync<string>("username");
+            if (result.Success || !string.IsNullOrEmpty(result.Value))
+            {
+                Console.WriteLine($"Adresse courriel / NEQ: {result.Value}");
+                idUtilisateur = result.Value;
+            }
+        }
+        catch
+        {
+            Console.WriteLine($"Erreur lors de la récupération de l'adresse courriel");
+            NavigationManager.NavigateTo("/", true);
+
+        }
+    }
+}
+
+<EditForm Model="@forgotPasswordModel" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="ValidateInput">
+    <div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
+        <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
+            <div class="card w-75 h-75 d-flex justify-content-center p-0 m-0">
+                <div class="card-header py-2 bg-bleuFonce">
+                    <h3 class="py-2 p-0 my-0 text-white titre-bold">Changer le Mot de Passe</h3>
+                </div>
+                <div class="card-body border-bleuFonce py-1">
+                    <div class="col-xl-12 col-lg-12 py-2">
+                        <label class="bleuFonce texte-bold" for="MotDePasse">
+                            <i class="bi @passwordIconClass"></i> Nouveau Mot de Passe <i
+                                class="bi bi-braces text-success"></i>
+                        </label>
+                        <InputText type="password" class="form-control" id="MotDePasse"
+                            @bind-Value="forgotPasswordModel.MotDePasse" />
+                        <ValidationMessage For="@(() => forgotPasswordModel.MotDePasse)" />
+                    </div>
+                    <div class="col-xl-12 col-lg-12 py-2">
+                        <label class="bleuFonce texte-bold" for="ConfirmationMotDePasse">
+                            <i class="bi @confirmationIconClass"></i> Confirmation du Mot de Passe <i
+                                class="bi bi-braces text-success"></i>
+                        </label>
+                        <InputText type="password" class="form-control" id="ConfirmationMotDePasse"
+                            @bind-Value="forgotPasswordModel.ConfirmationMotDePasse" />
+                        <ValidationMessage For="@(() => forgotPasswordModel.ConfirmationMotDePasse)" />
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <span class="text-danger">@errorMessage</span>
+                        }
+                    </div>
+                </div>
+                <div class="card-footer py-2 bg-bleuFonce">
+                    <button type="submit" class="btn btn-success w-100">Changer Mot de Passe</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <DataAnnotationsValidator />
+</EditForm>
+
+@code {
+    private ForgotPasswordModel forgotPasswordModel = new ForgotPasswordModel();
+    private string errorMessage = ""; // Message d'erreur en cas de non correspondance des mots de passe
+    private string passwordIconClass = ""; // Classe pour l'icône du mot de passe
+    private string confirmationIconClass = ""; // Classe pour l'icône de confirmation de mot de passe
+
+    private async void HandleValidSubmit()
+    {
+        if (forgotPasswordModel.MotDePasse != forgotPasswordModel.ConfirmationMotDePasse)
+        {
+            errorMessage = "Les mots de passe ne correspondent pas.";
+            return;
+        }
+
+        try
+        {
+            // Hacher et sauvegarder le nouveau mot de passe
+            var hashedPassword = HashPassword(forgotPasswordModel.MotDePasse);
+            // Remplacer ceci par l'identifiant de l'utilisateur actuel (à adapter)
+            var id = await ProtectedSessionStore.GetAsync<string>("utilisateur");
+            var utilisateur = await _context.Identifications.FindAsync(idUtilisateur);
+            Console.WriteLine($"Utilisateur: {utilisateur}");
+            Console.WriteLine(utilisateur.Neq);
+            if (utilisateur != null)
+            {
+                utilisateur.MotDePasse = hashedPassword;
+                await _context.SaveChangesAsync();
+                NavigationManager.NavigateTo("/confirmation"); // Redirige vers une page de confirmation
+            }
+            else
+            {
+                errorMessage = "Erreur : utilisateur non trouvé.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Erreur lors de la sauvegarde du mot de passe.";
+        }
+    }
+
+    private void ValidateInput()
+    {
+        // Validation du mot de passe
+        if (string.IsNullOrEmpty(forgotPasswordModel.MotDePasse) || forgotPasswordModel.MotDePasse.Length < 8)
+        {
+            passwordIconClass = "bi-x-circle text-danger";
+        }
+        else
+        {
+            passwordIconClass = "bi-check-circle text-success";
+        }
+
+        // Validation de la confirmation du mot de passe
+        if (forgotPasswordModel.ConfirmationMotDePasse != forgotPasswordModel.MotDePasse)
+        {
+            confirmationIconClass = "bi-x-circle text-danger";
+        }
+        else
+        {
+            confirmationIconClass = "bi-check-circle text-success";
+        }
+    }
+
+    static string HashPassword(string input)
+    => Convert.ToHexString(SHA1.HashData(Encoding.UTF8.GetBytes(input)));
+
+    public class ForgotPasswordModel
+    {
+        [Required(ErrorMessage = "Le mot de passe est requis")]
+        [MinLength(8, ErrorMessage = "Le mot de passe doit contenir au moins 8 caractères")]
+        public string MotDePasse { get; set; }
+
+        [Required(ErrorMessage = "La confirmation du mot de passe est requise")]
+        [Compare("MotDePasse", ErrorMessage = "Les mots de passe ne correspondent pas")]
+        public string ConfirmationMotDePasse { get; set; }
+    }
+}

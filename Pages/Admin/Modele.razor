@@ -8,14 +8,14 @@
 
 <PageTitle>Gestion des courriels</PageTitle>
     <div class="row d-flex justify-content-center">
-        <div class="col-xl-6 col-xl-6 col-lg-6 col-10 col-sm-10 ms-xl-3 ms-lg-3 py-2">
+        <div class="col-xl-11 col-lg-11 col-12 col-sm-12 py-2">
             <div class="card">
                 <div class="card-header py-2 bg-vertFonce">
                     <h3 class="py-2 my-0 text-white titre-bold">Modèles de courriels</h3>
                 </div>
                 <div class="card-body border-vertFonce py-1">
-                <div class="col-xl-11 col-lg-11 col-12 col-sm-12 ms-xl-3 ms-lg-3 py-2">
-                    <div class="form-group">
+                <div>
+                    <div class="form-group col-xl-3 col-lg-3 col-3 col-sm-6 py-2">
                         <label for="exampleFormControlSelect1" class="vertFonce texte-bold">Choix du modèle</label>
                         <select @onchange="OnModeleChanged" class="form-select form-control input-vert texte-light" id="exampleFormControlSelect1">
                             @if (selectedId == 0)
@@ -34,11 +34,14 @@
                     }
                     else
                     {
-                        <label for="objetCourriel" class="vertFonce texte-bold pt-2">Objet</label>
-                        <InputText @bind-Value="selectedObjet" type="text" class="form-control input-vert texte-light" id="objetCourriel" readonly="@(!isEditing)" />
-
-                        <label for="messageCourriel" class="vertFonce texte-bold pt-2">Message</label>
-                        <InputTextArea @bind-Value="selectedMessage" type="text-area" class="form-control input-vert texte-light" rows="6" id="messageCourriel" style="resize: none;" readonly="@(!isEditing)" />
+                        <div class="col-xl-6 col-lg-6 col-6 col-sm-6 py-1">
+                            <label for="objetCourriel" class="vertFonce texte-bold pt-2">Objet</label>
+                            <InputText @bind-Value="selectedObjet" type="text" class="form-control input-vert texte-light" id="objetCourriel" readonly="@(!isEditing)" />
+                        </div>
+                        <div class="col-xl-9 col-lg-9 col-9 col-sm-6 py-1">
+                            <label for="messageCourriel" class="vertFonce texte-bold pt-2">Message</label>
+                            <InputTextArea @bind-Value="selectedMessage" type="text-area" class="form-control input-vert texte-light" rows="6" id="messageCourriel" style="resize: none;" readonly="@(!isEditing)" />
+                        </div>
                     }
                 </div>
             </div>   
@@ -46,7 +49,7 @@
                 <div class="card-footer bg-vertFonce d-flex justify-content-center">
                     @if(!isCreating)
                     {
-                        <button class="btn bg-vert texte-medium vertFonce me-1" style="width: 200px;" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" @onclick="() => CreateModele(true)"><i class="bi bi-plus-circle me-1"></i>Ajouter</button>
+                        <button class="btn bg-vert texte-medium text-white me-1" style="width: 200px;" id="btnVert" data-bs-toggle="modal" data-bs-target="#exampleModalCenter" @onclick="() => CreateModele(true)"><i class="bi bi-plus-circle me-1"></i>Ajouter</button>
                     }
                     <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
@@ -74,8 +77,8 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer bg-vertFonce d-flex justify-content-center">
-                                    <button type="submit" class="btn bg-vert texte-medium vertFonce" style="width: 200px;"><i class="bi bi-floppy me-1"></i>Sauvegarder</button>
-                                    <button type="button" class="btn bg-vert texte-medium vertFonce me-1" style="width: 200px;" data-bs-dismiss="modal" @onclick="() => CreateModele(false)"><i class="bi bi-x-circle me-1"></i>Annuler</button>
+                                    <button type="submit" class="btn bg-vert texte-medium text-white" id="btnVert" style="width: 200px;"><i class="bi bi-floppy me-1"></i>Sauvegarder</button>
+                                    <button type="button" class="btn bg-vert texte-medium text-white me-1" id="btnVert" style="width: 200px;" data-bs-dismiss="modal" @onclick="() => CreateModele(false)"><i class="bi bi-x-circle me-1"></i>Annuler</button>
                                 </div>
                             </EditForm>
                         </div>
@@ -86,13 +89,13 @@
                     {
                         if(selectedId != 0)
                         {
-                        <button class="btn bg-vert texte-medium vertFonce me-1" style="width: 200px;" @onclick="EditConfig"><i class="bi bi-pencil me-1"></i>Modifier</button>
+                        <button class="btn bg-vert texte-medium text-white me-1" style="width: 200px;" id="btnVert" @onclick="EditConfig"><i class="bi bi-pencil me-1"></i>Modifier</button>
                         }
                     }
                     else
                     {
-                        <button class="btn bg-vert texte-medium vertFonce me-1" style="width: 200px;" @onclick="SaveConfig"><i class="bi bi-floppy me-1"></i>Sauvegarder</button>
-                        <button class="btn bg-vert texte-medium vertFonce" style="width: 200px;" @onclick="DeleteConfig"><i class="bi bi-trash3 me-1"></i>Supprimer</button>
+                        <button class="btn bg-vert texte-medium text-white me-1" style="width: 200px;" id="btnVert" @onclick="SaveConfig"><i class="bi bi-floppy me-1"></i>Sauvegarder</button>
+                        <button class="btn bg-danger texte-medium text-white" style="width: 200px;" @onclick="DeleteConfig"><i class="bi bi-trash3 me-1"></i>Supprimer</button>
                     }
                 </div>
 

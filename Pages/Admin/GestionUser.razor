@@ -9,52 +9,52 @@
 
 <PageTitle>Gestion des rôles</PageTitle>
     <div class="row d-flex justify-content-center">
-        <div class="col-xl-7 col-lg-10 col-sm-12 col-12 p-0">
+        <div class="col-xl-11 col-lg-11 col-sm-12 col-12 p-0">
             <div class="card">
                 <div class="card-header py-2 bg-vertFonce d-flex align-items-center">
-                <h3 class="py-2 my-0 text-white titre-bold">Gestion des utilisateurs</h3>
+                    <h3 class="py-2 my-0 text-white titre-bold">Gestion des utilisateurs</h3>
                 </div>
             <div class="card-body border-vertFonce">
-                <div class="row">
-                    <div class="col-xl-4">
+                <div class="col-xl-12 col-lg-12 col-12 col-sm-12 texte-bold">
+                    @if (!string.IsNullOrEmpty(message))
+                    {
+                        @((MarkupString)GetValidationHTML((message)))
+                    }
+                </div>
+                <div class="row d-flex align-baseline">
+                    <div class="col-xl-5 col-lg-5 col-4 col-sm-4">
                         <div class="titre-medium vert fs-3">Utilisateur</div>
                     </div>
-                    <div class="col-xl-4">
+                    <div class="col-xl-5 col-lg-5 col-4 col-sm-4">
                         <div class="titre-medium vert fs-3">Rôle</div>
                     </div>
-                    <div class="col-xl-12">
-                        @if (!string.IsNullOrEmpty(message))
-                        {
-                            @((MarkupString)GetValidationHTML((message)))
-                        }
-                    </div>
                 </div>
-                @foreach (var employe in allEmployes)
-                {
-                    <div class="row d-flex align-items-center pb-2 ">
-                        <div class="col-xl-4 col-12">
-                            <div class="texte-light fs-6 fw-bold">@employe.Courriel</div>
+                    @foreach (var employe in allEmployes)
+                    {
+                        <div class="row d-flex align-baseline">
+                            <div class="col-xl-5 col-lg-5 col-12 col-sm-12">
+                                <div class="texte-light fs-6 fw-bold">@employe.Courriel</div>
+                            </div>
+                            <div class="col-xl-5 col-lg-5 col-4 col-sm-4">
+                                <select class="form-select input-vert texte-light" @onchange="(e) => OnRoleChange(employe, e.Value!.ToString()!)">
+                                    @foreach (var value in Roles)
+                                    {
+                                        <option value="@value" selected="@((employe.Role == value))">@value</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-xl-1 col-lg-1 col-4 col-sm-4">
+                                <button type="button" class="btn btn-danger w-100" id="btnSupp" @onclick="() => OnDeleteUser(employe)"><i class="bi bi-trash"></i></button>
+                            </div>
+                            <hr class="mt-2 mb-0"/>
                         </div>
-                        <div class="col-xl-6 col-6">
-                            <select class="form-select input-vert texte-light" @onchange="(e) => OnRoleChange(employe, e.Value!.ToString()!)">
-                                @foreach (var value in Roles)
-                                {
-                                    <option value="@value" selected="@((employe.Role == value))">@value</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="col-xl-2 col-6">
-                            <button type="button" class="btn btn-danger w-100" @onclick="() => OnDeleteUser(employe)"><i class="bi bi-trash me-1"></i></button>
-                        </div>
-                        <hr class="mt-2 mb-0"/>
-                    </div>
-                }
+                    }
                 <div class="">
                 @if (!formAjouter)
                 {
                     <div class="row justify-content-center">
                         <div class="col-xl-6 text-center">
-                                <button type="submit" class="btn btn-success text-white texte-bold" style="width: 200px;" @onclick="ShowForm"><i class="bi bi-plus-circle"></i> Ajouter</button>
+                                <button type="submit" class="btn bg-vert text-white texte-bold" id="btnVert" style="width: 200px;" @onclick="ShowForm"><i class="bi bi-plus-circle me-1"></i>Ajouter</button>
                         </div>
                     </div>
                 }
@@ -83,8 +83,8 @@
                         </div>
                         <div class="row justify-content-center">
                             <div class="col-xl-12 text-center">
-                                <button type="submit" style="width: 200px" class="btn btn-success text-white texte-bold mb-sm-1" @onclick="AjoutUtilisateur">Confirmer</button>
-                                <button type="button" class="btn bg-danger text-white texte-bold" @onclick="AnnulerBtn" style="width: 200px;">Annuler</button>
+                                <button type="submit" style="width: 200px" class="btn bg-vert text-white texte-bold mb-sm-1" id="btnVert" @onclick="AjoutUtilisateur"><i class="bi bi-check-circle me-1"></i>Confirmer</button>
+                                <button type="button" class="btn bg-danger text-white texte-bold" @onclick="AnnulerBtn" id="btnSupp" style="width: 200px;"><i class="bi bi-x-circle me-1"></i>Annuler</button>
                             </div>
                         </div>
                     </EditForm>
@@ -94,7 +94,7 @@
             <div class="card-footer bg-vertFonce">
                 @if (isRoleChanged)
                 {
-                    <button type="submit" class="btn btn-success w-100 text-white texte-bold" @onclick="UpdateEmployesRole">Sauvegarder</button>
+                    <button type="submit" class="btn bg-vert w-100 text-white texte-bold" id="btnVert" @onclick="UpdateEmployesRole">Sauvegarder</button>
                 }
             </div>
         </div>
@@ -231,7 +231,7 @@
         }
         if (adminCount != 2)
         {
-            message = "2 administrateur en tout temps";
+            message = "2 administrateurs en tout temps";
             isRespectHierarchy = false;
             return isRespectHierarchy;
         }

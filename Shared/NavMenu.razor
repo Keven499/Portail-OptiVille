@@ -39,9 +39,9 @@
             </div>
         </div>
         <div>
-            @* <div class="nav-item px-3">
+            <div class="nav-item px-3">
                 <button class="btn bg-bleu text-white texte-bold" style="width: 200px" @onclick="Deconnexion">Déconnexion</button>
-            </div> *@
+            </div> 
         </div>
     </nav>
 </div>
@@ -55,7 +55,7 @@
     {
         collapseNavMenu = !collapseNavMenu;
     }
-    @* private async Task Deconnexion()
+    private async Task Deconnexion()
     {
         Usersession[] usersessions;
         string email;
@@ -102,7 +102,7 @@
         // await _context.SaveChangesAsync();
         
         NavigationManager.NavigateTo("/", true);
-    } *@
+    } 
 }
 
 #line default
