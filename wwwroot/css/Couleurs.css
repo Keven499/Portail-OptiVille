@@ -43,12 +43,17 @@ body
     cursor: pointer;
 }
 
+#btnVert:hover{
+    background-color: rgb(99, 188, 85, 0.6);
+    color: white;    
+    cursor: pointer;
+}
+
 #btnSupp:hover{
     background-color: rgba(160, 17, 17);
     color: white;    
     cursor: pointer;
 }
-
 
 /* Bleu pâle */
 .bleuPale
