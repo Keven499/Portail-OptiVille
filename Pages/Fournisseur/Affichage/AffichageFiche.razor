@@ -24,26 +24,6 @@
 @inject IJSRuntime JSRuntime
 @inject PieceJointeFormModel pieceJointeFormModel
 
-<style>
-    .main-div {
-        z-index: 1; 
-    }
-    .out-row {
-        position: absolute;
-        top: -25px; 
-        left: 50%;
-        transform: translateX(-50%);
-        width: 100%; 
-        z-index: 2; 
-    }
-    .flex-line {
-        flex-grow: 1;
-        height: 1px;
-        background: linear-gradient(to right, transparent, #b0b0b0, transparent);
-        opacity: 0.6; 
-    }
-</style>
-
 <PageTitle>Fiche Fournisseur</PageTitle>
 <div class="container-fluid p-0">
     @if (isLoading)
@@ -514,34 +494,33 @@
                     <h3 class="py-2 p-0 my-0 text-white titre-bold">Brochures et cartes d'affaires (Total: @GetFormatSize())</h3>
                 </div>
                 <div class="col-xxl-6 col-xl-5 col-lg-3 p-0 d-flex justify-content-end align-items-center">
-                    <button type="button" class="btn btn-warning rounded-0" onclick="showModal('ModifierModalPieceJointe')">Modifier</button>
+                    <button type="button" class="btn btn-warning rounded-0" onclick="showModal('modifierModalPieceJointe')">Modifier</button>
                 </div>
             </div>
             <div class="card rounded-0">
                 <div class="card-body mt-4">
                     <div class="row">
-                    <div class="modal fade" id="ModifierModalPieceJointe" tabindex="-1" role="dialog" data-bs-backdrop="static">
-                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
-                            <div class="modal-content">
-                                <div class="modal-body">
-                                    <PiecesJointes PieceJointeFormModel="pieceJointeFormModel"></PiecesJointes>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary rounded-0" @onclick="SaveModifcationPieceJointes">Sauvegarder</button>
+                        <div class="modal fade" id="modifierModalPieceJointe" tabindex="-1" role="dialog" data-bs-backdrop="static">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <PiecesJointes PieceJointeFormModel="pieceJointeFormModel"></PiecesJointes>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                        <button type="submit" class="btn btn-primary rounded-0" @onclick="SaveModifcationPieceJointes">Sauvegarder</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
                     <div class="table-responsive mt-1">
-                        <table class="table border-bleuFonce table-bordered my-0 mt-4">
+                        <table class="table border-bleuFonce table-bordered my-0 mt-lg-0 mt-sm-4">
                             <thead>
                                 <tr>
                                     <th scope="col" class="col-1 texte-bold">Fichier</th>
                                     <th scope="col" class="texte-bold">Nom</th>
                                     <th scope="col" class="col-1 texte-bold">Taille</th>
-                                    <th scope="col" class="col-2 texte-bold">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -551,40 +530,10 @@
                                         <th scope="row" class="texte-bold">@(selectedFichiers.IndexOf(file) + 1)</th>
                                         <td class="texte-light">@file.Nom</td>
                                         <td class="texte-light">@GetFormatSizeFile(file.Taille)</td>
-                                        @*onclick="() => OpenConfirmationModal(file)"*@
-                                        <td><button class="btn btn-danger texte-bold" type="button" onclick="showModal('modalConfirmation')"><i class="bi bi-trash"></i> Effacer</button></td>
                                     </tr>
                                 }
                             </tbody>
-                            @*
-                            <div class="modal fade" tabindex="-1" role="dialog" id="exampleModal" data-bs-backdrop="static">
-                                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
-                                    <div class="modal-content">
-                                        <div class="modal-body">
-                                            <ProduitsServices AssignReference="AssignReferenceProduitsServices" AllProduitServices="allProduitService" ProduitServiceFormModel="produitServiceFormModel" CategorieUNSPSC="categorieUNSPSC"></ProduitsServices>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-primary rounded-0" @onclick="SaveModifcationProduitServices">Sauvegarder</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            *@
                         </table>
-                    </div>
-                    <div class="modal fade" id="modalConfirmation" tabindex="-1" role="dialog">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header border-0 text-center w-100">
-                                    <h1 class="modal-title fs-5 mx-auto">Êtes-vous sûr de vouloir effacer ce fichier </h1>
-                                </div>
-                                <div class="modal-footer border-0 d-flex justify-content-center">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                                    <button type="button" class="btn btn-primary" @onclick="()=>OnDeleteFile(selectedFile)">Confirmer</button>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -693,56 +642,81 @@
     }
 </div>
 
-<style>
-    .valid {
-        outline: 1px solid #26b050;
-    } 
-</style>
-
 <script src="@popperScript"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 <script>
-    function hideModal(modalId) {
-    var modalElement = document.getElementById(modalId);
-    if (modalElement) {
-    var modal = bootstrap.Modal.getInstance(modalElement); // Get instance
-    if (modal) {
-    modal.hide(); // Hide the modal
-    }
-    }
-    };
     function showModal(modalId) {
-    var modalElement = document.getElementById(modalId);
-    if (modalElement) {
-    // Set up the modal hidden event listener
-    modalElement.addEventListener('hidden.bs.modal', function () {
-    var backdropElement = document.querySelector('.modal-backdrop');
-    if (backdropElement) {
-    backdropElement.remove(); // Remove the backdrop
+        // Remove any existing backdrops
+        const existingBackdrop = document.querySelector('.modal-backdrop');
+        if (existingBackdrop) {
+            existingBackdrop.remove();
+        }
+
+        var modalElement = document.getElementById(modalId);
+        if (modalElement) {
+            var modal = new bootstrap.Modal(modalElement, {
+                backdrop: 'static',
+                keyboard: false
+            });
+
+            // Set up the backdrop after showing the modal
+            modal.show();
+        }
     }
-    });
-    // Now show the modal
-    var modal = new bootstrap.Modal(modalElement);
-    modal.show();
-    }
-    };
-        window.showBootstrapModal = (modalId) => {
-            var existingBackdrops = document.querySelectorAll('.modal-backdrop');
-            existingBackdrops.forEach(backdrop => backdrop.remove());
-    var modalElement = document.getElementById(modalId);
-    if (modalElement) {
-        var modalInstance = new bootstrap.Modal(modalElement);
-        modalInstance.show();
-        // Ensure the backdrop is behind the modal
-        setTimeout(() => {
-            var backdrop = document.querySelector('.modal-backdrop');
-            if (backdrop) {
-                backdrop.style.zIndex = '1040';
+
+
+    function hideModal(modalId) {
+        var modalElement = document.getElementById(modalId);
+        if (modalElement) {
+            var modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (modalInstance) {
+                modalInstance.hide();
             }
-        }, 100);
+        }
     }
-};
 </script>
+
+<style>
+    .main-div {
+        z-index: 1;
+    }
+
+    .out-row {
+        position: absolute;
+        top: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        z-index: 2;
+    }
+
+    .flex-line {
+        flex-grow: 1;
+        height: 1px;
+        background: linear-gradient(to right, transparent, #b0b0b0, transparent);
+        opacity: 0.6;
+    }
+
+    .valid {
+        outline: 1px solid #26b050;
+    }
+
+    .modal-backdrop.show {
+        z-index: 1040; /* Ensure it's below the modal */
+        opacity: 0.5 !important; /* Ensure backdrop opacity */
+    }
+
+    .modal-backdrop {
+        z-index: 1040 !important; /* Ensure it's below the modal */
+        background-color: rgba(0, 0, 0, 0.5) !important; /* Adjust as needed */
+        opacity: 0.5 !important; /* Force opacity */
+    }
+
+    .modal {
+        z-index: 1050 !important; /* Ensure modal appears above backdrop */
+    }
+
+</style>
 
 @code{
     private bool isLoading = true;
@@ -1247,20 +1221,6 @@
         //closestHistorique.EtatDemande = "Refusé";
         //closestHistorique.DateEtatChanged = DateTime.UtcNow;
         selectedFichiers.Clear();// A enlever si on peut changer les donnnes sans refresh la page
-    }
-
-    private async Task OpenConfirmationModal(Fichier file)
-    {
-        selectedFile = file;
-        await JSRuntime.InvokeVoidAsync("showModal", "modalConfirmation");
-    }
-
-    private async Task OnDeleteFile(Fichier file)
-    {
-        await fichierService.DeleteOneFichierData(file);
-        selectedFichiers.Remove(file);// A enlever si on peut changer les donnnes sans refresh la page
-        GetFormatSize();
-        await JSRuntime.InvokeVoidAsync("hideModal", "modalConfirmation");
     }
 
     public class CustomBrowserFile : IBrowserFile
