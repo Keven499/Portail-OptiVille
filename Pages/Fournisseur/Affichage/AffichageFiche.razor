@@ -213,7 +213,7 @@
                                 <div class="row d-flex align-items-center">
                                     <div class="col-xl-12">
                                         <label for="inputPassword4" class="me-2 bleuFonce texte-bold">Numéro de téléphone</label>
-                                        <select class="form-select input-bleu texte-light rounded-0 py-1" id="telephoneType" @bind="@telephone.TypeTelEntreprise" style="width: 200px;">
+                                        <select class="form-select input-bleu texte-light rounded-0 py-1" id="telephoneType" @bind="@telephone.TypeTelEntreprise" style="width: 200px; @(modificationInfo ? "pointer-events: none;" : null)">
                                             <option value="Bureau">Bureau</option>
                                             <option value="Télécopieur">Télécopieur</option>
                                             <option value="Cellulaire">Cellulaire</option>
@@ -283,11 +283,11 @@
                                 <div class="row d-flex align-items-center">
                                     <div class="col-xl-12">
                                         <label for="telephoneType" class="me-2 bleuFonce texte-bold">Numéro de téléphone</label>
-                                        <InputSelect id="telephoneType" style="width: 200px; outline: none;" class="form-select input-bleu texte-light rounded-0 py-1" @bind-Value="contact.TypeTelephone" readonly="@modificationContact">
+                                        <select id="telephoneType" style="width: 200px; @(modificationContact ? "pointer-events: none;" : null)" class="form-select input-bleu texte-light rounded-0 py-1" @bind="contact.TypeTelephone" readonly="@modificationContact">
                                             <option value="Bureau">Bureau</option>
                                             <option value="Télécopieur">Télécopieur</option>
                                             <option value="Cellulaire">Cellulaire</option>
-                                        </InputSelect>
+                                        </select>
                                     </div>
                                 </div>
                                 <span class="flex-line mx-2"></span>
