@@ -7,55 +7,98 @@
 
 <PageTitle>Étape 6 Pièces jointes</PageTitle>
 <EditForm Model="PieceJointeFormModel">
-    <div class="card-header py-2 bg-bleuFonce">
-        <h3 class="py-2 p-0 my-0 text-white titre-bold">Carte d'affaires et brochures</h3>
-    </div>
-        <div class="card-body py-1 border-bleuFonce d-flex justify-content-center">
+    @if(ActivationModification)
+    {
+        @if(ModifcationPieceJointesActivationONState)
+        {
+            <div class="card-body py-1 d-flex justify-content-center @(!ModifcationPieceJointesActivationONState ? "border-bleuFonce": "borderTX-bleuFonce ")">
+                <div class="d-flex flex-column text-center">
+                <div class="texte-medium">.doc .docx .pdf .xls .xlsx .jpg .jpeg .png</div>
+                    <label for="fileInput">
+                        <div id="dropArea" class="drag-drop-area p-4 pt-5 pb-5 @GetInputClass()">
+                                <h4 class="texte-bold">Faites glisser et déposez les fichiers ici</h4>
+                                <p class="texte-medium">ou cliquez pour sélectionner les fichiers</p>
+                        </div>
+                    </label>
+                    <InputFile id="fileInput" OnChange="HandleFileChange" multiple accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" style="display: none;" />
+
+                </div>
+            </div>
+        }
+    }
+    else 
+    {
+        <div class="card-header py-2 bg-bleuFonce">
+                <h3 class="py-2 p-0 my-0 text-white titre-bold">Carte d'affaires et brochures</h3>
+            </div>
+        <div class="card-body py-1 d-flex justify-content-center @(!ModifcationPieceJointesActivationONState ? "border-bleuFonce": "borderTX-bleuFonce ")">
             <div class="d-flex flex-column text-center">
-            <div class="texte-medium">.doc .docx .pdf .xls .xlsx .jpg .jpeg .png</div>
+                <div class="texte-medium">.doc .docx .pdf .xls .xlsx .jpg .jpeg .png</div>
                 <label for="fileInput">
                     <div id="dropArea" class="drag-drop-area p-4 pt-5 pb-5 @GetInputClass()">
-                            <h4 class="texte-bold">Faites glisser et déposez les fichiers ici</h4>
-                            <p class="texte-medium">ou cliquez pour sélectionner les fichiers</p>
-                    </div>
-                </label>
-                <InputFile id="fileInput" OnChange="HandleFileChange"
-                           accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" style="display: none;" />
+                        <h4 class="texte-bold">Faites glisser et déposez les fichiers ici</h4>
+                        <p class="texte-medium">ou cliquez pour sélectionner les fichiers</p>
+                </div>
+            </label>
+            @*<InputFile id="fileInput" OnChange="HandleFileChange"  multiple accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" style="display: none;" />*@
+                <input type="text" id="fileInput" onchange="HandleFileChange()" multiple accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" style="display: none;">
             </div>
         </div>
-        @foreach (var error in errorTable)
-        {
-            int index = 0;
-        @((MarkupString)GetValidationHTML((index++)))
-        }
+    }
+
+    @foreach (var error in errorTable)
+    {
+        int index = 0;
+    @((MarkupString)GetValidationHTML((index++)))
+    }
+
+    @if(!ActivationModification)
+    {
         <div class="card-header py-2 bg-bleuFonce titre-bold">
             <h3 class="py-2 p-0 my-0 text-white">Fichiers téléversés (Total: @GetFormatSize())</h3>
         </div>
-
-        <div class="card-body table-bleu table-responsive">
-            <p class="texte-bold">Total: @GetFormatSize()</p>
-            <table class="table border-bleuFonce table-bordered my-0  col-12 col-sm-12">
-                <thead>
-                    <tr>
-                        <th scope="col" class="col-1 texte-bold">Fichier</th>
-                        <th scope="col" class="texte-bold">Nom</th>
-                        <th scope="col" class="col-1 texte-bold">Taille</th>
+    }
+    <div class="card-body table-bleu table-responsive">
+        <table class="table mini-border-bleuFonce table-bordered my-0 col-12 col-sm-12">
+            <thead>
+                <tr>
+                    <th scope="col" class="col-1 texte-bold text-center">Fichier</th>
+                    <th scope="col" class="texte-bold">Nom</th>
+                    <th scope="col" class="col-1 texte-bold text-center">Taille</th>
+                    @if(ActivationModification)
+                    {
+                        @if(ModifcationPieceJointesActivationONState)
+                        {
+                            <th scope="col" class="col-2 texte-bold">Action</th>
+                        }
+                    }
+                    else {
                         <th scope="col" class="col-2 texte-bold">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @foreach (var file in PieceJointeFormModel.ListFichiers)
-                {
-                    <tr>
-                    <th scope="row" class="texte-bold">@(PieceJointeFormModel.ListFichiers.IndexOf(file) + 1)</th>
-                        <td class="texte-light">@file.Name</td>
-                        <td class="texte-light">@GetFormatSizeFile(file.Size)</td>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var file in PieceJointeFormModel.ListFichiers)
+            {
+                <tr>
+                <th scope="row" class="texte-bold text-center">@(PieceJointeFormModel.ListFichiers.IndexOf(file) + 1)</th>
+                    <td class="texte-light">@file.Name</td>
+                    <td class="texte-light text-center">@GetFormatSizeFile(file.Size)</td>
+                    @if(ActivationModification)
+                    {
+                        @if(ModifcationPieceJointesActivationONState)
+                        {
+                            <td><button class="btn btn-danger texte-bold" type="button" @onclick="() => RemoveFile(file)"><i class="bi bi-trash me-1"></i>Effacer</button></td>
+                        }  
+                    }
+                    else {
                         <td><button class="btn btn-danger texte-bold" type="button" @onclick="() => RemoveFile(file)"><i class="bi bi-trash me-1"></i>Effacer</button></td>
-                    </tr>
-                }
-                </tbody>
-            </table>
-        </div>
+                    }
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
 </EditForm>
 
 <style>
@@ -106,6 +149,10 @@
 @code{
     [Parameter]
     public PieceJointeFormModel PieceJointeFormModel { get; set; }
+    [Parameter]
+    public bool ActivationModification { get; set; } = false; 
+    [Parameter]
+    public bool ModifcationPieceJointesActivationONState { get; set; } = true;
     private string[] allowedExtensions = new[] { ".doc", ".docx", ".pdf", ".xls", ".xlsx", ".jpg", ".jpeg", ".png" };
     private bool isFileInputTouched = false;
     private List<String> errorTable = new List<String>();
@@ -171,43 +218,52 @@
     private void HandleFileChange(InputFileChangeEventArgs e)
     {
         var fileList = e.GetMultipleFiles();
-        if (fileList == null)
+        if (!fileList.Any())
         {
             return;
         }
-        else
+
+        errorTable.Clear();
+        if (PieceJointeFormModel.ListFichiers.Count == 1 && fileList.Count < 2)
         {
-            errorTable.Clear();
-            if (PieceJointeFormModel.ListFichiers.Count == 1 && fileList.Count < 2)
-            {
-                errorTable.Add("Utilisez la sélection multiple en vous servant de la combinaison de touches CTRL + clic gauche (souris) pour ajouter plus d'un fichier");
-                return;
-            }
-            PieceJointeFormModel.ListFichiers.Clear();
+            errorTable.Add("Utilisez la sélection multiple en vous servant de la combinaison de touches CTRL + clic gauche (souris) pour ajouter plus d'un fichier");
+            return;
         }
+
+        long newSizeTotal = sizeTotal;
         foreach (var file in fileList)
         {
-            var fileExtension = Path.GetExtension(file.Name).ToLower();
-            if (!allowedExtensions.Contains(fileExtension))
+            try
             {
-                errorTable.Add($"L'extension {fileExtension} n'est pas autorisée");
-            }
-            if (sizeTotal + file.Size <= MaxSize * 1024 * 1024)
-            {
+                var fileExtension = Path.GetExtension(file.Name).ToLower();
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    errorTable.Add($"L'extension {fileExtension} n'est pas autorisée");
+                    continue;
+                }
+
+                newSizeTotal += file.Size;
+                if (newSizeTotal > MaxSize * 1024 * 1024)
+                {
+                    errorTable.Add($"En ajoutant {file.Name}, vous dépassez la taille maximale autorisée");
+                    continue;
+                }
+
                 if (!PieceJointeFormModel.ListFichiers.Any(f => f.Name == file.Name && f.Size == file.Size))
                 {
                     PieceJointeFormModel.ListFichiers.Add(file);
                     isFileInputTouched = true;
                 }
             }
-            else
+            catch (Exception ex)
             {
-                errorTable.Add($"En ajoutant {file.Name}, vous dépassez la taille maximale autorisée");
+                errorTable.Add($"Une erreur est survenue lors du traitement de {file.Name}: {ex.Message}");
             }
         }
+        sizeTotal = newSizeTotal; // Update the total size
         CalculTotalSize();
     }
-
+    
     private void RemoveFile(IBrowserFile file)
     {
         PieceJointeFormModel.ListFichiers.Remove(file);

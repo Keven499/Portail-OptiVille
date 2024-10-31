@@ -9,7 +9,7 @@
     "Id": 2,
     "Nom": "Refus",
     "Objet": "Objet Refus",
-    "Message": "Message Refus"
+    "Message": "Message Refus\nligne 2\nligne 3"
   },
   {
     "Id": 3,

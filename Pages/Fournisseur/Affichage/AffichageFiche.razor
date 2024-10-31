@@ -493,48 +493,22 @@
                 <div class="col-xxl-6 col-xl-7 col-lg-9 p-0 ps-3 bg-bleuFonce">
                     <h3 class="py-2 p-0 my-0 text-white titre-bold">Brochures et cartes d'affaires (Total: @GetFormatSize())</h3>
                 </div>
-                <div class="col-xxl-6 col-xl-5 col-lg-3 p-0 d-flex justify-content-end align-items-center">
-                    <button type="button" class="btn btn-warning rounded-0" onclick="showModal('modifierModalPieceJointe')">Modifier</button>
-                </div>
+                @if(modificationPieceJointes)
+                {
+                    <div class="col-xxl-6 col-xl-5 col-lg-3 p-0 d-flex justify-content-end align-items-center">
+                        <button type="button" class="btn btn-warning rounded-0" @onclick="ModifcationPieceJointes">Modifier</button>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-xxl-6 col-xl-5 col-lg-3 p-0 d-flex justify-content-end align-items-center">
+                        <button type="button" class="btn btn-success rounded-0" @onclick="SaveModifcationPieceJointes">Sauvegarder</button>
+                    </div>
+                }
             </div>
             <div class="card rounded-0">
                 <div class="card-body mt-4">
-                    <div class="row">
-                        <div class="modal fade" id="modifierModalPieceJointe" tabindex="-1" role="dialog" data-bs-backdrop="static">
-                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
-                                <div class="modal-content">
-                                    <div class="modal-body p-0">
-                                        <PiecesJointes PieceJointeFormModel="pieceJointeFormModel"></PiecesJointes>
-                                    </div>
-                                    <div class="modal-footer d-flex justify-content-center bg-bleuFonce">
-                                        <button type="button" class="btn btn-secondary rounded-0" data-bs-dismiss="modal">Annuler</button>
-                                        <button type="submit" class="btn btn-primary rounded-0" @onclick="SaveModifcationPieceJointes">Sauvegarder</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="table-responsive mt-1">
-                        <table class="table mini-border-bleuFonce table-bordered my-0 mt-lg-0 mt-sm-4">
-                            <thead>
-                                <tr>
-                                    <th scope="col" class="col-1 texte-bold text-center">Fichier</th>
-                                    <th scope="col" class="texte-bold">Nom</th>
-                                    <th scope="col" class="col-1 texte-bold text-center">Taille</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var file in selectedFichiers)
-                                {
-                                    <tr>
-                                        <th scope="row" class="texte-bold text-center">@(selectedFichiers.IndexOf(file) + 1)</th>
-                                        <td class="texte-light">@file.Nom</td>
-                                        <td class="texte-light text-center">@GetFormatSizeFile(file.Taille)</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                    <PiecesJointes PieceJointeFormModel="pieceJointeFormModel" ActivationModification="ModifcationPieceJointesActivation" ModifcationPieceJointesActivationONState="ModifcationPieceJointesActivationONState"></PiecesJointes>
                 </div>
             </div>
         </div>
@@ -734,6 +708,12 @@
     private ContactHosterFormModel contactHosterFormModel = new ContactHosterFormModel();
     Produitservice produitService = new Produitservice();
     public int MaxSize = 75;
+    private bool ModifcationPieceJointesActivation = true;
+    private bool ModifcationPieceJointesActivationONState;
+    private void ModifcationPieceJointesActivationONStateMethod()
+    {
+        ModifcationPieceJointesActivationONState = !modificationPieceJointes;
+    }
     private Fichier? selectedFile;
     List<Portail_OptiVille.Data.Models.Contact> selectedContacts = new List<Portail_OptiVille.Data.Models.Contact>();
     List<Fichier> selectedFichiers = new List<Fichier>();
@@ -832,15 +812,13 @@
     private void ModifcationPieceJointes()
     {
         modificationPieceJointes = false;
+        ModifcationPieceJointesActivationONStateMethod();
     }
     private async Task SaveModifcationPieceJointes()
     {
-
-        await licenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
-        selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
-        groupedCategories = GroupCategoriesByType();
-        //
-        await JSRuntime.InvokeVoidAsync("hideModal", "ModifierModalLicence");
+        modificationPieceJointes = true;
+        ModifcationPieceJointesActivationONStateMethod();
+        await fichierService.UpdateFichierData(pieceJointeFormModel, selectedFournisseur.IdFournisseur);
     }
     private async Task SaveModifcationLicenceRBQ()
     {
@@ -848,7 +826,7 @@
         await licenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
         selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
         groupedCategories = GroupCategoriesByType();
-        //
+        
         await JSRuntime.InvokeVoidAsync("hideModal", "ModifierModalLicence");
     }
 
@@ -1125,6 +1103,7 @@
             groupedCategories = GroupCategoriesByType();
             combinedFormModel.FillData(coordonnee, identification, selectedTelephones);
             Console.WriteLine("Fin Fetch Data");
+            ModifcationPieceJointesActivationONStateMethod();
         }
         catch (Exception ex)
         {
@@ -1186,7 +1165,7 @@
  
     private string GetFormatSize()
     {
-        sizeTotal = selectedFichiers.Sum(file => (int)(file.Taille.GetValueOrDefault(0)));
+        sizeTotal = pieceJointeFormModel.ListFichiers.Sum(file => (int)(file.Size));
         if (sizeTotal >= 1048576) // 1 MB = 1048576 bytes (1 * 1024 * 1024)
         {
             return $"{(sizeTotal / 1048576.0):F2} MB / {MaxSize}MB";

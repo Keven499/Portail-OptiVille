@@ -192,6 +192,13 @@ input[type="checkbox"]:checked+.check-blanc:before {
     border: 2px solid rgb(11, 35, 65);
 }
 
+.borderTX-bleuFonce
+{
+    border-top: 2px solid rgb(11, 35, 65);
+    border-left: 2px solid rgb(11, 35, 65);
+    border-right: 2px solid rgb(11, 35, 65);
+}
+
 /* Vert pâle */
 .vertPale
 {
