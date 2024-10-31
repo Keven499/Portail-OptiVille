@@ -22,20 +22,20 @@
     }
     <div class="row d-flex justify-content-center pb-2">
         <div class="col-xl-6 col-12 d-flex justify-content-xl-end justify-content-center mb-xl-0 mb-1">
-            <button type="button" class="btn bg-bleu text-white texte-bold" @onclick="AddContact" style="width: 200px;"><i class="bi bi-plus-circle"></i> Ajout</button>
+            <button type="button" class="btn bg-bleu text-white texte-bold" id="btnBleu" @onclick="AddContact" style="width: 200px;"><i class="bi bi-plus-circle me-1"></i>Ajout</button>
         </div>
         <div class="col-xl-6 col-12 d-flex justify-content-xl-start justify-content-center">
-            <button type="button" class="btn bg-danger text-white texte-bold" data-bs-target="#ModalConfirmation" @onclick="ShowConfirmationModalAsync" style="width: 200px;" disabled="@(!(ContactHosterFormModel.ContactList.Count > 1))"><i class="bi bi-trash"></i> Retirer</button>
+            <button type="button" class="btn bg-danger text-white texte-bold" id="btnSupp" data-bs-target="#ModalConfirmation" @onclick="ShowConfirmationModalAsync" style="width: 200px;" disabled="@(!(ContactHosterFormModel.ContactList.Count > 1))"><i class="bi bi-trash me-1"></i>Retirer</button>
         </div>
         <div class="modal fade confirmModal" id="ModalConfirmation" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    <div class="modal-header border-0 text-center w-100">
-                        <h1 class="modal-title fs-5 mx-auto" id="exampleModalLabel">Êtes-vous sûr de vouloir retirer le dernier contact</h1>
+                    <div class="modal-header border-0 text-center w-100 bg-bleu">
+                        <h1 class="modal-title fs-5 mx-auto texte-medium text-white" id="exampleModalLabel">Êtes-vous sûr de vouloir retirer le dernier contact?</h1>
                     </div>
                     <div class="modal-footer border-0 d-flex justify-content-center">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="RemoveContact">Confirmer</button>
+                        <button type="button" id="btnBleu" class="btn bg-bleu texte-bold text-white" data-bs-dismiss="modal">Annuler</button>
+                        <button type="button" id="btnBleu" class="btn bg-bleu text-white texte-bold" data-bs-dismiss="modal" @onclick="RemoveContact">Confirmer</button>
                     </div>
                 </div>
             </div>

@@ -51,7 +51,7 @@
             else
             {
                 <div class="d-flex justify-content-end">
-                    <button class="btn bg-bleu text-white texte-bold" style="width: 150px" @onclick="Deconnexion"><i class="bi bi-box-arrow-left me-1"></i>Déconnexion</button>
+                    <button class="btn bg-bleu text-white texte-bold" id="btnBleu" style="width: 150px" @onclick="Deconnexion"><i class="bi bi-box-arrow-left me-1"></i>Déconnexion</button>
                 </div>
                 <div class="row d-flex justify-content-center mb-1">
                     <div class="col-xl-11 col-lg-11 col-sm-12 col-12">
@@ -73,7 +73,7 @@
                         <div class="card">
                             @Components[currentIndex]
                             <div class="card-footer bg-bleuFonce d-flex justify-content-center">
-                                <button @onclick="ShowPrevious" disabled="@isFirstComponent" class="btn bg-bleu text-white texte-medium" style="width: 200px;">
+                                <button @onclick="ShowPrevious" disabled="@isFirstComponent" class="btn bg-bleu text-white texte-medium"  id="btnBleu" style="width: 200px;">
                                     <i class="bi bi-arrow-left-circle"></i> Précédent 
                                 </button>
                                 @if (currentIndex == 4 && !IsRBQAnyFieldChange)
@@ -85,7 +85,7 @@
                                 } 
                                 else
                                 {
-                                    <button @onclick="ShowNext" class="btn bg-bleu text-white texte-medium ms-2" style="width: 200px;">
+                                    <button @onclick="ShowNext" class="btn bg-bleu text-white texte-medium ms-2" id="btnBleu" style="width: 200px;">
                                         Suivant
                                         <i class="bi bi-arrow-right-circle"></i>
                                     </button>
