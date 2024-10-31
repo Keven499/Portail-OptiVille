@@ -1,27 +1,112 @@
-@page "/MotDePasse"
+@page "/motdepasse"
 @using System.Text.RegularExpressions
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Portail_OptiVille.Data.Utilities
+@using Portail_OptiVille.Data.Models
+@using System;
+@using System.Linq;
+@using System.Text;
 @inject ProtectedSessionStorage protectedSessionStorage
 @inject NavigationManager NavigationManager
 @inject MailManager mailManager
+@inject A2024420517riGr1Eq6Context _context
 
-@if (Post)
-{
-    <div class="alert alert-success" role="alert">
-        Un courriel a été envoyé à l'adresse suivante: @logInModel.Username
-    </div>
+@code {
+    private LogInModel logInModel = new LogInModel();
+    private string code = "";
+    private bool submitBtnEnabled = false;
+    private bool codeFieldVisible = false;
+    private bool emailSent = false;
+    private string userEnteredCode = "";
+    private string emailIconClass = "";
+    private string errorMessage = ""; // Message d'erreur pour le code incorrect
+
+    private void envoieMail()
+    {
+        code = GenerateRandomCode();
+        string contenuMail = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Data", "TemplatesMail", "MailOublie.html"));
+        contenuMail = contenuMail.Replace("{{VERIFICATION_CODE}}", code);
+        mailManager.SendMail(logInModel.Username, $"Mot de passe oublié - {logInModel.Username}", contenuMail);
+        
+        submitBtnEnabled = true; // Active le bouton de soumission
+        codeFieldVisible = true; // Affiche le champ pour le code de vérification
+        emailSent = true; // Indique qu'un mail a été envoyé pour changer le texte du bouton
+        errorMessage = ""; // Réinitialise le message d'erreur
+    }
+
+    private async void HandleValidSubmit()
+    {
+        if (userEnteredCode == code)
+        {
+            await protectedSessionStorage.SetAsync("username", logInModel.Username); // Enregistre le courriel/NEQ dans la session
+            NavigationManager.NavigateTo("/motdepasse"); // Redirige si le code est correct
+        }
+        else
+        {
+            errorMessage = "Le code entré est incorrect."; // Affiche le message d'erreur sous le champ de code
+        }
+    }
+
+    public static string GenerateRandomCode(int length = 10)
+    {
+        const string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const string lowercase = "abcdefghijklmnopqrstuvwxyz";
+        const string digits = "0123456789";
+        const string specialChars = "!@#$%^&*()-_=+[]{}|;:,.<>?";
+
+        string allChars = uppercase + lowercase + digits + specialChars;
+        Random random = new Random();
+        StringBuilder code = new StringBuilder(length);
+
+        code.Append(uppercase[random.Next(uppercase.Length)]);
+        code.Append(lowercase[random.Next(lowercase.Length)]);
+        code.Append(digits[random.Next(digits.Length)]);
+        code.Append(specialChars[random.Next(specialChars.Length)]);
+
+        for (int i = 4; i < length; i++)
+        {
+            code.Append(allChars[random.Next(allChars.Length)]);
+        }
+
+        return new string(code.ToString().OrderBy(_ => random.Next()).ToArray());
+    }
+
+    private string GetEmailIcon()
+    {
+        return emailIconClass;
+    }
+
+    private bool IsValidInput(string input)
+    {
+        Regex rg = new Regex(@"^(11|22|33|88)\d{8}$");
+        return (!string.IsNullOrEmpty(input) && input.Contains("@") && input.Contains(".")) || (!string.IsNullOrEmpty(input) && rg.IsMatch(input));
+    }
+
+    private void ValidateInput()
+    {
+        if (IsValidInput(logInModel.Username))
+        {
+            emailIconClass = "bi-check-circle text-success";
+        }
+        else
+        {
+            emailIconClass = "bi-x-circle text-danger";
+        }
+    }
+
+    public class LogInModel
+    {
+        [Required(ErrorMessage = "Le courriel/NEQ est requis")]
+        [RegularExpression(@"^(?:((11|22|33|88)\d{8})|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}))$", ErrorMessage = "Le courriel/NEQ n'est pas valide")]
+        public string Username { get; set; }
+    }
 }
-@if(!Post){
 
 <EditForm Model="@logInModel" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="ValidateInput">
-    <!-- OnValidSubmit="HandleValidSubmit" -->
     <div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
         <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
             <div class="card w-75 h-75 d-flex justify-content-center p-0 m-0">
-
-                @* Identification *@
                 <div class="card-header py-2 bg-bleuFonce">
                     <h3 class="py-2 p-0 my-0 text-white titre-bold">Identification</h3>
                 </div>
@@ -31,86 +116,28 @@
                             <i class="bi @GetEmailIcon()"></i> Courriel / NEQ <i class="bi bi-braces text-success"></i>
                         </label>
                         <InputText class="form-control" id="Courriel" @bind-Value="logInModel.Username" />
-                        @*Affichage de l'erreur*@
+                        <button type="button" class="btn btn-link" @onclick="envoieMail">
+                            @(emailSent ? "Renvoyer Courriel" : "Envoyer Courriel")
+                        </button>
                         <ValidationMessage For="@(() => logInModel.Username)" />
                     </div>
+                    @if (codeFieldVisible)
+                    {
+                        <div class="col-xl-12 col-lg-12 py-2">
+                            <label class="bleuFonce texte-bold" for="CodeVerification">Code de vérification</label>
+                            <InputText class="form-control" id="CodeVerification" @bind-Value="userEnteredCode" />
+                            @if (!string.IsNullOrEmpty(errorMessage))
+                            {
+                                <span class="text-danger">@errorMessage</span> <!-- Message d'erreur si le code est incorrect -->
+                            }
+                        </div>
+                    }
                 </div>
-
                 <div class="card-footer py-2 bg-bleuFonce">
-                    <button type="submit" class="btn btn-success w-100">Envoyer un courriel</button>
+                    <button type="submit" class="btn btn-success w-100" disabled="@(submitBtnEnabled == false)">Soumettre</button>
                 </div>
             </div>
         </div>
     </div>
     <DataAnnotationsValidator />
 </EditForm>
-}
-@code {
-
-    private LogInModel logInModel = new LogInModel();
-    bool Post = false;
-
-    private async void HandleValidSubmit()
-    {
-        string contenuMail = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Data", "TemplatesMail", "MailOublie.html"));
-        mailManager.SendMail("kevenmichel721@gmail.com", $"Mot de passe oublié - {logInModel.Username}", contenuMail);
-        Post = true;
-    }
-
-    private string emailIconClass = ""; // Par défaut
-    private string passwordIconClass = ""; // Par défaut
-
-    private void ValidateInput()
-    {
-        if (IsValidInput(logInModel.Username))
-        {
-            emailIconClass = "bi-check-circle text-success"; // Valide
-        }
-        else
-        {
-            emailIconClass = "bi-x-circle text-danger"; // Invalide
-        }
-    }
-
-    private bool IsValidInput(string input)
-    {
-        // Simple validation, tu peux utiliser des expressions régulières pour plus de précision
-        Regex rg = new Regex(@"^(11|22|33|88)\d{8}$");
-        
-        return (!string.IsNullOrEmpty(input) && input.Contains("@") && input.Contains(".")) || (!string.IsNullOrEmpty(input) && rg.IsMatch(input));
-    }
-
-    private string GetEmailIcon()
-    {
-        return emailIconClass;
-    }
-
-
-    public class LogInModel
-    {
-        [Required(ErrorMessage = "Le courriel/NEQ est requis")]
-        [RegularExpression(@"^(?:((11|22|33|88)\d{8})|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}))$", ErrorMessage = "Le courriel/NEQ n'est pas valide")]
-        public string Username { get; set; }
-
-        [Required(ErrorMessage = "Le mot de passe est requis")]
-        public string MotDePasse { get; set; }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender){
-        if(firstRender){
-
-        try{
-            var result = await protectedSessionStorage.GetAsync<string>("Email");
-            if (result.Success || !string.IsNullOrEmpty(result.Value))
-            {
-                Console.WriteLine($"Adresse courriel: {result.Value}");
-                NavigationManager.NavigateTo("/index",true);
-            }
-        }catch
-        {
-            Console.WriteLine($"Erreur lors de la récupération de l'adresse courriel");
-        }
-
-        }
-    } 
-}
