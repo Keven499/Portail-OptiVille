@@ -40,7 +40,7 @@
         if (userEnteredCode == code)
         {
             await protectedSessionStorage.SetAsync("username", logInModel.Username); // Enregistre le courriel/NEQ dans la session
-            NavigationManager.NavigateTo("/motdepasse"); // Redirige si le code est correct
+            NavigationManager.NavigateTo("/changement-mdp"); // Redirige si le code est correct
         }
         else
         {
