@@ -15,7 +15,7 @@
 @inject ICookie cookie
 @inject JwtTokenGenerator tokenGenerator
 
-@code{
+@code {
     public const int COOKIE_EXPIRATION = 3; // 3 Hours
 }
 
@@ -44,10 +44,12 @@
                             <i class="bi @passwordIconClass"></i> Mot de passe
                             <i class="bi bi-braces text-success"></i>
                         </label>
-                        <InputText type="password" class="form-control" id="MotDePasse" @bind-Value="logInModel.MotDePasse" />
+                        <InputText type="password" class="form-control" id="MotDePasse"
+                            @bind-Value="logInModel.MotDePasse" />
                         @*Affichage de l'erreur*@
                         <ValidationMessage For="@(() => logInModel.MotDePasse)" />
                     </div>
+                    <a href="/motdepasse">Vous avez oublié votre mot de passe ?</a>
                 </div>
 
                 <div class="card-footer py-2 bg-bleuFonce">
@@ -69,7 +71,7 @@
 
             // Récupérer le fournisseur qui a l'adresse courriel
             Identification? fournisseur = _context.Identifications.FirstOrDefault(f => f.AdresseCourriel == logInModel.Username);
-            if(fournisseur is null)
+            if (fournisseur is null)
             {
                 fournisseur = _context.Identifications.FirstOrDefault(f => f.Neq == logInModel.Username);
             }
@@ -84,11 +86,17 @@
                     {
                         // Redirection si les informations sont correctes
                         await ProtectedSessionStore.SetAsync("Email", fournisseur.AdresseCourriel);
-                        await ProtectedSessionStore.SetAsync("IDFournisseur",fournisseur.Fournisseur);
+                        await ProtectedSessionStore.SetAsync("IDFournisseur", fournisseur.Fournisseur);
 
                         string token = tokenGenerator.GenerateToken("fournisseur.AdresseCourriel");
                         // ajouter le token dans la BD
-                        Usersession usersession = new Usersession { Token = token, OwnerEmail = fournisseur.AdresseCourriel, ExpirationDate = DateTime.Now.AddHours(COOKIE_EXPIRATION) };
+                        Usersession usersession = new Usersession
+                            {
+                                Token = token,
+                                OwnerEmail = fournisseur.AdresseCourriel,
+                                ExpirationDate =
+                            DateTime.Now.AddHours(COOKIE_EXPIRATION)
+                            };
                         _context.Usersessions.Add(usersession);
                         await _context.SaveChangesAsync();
 
@@ -124,7 +132,7 @@
 
 
     static string HashPassword(string input)
-        => Convert.ToHexString(SHA1.HashData(Encoding.UTF8.GetBytes(input)));
+    => Convert.ToHexString(SHA1.HashData(Encoding.UTF8.GetBytes(input)));
 
     public bool VerifyPassword(string password, string hashedPassword)
     {
@@ -164,8 +172,9 @@
     {
         // Simple validation, tu peux utiliser des expressions régulières pour plus de précision
         Regex rg = new Regex(@"^(11|22|33|88)[4-9]\d{7}$");
-        
-        return (!string.IsNullOrEmpty(input) && input.Contains("@") && input.Contains(".")) || (!string.IsNullOrEmpty(input) && rg.IsMatch(input));
+
+        return (!string.IsNullOrEmpty(input) && input.Contains("@") && input.Contains(".")) || (!string.IsNullOrEmpty(input) &&
+        rg.IsMatch(input));
     }
 
     private string GetEmailIcon()
@@ -176,28 +185,33 @@
     public class LogInModel
     {
         [Required(ErrorMessage = "Le courriel/NEQ est requis")]
-        [RegularExpression(@"^(?:((11|22|33|88)[4-9]\d{7})|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}))$", ErrorMessage = "Le courriel/NEQ n'est pas valide")]
+        [RegularExpression(@"^(?:((11|22|33|88)[4-9]\d{7})|([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}))$", ErrorMessage =
+        "Le courriel/NEQ n'est pas valide")]
         public string Username { get; set; }
 
         [Required(ErrorMessage = "Le mot de passe est requis")]
         public string MotDePasse { get; set; }
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender){
-        if(firstRender){
-
-        try{
-            var result = await ProtectedSessionStore.GetAsync<string>("Email");
-            if (result.Success || !string.IsNullOrEmpty(result.Value))
-            {
-                Console.WriteLine($"Adresse courriel: {result.Value}");
-                NavigationManager.NavigateTo("/index",true);
-            }
-        }catch
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
         {
-            Console.WriteLine($"Erreur lors de la récupération de l'adresse courriel");
-        }
+
+            try
+            {
+                var result = await ProtectedSessionStore.GetAsync<string>("Email");
+                if (result.Success || !string.IsNullOrEmpty(result.Value))
+                {
+                    Console.WriteLine($"Adresse courriel: {result.Value}");
+                    NavigationManager.NavigateTo("/index", true);
+                }
+            }
+            catch
+            {
+                Console.WriteLine($"Erreur lors de la récupération de l'adresse courriel");
+            }
 
         }
-    } 
+    }
 }
