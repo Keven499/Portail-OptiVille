@@ -314,12 +314,12 @@
                 <div class="modal fade" tabindex="-1" role="dialog" id="ContactModal" data-bs-backdrop="static">
                     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
                         <div class="modal-content">
-                            <div class="modal-body">
+                            <div class="modal-body p-0">
                                 <ContactFormHoster AssignReference="AssignReferenceContactFormHoster" ContactHosterFormModel="contactHosterFormModel"></ContactFormHoster>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                                <button type="submit" class="btn btn-primary" @onclick="SaveContact">Sauvegarder</button>
+                            <div class="modal-footer d-flex justify-content-center bg-bleuFonce">
+                                <button type="button" class="btn btn-secondary rounded-0" data-bs-dismiss="modal">Annuler</button>
+                                <button type="submit" class="btn btn-primary rounded-0" @onclick="SaveContact">Sauvegarder</button>
                             </div>
                         </div>
                     </div>
@@ -342,11 +342,11 @@
                     <div class="modal fade" tabindex="-1" role="dialog" id="exampleModal" data-bs-backdrop="static">
                         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
                             <div class="modal-content">
-                                <div class="modal-body">
+                                <div class="modal-body p-0">
                                     <ProduitsServices AssignReference="AssignReferenceProduitsServices" AllProduitServices="allProduitService" ProduitServiceFormModel="produitServiceFormModel" CategorieUNSPSC="categorieUNSPSC"></ProduitsServices>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <div class="modal-footer d-flex justify-content-center bg-bleuFonce">
+                                    <button type="button" class="btn btn-secondary rounded-0" data-bs-dismiss="modal">Close</button>
                                     <button type="submit" class="btn btn-primary rounded-0" @onclick="SaveModifcationProduitServices">Sauvegarder</button>
                                 </div>
                             </div>
@@ -405,11 +405,11 @@
                     <div class="modal fade" id="ModifierModalLicence" tabindex="-1" role="dialog" data-bs-backdrop="static">
                         <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
                             <div class="modal-content">
-                                <div class="modal-body">
+                                <div class="modal-body p-0">
                                     <LicenceRBQ AssignReference="AssignReferenceLicenceRBQ" LicenceRBQFormModel="licenceRBQFormModel" AllCategories="allCategories"></LicenceRBQ>
                                 </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <div class="modal-footer d-flex justify-content-center bg-bleuFonce">
+                                    <button type="button" class="btn btn-secondary rounded-0" data-bs-dismiss="modal">Close</button>
                                     <button type="submit" class="btn btn-primary rounded-0" @onclick="SaveModifcationLicenceRBQ">Sauvegarder</button>
                                 </div>
                             </div>
@@ -503,11 +503,11 @@
                         <div class="modal fade" id="modifierModalPieceJointe" tabindex="-1" role="dialog" data-bs-backdrop="static">
                             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
                                 <div class="modal-content">
-                                    <div class="modal-body">
+                                    <div class="modal-body p-0">
                                         <PiecesJointes PieceJointeFormModel="pieceJointeFormModel"></PiecesJointes>
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                    <div class="modal-footer d-flex justify-content-center bg-bleuFonce">
+                                        <button type="button" class="btn btn-secondary rounded-0" data-bs-dismiss="modal">Annuler</button>
                                         <button type="submit" class="btn btn-primary rounded-0" @onclick="SaveModifcationPieceJointes">Sauvegarder</button>
                                     </div>
                                 </div>
@@ -515,21 +515,21 @@
                         </div>
                     </div>
                     <div class="table-responsive mt-1">
-                        <table class="table border-bleuFonce table-bordered my-0 mt-lg-0 mt-sm-4">
+                        <table class="table mini-border-bleuFonce table-bordered my-0 mt-lg-0 mt-sm-4">
                             <thead>
                                 <tr>
-                                    <th scope="col" class="col-1 texte-bold">Fichier</th>
+                                    <th scope="col" class="col-1 texte-bold text-center">Fichier</th>
                                     <th scope="col" class="texte-bold">Nom</th>
-                                    <th scope="col" class="col-1 texte-bold">Taille</th>
+                                    <th scope="col" class="col-1 texte-bold text-center">Taille</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach (var file in selectedFichiers)
                                 {
                                     <tr>
-                                        <th scope="row" class="texte-bold">@(selectedFichiers.IndexOf(file) + 1)</th>
+                                        <th scope="row" class="texte-bold text-center">@(selectedFichiers.IndexOf(file) + 1)</th>
                                         <td class="texte-light">@file.Nom</td>
-                                        <td class="texte-light">@GetFormatSizeFile(file.Taille)</td>
+                                        <td class="texte-light text-center">@GetFormatSizeFile(file.Taille)</td>
                                     </tr>
                                 }
                             </tbody>
