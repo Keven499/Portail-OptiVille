@@ -1,73 +1,265 @@
 @page "/recherche"
-@using Microsoft.AspNetCore.Components.Web
-
-@using System.Linq.Expressions
-
-
+@using Data.Models
+@using Microsoft.EntityFrameworkCore
+@inject A2024420517riGr1Eq6Context _context
 
 <PageTitle>Recherche</PageTitle>
-    <div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
-        <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
-            <div class="card w-75 h-75 d-flex justify-content-center p-0 m-0">
-
-                <div class="card-header py-2 bg-vertFonce">
-                    <h3 class="py-2 p-0 my-0 text-white titre-bold">Recherche</h3>
+<div class="card">
+    <div class="card-header py-2 bg-vertFonce">
+        <h3 class="py-2 p-0 my-0 text-white titre-bold">Recherche</h3>
+    </div>
+    <div class="card-body border-vertFonce">
+        <div class="row">
+            <div class="col-12">
+                <div class="input-group">
+                    <input type="text" placeholder="Recherchez" class="form-control input-vert texte-light" @bind="searchBarValue" />
+                    <button class="btn bg-vert text-white input-vert" type="button">
+                        <i class="bi bi-search"></i>
+                    </button>
                 </div>
-
-                <div class="card-body border-vertFonce py-1">
-                
-                    <div class="ms-xl-3 ms-lg-3 py-2 d-flex align-items-center justify-content-evenly">
-                        <div class="d-flex align-items-center flex-grow-1">
-                            <input type="text" placeholder="Recherchez" class="form-control input-vert texte-light" @bind="searchBarValue"/>
-                            <button class="btn bg-vert text-white me-2" type="button"><i class="bi bi-search"></i>
-                            </button>
-                        </div>    
-                        <div class="filters border-vertFonce box-vert py-2 d-flex align-items-center justify-content-evenly flex-grow-1">
-                            <div class="d-flex align-items-center">
-                                <label class="texte-13medium vertFonce me-1"><i class="bi bi-check-circle me-1"></i>Acceptée</label>
-                                <input type="checkbox" class="check-vert" @bind="acceptedFilter"/> 
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <label class="texte-13medium vertFonce me-1"><i class="bi bi-exclamation-circle me-1"></i>À réviser</label>
-                                <input type="checkbox" class="check-vert" @bind="reviewFilter"/> 
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <label class="texte-13medium vertFonce me-1"><i class="bi bi-x-circle me-1"></i>Refusée</label>
-                                <input type="checkbox" class="check-vert" @bind="refusedFilter"/>                
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <label class="texte-13medium vertFonce me-1"><i class="bi bi-dash-circle me-1"></i>En attente</label>
-                                <input type="checkbox" class="check-vert" @bind="pendingFilter"/>                         
-                            </div>
+            </div>
+        </div>
+        <div class="row border-vertFonce box-vert my-2 m-0">
+            <div class="col-6 my-1 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center justify-content-between">
+                    <i class="bi bi-check-circle me-2"></i>
+                    <label class="texte-13medium vertFonce" for="stateAccepted">Acceptée</label>
+                </div>
+                <span class="flex-line mx-2"></span>
+                <div class="d-flex align-items-center justify-content-end">
+                    <input type="checkbox" id="stateAccepted" class="check-vert" @bind="acceptedFilter" />
+                </div>
+            </div>
+            <div class="col-6 my-1 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center justify-content-between">
+                    <i class="bi bi-exclamation-circle me-2"></i>
+                    <label class="texte-13medium vertFonce" for="stateReview">À réviser</label>
+                </div>
+                <span class="flex-line mx-2"></span>
+                <div class="d-flex align-items-center justify-content-end">
+                    <input type="checkbox" id="stateReview" class="check-vert" @bind="reviewFilter" />
+                </div>
+            </div>
+            <div class="col-6 my-1 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center justify-content-between">
+                    <i class="bi bi-x-circle me-2"></i>
+                    <label class="texte-13medium vertFonce" for="stateRefused">Refusée</label>
+                </div>
+                <span class="flex-line mx-2"></span>
+                <div class="d-flex align-items-center justify-content-end">
+                    <input type="checkbox" id="stateRefused" class="check-vert" @bind="refusedFilter" />
+                </div>
+            </div>
+            <div class="col-6 my-1 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center justify-content-between">
+                    <i class="bi bi-dash-circle me-2"></i>
+                    <label class="texte-13medium vertFonce" for="stateWaiting">En attente</label>
+                </div>
+                <span class="flex-line mx-2"></span>
+                <div class="d-flex align-items-center justify-content-end">
+                    <input type="checkbox" id="stateWaiting" class="check-vert" @bind="pendingFilter" />
+                </div>
+            </div>
+        </div>
+        <div class="row my-2">
+            <div class="col-6 pe-1">
+                <div class="card" style="border: none;">
+                    <div class="card-header bg-vert py-1 px-3">
+                        <div class="text-white titre-bold fs-5">Produits et services</div>
+                    </div>
+                </div>
+                <div class="card-body border-vertFonce p-0">
+                    <div class="input-group">
+                        <input type="text" placeholder="Recherchez" style="height: 30px;" class="form-control input-vert texte-light rounded-0" @bind="searchBarValueProduct" />
+                        <button style="height: 30px;" class="btn bg-vert text-white input-vert rounded-0 d-flex align-items-center" type="button">
+                            <i class="bi bi-search" style="font-size: 12px;"></i>
+                        </button>
+                    </div>
+                    <!-- LISTER LES PRODUITS ET SERVICES -->
+                </div>
+            </div>
+            <div class="col-6 ps-1">
+                <div class="card" style="border: none;">
+                    <div class="card-header bg-vert py-1 px-3">
+                        <div class="text-white titre-bold fs-5">Catégorie</div>
+                    </div>
+                </div>
+                <div class="card-body border-vertFonce listFiltre p-1">
+                    <!-- LISTER LES CATÉGORIES -->
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <label class="titre-medium fs-4">Entrepeneur général</label>
                         </div>
-                    </div>         
+                        @{
+                            int i = 0;
+                            categorieRBQGeneral = categoriesRBQ
+                            .Where(c => c.NomCategorie == "Général")
+                            .ToList();
+                            foreach (var categorie in categorieRBQGeneral)
+                            {
+                                bool isLast = (i == categorieRBQGeneral.Count - 1);
+                                <div style="margin-bottom: @(isLast ? "0" : "5px");" class="col-12">
+                                    <label class="d-flex align-content-center">
+                                        <input type="checkbox" id="categorie@(i)" class="check-vert me-2" />
+                                        <div style="font-size: 14px;" class="d-flex texte-light fw-bold">
+                                            <div class="me-1">@categorie.CodeSousCategorie</div>
+                                            <div>@categorie.TravauxPermis</div>
+                                        </div>
+                                    </label>
+                                </div>
+                                i++;
+                            }
+                        } 
+                    </div>
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <label class="titre-medium fs-4">Entrepeneur spécialisé</label>
+                        </div>
+                        @{
+                            int j = 0;
+                            categorieRBQSpecialise = categoriesRBQ
+                            .Where(c => c.NomCategorie == "Spécialisé")
+                            .ToList();
+                            foreach (var categorie in categorieRBQSpecialise)
+                            {
+                                bool isLast = (j == categorieRBQSpecialise.Count - 1);
+                                <div style="margin-bottom: @(isLast ? "0" : "5px");" class="col-12">
+                                    <label class="d-flex align-content-center">
+                                        <input type="checkbox" id="categorie@(j)" class="check-vert me-2" />
+                                        <div style="font-size: 14px;" class="d-flex texte-light fw-bold">
+                                            <div class="me-1">@categorie.CodeSousCategorie</div>
+                                            <div>@categorie.TravauxPermis</div>
+                                        </div>
+                                    </label>
+                                </div>
+                                j++;
+                            }
+                        }
+                    </div>
+                </div>
             </div>
-
-            <div class="card-footer bg-vertFonce d-flex justify-content-center">
-                <button class="btn bg-vert text-white texte-medium ms-2" style="width: 200px;"><i class="bi bi-arrow-up-right-circle me-2"></i>Ouvrir les sélections</button>
+        </div>
+        <div class="row my-2">
+            <div class="col-6 pe-1">
+                <div class="card" style="border: none;">
+                    <div class="card-header bg-vert py-1 px-3">
+                        <div class="text-white titre-bold fs-5">Région administrative</div>
+                    </div>
+                </div>
+                <div class="card-body border-vertFonce listFiltre p-1">
+                    <!-- LISTER LES RÉGIONS ADMINISTRATIVES -->
+                    <div class="row">
+                        <div class="col-12">
+                        @{
+                            i = 0;
+                            foreach (var region in regionsAdmini2D)
+                            {
+                                bool isLast = (i == regionsAdmini2D.Count - 1);
+                                <div style="margin-bottom: @(isLast ? "0" : "5px");" class="col-12">
+                                    <label class="d-flex align-content-center">
+                                        <input type="checkbox" id="categorie@(j)" class="check-vert me-2" />
+                                        <div style="font-size: 14px;" class="d-flex texte-light fw-bold">
+                                            @for (int c = 0; c < region.Count; c++)
+                                            {
+                                                <div class="@(c == 1 ? "" : "me-1")">@region[c]</div>
+                                            }
+                                        </div>
+                                    </label>
+                                </div>
+                                i++;
+                            }
+                        }
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>        
+            <div class="col-6 ps-1">
+                <div class="card" style="border: none;">
+                    <div class="card-header bg-vert py-1 px-3">
+                        <div class="text-white titre-bold fs-5">Ville</div>
+                    </div>
+                </div>
+                <div class="card-body border-vertFonce">
+                    <!-- LISTER LES VILLES -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer bg-vertFonce d-flex justify-content-center">
+        <button class="btn bg-vert text-white texte-medium d-flex justify-content-evenly" style="width: 200px;">
+            <i class="bi bi-arrow-up-right-circle"></i>
+            <div>Ouvrir les sélections</div>
+        </button>
     </div>
 </div>
+
+<style>
+    .flex-line {
+        flex-grow: 1;
+        height: 1px;
+        background: linear-gradient(to right, transparent, #b0b0b0, transparent);
+        opacity: 0.6;
+    }
+    input[type="checkbox"].check-vert {
+        position: relative;
+        cursor: pointer;
+        appearance: none;
+        background-color: rgb(99 188 85);
+        border: 1px solid rgb(30 73 45);
+        border-radius: 4px;
+        transition: background-color 0.3s;
+    }
+    input[type="checkbox"].check-vert:checked {
+        background-color: rgb(30 73 45);
+    }
+    .listFiltre {
+        height: 250px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+</style>
 
 @code 
 {
     private bool acceptedFilter, reviewFilter, refusedFilter, pendingFilter;
-    private bool categoryFilter, generalContractorFilter, specializedContractorFilter;
-    private bool region01Filter, region02Filter;
-    private bool troisRivieresFilter, champlainFilter;
-   
     private string? searchBarValue;
- 
-    private List<Supplier> filteredSuppliers = new List<Supplier>(); 
-  
-        class Supplier
+    private string? searchBarValueProduct;
+    private List<Categorierbq> categoriesRBQ = new List<Categorierbq>();
+    private List<Categorierbq> categorieRBQGeneral = new List<Categorierbq>();
+    private List<Categorierbq> categorieRBQSpecialise = new List<Categorierbq>();
+    List<List<string>> regionsAdmini2D = new List<List<string>>
+        {
+            new List<string> { "(01)", "Bas-Saint-Laurent" },
+            new List<string> { "(02)", "Saguenay-Lac-Saint-Jean" },
+            new List<string> { "(03)", "Capitale-Nationale" },
+            new List<string> { "(04)", "Mauricie" },
+            new List<string> { "(05)", "Estrie" },
+            new List<string> { "(06)", "Montréal" },
+            new List<string> { "(07)", "Outaouais" },
+            new List<string> { "(08)", "Abitibi-Témiscamingue" },
+            new List<string> { "(09)", "Côte-Nord" },
+            new List<string> { "(10)", "Nord-du-Québec" },
+            new List<string> { "(11)", "Gaspésie-Îles-de-la-Madeleine" },
+            new List<string> { "(12)", "Chaudière-Appalaches" },
+            new List<string> { "(13)", "Laval" },
+            new List<string> { "(14)", "Lanaudière" },
+            new List<string> { "(15)", "Laurentides" },
+            new List<string> { "(16)", "Montérégie" },
+            new List<string> { "(17)", "Centre-du-Québec" }
+        };
+
+    protected override async Task OnInitializedAsync()
     {
-        public string Name { get; set; }
-        public string City { get; set; }
-        public string Status { get; set; }
-        public bool Selected { get; set; }
-    }  
+        try
+        {
+            categoriesRBQ = await _context.Categorierbqs.ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"A problem occurred when trying to retrieve the categories: {ex.Message}");
+        }
+    }
+
 }
 
 
