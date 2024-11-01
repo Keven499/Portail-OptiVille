@@ -286,17 +286,38 @@
 <script>
     let flashingRows = [];
     function toggleRowSelection(element) {
+        // Check if the element is already flashing
         const isSelected = flashingRows.includes(element);
+        const isLastRow = !element.nextElementSibling; // Check if this is the last row
+
         if (isSelected) {
+            // If already selected, remove from the flashing list and remove the class
             flashingRows = flashingRows.filter(row => row !== element);
             element.classList.remove("selected-row");
-            element.classList.remove("has-bottom-border");
+            element.classList.remove("has-bottom-border"); // Remove the bottom border from the clicked row
+
+            // Check if the previous row exists
+            const previousRow = element.previousElementSibling;
+            if (previousRow) {
+                // If the previous row is selected, keep its bottom border; otherwise, remove it
+                if (!flashingRows.includes(previousRow)) {
+                    previousRow.classList.remove("has-bottom-border"); // Remove bottom border from previous row if it is not selected
+                }
+            }
         } else {
+            // If not selected, add to the flashing list and start flashing
             flashingRows.push(element);
             element.classList.add("selected-row");
-            const isLastRow = !element.nextElementSibling;
+
+            // Only add bottom border if it's not the last row
             if (!isLastRow) {
-                element.classList.add("has-bottom-border");
+                element.classList.add("has-bottom-border"); // Add bottom border to the clicked row
+            }
+
+            // Check if the previous row exists and is not selected
+            const previousRow = element.previousElementSibling;
+            if (previousRow && !flashingRows.includes(previousRow)) {
+                previousRow.classList.add("has-bottom-border"); // Add bottom border to the previous row
             }
         }
     }

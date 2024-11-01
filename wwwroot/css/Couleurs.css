@@ -338,12 +338,12 @@ input[type="checkbox"]:checked+.check-blanc:before {
 }
 
 .has-bottom-border {
-    border-bottom: 2px solid rgba(30, 73, 45, 0.8); 
+    border-bottom: 2px solid rgba(30, 73, 45, 0.8); /* Apply bottom border */
 }
 
 .selected-row {
-    background-color: rgba(177, 196, 0, 0.2); 
-    animation: flashBackground 1s infinite; 
+    background-color: rgba(177, 196, 0, 0.2); /* Background flashing */
+    animation: flashBackground 1s infinite; /* Animation */
 }
 
 @media (max-width: 767px) {
