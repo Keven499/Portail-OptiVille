@@ -7,10 +7,10 @@
 
 <PageTitle>Recherche</PageTitle>
 <div class="card">
-    <div class="card-header py-2 bg-vertFonce">
+    <div style="border: none;" class="card-header py-2 bg-vertFonce">
         <h3 class="py-2 p-0 my-0 text-white titre-bold">Recherche</h3>
     </div>
-    <div class="card-body border-vertFonce">
+    <div class="card-body border-vertFonce pb-1">
         <div class="row">
             <div class="col-12">
                 <div class="input-group">
@@ -77,7 +77,7 @@
                         <i class="bi bi-search" style="font-size: 12px;"></i>
                     </button>
                 </div>
-                <div class="card-body border-vertFonce listFiltre p-1">
+                <div style="max-height: 220px;" class="card-body border-vertFonce box-vert listFiltre p-1">
                     <!-- LISTER LES PRODUITS ET SERVICES -->
                     <div class="row">
                         @{
@@ -106,7 +106,7 @@
                         <div class="text-white titre-bold fs-5">Catégories</div>
                     </div>
                 </div>
-                <div class="card-body border-vertFonce listFiltre p-1">
+                <div class="card-body border-vertFonce box-vert listFiltre p-1">
                     <!-- LISTER LES CATÉGORIES -->
                     <div class="row">
                         <div class="col-12 text-center">
@@ -168,7 +168,7 @@
                         <div class="text-white titre-bold fs-5">Région administratives</div>
                     </div>
                 </div>
-                <div class="card-body border-vertFonce listFiltre p-1">
+                <div class="card-body border-vertFonce box-vert listFiltre p-1">
                     <!-- LISTER LES RÉGIONS ADMINISTRATIVES -->
                     <div class="row">
                         <div class="col-12">
@@ -201,7 +201,7 @@
                         <div class="text-white titre-bold fs-5">Villes</div>
                     </div>
                 </div>
-                <div class="card-body border-vertFonce listFiltre p-1">
+                <div class="card-body border-vertFonce box-vert listFiltre p-1">
                     <!-- LISTER LES VILLES -->
                     <!-- 
                         LA LISTE DES VILLES SE RETROUVE SUR L'API:
@@ -229,6 +229,51 @@
                 </div>
             </div>
         </div>
+        <div class="row my-2">
+            <div class="col-12">
+                <div class="card" style="border: none;">
+                    <div class="card-header bg-vert card-header-borders py-0 px-0">
+                        <div class="row m-0">
+                            <div class="col-3 d-flex justify-content-center border-right">
+                                <div class="text-white titre-bold fs-5">Statut</div>
+                            </div>
+                            <div class="col-3 d-flex justify-content-center border-right">
+                                <div class="text-white titre-bold fs-5">Fournisseur</div>
+                            </div>
+                            <div class="col-3 d-flex justify-content-center border-right">
+                                <div class="text-white titre-bold fs-5">Ville</div>
+                            </div>
+                            <div class="col-3 d-flex justify-content-center">
+                                <div class="text-white titre-bold fs-5">Fiche</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="max-height: 400px;" class="card-body border-vertFonce box-vert listFiltre p-0">
+                    <!-- LISTE DES FICHES -->
+                    @for (int n = 0; n < 3; n++)
+                    {
+                        <div style="height: 35px;" class="row m-0 list-row" onclick="toggleRowSelection(this)">
+                            <div class="col-3 d-flex justify-content-center align-items-center border-right">
+                                <div class="bg-vert w-100 text-center">NA</div>
+                            </div>
+                            <div class="col-3 d-flex justify-content-center align-items-center border-right">
+                                <div style="font-size: 14px;" class="d-flex texte-light fw-bold">Lorem ipsum</div>
+                            </div>
+                            <div class="col-3 d-flex justify-content-center align-items-center border-right">
+                                <div style="font-size: 14px;" class="d-flex texte-light fw-bold">NA</div>
+                            </div>
+                            <div class="col-3 d-flex justify-content-center align-items-center">
+                                <button type="button" 
+                                        style="font-size: 14px; height: 30px;" 
+                                        class="btn bg-vert d-flex align-items-center texte-light fw-bold"
+                                        >Fiche</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
     <div class="card-footer bg-vertFonce d-flex justify-content-center">
         <button class="btn bg-vert text-white texte-medium d-flex justify-content-evenly" style="width: 200px;">
@@ -238,12 +283,40 @@
     </div>
 </div>
 
+<script>
+    let flashingRows = [];
+    function toggleRowSelection(element) {
+        const isSelected = flashingRows.includes(element);
+        if (isSelected) {
+            flashingRows = flashingRows.filter(row => row !== element);
+            element.classList.remove("selected-row");
+            element.classList.remove("has-bottom-border");
+        } else {
+            flashingRows.push(element);
+            element.classList.add("selected-row");
+            const isLastRow = !element.nextElementSibling;
+            if (!isLastRow) {
+                element.classList.add("has-bottom-border");
+            }
+        }
+    }
+</script>
+
 <style>
     .flex-line {
         flex-grow: 1;
         height: 1px;
         background: linear-gradient(to right, transparent, #b0b0b0, transparent);
         opacity: 0.6;
+    }
+    .list-row {
+        transition: background-color 1s ease;
+    }
+    .row-item:hover {
+        background-color: #e0e0e0; 
+    }
+    .row-item:hover button {
+        background-color: initial;
     }
     input[type="checkbox"].check-vert {
         position: relative;
@@ -276,6 +349,9 @@
         font-size: 14px; 
         color: rgba(0, 0, 0, 0.5);
         font-style: italic;
+    }
+    .border-right {
+        border-right: 1px solid rgb(30, 73, 45);
     }
 </style>
 
