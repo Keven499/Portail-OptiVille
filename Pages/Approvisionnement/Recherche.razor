@@ -1,7 +1,9 @@
 @page "/recherche"
 @using Data.Models
 @using Microsoft.EntityFrameworkCore
+@using Portail_OptiVille.Data.Attributes
 @inject A2024420517riGr1Eq6Context _context
+@inject ListeVillesAPI listeVillesAPI
 
 <PageTitle>Recherche</PageTitle>
 <div class="card">
@@ -12,13 +14,14 @@
         <div class="row">
             <div class="col-12">
                 <div class="input-group">
-                    <input type="text" placeholder="Recherchez" class="form-control input-vert texte-light" @bind="searchBarValue" />
+                    <input type="text" placeholder="Recherchez" class="form-control input-vert texte-light placeholder-large" @bind="searchBarValue" />
                     <button class="btn bg-vert text-white input-vert" type="button">
                         <i class="bi bi-search"></i>
                     </button>
                 </div>
             </div>
         </div>
+        <!-- FILTRE NE S'APPLIQUANT QU'AU RESPONSABLE -->
         <div class="row border-vertFonce box-vert my-2 m-0">
             <div class="col-6 my-1 d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center justify-content-between">
@@ -64,24 +67,43 @@
         <div class="row my-2">
             <div class="col-6 pe-1">
                 <div class="card" style="border: none;">
-                    <div class="card-header bg-vert py-1 px-3">
+                    <div style="border-bottom: 2px; border-style: solid;" class="card-header bg-vert card-header-borders py-1 px-3">
                         <div class="text-white titre-bold fs-5">Produits et services</div>
                     </div>
                 </div>
-                <div class="card-body border-vertFonce p-0">
-                    <div class="input-group">
-                        <input type="text" placeholder="Recherchez" style="height: 30px;" class="form-control input-vert texte-light rounded-0" @bind="searchBarValueProduct" />
-                        <button style="height: 30px;" class="btn bg-vert text-white input-vert rounded-0 d-flex align-items-center" type="button">
-                            <i class="bi bi-search" style="font-size: 12px;"></i>
-                        </button>
-                    </div>
+                <div style="border-width: 0 2px 0 2px; border-style: solid; border-color: rgb(30, 73, 45);" class="input-group">
+                    <input type="text" placeholder="Recherchez" style="height: 30px;" class="form-control input-vert-no-border texte-light rounded-0 placeholder-small" @bind="searchBarValueProduct" />
+                    <button style="height: 30px;" class="btn bg-vert text-white input-vert-no-border rounded-0 d-flex align-items-center" type="button">
+                        <i class="bi bi-search" style="font-size: 12px;"></i>
+                    </button>
+                </div>
+                <div class="card-body border-vertFonce listFiltre p-1">
                     <!-- LISTER LES PRODUITS ET SERVICES -->
+                    <div class="row">
+                        @{
+                            int b = 0;
+                            foreach (var produit in produitsService)
+                            {
+                                bool isLast = (b == categorieRBQGeneral.Count - 1);
+                                <div style="margin-bottom: @(isLast ? "0" : "5px");" class="col-12">
+                                    <label class="d-flex align-content-center">
+                                        <input type="checkbox" id="categorie@(b)" class="check-vert me-2" />
+                                        <div style="font-size: 14px;" class="d-flex texte-light fw-bold">
+                                            <div class="me-1">@produit.CodeUnspsc</div>
+                                            <div>@produit.Description</div>
+                                        </div>
+                                    </label>
+                                </div>
+                                b++;
+                            }
+                        }
+                    </div>
                 </div>
             </div>
             <div class="col-6 ps-1">
                 <div class="card" style="border: none;">
-                    <div class="card-header bg-vert py-1 px-3">
-                        <div class="text-white titre-bold fs-5">Catégorie</div>
+                    <div class="card-header bg-vert card-header-borders py-1 px-3">
+                        <div class="text-white titre-bold fs-5">Catégories</div>
                     </div>
                 </div>
                 <div class="card-body border-vertFonce listFiltre p-1">
@@ -142,8 +164,8 @@
         <div class="row my-2">
             <div class="col-6 pe-1">
                 <div class="card" style="border: none;">
-                    <div class="card-header bg-vert py-1 px-3">
-                        <div class="text-white titre-bold fs-5">Région administrative</div>
+                    <div class="card-header card-header-borders bg-vert py-1 px-3">
+                        <div class="text-white titre-bold fs-5">Région administratives</div>
                     </div>
                 </div>
                 <div class="card-body border-vertFonce listFiltre p-1">
@@ -175,12 +197,35 @@
             </div>
             <div class="col-6 ps-1">
                 <div class="card" style="border: none;">
-                    <div class="card-header bg-vert py-1 px-3">
-                        <div class="text-white titre-bold fs-5">Ville</div>
+                    <div class="card-header card-header-borders bg-vert py-1 px-3">
+                        <div class="text-white titre-bold fs-5">Villes</div>
                     </div>
                 </div>
-                <div class="card-body border-vertFonce">
+                <div class="card-body border-vertFonce listFiltre p-1">
                     <!-- LISTER LES VILLES -->
+                    <!-- 
+                        LA LISTE DES VILLES SE RETROUVE SUR L'API:
+                        https://www.donneesquebec.ca/recherche/dataset/repertoire-des-municipalites-du-quebec/resource/19385b4e-5503-4330-9e59-f998f5918363
+                        LES VILLES ONT POUR CHAMP: munnom (municipalité nom)
+                    -->
+                    <div class="row">
+                        <div class="col-12">
+                        @{
+                            i = 0;
+                            foreach (var city in cities)
+                            {
+                                bool isLast = (i == cities.Count - 1);
+                                <div style="margin-bottom: @(isLast ? "0" : "5px");" class="col-12">
+                                    <label class="d-flex align-content-center">
+                                        <input type="checkbox" id="categorie@(j)" class="check-vert me-2" />
+                                        <div style="font-size: 14px;" class="d-flex texte-light fw-bold">@city</div>
+                                    </label>
+                                </div>
+                                i++;
+                            }
+                        }
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -213,9 +258,24 @@
         background-color: rgb(30 73 45);
     }
     .listFiltre {
-        height: 250px;
+        max-height: 250px;
         overflow-y: auto;
         overflow-x: hidden;
+    }
+    .card-header-borders {
+        border-width: 2px 2px 0 2px; 
+        border-style: solid; 
+        border-color: rgb(30, 73, 45);
+    }
+    .placeholder-large::placeholder {
+        font-size: 16px; 
+        color: rgba(0, 0, 0, 0.5);
+        font-style: italic;
+    }
+    .placeholder-small::placeholder {
+        font-size: 14px; 
+        color: rgba(0, 0, 0, 0.5);
+        font-style: italic;
     }
 </style>
 
@@ -227,6 +287,8 @@
     private List<Categorierbq> categoriesRBQ = new List<Categorierbq>();
     private List<Categorierbq> categorieRBQGeneral = new List<Categorierbq>();
     private List<Categorierbq> categorieRBQSpecialise = new List<Categorierbq>();
+    private List<Produitservice> produitsService = new List<Produitservice>();
+    private List<string> cities = new List<string>();
     List<List<string>> regionsAdmini2D = new List<List<string>>
         {
             new List<string> { "(01)", "Bas-Saint-Laurent" },
@@ -253,13 +315,15 @@
         try
         {
             categoriesRBQ = await _context.Categorierbqs.ToListAsync();
+            cities = await listeVillesAPI.GetVilles();
+            // TEST AVEC SEULEMENT 500 LIGNES
+            produitsService = await _context.Produitservices.Take(500).ToListAsync();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"A problem occurred when trying to retrieve the categories: {ex.Message}");
+            Console.WriteLine($"A problem occurred while retrieving data: {ex.Message}");
         }
     }
-
 }
 
 

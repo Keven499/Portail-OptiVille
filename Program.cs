@@ -11,6 +11,7 @@ using Portail_OptiVille.Data.Services;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Portail_OptiVille.Data.FormModels;
+using Portail_OptiVille.Data.Attributes;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,7 @@ builder.Services.Configure<FormOptions>(options =>
 
 #region Configuration des services
 builder.Services.AddScoped<LicenceService>();
+builder.Services.AddScoped<ListeVillesAPI>();
 builder.Services.AddScoped<PieceJointeFormModel>();
 #endregion
 

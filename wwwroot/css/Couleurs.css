@@ -104,6 +104,10 @@ body
     border-bottom: 2px solid rgb(30, 73, 45);
 }
 
+.input-vert-no-border {
+    background-color: rgb(197, 216, 0, 0.2);
+}
+
 .box-bleu 
 {
     background-color: rgb(0, 118, 213, 0.2); 

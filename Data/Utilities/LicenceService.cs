@@ -1,6 +1,4 @@
-using System.Net.Http;
 using System.Text.Json;
-using System.Threading.Tasks;
 using static Portail_OptiVille.Data.Attributes.RBQApiResponse;
 
 public class LicenceService
