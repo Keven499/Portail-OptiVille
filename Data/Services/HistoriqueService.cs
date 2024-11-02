@@ -42,6 +42,10 @@ namespace Portail_OptiVille.Data.Services
 
         public async Task AddHistoriqueEnAttente(int _idFournisseur)
         {
+            if (_idFournisseur == -1)
+            {
+                _idFournisseur = await _context.Fournisseurs.MaxAsync(f => (int)f.IdFournisseur);
+            }
             var historique = new Historique
             {
                 EtatDemande = "En attente",

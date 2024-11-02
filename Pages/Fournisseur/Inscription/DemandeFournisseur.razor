@@ -10,13 +10,14 @@
 @using Microsoft.AspNetCore.Components.Web
 @inject A2024420517riGr1Eq6Context _context
 @inject IJSRuntime JS
-@inject FournisseurService FournisseurService
-@inject ContactsService ContactsService
-@inject CoordonneeService CoordonneeService
-@inject FichierService FichierService
-@inject IdentificationService IdentificationService
-@inject LicenceRBQService LicenceRBQService
-@inject ProduitServiceService ProduitServiceService
+@inject FournisseurService fournisseurService
+@inject ContactsService contactsService
+@inject CoordonneeService coordonneeService
+@inject FichierService fichierService
+@inject IdentificationService identificationService
+@inject LicenceRBQService licenceRBQService
+@inject ProduitServiceService produitServiceService
+@inject HistoriqueService historiqueService
 
 <PageTitle>Demande fournisseur</PageTitle>
 
@@ -66,7 +67,7 @@
                                 </button>
                                 @if (currentIndex == 4 && !IsRBQAnyFieldChange)
                                 {
-                                    <button @onclick="ShowNext" class="btn bg-bleu text-white texte-medium ms-2" style="width: 200px;">
+                                    <button @onclick="ShowNext" class="btn bg-warning text-white texte-medium ms-2" style="width: 200px;">
                                         Passer
                                         <i class="bi bi-arrow-right-circle"></i>
                                     </button>
@@ -326,13 +327,14 @@
 
     private async void SaveDataToDB()
     {
-        await FournisseurService.SaveFournisseurData(produitServiceFormModel);
-        await IdentificationService.SaveIdentificationData(identicationFormModel);
-        await CoordonneeService.SaveCoordonneeData(coordonneeFormModel);
-        await ContactsService.SaveContactsData(contactHosterFormModel);
-        await ProduitServiceService.SaveProduitServiceData(produitServiceFormModel);
-        await LicenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
-        await FichierService.SaveFichierData(pieceJointeFormModel, identicationFormModel);
+        await fournisseurService.SaveFournisseurData(produitServiceFormModel);
+        await identificationService.SaveIdentificationData(identicationFormModel);
+        await coordonneeService.SaveCoordonneeData(coordonneeFormModel);
+        await contactsService.SaveContactsData(contactHosterFormModel);
+        await produitServiceService.SaveProduitServiceData(produitServiceFormModel);
+        await licenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
+        await fichierService.SaveFichierData(pieceJointeFormModel, identicationFormModel);
+        await historiqueService.AddHistoriqueEnAttente(-1);
         // IL RESTE PLUS QU'A LE REDIRIGER VERS SA FICHE FOURNISSEUR SUR SON PROPRE COMPTE OU VERS LOGIN
     }
 }

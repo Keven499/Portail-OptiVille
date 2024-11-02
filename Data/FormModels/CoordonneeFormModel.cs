@@ -21,7 +21,7 @@ namespace Portail_OptiVille.Data.FormModels
         [RegularExpression(@"^[a-zA-Z0-9]{1,8}$", ErrorMessage = "Entre 1 à 8 chiffres ou lettres.")]
         public string? BureauEntreprise { get; set; }
 
-        [Ville]
+        [Required(ErrorMessage = "Ville requise")]
         public string VilleEntreprise { get; set; }
 
         [Required(ErrorMessage = "Province requise")]

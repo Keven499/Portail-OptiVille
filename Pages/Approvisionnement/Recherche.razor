@@ -6,6 +6,17 @@
 @inject ListeVillesAPI listeVillesAPI
 
 <PageTitle>Recherche</PageTitle>
+@if (isLoading)
+{
+    <div class="d-flex justify-content-center align-items-center" style="height: 80vh; position: relative;">
+        <div class="spinner-border text-success me-2" role="status"></div>
+        <div class="d-flex flex-column">
+            <span class="titre-medium fs-3">Chargement en cours..</span>
+        </div>
+    </div>
+}
+else
+{
 <div class="card">
     <div style="border: none;" class="card-header py-2 bg-vertFonce">
         <h3 class="py-2 p-0 my-0 text-white titre-bold">Recherche</h3>
@@ -251,25 +262,43 @@
                 </div>
                 <div style="max-height: 400px;" class="card-body border-vertFonce box-vert listFiltre p-0">
                     <!-- LISTE DES FICHES -->
-                    @for (int n = 0; n < 3; n++)
-                    {
-                        <div style="height: 35px;" class="row m-0 list-row" onclick="toggleRowSelection(this)">
-                            <div class="col-3 d-flex justify-content-center align-items-center border-right">
-                                <div class="bg-vert w-100 text-center">NA</div>
-                            </div>
-                            <div class="col-3 d-flex justify-content-center align-items-center border-right">
-                                <div style="font-size: 14px;" class="d-flex texte-light fw-bold">Lorem ipsum</div>
-                            </div>
-                            <div class="col-3 d-flex justify-content-center align-items-center border-right">
-                                <div style="font-size: 14px;" class="d-flex texte-light fw-bold">NA</div>
-                            </div>
-                            <div class="col-3 d-flex justify-content-center align-items-center">
-                                <button type="button" 
-                                        style="font-size: 14px; height: 30px;" 
-                                        class="btn bg-vert d-flex align-items-center texte-light fw-bold"
-                                        >Fiche</button>
-                            </div>
-                        </div>
+                    @{
+                        if (fournisseurFiches.Any())
+                        {
+                            foreach (var fiche in fournisseurFiches)
+                            {
+                                <div style="height: 35px;" class="row m-0 list-row" onclick="toggleRowSelection(this)">
+                                    <!-- STATUS -->
+                                    <div class="col-3 d-flex justify-content-center align-items-center border-right">
+                                        <div class="w-100 text-center
+                                            @(fiche.EtatDemande == "En attente" ? "bg-yellowEtat" :
+                                            fiche.EtatDemande == "Acceptée" ? "bg-vert" :
+                                            fiche.EtatDemande == "Refusée" ? "bg-redEtat" : "")">
+                                            @fiche.EtatDemande
+                                        </div>
+                                    </div>
+                                    <!-- NOM ENTREPRISE -->
+                                    <div class="col-3 d-flex justify-content-center align-items-center border-right">
+                                        <div style="font-size: 14px;" class="d-flex texte-light fw-bold">@fiche.NomEntreprise</div>
+                                    </div>
+                                    <!-- VILLE -->
+                                    <div class="col-3 d-flex justify-content-center align-items-center border-right">
+                                        <div style="font-size: 14px;" class="d-flex texte-light fw-bold">@fiche.Ville</div>
+                                    </div>
+                                    <div class="col-3 d-flex justify-content-center align-items-center">
+                                        <button type="button"
+                                                style="font-size: 14px; height: 30px;"
+                                                class="btn bg-vert d-flex align-items-center texte-light fw-bold">
+                                            Fiche
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center fw-bold py-2">NO DATA</div>    
+                        }
                     }
                 </div>
             </div>
@@ -282,42 +311,32 @@
         </button>
     </div>
 </div>
+}
 
 <script>
     let flashingRows = [];
     function toggleRowSelection(element) {
-        // Check if the element is already flashing
         const isSelected = flashingRows.includes(element);
-        const isLastRow = !element.nextElementSibling; // Check if this is the last row
-
+        const isLastRow = !element.nextElementSibling; 
         if (isSelected) {
-            // If already selected, remove from the flashing list and remove the class
             flashingRows = flashingRows.filter(row => row !== element);
             element.classList.remove("selected-row");
-            element.classList.remove("has-bottom-border"); // Remove the bottom border from the clicked row
-
-            // Check if the previous row exists
+            element.classList.remove("has-bottom-border");
             const previousRow = element.previousElementSibling;
             if (previousRow) {
-                // If the previous row is selected, keep its bottom border; otherwise, remove it
                 if (!flashingRows.includes(previousRow)) {
-                    previousRow.classList.remove("has-bottom-border"); // Remove bottom border from previous row if it is not selected
+                    previousRow.classList.remove("has-bottom-border");
                 }
             }
         } else {
-            // If not selected, add to the flashing list and start flashing
             flashingRows.push(element);
             element.classList.add("selected-row");
-
-            // Only add bottom border if it's not the last row
             if (!isLastRow) {
-                element.classList.add("has-bottom-border"); // Add bottom border to the clicked row
+                element.classList.add("has-bottom-border");
             }
-
-            // Check if the previous row exists and is not selected
             const previousRow = element.previousElementSibling;
             if (previousRow && !flashingRows.includes(previousRow)) {
-                previousRow.classList.add("has-bottom-border"); // Add bottom border to the previous row
+                previousRow.classList.add("has-bottom-border");
             }
         }
     }
@@ -378,6 +397,7 @@
 
 @code 
 {
+    private bool isLoading = true;
     private bool acceptedFilter, reviewFilter, refusedFilter, pendingFilter;
     private string? searchBarValue;
     private string? searchBarValueProduct;
@@ -386,6 +406,7 @@
     private List<Categorierbq> categorieRBQSpecialise = new List<Categorierbq>();
     private List<Produitservice> produitsService = new List<Produitservice>();
     private List<string> cities = new List<string>();
+    private List<FournisseurFiche> fournisseurFiches;
     List<List<string>> regionsAdmini2D = new List<List<string>>
         {
             new List<string> { "(01)", "Bas-Saint-Laurent" },
@@ -415,11 +436,30 @@
             cities = await listeVillesAPI.GetVilles();
             // TEST AVEC SEULEMENT 500 LIGNES
             produitsService = await _context.Produitservices.Take(500).ToListAsync();
+            fournisseurFiches = await (from h in _context.Historiques
+                                      join f in _context.Fournisseurs on h.Fournisseur equals f.IdFournisseur
+                                      from i in f.Identifications.DefaultIfEmpty()
+                                      from c in f.Coordonnees.DefaultIfEmpty()
+                                      select new FournisseurFiche
+                                      {
+                                          EtatDemande = h.EtatDemande,
+                                          NomEntreprise = i.NomEntreprise,
+                                          Ville = c.Ville
+                                      })
+                           .ToListAsync();
+            isLoading = false;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"A problem occurred while retrieving data: {ex.Message}");
         }
+    }
+
+    public class FournisseurFiche
+    {
+        public string EtatDemande { get; set; }
+        public string NomEntreprise { get; set; }
+        public string Ville { get; set; }
     }
 }
 
