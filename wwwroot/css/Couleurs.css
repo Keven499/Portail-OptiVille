@@ -66,14 +66,6 @@ body
     background-color: rgb(120, 198, 224);
 }
 
-.bg-yellowEtat {
-    background-color: rgb(243 231 0);
-}
-
-.bg-redEtat {
-    background-color: rgb(229 0 77);
-}
-
 .border-bleuPale
 {
     border: 2px solid rgb(120, 198, 224);
