@@ -26,7 +26,7 @@ else
             <div class="col-12">
                 <div class="input-group">
                     <input type="text" placeholder="Recherchez" class="form-control input-vert texte-light placeholder-large" @bind="searchBarValue" />
-                    <button class="btn bg-vert text-white input-vert" type="button">
+                    <button class="btn bg-vert text-white input-vert no-focus-white-thick-border" type="button">
                         <i class="bi bi-search"></i>
                     </button>
                 </div>
@@ -84,7 +84,7 @@ else
                 </div>
                 <div style="border-width: 0 2px 0 2px; border-style: solid; border-color: rgb(30, 73, 45);" class="input-group">
                     <input type="text" placeholder="Recherchez" style="height: 30px;" class="form-control input-vert-no-border texte-light rounded-0 placeholder-small" @bind="searchBarValueProduct" />
-                    <button style="height: 30px;" class="btn bg-vert text-white input-vert-no-border rounded-0 d-flex align-items-center" type="button">
+                    <button style="height: 30px;" class="btn bg-vert text-white input-vert-no-border rounded-0 d-flex align-items-center no-focus-white-light-border" type="button" @onclick="OnSearch">
                         <i class="bi bi-search" style="font-size: 12px;"></i>
                     </button>
                 </div>
@@ -93,9 +93,9 @@ else
                     <div class="row">
                         @{
                             int b = 0;
-                            foreach (var produit in produitsService)
+                            foreach (var produit in produitsServiceInternal)
                             {
-                                bool isLast = (b == categorieRBQGeneral.Count - 1);
+                                bool isLast = (b == produitsServiceInternal.Count - 1);
                                 <div style="margin-bottom: @(isLast ? "0" : "5px");" class="col-12">
                                     <label class="d-flex align-content-center">
                                         <input type="checkbox" id="categorie@(b)" class="check-vert me-2" />
@@ -343,6 +343,17 @@ else
 </script>
 
 <style>
+    .no-focus-white-thick-border:focus,
+    .no-focus-white-thick-border:focus:active {
+        background-color: rgb(99, 188, 85);
+        border-bottom: 2px solid rgb(30, 73, 45);
+        color: white; /* Keep text color white */
+    }
+    .no-focus-white-light-border:focus:focus,
+    .no-focus-white-light-border:focus:active {
+        background-color: rgb(99, 188, 85);
+        color: white; /* Keep text color white */
+    }
     .flex-line {
         flex-grow: 1;
         height: 1px;
@@ -411,6 +422,7 @@ else
     private List<Categorierbq> categorieRBQGeneral = new List<Categorierbq>();
     private List<Categorierbq> categorieRBQSpecialise = new List<Categorierbq>();
     private List<Produitservice> produitsService = new List<Produitservice>();
+    private List<Produitservice> produitsServiceInternal = new List<Produitservice>();
     private List<string> cities = new List<string>();
     private List<FournisseurFiche> fournisseurFiches;
     List<List<string>> regionsAdmini2D = new List<List<string>>
@@ -442,11 +454,12 @@ else
             cities = await listeVillesAPI.GetVilles();
             // TEST AVEC SEULEMENT 500 LIGNES
             produitsService = await _context.Produitservices.Take(500).ToListAsync();
+            produitsServiceInternal = produitsService;
             fournisseurFiches = await (from h in _context.Historiques
-                                      join f in _context.Fournisseurs on h.Fournisseur equals f.IdFournisseur
-                                      from i in f.Identifications.DefaultIfEmpty()
-                                      from c in f.Coordonnees.DefaultIfEmpty()
-                                      select new FournisseurFiche
+                                       join f in _context.Fournisseurs on h.Fournisseur equals f.IdFournisseur
+                                       from i in f.Identifications.DefaultIfEmpty()
+                                       from c in f.Coordonnees.DefaultIfEmpty()
+                                       select new FournisseurFiche
                                       {
                                           EtatDemande = h.EtatDemande,
                                           NomEntreprise = i.NomEntreprise,
@@ -458,6 +471,32 @@ else
         catch (Exception ex)
         {
             Console.WriteLine($"A problem occurred while retrieving data: {ex.Message}");
+        }
+    }
+
+    private void OnSearch()
+    {
+        if (string.IsNullOrEmpty(searchBarValueProduct) && produitsServiceInternal.Count != 500)
+        {
+            produitsServiceInternal = produitsService;
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(searchBarValueProduct) && char.IsDigit(searchBarValueProduct[0]))
+            {
+                produitsServiceInternal = produitsService
+                        .Where(c => c.CodeUnspsc != null && c.CodeUnspsc.Contains(searchBarValueProduct))
+                        .ToList();
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(searchBarValueProduct))
+                {
+                    produitsServiceInternal = produitsService
+                        .Where(c => c.Description != null && c.Description.Contains(searchBarValueProduct))
+                        .ToList();
+                }
+            }
         }
     }
 
