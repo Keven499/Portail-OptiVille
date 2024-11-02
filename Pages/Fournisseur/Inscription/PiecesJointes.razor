@@ -3,6 +3,7 @@
 @using System.Linq.Expressions
 @using Portail_OptiVille.Data.FormModels
 @using System.IO
+@using Portail_OptiVille.Data.Models
 @inject IJSRuntime _jsRuntime
 
 <PageTitle>Étape 6 Pièces jointes</PageTitle>
@@ -20,8 +21,7 @@
                                 <p class="texte-medium">ou cliquez pour sélectionner les fichiers</p>
                         </div>
                     </label>
-                    <InputFile id="fileInput" OnChange="HandleFileChange" multiple accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" style="display: none;" />
-
+                    <InputFile id="fileInput" OnChange="HandleFileChange" accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" style="display: none;" />
                 </div>
             </div>
         }
@@ -40,8 +40,7 @@
                         <p class="texte-medium">ou cliquez pour sélectionner les fichiers</p>
                 </div>
             </label>
-            @*<InputFile id="fileInput" OnChange="HandleFileChange"  multiple accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" style="display: none;" />*@
-                <input type="text" id="fileInput" onchange="HandleFileChange()" multiple accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" style="display: none;">
+            <InputFile id="fileInput" OnChange="HandleFileChange" accept=".doc,.docx,.pdf,.xls,.xlsx,.jpg,.jpeg,.png" style="display: none;" />
             </div>
         </div>
     }
@@ -82,8 +81,8 @@
             {
                 <tr>
                 <th scope="row" class="texte-bold text-center">@(PieceJointeFormModel.ListFichiers.IndexOf(file) + 1)</th>
-                    <td class="texte-light">@file.Name</td>
-                    <td class="texte-light text-center">@GetFormatSizeFile(file.Size)</td>
+                    <td class="texte-light">@file.Nom</td>
+                    <td class="texte-light text-center">@GetFormatSizeFile((long)file.Taille)</td>
                     @if(ActivationModification)
                     {
                         @if(ModifcationPieceJointesActivationONState)
@@ -170,6 +169,7 @@
                 try
                 {
                     await _jsRuntime.InvokeVoidAsync("dragAndDrop.initialize", "dropArea", "fileInput");
+                    Console.WriteLine("drag and drop initialisé");
                     initialized = true;
                 }
                 catch (JSException ex)
@@ -184,8 +184,6 @@
             }
         }
     }
-
-
     private string GetFormatSizeFile(long size)
     {
         if (size >= 1048576)
@@ -212,10 +210,10 @@
 
     private void CalculTotalSize()
     {
-        sizeTotal = PieceJointeFormModel.ListFichiers.Sum(file => file.Size);
+        sizeTotal = (long)PieceJointeFormModel.ListFichiers.Sum(file => file.Taille);
     }
-
-    private void HandleFileChange(InputFileChangeEventArgs e)
+    private Dictionary<string, Stream> fileStreams = new Dictionary<string, Stream>();
+    private async void HandleFileChange(InputFileChangeEventArgs e)
     {
         var fileList = e.GetMultipleFiles();
         if (!fileList.Any())
@@ -224,11 +222,6 @@
         }
 
         errorTable.Clear();
-        if (PieceJointeFormModel.ListFichiers.Count == 1 && fileList.Count < 2)
-        {
-            errorTable.Add("Utilisez la sélection multiple en vous servant de la combinaison de touches CTRL + clic gauche (souris) pour ajouter plus d'un fichier");
-            return;
-        }
 
         long newSizeTotal = sizeTotal;
         foreach (var file in fileList)
@@ -249,10 +242,27 @@
                     continue;
                 }
 
-                if (!PieceJointeFormModel.ListFichiers.Any(f => f.Name == file.Name && f.Size == file.Size))
+                var fichier = new Fichier
+                    {
+                        Nom = file.Name,
+                        Type = file.ContentType,
+                        Taille = (int)file.Size,
+                        DateCreation = DateTime.Now
+                    };
+
+
+                if (!PieceJointeFormModel.ListFichiers.Any(f => f.Nom == fichier.Nom && f.Taille == fichier.Taille))
                 {
-                    PieceJointeFormModel.ListFichiers.Add(file);
+                    PieceJointeFormModel.ListFichiers.Add(fichier);
                     isFileInputTouched = true;
+
+
+                    using var fileStream = file.OpenReadStream(maxAllowedSize: 75 * 1024 * 1024);
+                    var memoryStream = new MemoryStream();
+                    await fileStream.CopyToAsync(memoryStream);
+                    memoryStream.Position = 0;
+
+                    PieceJointeFormModel.FileStreams[file.Name] = memoryStream;
                 }
             }
             catch (Exception ex)
@@ -260,11 +270,11 @@
                 errorTable.Add($"Une erreur est survenue lors du traitement de {file.Name}: {ex.Message}");
             }
         }
-        sizeTotal = newSizeTotal; // Update the total size
+        sizeTotal = newSizeTotal;
         CalculTotalSize();
     }
     
-    private void RemoveFile(IBrowserFile file)
+    private void RemoveFile(Fichier file)
     {
         PieceJointeFormModel.ListFichiers.Remove(file);
         CalculTotalSize();

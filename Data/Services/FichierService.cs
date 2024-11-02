@@ -17,9 +17,6 @@ namespace Portail_OptiVille.Data.Services
         {
             var lastFournisseurId = await _context.Fournisseurs.MaxAsync(f => (int?)f.IdFournisseur);
             var fichiers = new List<Fichier>();
-            // var sanitizedFolderName = string.Join("_", identificationFormModelDto.NomEntreprise.Split(Path.GetInvalidFileNameChars()))
-            //                             .Replace(" ", "_")
-            //                             .ToLower();
 
             var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files", lastFournisseurId.ToString());
             Directory.CreateDirectory(folderPath);
@@ -33,40 +30,37 @@ namespace Portail_OptiVille.Data.Services
                         Console.WriteLine("File is null, skipping.");
                         continue;
                     }
-                    var filePath = Path.Combine(folderPath, fichierFromList.Name).ToLower();
+                    var filePath = Path.Combine(folderPath, fichierFromList.Nom).ToLower();
                     if (File.Exists(filePath))
                     {
                         continue;
                     }
-                    using (var fileStream = fichierFromList.OpenReadStream(maxAllowedSize: 75 * 1024 * 1024)) // 75 MB limit
+                    if (pieceJointeFormModelDto.FileStreams.TryGetValue(fichierFromList.Nom, out var fileStream))
                     {
-                        if (fileStream == null)
-                        {
-                            Console.WriteLine($"File stream is null for {fichierFromList.Name}. Skipping.");
-                            continue;
-                        }
                         using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                         {
+                            fileStream.Position = 0;
                             await fileStream.CopyToAsync(stream);
                         }
-                    }
-                    var fileExtension = Path.GetExtension(fichierFromList.Name).ToLower();
-                    Console.WriteLine(fichierFromList.Name);
+
+                    var fileExtension = Path.GetExtension(fichierFromList.Nom).ToLower();
+                    Console.WriteLine(fichierFromList.Nom);
                     var fichier = new Fichier
                     {
                         // NE PAS METTRE L'EXTENSION DANS LE NOM
-                        Nom = fichierFromList.Name,
+                        Nom = fichierFromList.Nom,
                         Type = fileExtension,
-                        Taille = (int)fichierFromList.Size, // File size in bytes
+                        Taille = (int)fichierFromList.Taille,
                         DateCreation = DateTime.Now,
-                        Path = Path.Combine("files", lastFournisseurId.ToString(), fichierFromList.Name).ToLower(),
+                        Path = Path.Combine("files", lastFournisseurId.ToString(), fichierFromList.Nom).ToLower(),
                         Fournisseur = lastFournisseurId
                     };
                     fichiers.Add(fichier); 
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error saving file {fichierFromList?.Name}: {ex.Message}");
+                    Console.WriteLine($"Une erreur est survenue lors de la sauvegarde du fichier {fichierFromList?.Nom}: {ex.Message}");
                     continue; 
                 }
             }
@@ -89,69 +83,84 @@ namespace Portail_OptiVille.Data.Services
         {
             var fichiers = new List<Fichier>();
 
-            // DEFINE FOLDER PATH WITH THE USER ID
+
             var folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "files", fournisseurID.ToString());
 
-            // CHECK IF DIRECTORY DOES NOT EXIST
-            /* if (!Directory.Exists(folderPath))
+            if (!Directory.Exists(folderPath))
             {
-                //Delete the existing directory and its contents
-                //Directory.Delete(folderPath, true); 
                 Directory.CreateDirectory(folderPath);
-            } */
+            }
+            var existingFichiers = await _context.Fichiers.Where(f => f.Fournisseur == fournisseurID).ToListAsync();
+            var existingFileNames = existingFichiers.Select(f => f.Nom).ToHashSet();
+            var filesToDelete = existingFichiers
+            .Where(f => !pieceJointeFormModelDto.ListFichiers.Any(pf => pf.Nom == f.Nom))
+            .ToList();
+
+            foreach (var fichierToDelete in filesToDelete)
+            {
+                try
+                {
+                    var filePath = Path.Combine(folderPath, fichierToDelete.Nom).ToLower();
+                    if (File.Exists(filePath))
+                    {
+                        File.Delete(filePath);
+                    }
+                    _context.Fichiers.Remove(fichierToDelete);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Une erreur est survenue lors de la suppression du fichier {fichierToDelete.Nom}: {ex.Message}");
+                }
+            }
 
 
-            // Create a new directory
-            //Directory.CreateDirectory(folderPath);
             foreach (var fichierFromList in pieceJointeFormModelDto.ListFichiers)
             {
                 try
                 {
-                    if (fichierFromList == null)
+                    if (fichierFromList == null || string.IsNullOrEmpty(fichierFromList.Nom))
                     {
-                        Console.WriteLine("File is null, skipping.");
+                        Console.WriteLine("File is null or has an empty name, skipping.");
+                        continue;
                     }
 
-                    var filePath = Path.Combine(folderPath, fichierFromList.Name).ToLower();
-                    if (File.Exists(filePath))
+                    var filePath = Path.Combine(folderPath, fichierFromList.Nom).ToLower();
+
+
+                    if (!existingFileNames.Contains(fichierFromList.Nom) &&
+                        pieceJointeFormModelDto.FileStreams.TryGetValue(fichierFromList.Nom, out var fileStream))
                     {
-                        Console.WriteLine($"File already exists: {filePath}. Skipping.");
-                    }
 
                         using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                         {
-                            await fichierFromList.OpenReadStream(maxAllowedSize: 75 * 1024 * 1024).CopyToAsync(stream);
+                            fileStream.Position = 0;
+                            await fileStream.CopyToAsync(stream);
                         }
 
-                    var fileExtension = Path.GetExtension(fichierFromList.Name).ToLower();
-                    Console.WriteLine(fichierFromList.Name);
+                        var fileExtension = Path.GetExtension(fichierFromList.Nom).ToLower();
 
-                    var fichier = new Fichier
-                    {
-                        // NE PAS METTRE L'EXTENSION DANS LE NOM
-                        Nom = fichierFromList.Name,
-                        Type = fichierFromList.ContentType,
-                        Taille = (int)fichierFromList.Size, // File size in bytes
-                        DateCreation = DateTime.Now,
-                        Path = Path.Combine("files", fournisseurID.ToString(), fichierFromList.Name, fileExtension).ToLower(),
-                        Fournisseur = fournisseurID
-                    };
-                    //fichiers.Add(fichier);
-                    _context.Fichiers.Add(fichier);
+                        var fichier = new Fichier
+                        {
+                            Nom = fichierFromList.Nom,
+                            Type = fileExtension,
+                            Taille = (int)fichierFromList.Taille,
+                            DateCreation = DateTime.Now,
+                            Path = Path.Combine("files", fournisseurID.ToString(), fichierFromList.Nom).ToLower(),
+                            Fournisseur = fournisseurID
+                        };
+
+                        _context.Fichiers.Add(fichier);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error saving file {fichierFromList?.Name}: {ex.Message}");
+                    Console.WriteLine($"Une erreur est survenue lors de la sauvegarde du fichier {fichierFromList?.Nom}: {ex.Message}");
                 }
             }
 
+
             try
             {
-                /* if (fichiers.Count > 0)
-                {
-                    await _context.Fichiers.AddRangeAsync(fichiers);
-                    await _context.SaveChangesAsync();
-                } */
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -166,13 +175,10 @@ namespace Portail_OptiVille.Data.Services
             {
                 try
                 {
-                    // Construct the full file path on the server based on the stored path in the database
                     var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", fichier.Path.Replace("\\", Path.DirectorySeparatorChar.ToString()));
 
-                    // Check if the file exists on the server
                     if (File.Exists(fullPath))
                     {
-                        // Delete the file from the server
                         File.Delete(fullPath);
                     }
                     else
@@ -180,12 +186,11 @@ namespace Portail_OptiVille.Data.Services
                         Console.WriteLine($"File not found: {fullPath}, skipping deletion from server.");
                     }
 
-                    // Remove the file entry from the database
                     _context.Fichiers.Remove(fichier);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Error deleting file {fichier.Nom}: {ex.Message}");
+                    Console.WriteLine($"Une erreur est survenue lors de la supression du fichier {fichier.Nom}: {ex.Message}");
                     continue;
                 }
             }

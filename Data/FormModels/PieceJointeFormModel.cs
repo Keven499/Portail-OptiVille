@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
+using Portail_OptiVille.Data.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace Portail_OptiVille.Data.FormModels
@@ -7,6 +8,8 @@ namespace Portail_OptiVille.Data.FormModels
     {
         public IBrowserFile? Fichier { get; set; }
 
-        public List<IBrowserFile> ListFichiers = new List<IBrowserFile>();
+        public List<Fichier> ListFichiers = new List<Fichier>();
+
+        public Dictionary<string, Stream> FileStreams { get; set; } = new Dictionary<string, Stream>();
     }
 }

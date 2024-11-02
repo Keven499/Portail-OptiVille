@@ -1027,7 +1027,7 @@
             var browserfiles = TransformFichierToBrowserFile(selectedFichiers);
             // Pt que lister la liste des fichiers sur le serv comme sa deja en ibrowserfile ** A voir**
             pieceJointeFormModel = new PieceJointeFormModel{
-                ListFichiers = browserfiles
+                ListFichiers = selectedFichiers
             };
             selectedHistoriques = await _context.Historiques.Where(c => c.Fournisseur == FournisseurID).ToListAsync();
             closestHistorique = selectedHistoriques.Where(h => h.DateEtatChanged.HasValue).OrderBy(h => Math.Abs((h.DateEtatChanged.Value - DateTime.UtcNow).TotalDays)).FirstOrDefault();
@@ -1165,7 +1165,7 @@
  
     private string GetFormatSize()
     {
-        sizeTotal = pieceJointeFormModel.ListFichiers.Sum(file => (int)(file.Size));
+        sizeTotal = pieceJointeFormModel.ListFichiers.Sum(file => (int)(file.Taille));
         if (sizeTotal >= 1048576) // 1 MB = 1048576 bytes (1 * 1024 * 1024)
         {
             return $"{(sizeTotal / 1048576.0):F2} MB / {MaxSize}MB";
