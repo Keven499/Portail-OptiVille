@@ -8,7 +8,7 @@ public class MDPRegexIdentification : ValidationAttribute
         var password = value as string;
         if (string.IsNullOrEmpty(password))
         {
-            return new ValidationResult("Mdp requis", new[] { validationContext.MemberName });
+            return new ValidationResult("Mot de passe requis", new[] { validationContext.MemberName });
         }
         if (password.Length < 7 || password.Length > 12)
         {

@@ -23,7 +23,7 @@ namespace Portail_OptiVille.Data.Attributes
 
             if (Regex.IsMatch(currentValue, @"\d"))
             {
-                return new ValidationResult($"Aucun chiffres permis");
+                return new ValidationResult($"Aucun chiffre permis");
             }
 
             if (Regex.IsMatch(currentValue, @"[^a-zA-Z'-,]"))

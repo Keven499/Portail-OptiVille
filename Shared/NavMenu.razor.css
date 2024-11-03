@@ -82,9 +82,8 @@
 
 .navbar-brand img {
     height: auto;
-    padding: auto;
+    padding-top: auto;
     margin: auto;
-    margin-top: 30px;
 }
 
 .navbar .navbar-toggler {

@@ -56,39 +56,39 @@ NavigationManager.NavigateTo("/", true);
     }
 }
 
+<PageTitle>Changement mot de passe</PageTitle>
+
 <EditForm Model="@forgotPasswordModel" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="ValidateInput">
-    <div class="form-group container-fluid h-100 w-100 d-flex align-items-center justify-content-center">
-        <div class="row h-100 w-100 d-flex align-items-center justify-content-center">
-            <div class="card w-75 h-75 d-flex justify-content-center p-0 m-0">
-                <div class="card-header py-2 bg-bleuFonce">
-                    <h3 class="py-2 p-0 my-0 text-white titre-bold">Changer le Mot de Passe</h3>
-                </div>
-                <div class="card-body border-bleuFonce py-1">
-                    <div class="col-xl-12 col-lg-12 py-2">
-                        <label class="bleuFonce texte-bold" for="MotDePasse">
-                            <i class="bi @passwordIconClass"></i> Nouveau Mot de Passe <i
-                                class="bi bi-braces text-success"></i>
-                        </label>
-                        <InputText type="password" class="form-control" id="MotDePasse"
-                            @bind-Value="forgotPasswordModel.MotDePasse" />
-                        <ValidationMessage For="@(() => forgotPasswordModel.MotDePasse)" />
+    <div class="form-group container-fluid">
+        <div class="row d-flex justify-content-center">
+            <div class="col-xl-6 col-xl-6 col-lg-11 col-12 col-sm-12 py-2">
+                <div class="card">
+                    <div class="card-header py-2 bg-bleuFonce">
+                        <h3 class="py-2 p-0 my-0 text-white titre-bold">Changer le Mot de Passe</h3>
                     </div>
-                    <div class="col-xl-12 col-lg-12 py-2">
-                        <label class="bleuFonce texte-bold" for="ConfirmationMotDePasse">
-                            <i class="bi @confirmationIconClass"></i> Confirmation du Mot de Passe <i
-                                class="bi bi-braces text-success"></i>
-                        </label>
-                        <InputText type="password" class="form-control" id="ConfirmationMotDePasse"
-                            @bind-Value="forgotPasswordModel.ConfirmationMotDePasse" />
-                        <ValidationMessage For="@(() => forgotPasswordModel.ConfirmationMotDePasse)" />
-                        @if (!string.IsNullOrEmpty(errorMessage))
-                        {
-                            <span class="text-danger">@errorMessage</span>
-                        }
+                    <div class="card-body border-bleuFonce py-1">
+                        <div class="col-xl-8 col-lg-8 col-12 col-sm-12 py-2">
+                            <label class="bleuFonce texte-bold" for="MotDePasse">Nouveau Mot de Passe <i class="bi bi-braces-asterisk text-danger"></i></label>
+                            <InputText type="password" class="form-control" id="MotDePasse" @bind-Value="forgotPasswordModel.MotDePasse" />
+                            <div class="d-flex align-baseline">
+                                <i class="bi @passwordIconClass me-1"></i><ValidationMessage For="@(() => forgotPasswordModel.MotDePasse)" />
+                            </div>
+                        </div>
+                        <div class="col-xl-8 col-lg-8 col-12 col-sm-12 py-2">
+                            <label class="bleuFonce texte-bold" for="ConfirmationMotDePasse">Confirmation du Mot de Passe <i class="bi bi-braces-asterisk text-danger"></i></label>
+                            <InputText type="password" class="form-control" id="ConfirmationMotDePasse" @bind-Value="forgotPasswordModel.ConfirmationMotDePasse" />
+                            <div class="d-flex align-baseline">
+                                <i class="bi @confirmationIconClass me-1"></i><ValidationMessage For="@(() => forgotPasswordModel.ConfirmationMotDePasse)" />
+                            </div>
+                            @if (!string.IsNullOrEmpty(errorMessage))
+                            {
+                                <span class="text-danger texte-medium">@errorMessage</span>
+                            }
+                        </div>
                     </div>
-                </div>
-                <div class="card-footer py-2 bg-bleuFonce">
-                    <button type="submit" class="btn btn-success w-100">Changer Mot de Passe</button>
+                    <div class="card-footer py-2 bg-bleuFonce d-flex justify-content-center">
+                        <button type="submit" id="btnBleu" class="btn bg-bleu texte-bold text-white" style="width: 200px;">Changer Mot de Passe</button>
+                    </div>
                 </div>
             </div>
         </div>
