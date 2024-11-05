@@ -24,15 +24,28 @@
 
     private void envoieMail()
     {
-        code = GenerateRandomCode();
-        string contenuMail = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Data", "TemplatesMail", "MailOublie.html"));
-        contenuMail = contenuMail.Replace("{{VERIFICATION_CODE}}", code);
-        mailManager.SendMail(logInModel.Username, $"Mot de passe oublié - {logInModel.Username}", contenuMail);
+        try{
+            code = GenerateRandomCode();
+            string contenuMail = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Data", "TemplatesMail", "MailOublie.html"));
+            contenuMail = contenuMail.Replace("{{VERIFICATION_CODE}}", code);
+            Regex rg = new Regex(@"^(11|22|33|88)\d{8}$");
+            
+            string? destinataire = logInModel.Username;
+            
+            if(rg.IsMatch(logInModel.Username)){
+                destinataire = _context.Identifications.Where(f => f.Neq == logInModel.Username).Select(f => f.AdresseCourriel).FirstOrDefault();
+            }
+            
+            mailManager.SendMail(destinataire, $"Mot de passe oublié - {logInModel.Username}", contenuMail);
+            submitBtnEnabled = true; // Active le bouton de soumission
+            codeFieldVisible = true; // Affiche le champ pour le code de vérification
+            emailSent = true; // Indique qu'un mail a été envoyé pour changer le texte du bouton
+            errorMessage = ""; // Réinitialise le message d'erreur
+            }
+            catch(Exception e){
+                errorMessage = "Une erreur est survenue lors de l'envoi du courriel. Veuillez réessayer plus tard.";
+            }
         
-        submitBtnEnabled = true; // Active le bouton de soumission
-        codeFieldVisible = true; // Affiche le champ pour le code de vérification
-        emailSent = true; // Indique qu'un mail a été envoyé pour changer le texte du bouton
-        errorMessage = ""; // Réinitialise le message d'erreur
     }
 
     private async void HandleValidSubmit()
