@@ -1,5 +1,6 @@
 @page "/changement-mdp"
 @using System.ComponentModel.DataAnnotations
+@using Microsoft.EntityFrameworkCore
 @using Portail_OptiVille.Data.Exceptions
 @using Portail_OptiVille.Data.Models
 @using Microsoft.AspNetCore.Components.Forms
@@ -12,8 +13,17 @@
 @inject NavigationManager NavigationManager
 @inject A2024420517riGr1Eq6Context _context
 
-
 <PageTitle>Changement mot de passe</PageTitle>
+
+@if (motDePasseChange)
+{
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Votre mot de passe a été changé!</h4>
+        <p>Lors de votre prochaine connexion, vous allez devoir utiliser votre nouveau mot de passe</p>
+        <hr>
+        <p class="mb-0">Vous serez redirigé vers la page de connexion dans @tempsRestant secondes.</p>
+    </div>
+}
 
 <EditForm Model="@forgotPasswordModel" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="ValidateInput">
     <div class="form-group container-fluid">
@@ -58,13 +68,22 @@
     private string errorMessage = ""; // Message d'erreur en cas de non correspondance des mots de passe
     private string passwordIconClass = ""; // Classe pour l'icône du mot de passe
     private string confirmationIconClass = ""; // Classe pour l'icône de confirmation de mot de passe
+    private int tempsRestant = 10; // Temps restant avant la redirection vers la page de connexion
+    private bool motDePasseChange = false; // État pour afficher ou non le message de succès
 
-    private async void HandleValidSubmit()
+    private async Task HandleValidSubmit()
     {
-        string? idUtilisateur = "";
+        object? idUtilisateur = "";
         if (forgotPasswordModel.MotDePasse != forgotPasswordModel.ConfirmationMotDePasse)
         {
             errorMessage = "Les mots de passe ne correspondent pas.";
+            return;
+        }
+
+        // Vérification de la complexité du mot de passe
+        if (!IsPasswordComplex(forgotPasswordModel.MotDePasse))
+        {
+            errorMessage = "Le mot de passe doit contenir au moins une majuscule, une minuscule, un chiffre et un caractère spécial.";
             return;
         }
 
@@ -79,27 +98,50 @@
             else
             {
                 errorMessage = "Erreur : utilisateur non trouvé.";
-                NavigationManager.NavigateTo("/",true);
+                NavigationManager.NavigateTo("/", true);
                 return;
             }
-            // Hacher et sauvegarder le nouveau mot de passe
-            var hashedPassword = HashPassword(forgotPasswordModel.MotDePasse);
-            // Remplacer ceci par l'identifiant de l'utilisateur actuel (à adapter)
-            var id = await ProtectedSessionStore.GetAsync<string>("utilisateur");
-            var utilisateur = await _context.Identifications.FindAsync(idUtilisateur);
+
+            // Rechercher l'utilisateur d'abord par AdresseCourriel, puis par NEQ
+            var utilisateur = await _context.Identifications.FirstOrDefaultAsync(u => u.AdresseCourriel == idUtilisateur.ToString() || u.Neq == idUtilisateur.ToString());
+
             if (utilisateur != null)
             {
+                // Vérifier si le mot de passe actuel est le même que le nouveau mot de passe
+                if (utilisateur.MotDePasse == HashPassword(forgotPasswordModel.MotDePasse))
+                {
+                    errorMessage = "Votre nouveau mot de passe ne peut pas être le même que l'ancien.";
+                    return;
+                }
+
+                // Hacher et sauvegarder le nouveau mot de passe
+                var hashedPassword = HashPassword(forgotPasswordModel.MotDePasse);
                 utilisateur.MotDePasse = hashedPassword;
                 await _context.SaveChangesAsync();
-                NavigationManager.NavigateTo("/confirmation"); // Redirige vers une page de confirmation
+
+                // Déclencher l'affichage du message de succès
+                motDePasseChange = true;
+
+                // Démarrer un compte à rebours pour la redirection
+                while (tempsRestant > 0)
+                {
+                    await Task.Delay(1000); // Attendre 1 seconde
+                    tempsRestant--; // Décrémenter le temps restant
+                    StateHasChanged(); // Mettre à jour l'interface utilisateur
+                }
+
+                // Une fois le compte à rebours terminé, rediriger vers la page de connexion
+                NavigationManager.NavigateTo("/");
             }
             else
             {
+                Console.WriteLine("Erreur : utilisateur non trouvé.");
                 errorMessage = "Erreur : utilisateur non trouvé.";
             }
         }
         catch (Exception ex)
         {
+            Console.WriteLine(ex.Message);
             errorMessage = "Erreur lors de la sauvegarde du mot de passe.";
         }
     }
@@ -128,7 +170,18 @@
     }
 
     static string HashPassword(string input)
-    => Convert.ToHexString(SHA1.HashData(Encoding.UTF8.GetBytes(input)));
+    {
+        return Convert.ToHexString(SHA1.HashData(Encoding.UTF8.GetBytes(input)));
+    }
+
+    private bool IsPasswordComplex(string password)
+    {
+        // Vérification des critères de complexité : majuscule, minuscule, chiffre, caractère spécial
+        return password.Any(char.IsUpper) &&
+               password.Any(char.IsLower) &&
+               password.Any(char.IsDigit) &&
+               password.Any(ch => "!@#$%^&*()-_=+[]{};:,.<>?".Contains(ch));
+    }
 
     public class ForgotPasswordModel
     {

@@ -11,6 +11,7 @@
 @inject NavigationManager NavigationManager
 @inject MailManager mailManager
 @inject A2024420517riGr1Eq6Context _context
+@inject IJSRuntime JSRuntime
 
 @code {
     private LogInModel logInModel = new LogInModel();
@@ -21,32 +22,71 @@
     private string userEnteredCode = "";
     private string emailIconClass = "";
     private string errorMessage = ""; // Message d'erreur pour le code incorrect
-
-    private void envoieMail()
+private async Task envoieMail()
+{
+    try
     {
-        try{
-            code = GenerateRandomCode();
-            string contenuMail = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Data", "TemplatesMail", "MailOublie.html"));
-            contenuMail = contenuMail.Replace("{{VERIFICATION_CODE}}", code);
-            Regex rg = new Regex(@"^(11|22|33|88)\d{8}$");
-            
-            string? destinataire = logInModel.Username;
-            
-            if(rg.IsMatch(logInModel.Username)){
-                destinataire = _context.Identifications.Where(f => f.Neq == logInModel.Username).Select(f => f.AdresseCourriel).FirstOrDefault();
+        code = GenerateRandomCode(); // Générer le code de vérification
+        string contenuMail = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Data", "TemplatesMail", "MailOublie.html"));
+        contenuMail = contenuMail.Replace("{{VERIFICATION_CODE}}", code); // Remplacer le code dans le modèle de mail
+
+        string? destinataire = null;
+
+        // Vérification si Username est un NEQ
+        Regex rg = new Regex(@"^(11|22|33|88)\d{8}$"); // Regex pour valider un NEQ
+        if (rg.IsMatch(logInModel.Username))
+        {
+            // Chercher l'adresse courriel associée au NEQ
+            destinataire = _context.Identifications
+                .Where(f => f.Neq == logInModel.Username)
+                .Select(f => f.AdresseCourriel)
+                .FirstOrDefault();
+
+            // Si un courriel associé au NEQ est trouvé, envoyer le mail
+            if (destinataire != null)
+            {
+                mailManager.SendMail(destinataire, $"Mot de passe oublié - {logInModel.Username}", contenuMail);
             }
-            
-            mailManager.SendMail(destinataire, $"Mot de passe oublié - {logInModel.Username}", contenuMail);
+        }
+
+        // Si Username est un email, vérifier dans la base de données
+        if (destinataire == null)
+        {
+            destinataire = _context.Identifications
+                .Where(f => f.AdresseCourriel == logInModel.Username)
+                .Select(f => f.AdresseCourriel)
+                .FirstOrDefault();
+
+            // Si l'email est trouvé dans la base de données, envoyer le mail
+            if (destinataire != null)
+            {
+                mailManager.SendMail(destinataire, $"Mot de passe oublié - {logInModel.Username}", contenuMail);
+            }
+        }
+
+        // Si un email a été trouvé et envoyé, afficher une notification et afficher le champ de code
+        if (destinataire != null)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Si un compte existe avec ces informations vous recevrez un courriel avec un code de vérification.");
             submitBtnEnabled = true; // Active le bouton de soumission
             codeFieldVisible = true; // Affiche le champ pour le code de vérification
             emailSent = true; // Indique qu'un mail a été envoyé pour changer le texte du bouton
             errorMessage = ""; // Réinitialise le message d'erreur
-            }
-            catch(Exception e){
-                errorMessage = "Une erreur est survenue lors de l'envoi du courriel. Veuillez réessayer plus tard.";
-            }
-        
+            StateHasChanged(); // Met à jour l'interface utilisateur
+        }
+        else
+        {
+            // Si aucune correspondance n'a été trouvée, ne rien faire (ne pas envoyer de mail)
+            errorMessage = "Aucun compte trouvé avec ce nom d'utilisateur.";
+        }
     }
+    catch (Exception e)
+    {
+        // Gestion des erreurs
+        errorMessage = "Une erreur est survenue lors de l'envoi du courriel. Veuillez réessayer plus tard.";
+    }
+}
+
 
     private async void HandleValidSubmit()
     {
@@ -66,7 +106,7 @@
         const string uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         const string lowercase = "abcdefghijklmnopqrstuvwxyz";
         const string digits = "0123456789";
-        const string specialChars = "!@#$%^&*()-_=+[]{}|;:,.<>?";
+        const string specialChars = "!@#$%^&*()-_=+[]{};:,.<>?";
 
         string allChars = uppercase + lowercase + digits + specialChars;
         Random random = new Random();
