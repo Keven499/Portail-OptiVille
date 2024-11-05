@@ -41,7 +41,7 @@ else
                 </div>
                 <span class="flex-line mx-2"></span>
                 <div class="d-flex align-items-center justify-content-end">
-                    <input type="checkbox" id="stateAccepted" class="check-vert" @bind="acceptedFilter" />
+                    <input type="checkbox" id="stateAccepted" class="check-vert" @onchange="(e) => OnCheckboxChanged('A', e.Value)" />
                 </div>
             </div>
             <div class="col-6 my-1 d-flex justify-content-between align-items-center">
@@ -51,7 +51,7 @@ else
                 </div>
                 <span class="flex-line mx-2"></span>
                 <div class="d-flex align-items-center justify-content-end">
-                    <input type="checkbox" id="stateReview" class="check-vert" @bind="reviewFilter" />
+                    <input type="checkbox" id="stateReview" class="check-vert" @onchange="(e) => OnCheckboxChanged('V', e.Value)" />
                 </div>
             </div>
             <div class="col-6 my-1 d-flex justify-content-between align-items-center">
@@ -61,7 +61,7 @@ else
                 </div>
                 <span class="flex-line mx-2"></span>
                 <div class="d-flex align-items-center justify-content-end">
-                    <input type="checkbox" id="stateRefused" class="check-vert" @bind="refusedFilter" />
+                    <input type="checkbox" id="stateRefused" class="check-vert" @onchange="(e) => OnCheckboxChanged('R', e.Value)" />
                 </div>
             </div>
             <div class="col-6 my-1 d-flex justify-content-between align-items-center">
@@ -71,7 +71,7 @@ else
                 </div>
                 <span class="flex-line mx-2"></span>
                 <div class="d-flex align-items-center justify-content-end">
-                    <input type="checkbox" id="stateWaiting" class="check-vert" @bind="pendingFilter" />
+                    <input type="checkbox" id="stateWaiting" class="check-vert" @onchange="(e) => OnCheckboxChanged('W', e.Value)" />
                 </div>
             </div>
         </div>
@@ -414,8 +414,8 @@ else
 
 @code 
 {
+    private string selectedValue = string.Empty;
     private bool isLoading = true;
-    private bool acceptedFilter, reviewFilter, refusedFilter, pendingFilter;
     private string? searchBarValue;
     private string? searchBarValueProduct;
     private List<Categorierbq> categoriesRBQ = new List<Categorierbq>();
@@ -423,8 +423,16 @@ else
     private List<Categorierbq> categorieRBQSpecialise = new List<Categorierbq>();
     private List<Produitservice> produitsService = new List<Produitservice>();
     private List<Produitservice> produitsServiceInternal = new List<Produitservice>();
+    List<string> state = new List<string>();
     private List<string> cities = new List<string>();
     private List<FournisseurFiche> fournisseurFiches;
+    private Dictionary<string, bool> cbxDicState = new Dictionary<string, bool>
+    {
+        { "Accepté", false },
+        { "À Réviser", false },
+        { "Refusé", false },
+        { "En Attente", false }
+    };
     List<List<string>> regionsAdmini2D = new List<List<string>>
         {
             new List<string> { "(01)", "Bas-Saint-Laurent" },
@@ -455,16 +463,17 @@ else
             // TEST AVEC SEULEMENT 500 LIGNES
             produitsService = await _context.Produitservices.Take(500).ToListAsync();
             produitsServiceInternal = produitsService;
-            fournisseurFiches = await (from h in _context.Historiques
-                                       join f in _context.Fournisseurs on h.Fournisseur equals f.IdFournisseur
-                                       from i in f.Identifications.DefaultIfEmpty()
-                                       from c in f.Coordonnees.DefaultIfEmpty()
-                                       select new FournisseurFiche
-                                      {
-                                          EtatDemande = h.EtatDemande,
-                                          NomEntreprise = i.NomEntreprise,
-                                          Ville = c.Ville
-                                      })
+            fournisseurFiches = await (from f in _context.Fournisseurs
+                           join h in _context.Historiques on f.IdFournisseur equals h.Fournisseur
+                           from i in f.Identifications.DefaultIfEmpty()
+                           from c in f.Coordonnees.DefaultIfEmpty()
+                           select new FournisseurFiche
+                           {
+                               IdFournisseur = f.IdFournisseur,
+                               EtatDemande = h.EtatDemande,
+                               NomEntreprise = i.NomEntreprise,
+                               Ville = c.Ville
+                           })
                            .ToListAsync();
             isLoading = false;
         }
@@ -473,7 +482,7 @@ else
             Console.WriteLine($"A problem occurred while retrieving data: {ex.Message}");
         }
     }
-
+    
     private void OnSearch()
     {
         if (string.IsNullOrEmpty(searchBarValueProduct) && produitsServiceInternal.Count != 500)
@@ -500,8 +509,71 @@ else
         }
     }
 
+    private async void FiltrageQuery()
+    {
+        state.Clear();
+        foreach(var item in cbxDicState)
+        {
+            if(item.Value)
+            {
+                state.Add(item.Key);
+            }
+            else
+            {
+                state.Remove(item.Key);
+            }   
+        }
+        string stateString = "\"" + string.Join(",", state) + "\"";
+        Console.WriteLine(stateString);
+        string ville = null;
+        string regionAdministrative = null;
+        string codeUNSPSC = null;
+        string codeSousCategorie = null;
+        var fournisseurIdList = await _context.Database
+         .SqlQueryRaw<string>(@"
+                SELECT DISTINCT f.idFournisseur
+                FROM Fournisseur f
+                LEFT JOIN Coordonnee c ON f.idFournisseur = c.fournisseur
+                LEFT JOIN FournisseurProduitService fps ON f.idFournisseur = fps.idFournisseur
+                LEFT JOIN ProduitService ps ON fps.idProduitService = ps.codeUNSPSC
+                LEFT JOIN FournisseurLicenceRBQ flrbq ON f.idFournisseur = (SELECT fournisseur FROM LicenceRBQ WHERE idLicenceRBQ = flrbq.idLicenceRBQ)
+                LEFT JOIN CategorieRBQ crbq ON flrbq.idCategorieRBQ = crbq.codeSousCategorie
+                LEFT JOIN Historique h ON f.idFournisseur = h.fournisseur
+                WHERE 
+                    (c.ville = {0} OR {0} IS NULL)
+                    AND (c.regionAdministrative = {1} OR {1} IS NULL)
+                    AND (ps.codeUNSPSC = {2} OR {2} IS NULL)
+                    AND (crbq.codeSousCategorie = {3} OR {3} IS NULL)
+                    AND (FIND_IN_SET(h.etatDemande, {4}) > 0 OR {4} IS NULL)", ville, regionAdministrative, codeUNSPSC, codeSousCategorie, stateString)
+                            .ToListAsync();  
+        // FAIRE LE LIEN ENTRE LES DEUX LISTES
+        StateHasChanged();
+    }
+
+    private void OnCheckboxChanged(char checkboxKey, object isChecked)
+    {
+        string valueState = string.Empty;
+        switch(checkboxKey){
+            case 'A':
+                valueState = "Accepté";
+                break;
+            case 'V':
+                valueState = "À Réviser";
+                break;
+            case 'R':
+                valueState = "Refusé";
+                break;
+            case 'W':
+                valueState = "En Attente";
+                break;
+        }
+        cbxDicState[valueState] = (bool)isChecked;
+        FiltrageQuery();
+    }
+
     public class FournisseurFiche
     {
+        public int IdFournisseur { get; set; } 
         public string EtatDemande { get; set; }
         public string NomEntreprise { get; set; }
         public string Ville { get; set; }
