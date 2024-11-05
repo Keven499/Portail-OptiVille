@@ -12,49 +12,6 @@
 @inject NavigationManager NavigationManager
 @inject A2024420517riGr1Eq6Context _context
 
-@code {
-    public static string idUtilisateur = "";
-    @* protected override async Task OnAfterRenderAsync(bool firstRender)
-{
-
-try
-{
-var result = await ProtectedSessionStore.GetAsync<string>("username");
-if (result.Success || !string.IsNullOrEmpty(result.Value))
-{
-Console.WriteLine($"Adresse courriel / NEQ: {result.Value}");
-idUtilisateur = result.Value;
-}
-}
-catch
-{
-Console.WriteLine($"Erreur lors de la récupération de l'adresse courriel");
-NavigationManager.NavigateTo("/", true);
-
-}
-
-} *@
-
-    // OnInitizializedAsync
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            var result = await ProtectedSessionStore.GetAsync<string>("username");
-            if (result.Success || !string.IsNullOrEmpty(result.Value))
-            {
-                Console.WriteLine($"Adresse courriel / NEQ: {result.Value}");
-                idUtilisateur = result.Value;
-            }
-        }
-        catch
-        {
-            Console.WriteLine($"Erreur lors de la récupération de l'adresse courriel");
-            NavigationManager.NavigateTo("/", true);
-
-        }
-    }
-}
 
 <PageTitle>Changement mot de passe</PageTitle>
 
@@ -104,6 +61,7 @@ NavigationManager.NavigateTo("/", true);
 
     private async void HandleValidSubmit()
     {
+        string? idUtilisateur = "";
         if (forgotPasswordModel.MotDePasse != forgotPasswordModel.ConfirmationMotDePasse)
         {
             errorMessage = "Les mots de passe ne correspondent pas.";
@@ -112,13 +70,23 @@ NavigationManager.NavigateTo("/", true);
 
         try
         {
+            var result = await ProtectedSessionStore.GetAsync<string>("username");
+            if (result.Success || !string.IsNullOrEmpty(result.Value))
+            {
+                Console.WriteLine($"Adresse courriel / NEQ: {result.Value}");
+                idUtilisateur = result.Value;
+            }
+            else
+            {
+                errorMessage = "Erreur : utilisateur non trouvé.";
+                NavigationManager.NavigateTo("/",true);
+                return;
+            }
             // Hacher et sauvegarder le nouveau mot de passe
             var hashedPassword = HashPassword(forgotPasswordModel.MotDePasse);
             // Remplacer ceci par l'identifiant de l'utilisateur actuel (à adapter)
             var id = await ProtectedSessionStore.GetAsync<string>("utilisateur");
             var utilisateur = await _context.Identifications.FindAsync(idUtilisateur);
-            Console.WriteLine($"Utilisateur: {utilisateur}");
-            Console.WriteLine(utilisateur.Neq);
             if (utilisateur != null)
             {
                 utilisateur.MotDePasse = hashedPassword;
