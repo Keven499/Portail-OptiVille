@@ -11,7 +11,10 @@
 @using System.Linq.Expressions
 @inject LicenceService licenceService
 
-<PageTitle>Étape 5 Licence RBQ</PageTitle>
+@if (ShowTitle)
+{
+    <PageTitle>Étape 5 Licence RBQ</PageTitle>
+}
 <EditForm EditContext="@editContext">
     <DataAnnotationsValidator />
     <div class="card-header py-2 bg-bleuFonce">
@@ -129,6 +132,7 @@
     private Dictionary<string, object> inputAttributes;
     private bool isSubmit = false;
     bool isDisabled = false;
+    [Parameter] public bool ShowTitle { get; set; } = true;
     protected override void OnParametersSet()
     {
         if (AllCategories != null && AllCategories.Any())

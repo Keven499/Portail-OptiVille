@@ -6,7 +6,10 @@
 @using Portail_OptiVille.Data.Models
 @inject IJSRuntime _jsRuntime
 
-<PageTitle>Étape 6 Pièces jointes</PageTitle>
+@if (ShowTitle)
+{
+    <PageTitle>Étape 6 Pièces jointes</PageTitle>
+}
 <EditForm Model="PieceJointeFormModel">
     @if(ActivationModification)
     {
@@ -157,7 +160,7 @@
     private List<String> errorTable = new List<String>();
     private long sizeTotal { get; set; } = 0;
     private long MaxSize = 75;
-
+    [Parameter] public bool ShowTitle { get; set; } = true;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)

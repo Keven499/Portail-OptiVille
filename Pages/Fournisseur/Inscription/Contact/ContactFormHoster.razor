@@ -2,7 +2,10 @@
 @using System.Linq.Expressions
 @inject IJSRuntime JSRuntime
 
-<PageTitle>Étape 3 Contacts</PageTitle>
+@if (ShowTitle)
+{
+    <PageTitle>Étape 3 Contacts</PageTitle>
+}
 <div class="card-header p-3 bg-bleuFonce">
     <h3 class="my-0 text-white titre-bold">Contacts</h3>
 </div>
@@ -34,8 +37,8 @@
                         <h1 class="modal-title fs-5 mx-auto texte-medium text-white" id="exampleModalLabel">Êtes-vous sûr de vouloir retirer le dernier contact?</h1>
                     </div>
                     <div class="modal-footer border-0 d-flex justify-content-center">
-                        <button type="button" id="btnBleu" class="btn bg-bleu texte-bold text-white" data-bs-dismiss="modal">Annuler</button>
-                        <button type="button" id="btnBleu" class="btn bg-bleu text-white texte-bold" data-bs-dismiss="modal" @onclick="RemoveContact">Confirmer</button>
+                        <button type="button" id="btnBleu" class="btn bg-bleu texte-bold text-white" data-bs-dismiss="modal"><i class="bi bi-x-circle me-1"></i>Annuler</button>
+                        <button type="button" id="btnBleu" class="btn bg-bleu text-white texte-bold" data-bs-dismiss="modal" @onclick="RemoveContact"><i class="bi bi-check-circle me-1"></i>Confirmer</button>
                     </div>
                 </div>
             </div>
@@ -74,6 +77,9 @@
     private Dictionary<ContactFormModel, Contact> contactComponents = new Dictionary<ContactFormModel, Contact>();
     private EditContext editContext { get; set; }
     private bool isSubmit = false;
+    [Parameter] public bool ShowTitle { get; set; } = true;
+    
+
 
     protected override void OnInitialized()
     {
@@ -145,5 +151,5 @@
             }
         }
         return isValid;
-    }
+    }    
 }

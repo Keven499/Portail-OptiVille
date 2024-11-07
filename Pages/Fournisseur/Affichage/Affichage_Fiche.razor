@@ -24,9 +24,19 @@
 @inject IJSRuntime JSRuntime
 @inject PieceJointeFormModel pieceJointeFormModel
 
+@using Portail_OptiVille.Data.Utilities
+@inject ProtectedSessionStorage protectedSessionStorage
+@inject NavigationManager NavigationManager
+@inject ICookie cookie
+@inject A2024420517riGr1Eq6Context _context
+@inject JwtTokenGenerator tokenGenerator
+
 <PageTitle>Fiche</PageTitle>
 <div class="container-fluid">
     <div class="row d-flex justify-content-center">
+            <div class="d-flex justify-content-end col-xl-11 col-lg-11 col-12 col-sm-12 pb-4">
+                <button class="btn bg-bleu text-white texte-bold" id="btnBleu" style="width: 200px" @onclick="Deconnexion">Déconnexion</button>
+            </div> 
         <div class="col-xl-11">
             <div class="card">
 @*Demande*@
@@ -42,17 +52,17 @@
                                 <h1 class="modal-title fs-5 mx-auto texte-bold text-white" id="ModalConfirmationDeleteFiche">Êtes-vous sûre de vouloir effacer la fiche?</h1>
                             </div>
                             <div class="modal-footer border-0 d-flex justify-content-center bg-bleuPale">
-                                <button type="button" class="btn bg-bleu texte-bold text-white" data-bs-dismiss="modal" @onclick="DeleteFiche"><i class="bi bi-check-circle me-1"></i>Confirmer</button>
-                                <button type="button" class="btn bg-bleu texte-bold text-white" data-bs-dismiss="modal"><i class="bi bi-x-circle me-1"></i>Annuler</button>
+                                <button type="button" id="btnBleu" class="btn bg-bleu texte-bold text-white" data-bs-dismiss="modal" @onclick="DeleteFiche"><i class="bi bi-check-circle me-1"></i>Confirmer</button>
+                                <button type="button" id="btnBleu" class="btn bg-bleu texte-bold text-white" data-bs-dismiss="modal"><i class="bi bi-x-circle me-1"></i>Annuler</button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="card-body border-bleuFonce">
                     <div class="row d-flex align-items-start">
-                        <div class="col-xl-5 col-lg-5 col-sm-12 col-12">                      
-                            <div class="row align-items-center">
-                                <div class="col-xl-12 col-lg-12 col-sm-12 col-12 py-2 d-flex justify-content-between align-items-center">
+                        <div class="col-xl-6 col-lg-6 col-sm-12 col-12">                      
+                            <div class="row mb-3">
+                                <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12 py-1">
                                     <label class="bleuFonce texte-bold" for="selectEtat">État</label>       
                                     <div class="flex-grow-1 ligneTxt"></div>
                                     <div class="bleuFonce texte-medium">@((closestHistorique != null) ? closestHistorique.EtatDemande : "N/A")</div>
@@ -62,35 +72,39 @@
                                             <option value="Refusé">Refusé</option>
                                             <option value="En attente">En attente</option>
                                             <option value="À réviser">À réviser</option>
-                                        </select> *@                
+                                        </select> *@   
                                 </div>
                             </div>
-                            <div class="row align-items-center">
-                                <div class="col-xl-12 col-lg-12 col-sm-12 col-12 py-2 d-flex justify-content-between align-items-center">
+                            <div class="row mb-3">
+                                <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12 py-1">
                                     <div class="bleuFonce texte-bold">Dernière modification</div>
                                     <div class="flex-grow-1 ligneTxt"></div>
                                     <div class="bleuFonce texte-medium">@((closestHistorique != null && closestHistorique.DateEtatChanged.HasValue) ? closestHistorique.DateEtatChanged.Value.ToString("yyyy-MM-dd") : "N/A")</div>
                                 </div>
                             </div>
-                            <div class="row align-items-center">
-                                <div class="col-xl-12 col-lg-12 col-sm-12 col-12 py-2 d-flex justify-content-between align-items-center">
+                            <div class="row mb-3">
+                                <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12 py-1">
                                     <div class="bleuFonce texte-bold">Création</div>
                                     <div class="flex-grow-1 ligneTxt"></div>
                                     <div class="bleuFonce texte-medium">@((selectedFournisseur.DateCreation.HasValue) ? selectedFournisseur.DateCreation.Value.ToString("yyyy-MM-dd") : "N/A")</div>
                                 </div>
                             </div>
-                            <div class="row align-items-center">
-                                <div class="col-xl-12 col-lg-12 col-sm-12 col-12 py-2 d-flex justify-content-between align-items-center">
+                            <div class="row mb-3">
+                                <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12 pt-1">
                                     <div class="bleuFonce texte-bold">Modification</div>
                                     <div class="flex-grow-1 ligneTxt"></div>
                                     <div class="bleuFonce texte-medium">@((selectedFournisseur.DateLastChanged.HasValue) ? selectedFournisseur.DateLastChanged.Value.ToString("yyyy-MM-dd") : "N/A")</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="offset-xl-1 col-xl-4 col-lg-4 col-sm-12 col-12 d-flex flex-column align-items-start">
-                            <label class="bleuFonce texte-bold" for="reason">Raison du refus</label>
-                            <textarea id="reason" class="w-100 input-bleu" rows="5" style="resize: none; height: 100%;"></textarea>
-                        </div>                    
+                        <div class="col-xl-6 col-lg-6 col-sm-12 col-12">
+                            <div class="row mb-3">
+                                <div class="col-xl-11 col-lg-11 col-sm-12 col-12 d-flex flex-column align-items-start">
+                                    <label class="bleuFonce texte-bold" for="reason">Raison du refus</label>
+                                    <textarea id="reason" class="form-control w-100 input-bleu texte-light" rows="5" style="resize: none; height: 100%;"></textarea>
+                                </div>  
+                            </div>                
+                        </div>
                     </div> 
                     @if (FinanceInfoNull)
                     {
@@ -101,120 +115,448 @@
                     }                   
                 </div>
 @* Informations générales*@
-                <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
-                    <h3 class="text-white titre-bold m-0">Informations générales</h3>
-                        @if(modificationInfo)
-                        {
-                            <button type="button" class="btn bg-bleu texte-bold text-white" style="height: 40px; width: 200px;" @onclick="ModifcationInfo"><i class="bi bi-pencil me-1"></i>Modifier</button>
-                        }
-                        else
-                        {
-                            <button type="submit" class="btn bg-bleu texte-bold text-white" style="height: 40px; width: 200px;"><i class="bi bi-floppy me-1"></i>Sauvegarder</button> 
-                        }                
-                </div>
-                <div class="card-body border-bleuFonce">
-                    <div class="row">
-                        <div class="col-xl-6 col-12 col-lg-6 col-sm-12">                      
-                            <div class="row mb-3">
-                                <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                    <label for="inputEmail4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">NEQ</label>
-                                    <div class="flex-grow-1 d-none d-md-block ligneTxt"></div> <!-- Barre entre label et input -->
-                                    <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.NEQ" readonly="@modificationInfo">
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                    <label for="inputEmail4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Nom de l'entreprise</label>
-                                    <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                    <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.NomEntreprise" readonly="@modificationInfo">
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                    <label for="inputEmail4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Adresse courriel</label>
-                                    <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                    <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.CourrielEntreprise" readonly="@modificationInfo">
-                                </div>
-                            </div>
-
-                        @foreach(var telephone in combinedFormModel.CoordonneeFormModel.PhoneList!)
-                        {
-                            <div class="row mb-3">
-                                <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                    <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Numéro de téléphone</label>
-                                    <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                    <select class="form-select input-bleu texte-light py-1" id="telephoneType" @bind="@telephone.TypeTelEntreprise" style="width: 325px; @(modificationInfo ? "pointer-events: none;" : null)">
-                                            <option value="Bureau">Bureau</option>
-                                            <option value="Télécopieur">Télécopieur</option>
-                                            <option value="Cellulaire">Cellulaire</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row mb-3 pb-1">
-                                <div class="col-xl-12 d-xl-flex justify-content-xl-end col-lg-12 d-lg-flex justify-content-lg-end col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                    <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputEmail4" @bind="telephone.NoTelEntreprise">
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                    <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Poste</label>
-                                    <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                    <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputEmail4" @bind="telephone.PosteTelEntreprise">                                </div>
-                            </div>
-                        }
+                <EditForm Model="combinedFormModel" OnValidSubmit="SaveModifcationInfo">
+                    <DataAnnotationsValidator />
+                        <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
+                            <h3 class="text-white titre-bold m-0">Informations générales</h3>
+                                @if(modificationInfo)
+                                {
+                                    <button type="button" id="btnBleu" class="btn bg-bleu texte-bold text-white" style="height: 40px; width: 200px;" @onclick="ModifcationInfo"><i class="bi bi-pencil me-1"></i>Modifier</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" id="btnBleu" class="btn bg-bleu texte-bold text-white" style="height: 40px; width: 200px;"><i class="bi bi-floppy me-1"></i>Sauvegarder</button> 
+                                }                
                         </div>
-                        <div class="col-xl-6 col-lg-6 col-sm-12 col-12">
-                            <div class="row mb-3">
-                                <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                    <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">No Civique</label>
-                                    <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                    <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.NoEntreprise" readonly="@modificationInfo">
+                        <div class="card-body border-bleuFonce">
+                            <div class="row">
+                                <div class="col-xl-6 col-12 col-lg-6 col-sm-12">                      
+                                    <div class="row mb-3">
+                                        <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                            <label for="inputEmail4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">NEQ</label>
+                                            <div class="flex-grow-1 d-none d-md-block ligneTxt"></div> <!-- Barre entre label et input -->
+                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.NEQ" readonly="@modificationInfo">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                            <label for="inputEmail4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Nom de l'entreprise</label>
+                                            <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.NomEntreprise" readonly="@modificationInfo">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                            <label for="inputEmail4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Adresse courriel</label>
+                                            <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.CourrielEntreprise" readonly="@modificationInfo">
+                                        </div>
+                                    </div>
+
+                                    @foreach(var telephone in combinedFormModel.CoordonneeFormModel.PhoneList!)
+                                    {
+                                        <div class="row mb-3">
+                                            <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                                <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Numéro de téléphone</label>
+                                                <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                                <select class="form-select input-bleu texte-light py-1" id="telephoneType" @bind="@telephone.TypeTelEntreprise" style="width: 325px; @(modificationInfo ? "pointer-events: none;" : null)">
+                                                        <option value="Bureau">Bureau</option>
+                                                        <option value="Télécopieur">Télécopieur</option>
+                                                        <option value="Cellulaire">Cellulaire</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3 pb-1">
+                                            <div class="col-xl-12 d-xl-flex justify-content-xl-end col-lg-12 d-lg-flex justify-content-lg-end col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                                <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputEmail4" @bind="telephone.NoTelEntreprise">
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                                <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Poste</label>
+                                                <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                                <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputEmail4" @bind="telephone.PosteTelEntreprise">                                </div>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-sm-12 col-12">
+                                    <div class="row mb-3">
+                                        <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                            <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">No Civique</label>
+                                            <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.NoEntreprise" readonly="@modificationInfo">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                            <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Rue</label>
+                                            <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.RueEntreprise" readonly="@modificationInfo">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                            <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Bureau</label>
+                                            <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.BureauEntreprise" readonly="@modificationInfo">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                            <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Ville</label>
+                                            <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.VilleEntreprise" readonly="@modificationInfo">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                            <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Code Postal</label>
+                                            <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.CodePostalEntreprise" readonly="@modificationInfo">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                            <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Province</label>
+                                            <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.ProvinceEntreprise" readonly="@modificationInfo">
+                                        </div>
+                                    </div>
+                                </div>                    
+                            </div>                    
+                        </div> 
+                </EditForm>
+@* Contacts*@
+                <EditForm Model="contactHosterFormModel">
+                    <DataAnnotationsValidator />
+                        <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
+                            <h3 class="text-white titre-bold m-0">Contacts</h3>
+                            <button type="button" id="btnBleu" class="btn bg-bleu texte-bold text-white" style="height: 40px; width: 200px;" @onclick="ShowContactModalAsync"><i class="bi bi-pencil me-1"></i>Modifier</button>              
+                        </div>
+                        <div class="card-body border-bleuFonce">
+                            <div class="row">
+                                @for (int i = 0; i < contactHosterFormModel.ContactList!.Count; i++)
+                                {
+                                    var contact = contactHosterFormModel.ContactList[i];
+                                    <div class="col-xl-6 col-lg-6 col-sm-12 col-12">
+                                        <div class="row mb-3">
+                                            <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                                <label for="prenomInput" class="bleuFonce texte-bold">Prénom</label>
+                                                <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                                <InputText id="prenomInput" style="width: 325px; outline: none;" class="form-control input-bleu texte-light py-1" @bind-Value="contact.Prenom" readonly="@modificationContact" />
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                                <label for="nomInput" class="bleuFonce texte-bold">Nom</label>
+                                                <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                                <InputText id="prenomInput" style="width: 325px; outline: none;" class="form-control input-bleu texte-light py-1" @bind-Value="contact.Nom" readonly="@modificationContact" />
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                                <label for="fonctionInput" class="bleuFonce texte-bold">Fonction</label>
+                                                <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                                <InputText id="prenomInput" style="width: 325px; outline: none;" class="form-control input-bleu texte-light py-1" @bind-Value="contact.Fonction" readonly="@modificationContact" />
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                                <label for="courrielInput" class="bleuFonce texte-bold">Adresse courriel</label>
+                                                <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                                <InputText id="prenomInput" style="width: 325px; outline: none;" class="form-control input-bleu texte-light py-1" @bind-Value="contact.AdresseCourriel" readonly="@modificationContact" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-6 col-lg-6 col-sm-12 col-12">
+                                        <div class="row mb-3">
+                                            <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                                <label for="telephoneType" class="me-2 bleuFonce texte-bold">Numéro de téléphone</label>
+                                                <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                                <select id="telephoneType" style="width: 325px; @(modificationContact ? "pointer-events: none;" : null)" class="form-select input-bleu texte-light py-1" @bind="contact.TypeTelephone" readonly="@modificationContact">
+                                                        <option value="Bureau">Bureau</option>
+                                                        <option value="Télécopieur">Télécopieur</option>
+                                                        <option value="Cellulaire">Cellulaire</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-xl-12 d-xl-flex justify-content-xl-end col-lg-12 d-lg-flex justify-content-lg-end col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">                                                
+                                                <InputText id="prenomInput" style="width: 325px; outline: none;" class="form-control input-bleu texte-light py-1" @bind-Value="contact.Telephone" readonly="@modificationContact" />
+                                            </div>
+                                        </div>
+                                        <div class="row mb-3">
+                                            <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                                <label for="posteInput" class="bleuFonce texte-bold">Poste</label>
+                                                <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                                <InputText id="prenomInput" style="width: 325px; outline: none;" class="form-control input-bleu texte-light py-1" @bind-Value="contact.Poste" readonly="@modificationContact" />
+                                            </div>
+                                        </div>
+                                    </div>  
+@* ligne de séparation*@
+                                    @if (i < contactHosterFormModel.ContactList.Count - 1) 
+                                    {
+                                        <div class="col-12">
+                                            <hr class="py-1 bg-bleuFonce" style="height: 3px;"/> 
+                                        </div>
+                                    }                                                               
+                                }
+                            </div>
+                        </div>
+@* Modification*@
+                        <div class="row">
+                            <div class="modal fade" tabindex="-1" role="dialog" id="ContactModal" data-bs-backdrop="static">
+                                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+                                    <div class="modal-content">
+                                        <div class="modal-body p-0">
+                                            <ContactFormHoster AssignReference="AssignReferenceContactFormHoster" ContactHosterFormModel="contactHosterFormModel" ShowTitle="false"></ContactFormHoster>
+                                        </div>
+                                        <div class="modal-footer d-flex justify-content-center bg-bleuFonce">
+                                            <button type="button" id="btnBleu" class="btn bg-bleu text-white texte-bold" data-bs-dismiss="modal"><i class="bi bi-x-circle me-1"></i>Annuler</button>
+                                            <button type="submit" id="btnBleu" class="btn bg-bleu text-white texte-bold" @onclick="SaveContact"><i class="bi bi-floppy me-1"></i>Sauvegarder</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                    <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Rue</label>
-                                    <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                    <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.RueEntreprise" readonly="@modificationInfo">
+                        </div>
+                </EditForm>
+@* Produits et services*@
+                <EditForm Model="contactHosterFormModel">
+                    <DataAnnotationsValidator />
+                        <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
+                            <h3 class="text-white titre-bold m-0">Produits et services</h3>
+                            <button type="button" id="btnBleu" class="btn bg-bleu texte-bold text-white" style="height: 40px; width: 200px;" onclick="showModal('exampleModal')"><i class="bi bi-pencil me-1"></i>Modifier</button>              
+                        </div>  
+                        <div class="card-body border-bleuFonce">
+                            <div class="row">
+                                <div class="col-xl-6 col-lg-6 col-sm-12 col-12">
+                                    @if (groupedServices != null && groupedServices.Count > 0)
+                                        {
+                                            string currentCategory = null;
+                                            string currentNature = null;
+
+                                            foreach (var group in groupedServices)
+                                            {
+                                                if (currentCategory != group.Key.CodeCategorie || currentNature != group.Key.Nature)
+                                                {                                               
+                                                    if (currentCategory != null)
+                                                    {
+                                                    <hr />
+                                                    }
+                                                    <div>
+                                                        <div class="bleuFonce texte-bold">@group.Key.CodeCategorie - @group.Key.Nature</div>
+                                                    </div>
+                                                    currentCategory = group.Key.CodeCategorie;
+                                                    currentNature = group.Key.Nature;
+                                                }
+                                                foreach (var produitservice in group)
+                                                {
+                                                    <div class="ms-4 mb-1">@produitservice.CodeUnspsc - @produitservice.Description</div>
+                                                }
+                                            }
+                                        }
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-sm-12 col-12">
+                                    <div class="row mb-3">
+                                        <div class="col-xl-11 col-lg-11 col-sm-12 col-12 d-flex flex-column align-items-start">
+                                            <label for="TextAreaProduitService" class="bleuFonce texte-bold">Détails et spécifications</label>
+                                            <textarea id="TextAreaProduitService" class="form-control w-100 input-bleu texte-light" rows="4" style="resize: none; height: 100%;" readonly="true">@selectedFournisseur.DetailSpecification</textarea>
+                                        </div>  
+                                    </div>
+                                </div>
+@* Modification*@
+                                <div class="row">
+                                    <div class="modal fade" tabindex="-1" role="dialog" id="exampleModal" data-bs-backdrop="static">
+                                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+                                            <div class="modal-content">
+                                                <div class="modal-body p-0">
+                                                    <ProduitsServices AssignReference="AssignReferenceProduitsServices" AllProduitServices="allProduitService" ProduitServiceFormModel="produitServiceFormModel" CategorieUNSPSC="categorieUNSPSC" ShowTitle="false"></ProduitsServices>
+                                                </div>
+                                                <div class="modal-footer d-flex justify-content-center bg-bleuFonce">
+                                                    <button type="button" id="btnBleu" class="btn bg-bleu text-white texte-bold" data-bs-dismiss="modal"><i class="bi bi-x-circle me-1"></i>Annuler</button>
+                                                    <button type="submit" id="btnBleu" class="btn bg-bleu text-white texte-bold" @onclick="SaveModifcationProduitServices"><i class="bi bi-floppy me-1"></i>Sauvegarder</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>                                
+                            </div>
+                        </div>
+                </EditForm>
+@* Licence RBQ*@
+                <EditForm Model="contactHosterFormModel">
+                    <DataAnnotationsValidator />
+                        <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
+                            <h3 class="text-white titre-bold m-0">Licence RBQ</h3>
+                            <button type="button" id="btnBleu" class="btn bg-bleu texte-bold text-white" style="height: 40px; width: 200px;" onclick="showModal('ModifierModalLicence')"><i class="bi bi-pencil me-1"></i>Modifier</button>             
+                        </div> 
+                        <div class="card-body border-bleuFonce">
+                            <div class="row">
+                                <div class="col-xl-6 col-lg-6 col-sm-12 col-12">
+                                    <div class="row mb-3">
+                                        <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                                <label for="posteInput" class="bleuFonce texte-bold">Statut</label>
+                                                <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                                <div class="bleuFonce texte-medium">@licencerbqs.Statut</div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                            <label for="IdLicenceRbq" class="me-3 bleuFonce texte-bold">Numéro</label>
+                                            <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="IdLicenceRbq" value="@licencerbqs.IdLicenceRbq">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                            <label for="TypeLicencerbq" class="me-3 bleuFonce texte-bold">Type de licence</label>
+                                            <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="TypeLicencerbq" value="@licencerbqs.Type">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-6 col-lg-6 col-sm-12 col-12">
+                                    @if (selectedCategorieRBQ != null)
+                                    {
+                                        if (groupedCategories == null)
+                                        {
+                                            groupedCategories = GroupCategoriesByType();
+                                        }
+
+                                        <div class="row">
+                                            <div class="col-xl-6 col-lg-6 col-sm-12 col-12">
+                                                <div class="bleuFonce texte-bold">Général</div>
+                                                    @if (groupedCategories.ContainsKey("Général") && groupedCategories["Général"].Count > 0)
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-xl-12 col-lg-12 col-12 col-sm-12">
+                                                                @foreach (var categorie in groupedCategories["Général"])
+                                                                {
+                                                                    <div class="ms-4 mb-1 texte-light">@categorie.CodeSousCategorie - @categorie.TravauxPermis</div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="d-flex justify-content-center align-items-center">
+                                                            <p>Aucune Catégorie</p>
+                                                        </div>
+                                                    }
+                                            </div>
+                                            <div class="col-xl-6 col-lg-6 col-sm-12 col-12">
+                                                <div class="bleuFonce texte-bold">Spécialisé</div>
+                                                    @if (groupedCategories.ContainsKey("Spécialisé") && groupedCategories["Spécialisé"].Count > 0)
+                                                    {
+                                                        <div class="row">
+                                                            <div class="col-xl-12 col-lg-12 col-12 col-sm-12">
+                                                                @foreach (var categorie in groupedCategories["Spécialisé"])
+                                                                {
+                                                                    <div class="ms-4 mb-1 texte-light">@categorie.CodeSousCategorie - @categorie.TravauxPermis</div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="d-flex justify-content-center align-items-center">
+                                                            <p>Aucune Catégorie</p>
+                                                        </div>
+                                                    }
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p>Chargement...</p>
+                                    }
+                                </div>
+@* Modification*@
+                                <div class="row">
+                                    <div class="modal fade" id="ModifierModalLicence" tabindex="-1" role="dialog" data-bs-backdrop="static">
+                                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+                                            <div class="modal-content">
+                                                <div class="modal-body p-0">
+                                                    <LicenceRBQ AssignReference="AssignReferenceLicenceRBQ" LicenceRBQFormModel="licenceRBQFormModel" AllCategories="allCategories" ShowTitle="false"></LicenceRBQ>
+                                                </div>
+                                                <div class="modal-footer d-flex justify-content-center bg-bleuFonce">
+                                                    <button type="button" id="btnBleu" class="btn bg-bleu text-white texte-bold" data-bs-dismiss="modal"><i class="bi bi-x-circle me-1"></i>Annuler</button>
+                                                    <button type="submit" id="btnBleu" class="btn bg-bleu text-white texte-bold" @onclick="SaveModifcationLicenceRBQ"><i class="bi bi-floppy me-1"></i>Sauvegarder</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                    <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Bureau</label>
-                                    <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                    <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.BureauEntreprise" readonly="@modificationInfo">
+                        </div>
+                </EditForm>
+@* Pièces jointes*@
+                <EditForm Model="contactHosterFormModel">
+                    <DataAnnotationsValidator />
+                        <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
+                            <h3 class="text-white titre-bold m-0">Brochures et cartes d'affaires</h3>            
+                            @if(modificationPieceJointes)
+                            {
+                                <div class="col-xxl-6 col-xl-5 col-lg-3 p-0 d-flex justify-content-end align-items-center">
+                                    <button type="button" id="btnBleu" class="btn bg-bleu texte-bold text-white" style="height: 40px; width: 200px;" @onclick="ModifcationPieceJointes"><i class="bi bi-pencil me-1"></i>Modifier</button>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-xxl-6 col-xl-5 col-lg-3 p-0 d-flex justify-content-end align-items-center">
+                                    <button type="button" id="btnBleu" class="btn bg-bleu texte-bold text-white" style="height: 40px; width: 200px;" @onclick="SaveModifcationPieceJointes"><i class="bi bi-floppy me-1"></i>Sauvegarder</button>
+                                </div>
+                            }
+                        </div> 
+                        <div class="card-body border-bleuFonce">
+                            <div class="row">
+                                <div class="col-xl-12 col-lg-12 col-sm-12 col-12">    
+                                    <h3 class="texte-20bold">Total: @GetFormatSize()</h3>                                            
+                                    <PiecesJointes PieceJointeFormModel="pieceJointeFormModel" ActivationModification="ModifcationPieceJointesActivation" ModifcationPieceJointesActivationONState="ModifcationPieceJointesActivationONState" ShowTitle="false"></PiecesJointes>                
                                 </div>
                             </div>
-                            <div class="row mb-3">
-                                <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                    <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Ville</label>
-                                    <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                    <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.VilleEntreprise" readonly="@modificationInfo">
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                    <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Code Postal</label>
-                                    <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                    <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.CodePostalEntreprise" readonly="@modificationInfo">
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                                <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                    <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Province</label>
-                                    <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                    <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.ProvinceEntreprise" readonly="@modificationInfo">
-                                </div>
-                            </div>
-                        </div>                    
-                    </div>                    
-                </div>    
+                        </div>
+                </EditForm>
+@* Finances*@
+                <EditForm Model="contactHosterFormModel">
+                    <DataAnnotationsValidator />
+                </EditForm>
             </div>
         </div>
     </div>
 </div>
 
 
+<script src="@popperScript"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+<script>
+    function showModal(modalId) {
+        const existingBackdrop = document.querySelector('.modal-backdrop');
+        if (existingBackdrop) {
+            existingBackdrop.remove();
+        }
+
+        var modalElement = document.getElementById(modalId);
+        if (modalElement) {
+            var modal = new bootstrap.Modal(modalElement, {
+                backdrop: 'static',
+                keyboard: false
+            });
+
+            modal.show();
+        }
+    }
+
+    function hideModal(modalId) {
+        var modalElement = document.getElementById(modalId);
+        if (modalElement) {
+            var modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+        }
+    }
+</script>
 
 @code{
     private bool isLoading = true;
@@ -750,4 +1092,53 @@
             ContentType = f.Type
         }).ToList<IBrowserFile>();
     }
+
+        private async Task Deconnexion()
+    {
+        Usersession[] usersessions;
+        string email;
+
+        var result = await protectedSessionStorage.GetAsync<string>("Email"); // Je vais chercher le mail dans le protectedSessionStorage
+
+        email = result.Value;
+        usersessions = _context.Usersessions.Where(u => u.OwnerEmail == email).ToArray();
+        if(usersessions.Length > 0)
+        {
+            foreach (var usersession in usersessions)
+            {
+                _context.Usersessions.Remove(usersession);
+            }
+            await _context.SaveChangesAsync();    
+
+            await protectedSessionStorage.DeleteAsync("Email");
+            await cookie.destroy("SToken");
+        }
+        else
+        {
+            var token = await cookie.GetValue("SToken");
+            if(!string.IsNullOrEmpty(token))
+            {
+                email = tokenGenerator.GetEmailFromToken(token);
+                usersessions = _context.Usersessions.Where(u => u.OwnerEmail == email).ToArray();
+                foreach (var usersession in usersessions)
+                {
+                    _context.Usersessions.Remove(usersession);
+                }
+                await _context.SaveChangesAsync();
+            }
+            
+            await protectedSessionStorage.DeleteAsync("Email");
+            await cookie.destroy("SToken");
+        } 
+
+
+        // usersessions = _context.Usersessions.Where(u => u.OwnerEmail == email).ToArray();
+        // foreach (var usersession in usersessions)
+        // {
+        //     _context.Usersessions.Remove(usersession);
+        // }
+        // await _context.SaveChangesAsync();
+        
+        NavigationManager.NavigateTo("/", true);
+    } 
 }

@@ -3,8 +3,10 @@
 @using Portail_OptiVille.Data.FormModels
 @using System.Linq.Expressions
 @inject A2024420517riGr1Eq6Context _context
-
-<PageTitle>Étape 4 Produits et services</PageTitle>
+@if (ShowTitle)
+{
+    <PageTitle>Étape 4 Produits et services</PageTitle>
+}
 <EditForm EditContext="@editContext">
     <DataAnnotationsValidator />
     <div class="card-header py-2 bg-bleuFonce">
@@ -90,6 +92,7 @@
     [Parameter]
     public List<Categorieunspsc> CategorieUNSPSC { get; set; }
     private EditContext editContext { get; set; }
+    [Parameter] public bool ShowTitle { get; set; } = true;
     private List<Produitservice> produitServiceCatego = new List<Produitservice>();
     private bool isSubmit = false;
     private string? searchBarValue;

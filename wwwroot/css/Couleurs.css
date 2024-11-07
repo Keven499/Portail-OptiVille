@@ -50,7 +50,7 @@ body
 }
 
 #btnSupp:hover{
-    background-color: rgba(160, 17, 17);
+    background-color: rgb(228, 99, 99);
     color: white;    
     cursor: pointer;
 }
@@ -315,6 +315,11 @@ input[type="checkbox"]:checked+.check-blanc:before {
 {
     font-family: 'TT Hoves Bold';
     font-size: 14px;
+}
+.texte-20bold
+{
+    font-family: 'TT Hoves Bold';
+    font-size: 20px;
 }
 
 .texte-validation
