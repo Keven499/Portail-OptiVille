@@ -24,19 +24,10 @@
 @inject IJSRuntime JSRuntime
 @inject PieceJointeFormModel pieceJointeFormModel
 
-@using Portail_OptiVille.Data.Utilities
-@inject ProtectedSessionStorage protectedSessionStorage
-@inject NavigationManager NavigationManager
-@inject ICookie cookie
-@inject A2024420517riGr1Eq6Context _context
-@inject JwtTokenGenerator tokenGenerator
 
 <PageTitle>Fiche</PageTitle>
 <div class="container-fluid">
     <div class="row d-flex justify-content-center">
-            <div class="d-flex justify-content-end col-xl-11 col-lg-11 col-12 col-sm-12 pb-4">
-                <button class="btn bg-bleu text-white texte-bold" id="btnBleu" style="width: 200px" @onclick="Deconnexion">Déconnexion</button>
-            </div> 
         <div class="col-xl-11">
             <div class="card">
 @*Demande*@
@@ -321,8 +312,7 @@
                         </div>
                 </EditForm>
 @* Produits et services*@
-                <EditForm Model="contactHosterFormModel">
-                    <DataAnnotationsValidator />
+
                         <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
                             <h3 class="text-white titre-bold m-0">Produits et services</h3>
                             <button type="button" id="btnBleu" class="btn bg-bleu texte-bold text-white" style="height: 40px; width: 200px;" onclick="showModal('exampleModal')"><i class="bi bi-pencil me-1"></i>Modifier</button>              
@@ -382,10 +372,9 @@
                                 </div>                                
                             </div>
                         </div>
-                </EditForm>
+
 @* Licence RBQ*@
-                <EditForm Model="contactHosterFormModel">
-                    <DataAnnotationsValidator />
+
                         <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
                             <h3 class="text-white titre-bold m-0">Licence RBQ</h3>
                             <button type="button" id="btnBleu" class="btn bg-bleu texte-bold text-white" style="height: 40px; width: 200px;" onclick="showModal('ModifierModalLicence')"><i class="bi bi-pencil me-1"></i>Modifier</button>             
@@ -489,10 +478,9 @@
                                 </div>
                             </div>
                         </div>
-                </EditForm>
+
 @* Pièces jointes*@
-                <EditForm Model="contactHosterFormModel">
-                    <DataAnnotationsValidator />
+
                         <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
                             <h3 class="text-white titre-bold m-0">Brochures et cartes d'affaires</h3>            
                             @if(modificationPieceJointes)
@@ -516,11 +504,10 @@
                                 </div>
                             </div>
                         </div>
-                </EditForm>
+
 @* Finances*@
-                <EditForm Model="contactHosterFormModel">
-                    <DataAnnotationsValidator />
-                </EditForm>
+
+
             </div>
         </div>
     </div>
@@ -1092,53 +1079,4 @@
             ContentType = f.Type
         }).ToList<IBrowserFile>();
     }
-
-        private async Task Deconnexion()
-    {
-        Usersession[] usersessions;
-        string email;
-
-        var result = await protectedSessionStorage.GetAsync<string>("Email"); // Je vais chercher le mail dans le protectedSessionStorage
-
-        email = result.Value;
-        usersessions = _context.Usersessions.Where(u => u.OwnerEmail == email).ToArray();
-        if(usersessions.Length > 0)
-        {
-            foreach (var usersession in usersessions)
-            {
-                _context.Usersessions.Remove(usersession);
-            }
-            await _context.SaveChangesAsync();    
-
-            await protectedSessionStorage.DeleteAsync("Email");
-            await cookie.destroy("SToken");
-        }
-        else
-        {
-            var token = await cookie.GetValue("SToken");
-            if(!string.IsNullOrEmpty(token))
-            {
-                email = tokenGenerator.GetEmailFromToken(token);
-                usersessions = _context.Usersessions.Where(u => u.OwnerEmail == email).ToArray();
-                foreach (var usersession in usersessions)
-                {
-                    _context.Usersessions.Remove(usersession);
-                }
-                await _context.SaveChangesAsync();
-            }
-            
-            await protectedSessionStorage.DeleteAsync("Email");
-            await cookie.destroy("SToken");
-        } 
-
-
-        // usersessions = _context.Usersessions.Where(u => u.OwnerEmail == email).ToArray();
-        // foreach (var usersession in usersessions)
-        // {
-        //     _context.Usersessions.Remove(usersession);
-        // }
-        // await _context.SaveChangesAsync();
-        
-        NavigationManager.NavigateTo("/", true);
-    } 
 }
