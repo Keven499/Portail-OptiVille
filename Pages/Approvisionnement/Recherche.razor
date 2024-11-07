@@ -4,6 +4,7 @@
 @using Portail_OptiVille.Data.Attributes
 @inject A2024420517riGr1Eq6Context _context
 @inject ListeVillesAPI listeVillesAPI
+@inject NavigationManager Navigation
 
 <PageTitle>Recherche</PageTitle>
 @if (isLoading)
@@ -280,7 +281,8 @@ else
                                             <div class="col-3 d-flex justify-content-center align-items-center">
                                                 <button type="button"
                                                         style="font-size: 14px; height: 30px;"
-                                                        class="btn bg-vert d-flex align-items-center texte-light fw-bold">
+                                                        class="btn bg-vert d-flex align-items-center texte-light fw-bold"
+                                                        @onclick="() => NavigateToTargetPage(fiche.IdFournisseur)">
                                                     Fiche
                                                 </button>
                                             </div>
@@ -506,6 +508,11 @@ else
         }
         FiltrageQuery();
     } 
+
+    private void NavigateToTargetPage(int fournisseurID)
+    {
+        Navigation.NavigateTo($"/affichage/{fournisseurID}");
+    }
 
     public class FournisseurFiche
     {
