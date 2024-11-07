@@ -17,7 +17,7 @@ namespace Portail_OptiVille.Data.FormModels {
         public string Fonction { get; set; }
 
         [Required(ErrorMessage = "Courriel requis")]
-        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Format invalide")]
+        [RegularExpression(@"^[\w\-\.]+@([\w-]+\.)+[\w-]{2,}$", ErrorMessage = "Format invalide")]
         public string AdresseCourriel { get; set; }
 
         [Required(ErrorMessage = "Type requis")]

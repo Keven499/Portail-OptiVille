@@ -93,7 +93,7 @@
                         await ProtectedSessionStore.SetAsync("Email", fournisseur.AdresseCourriel);
                         await ProtectedSessionStore.SetAsync("IDFournisseur", fournisseur.Fournisseur);
 
-                        string token = tokenGenerator.GenerateToken("fournisseur.AdresseCourriel");
+                        string token = tokenGenerator.GenerateToken($"{fournisseur.AdresseCourriel}:{fournisseur.Fournisseur}");
                         // ajouter le token dans la BD
                         Usersession usersession = new Usersession
                             {

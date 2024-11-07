@@ -65,9 +65,9 @@ private async Task envoieMail()
         }
 
         // Si un email a été trouvé et envoyé, afficher une notification et afficher le champ de code
+        await JSRuntime.InvokeVoidAsync("alert", "Si un compte existe avec ces informations vous recevrez un courriel avec un code de vérification.");
         if (destinataire != null)
         {
-            await JSRuntime.InvokeVoidAsync("alert", "Si un compte existe avec ces informations vous recevrez un courriel avec un code de vérification.");
             submitBtnEnabled = true; // Active le bouton de soumission
             codeFieldVisible = true; // Affiche le champ pour le code de vérification
             emailSent = true; // Indique qu'un mail a été envoyé pour changer le texte du bouton

@@ -18,6 +18,7 @@
 @inject LicenceRBQService licenceRBQService
 @inject ProduitServiceService produitServiceService
 @inject HistoriqueService historiqueService
+@inject NavigationManager NavigationManager
 
 <PageTitle>Demande fournisseur</PageTitle>
 
@@ -342,5 +343,6 @@
         await fichierService.SaveFichierData(pieceJointeFormModel, identicationFormModel);
         await historiqueService.AddHistoriqueEnAttente(-1);
         // IL RESTE PLUS QU'A LE REDIRIGER VERS SA FICHE FOURNISSEUR SUR SON PROPRE COMPTE OU VERS LOGIN
+        NavigationManager.NavigateTo("/", true);
     }
 }
