@@ -300,7 +300,8 @@ else
                 </div>
             </div>
             <div class="card-footer bg-vertFonce d-flex justify-content-center">
-                <button class="btn bg-vert text-white texte-medium d-flex justify-content-evenly" style="width: 200px;">
+                <button class="btn bg-vert text-white texte-medium d-flex justify-content-evenly" style="width: 200px;"
+                    @onclick="OpenSelection">
                     <i class="bi bi-arrow-up-right-circle"></i>
                     <div>Ouvrir les sélections</div>
                 </button>
@@ -310,31 +311,41 @@ else
 }
 
 <script>
-    let flashingRows = [];
+    let flashingRows = [];  // Array to store selected row indices
+    
     function toggleRowSelection(element) {
-        const isSelected = flashingRows.includes(element);
-        const isLastRow = !element.nextElementSibling; 
+        const rowIndex = Array.from(element.parentElement.children).indexOf(element);  // Get the index of the selected row
+        const isSelected = flashingRows.includes(rowIndex);
+        const isLastRow = !element.nextElementSibling;
+
         if (isSelected) {
-            flashingRows = flashingRows.filter(row => row !== element);
+            // Remove the index from the selected array
+            flashingRows = flashingRows.filter(index => index !== rowIndex);
             element.classList.remove("selected-row");
             element.classList.remove("has-bottom-border");
             const previousRow = element.previousElementSibling;
             if (previousRow) {
-                if (!flashingRows.includes(previousRow)) {
+                if (!flashingRows.includes(Array.from(previousRow.parentElement.children).indexOf(previousRow))) {
                     previousRow.classList.remove("has-bottom-border");
                 }
             }
         } else {
-            flashingRows.push(element);
+            // Add the index to the selected array
+            flashingRows.push(rowIndex);
             element.classList.add("selected-row");
             if (!isLastRow) {
                 element.classList.add("has-bottom-border");
             }
             const previousRow = element.previousElementSibling;
-            if (previousRow && !flashingRows.includes(previousRow)) {
+            if (previousRow && !flashingRows.includes(Array.from(previousRow.parentElement.children).indexOf(previousRow))) {
                 previousRow.classList.add("has-bottom-border");
             }
         }
+    }
+
+    // Function to return the selected row indices
+    function getSelectedIndices() {
+        return flashingRows;
     }
 </script>
 
@@ -538,6 +549,15 @@ else
         }
         FiltrageQuery();
     } 
+
+
+    private async Task OpenSelection() {
+        var selectedIndices = await JS.InvokeAsync<int[]>("getSelectedIndices");
+        var selectedIds = selectedIndices.Select(index => copieFournisseurFiches[index].IdFournisseur).ToList();
+        var queryString = string.Join("&", selectedIds.Select((id, index) => $"id{index + 1}={id}"));
+        Console.WriteLine($"Generated Query String: {queryString}");
+        Navigation.NavigateTo($"/listeSelection?{queryString}");
+    }
 
     private void NavigateToTargetPage(int fournisseurID)
     {
