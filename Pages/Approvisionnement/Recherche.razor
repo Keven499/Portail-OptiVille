@@ -263,27 +263,28 @@ else
                 <div style="max-height: 400px;" class="card-body border-vertFonce box-vert listFiltre p-0">
                     <!-- LISTE DES FICHES -->
                     @{
-                        if (fournisseurFiches.Any())
+                        if (copieFournisseurFiches.Any())
                         {
-                            foreach (var fiche in fournisseurFiches)
+                            foreach (var fiche in copieFournisseurFiches)
                             {
                                 <div style="height: 35px;" class="row m-0 list-row" onclick="toggleRowSelection(this)">
                                     <!-- STATUS -->
                                     <div class="col-3 d-flex justify-content-center align-items-center border-right">
                                         <div class="w-100 text-center
                                             @(fiche.EtatDemande == "En attente" ? "bg-yellowEtat" :
-                                            fiche.EtatDemande == "Acceptée" ? "bg-vert" :
-                                            fiche.EtatDemande == "Refusée" ? "bg-redEtat" : "")">
+                                            fiche.EtatDemande == "Accepté" ? "bg-vert" :
+                                            fiche.EtatDemande == "Refusé" ? "bg-redEtat" : 
+                                            fiche.EtatDemande == "À reviser" ? "bg-grayEtat" : "")">
                                             @fiche.EtatDemande
                                         </div>
                                     </div>
                                     <!-- NOM ENTREPRISE -->
                                     <div class="col-3 d-flex justify-content-center align-items-center border-right">
-                                        <div style="font-size: 14px;" class="d-flex texte-light fw-bold">@fiche.NomEntreprise</div>
+                                        <div style="font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" class="d-flex texte-light fw-bold">@fiche.NomEntreprise</div>
                                     </div>
                                     <!-- VILLE -->
                                     <div class="col-3 d-flex justify-content-center align-items-center border-right">
-                                        <div style="font-size: 14px;" class="d-flex texte-light fw-bold">@fiche.Ville</div>
+                                        <div style="font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" class="d-flex texte-light fw-bold">@fiche.Ville</div>
                                     </div>
                                     <div class="col-3 d-flex justify-content-center align-items-center">
                                         <button type="button"
@@ -410,6 +411,9 @@ else
     .bg-redEtat {
         background-color: rgb(229 0 77);
     }
+    .bg-grayEtat {
+        background-color: gray;
+    }
 </style>
 
 @code 
@@ -423,9 +427,10 @@ else
     private List<Categorierbq> categorieRBQSpecialise = new List<Categorierbq>();
     private List<Produitservice> produitsService = new List<Produitservice>();
     private List<Produitservice> produitsServiceInternal = new List<Produitservice>();
-    List<string> state = new List<string>();
+    private List<string> state = new List<string>();
     private List<string> cities = new List<string>();
     private List<FournisseurFiche> fournisseurFiches;
+    private List<FournisseurFiche> copieFournisseurFiches;
     private Dictionary<string, bool> cbxDicState = new Dictionary<string, bool>
     {
         { "Accepté", false },
@@ -453,6 +458,11 @@ else
             new List<string> { "(16)", "Montérégie" },
             new List<string> { "(17)", "Centre-du-Québec" }
         };
+    string? ville = null;
+    string? regionAdministrative = null;
+    string? codeUNSPSC = null;
+    string? codeSousCategorie = null;
+    string? stateString;
 
     protected override async Task OnInitializedAsync()
     {
@@ -464,10 +474,10 @@ else
             produitsService = await _context.Produitservices.Take(500).ToListAsync();
             produitsServiceInternal = produitsService;
             fournisseurFiches = await (from f in _context.Fournisseurs
-                           join h in _context.Historiques on f.IdFournisseur equals h.Fournisseur
-                           from i in f.Identifications.DefaultIfEmpty()
-                           from c in f.Coordonnees.DefaultIfEmpty()
-                           select new FournisseurFiche
+                                       join h in _context.Historiques on f.IdFournisseur equals h.Fournisseur
+                                       from i in f.Identifications.DefaultIfEmpty()
+                                       from c in f.Coordonnees.DefaultIfEmpty()
+                                       select new FournisseurFiche
                            {
                                IdFournisseur = f.IdFournisseur,
                                EtatDemande = h.EtatDemande,
@@ -475,6 +485,7 @@ else
                                Ville = c.Ville
                            })
                            .ToListAsync();
+            copieFournisseurFiches = new List<FournisseurFiche>(fournisseurFiches); 
             isLoading = false;
         }
         catch (Exception ex)
@@ -482,7 +493,7 @@ else
             Console.WriteLine($"A problem occurred while retrieving data: {ex.Message}");
         }
     }
-    
+
     private void OnSearch()
     {
         if (string.IsNullOrEmpty(searchBarValueProduct) && produitsServiceInternal.Count != 500)
@@ -514,7 +525,7 @@ else
         state.Clear();
         foreach(var item in cbxDicState)
         {
-            if(item.Value)
+            if (item.Value)
             {
                 state.Add(item.Key);
             }
@@ -523,30 +534,38 @@ else
                 state.Remove(item.Key);
             }   
         }
-        string stateString = "\"" + string.Join(",", state) + "\"";
-        Console.WriteLine(stateString);
-        string ville = null;
-        string regionAdministrative = null;
-        string codeUNSPSC = null;
-        string codeSousCategorie = null;
+        // DE PRÉFÉRENCE LES DÉCLARER EN HAUT
+        ville = string.IsNullOrEmpty(ville) ? null : ville;
+        regionAdministrative = string.IsNullOrEmpty(regionAdministrative) ? null : regionAdministrative;
+        codeUNSPSC = string.IsNullOrEmpty(codeUNSPSC) ? null : codeUNSPSC;
+        codeSousCategorie = string.IsNullOrEmpty(codeSousCategorie) ? null : codeSousCategorie;
+        stateString = state.Any() ? string.Join(",", state) : null;
         var fournisseurIdList = await _context.Database
-         .SqlQueryRaw<string>(@"
-                SELECT DISTINCT f.idFournisseur
-                FROM Fournisseur f
-                LEFT JOIN Coordonnee c ON f.idFournisseur = c.fournisseur
-                LEFT JOIN FournisseurProduitService fps ON f.idFournisseur = fps.idFournisseur
-                LEFT JOIN ProduitService ps ON fps.idProduitService = ps.codeUNSPSC
-                LEFT JOIN FournisseurLicenceRBQ flrbq ON f.idFournisseur = (SELECT fournisseur FROM LicenceRBQ WHERE idLicenceRBQ = flrbq.idLicenceRBQ)
-                LEFT JOIN CategorieRBQ crbq ON flrbq.idCategorieRBQ = crbq.codeSousCategorie
-                LEFT JOIN Historique h ON f.idFournisseur = h.fournisseur
-                WHERE 
-                    (c.ville = {0} OR {0} IS NULL)
-                    AND (c.regionAdministrative = {1} OR {1} IS NULL)
-                    AND (ps.codeUNSPSC = {2} OR {2} IS NULL)
-                    AND (crbq.codeSousCategorie = {3} OR {3} IS NULL)
-                    AND (FIND_IN_SET(h.etatDemande, {4}) > 0 OR {4} IS NULL)", ville, regionAdministrative, codeUNSPSC, codeSousCategorie, stateString)
-                            .ToListAsync();  
-        // FAIRE LE LIEN ENTRE LES DEUX LISTES
+            .SqlQueryRaw<int>(@"
+        SELECT DISTINCT f.idFournisseur
+        FROM Fournisseur f
+        LEFT JOIN Coordonnee c ON f.idFournisseur = c.fournisseur
+        LEFT JOIN FournisseurProduitService fps ON f.idFournisseur = fps.idFournisseur
+        LEFT JOIN ProduitService ps ON fps.idProduitService = ps.codeUNSPSC
+        LEFT JOIN FournisseurLicenceRBQ flrbq ON f.idFournisseur = (SELECT fournisseur FROM LicenceRBQ WHERE idLicenceRBQ = flrbq.idLicenceRBQ)
+        LEFT JOIN CategorieRBQ crbq ON flrbq.idCategorieRBQ = crbq.codeSousCategorie
+        LEFT JOIN Historique h ON f.idFournisseur = h.fournisseur
+        WHERE
+            (c.ville = {0} OR {0} IS NULL)
+            AND (c.regionAdministrative = {1} OR {1} IS NULL)
+            AND (ps.codeUNSPSC = {2} OR {2} IS NULL)
+            AND (crbq.codeSousCategorie = {3} OR {3} IS NULL)
+            AND (FIND_IN_SET(h.etatDemande, {4}) > 0 OR {4} IS NULL)",
+                ville,
+                regionAdministrative,
+                codeUNSPSC,
+                codeSousCategorie,
+                stateString)
+            .ToListAsync();
+        var fournisseurIdSet = new HashSet<string>(fournisseurIdList.Select(id => id.ToString()));
+        copieFournisseurFiches = fournisseurFiches
+            .Where(fiche => fournisseurIdSet.Contains(fiche.IdFournisseur.ToString()))
+            .ToList();
         StateHasChanged();
     }
 
@@ -557,14 +576,14 @@ else
             case 'A':
                 valueState = "Accepté";
                 break;
-            case 'V':
-                valueState = "À Réviser";
-                break;
             case 'R':
                 valueState = "Refusé";
                 break;
             case 'W':
-                valueState = "En Attente";
+                valueState = "En attente";
+                break;
+            case 'V':
+                valueState = "À reviser";
                 break;
         }
         cbxDicState[valueState] = (bool)isChecked;
