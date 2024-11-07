@@ -55,7 +55,8 @@ else
                             </div>
                             <span class="flex-line mx-2"></span>
                             <div class="d-flex align-items-center justify-content-end">
-                                <input type="checkbox" id="state@(p)" class="check-vert" @onchange="(e) => OnCheckboxChangeState(checkBox.Key, e)" />
+                                <input type="checkbox" id="state@(p)" class="check-vert" 
+                                    @onchange="(e) => OnCheckboxChangeState(checkBox.Key, e)" />
                             </div>
                         </div>
                     } 
@@ -83,7 +84,8 @@ else
                                         bool isLast = (b == produitsServiceInternal.Count - 1);
                                         <div style="margin-bottom: @(isLast ? "0" : "5px");" class="col-12">
                                             <label class="d-flex align-content-center">
-                                                <input type="checkbox" id="categorie@(b)" class="check-vert me-2" />
+                                                <input type="checkbox" id="categorie@(b)" class="check-vert me-2"
+                                                    @onchange="(e) => OnCheckboxChangeProductService(produit.CodeUnspsc, e)" />
                                                 <div style="font-size: 14px;" class="d-flex texte-light fw-bold">
                                                     <div class="me-1">@produit.CodeUnspsc</div>
                                                     <div>@produit.Description</div>
@@ -177,7 +179,8 @@ else
                                         bool isLast = (i == regionsAdmini2D.Count - 1);
                                         <div style="margin-bottom: @(isLast ? "0" : "5px");" class="col-12">
                                             <label class="d-flex align-content-center">
-                                                <input type="checkbox" id="categorie@(j)" class="check-vert me-2" />
+                                                <input type="checkbox" id="categorie@(i)" class="check-vert me-2"
+                                                    @onchange="(e) => OnCheckboxChangeRegionAdmini(region[1], e)"/>
                                                 <div style="font-size: 14px;" class="d-flex texte-light fw-bold">
                                                     @for (int c = 0; c < region.Count; c++)
                                                     {
@@ -317,7 +320,9 @@ else
     private List<FournisseurFiche> fournisseurFiches;
     private List<FournisseurFiche> copieFournisseurFiches;
     private Dictionary<string, bool> cbxDicCategoriesRBQ;
+    private Dictionary<string, bool> cbxDicProductService;
     private Dictionary<string, bool> cbxDicVilles;
+    private Dictionary<string, bool> cbxDicRegionsAdmini;
     private Dictionary<string, bool> cbxDicState = new Dictionary<string, bool>
     {
         { "Accepté", false },
@@ -326,25 +331,25 @@ else
         { "En attente", false }
     };
     List<List<string>> regionsAdmini2D = new List<List<string>>
-        {
-            new List<string> { "(01)", "Bas-Saint-Laurent" },
-            new List<string> { "(02)", "Saguenay-Lac-Saint-Jean" },
-            new List<string> { "(03)", "Capitale-Nationale" },
-            new List<string> { "(04)", "Mauricie" },
-            new List<string> { "(05)", "Estrie" },
-            new List<string> { "(06)", "Montréal" },
-            new List<string> { "(07)", "Outaouais" },
-            new List<string> { "(08)", "Abitibi-Témiscamingue" },
-            new List<string> { "(09)", "Côte-Nord" },
-            new List<string> { "(10)", "Nord-du-Québec" },
-            new List<string> { "(11)", "Gaspésie-Îles-de-la-Madeleine" },
-            new List<string> { "(12)", "Chaudière-Appalaches" },
-            new List<string> { "(13)", "Laval" },
-            new List<string> { "(14)", "Lanaudière" },
-            new List<string> { "(15)", "Laurentides" },
-            new List<string> { "(16)", "Montérégie" },
-            new List<string> { "(17)", "Centre-du-Québec" }
-        };
+    {
+        new List<string> { "(01)", "Bas-Saint-Laurent" },
+        new List<string> { "(02)", "Saguenay-Lac-Saint-Jean" },
+        new List<string> { "(03)", "Capitale-Nationale" },
+        new List<string> { "(04)", "Mauricie" },
+        new List<string> { "(05)", "Estrie" },
+        new List<string> { "(06)", "Montréal" },
+        new List<string> { "(07)", "Outaouais" },
+        new List<string> { "(08)", "Abitibi-Témiscamingue" },
+        new List<string> { "(09)", "Côte-Nord" },
+        new List<string> { "(10)", "Nord-du-Québec" },
+        new List<string> { "(11)", "Gaspésie-Îles-de-la-Madeleine" },
+        new List<string> { "(12)", "Chaudière-Appalaches" },
+        new List<string> { "(13)", "Laval" },
+        new List<string> { "(14)", "Lanaudière" },
+        new List<string> { "(15)", "Laurentides" },
+        new List<string> { "(16)", "Montérégie" },
+        new List<string> { "(17)", "Centre-du-Québec" }
+    };
     string? ville = null;
     string? regionAdministrative = null;
     string? codeUNSPSC = null;
@@ -359,8 +364,10 @@ else
             cbxDicCategoriesRBQ = categoriesRBQ.ToDictionary(c => c.CodeSousCategorie, c => false);
             cities = await listeVillesAPI.GetVilles();
             cbxDicVilles = cities.ToDictionary(city => city, city => false);
+            cbxDicRegionsAdmini = regionsAdmini2D.ToDictionary(region => region[1], region => false);
             // TEST AVEC SEULEMENT 500 LIGNES
             produitsService = await _context.Produitservices.Take(500).ToListAsync();
+            cbxDicProductService = produitsService.ToDictionary(c => c.CodeUnspsc, c => false);
             produitsServiceInternal = produitsService;
             fournisseurFiches = await (from f in _context.Fournisseurs
                                        join h in _context.Historiques on f.IdFournisseur equals h.Fournisseur
@@ -414,8 +421,12 @@ else
         ville = cbxDicVilles.Any(kv => kv.Value) 
             ? string.Join(",", cbxDicVilles.Where(kv => kv.Value).Select(kv => kv.Key)) 
             : null;
-        regionAdministrative = string.IsNullOrEmpty(regionAdministrative) ? null : regionAdministrative;
-        codeUNSPSC = string.IsNullOrEmpty(codeUNSPSC) ? null : codeUNSPSC;
+        regionAdministrative = cbxDicRegionsAdmini.Any(kv => kv.Value) 
+            ? string.Join(",", cbxDicRegionsAdmini.Where(kv => kv.Value).Select(kv => kv.Key)) 
+            : null;
+        codeUNSPSC = cbxDicProductService.Any(kv => kv.Value) 
+            ? string.Join(",", cbxDicProductService.Where(kv => kv.Value).Select(kv => kv.Key)) 
+            : null;
         codeSousCategorie = cbxDicCategoriesRBQ.Any(kv => kv.Value) 
             ? string.Join(",", cbxDicCategoriesRBQ.Where(kv => kv.Value).Select(kv => kv.Key)) 
             : null;
@@ -434,9 +445,9 @@ else
                 LEFT JOIN Historique h ON f.idFournisseur = h.fournisseur
                 WHERE
                     (FIND_IN_SET(c.ville, {0}) > 0 OR {0} IS NULL)
-                    AND (c.regionAdministrative = {1} OR {1} IS NULL)
-                    AND (ps.codeUNSPSC = {2} OR {2} IS NULL)
-                    AND (crbq.codeSousCategorie = {3} OR {3} IS NULL)
+                    AND (FIND_IN_SET(c.regionAdministrative, {1}) > 0 OR {1} IS NULL)
+                    AND (FIND_IN_SET(ps.codeUNSPSC, {2}) > 0 OR {2} IS NULL)
+                    AND (FIND_IN_SET(crbq.codeSousCategorie, {3}) > 0 OR {3} IS NULL)
                     AND (FIND_IN_SET(h.etatDemande, {4}) > 0 OR {4} IS NULL);",
                 ville,
                 regionAdministrative,
@@ -477,6 +488,24 @@ else
         }
         FiltrageQuery();
     }
+
+    private void OnCheckboxChangeRegionAdmini(string regionAdmini, ChangeEventArgs e)
+    {
+        if (e.Value is bool isChecked)
+        {
+            cbxDicRegionsAdmini[regionAdmini] = (bool)e.Value;
+        }
+        FiltrageQuery();
+    }
+
+    private void OnCheckboxChangeProductService(string productService, ChangeEventArgs e)
+    {
+        if (e.Value is bool isChecked)
+        {
+            cbxDicProductService[productService] = (bool)e.Value;
+        }
+        FiltrageQuery();
+    } 
 
     public class FournisseurFiche
     {
