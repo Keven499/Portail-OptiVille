@@ -4,6 +4,8 @@
 @using Portail_OptiVille.Data.Attributes
 @inject A2024420517riGr1Eq6Context _context
 @inject ListeVillesAPI listeVillesAPI
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 <PageTitle>Recherche</PageTitle>
 @if (isLoading)
@@ -280,7 +282,8 @@ else
                                             <div class="col-3 d-flex justify-content-center align-items-center">
                                                 <button type="button"
                                                         style="font-size: 14px; height: 30px;"
-                                                        class="btn bg-vert d-flex align-items-center texte-light fw-bold">
+                                                        class="btn bg-vert d-flex align-items-center texte-light fw-bold"
+                                                        @onclick="() => NavigateToTargetPage(fiche.IdFournisseur)">
                                                     Fiche
                                                 </button>
                                             </div>
@@ -297,7 +300,8 @@ else
                 </div>
             </div>
             <div class="card-footer bg-vertFonce d-flex justify-content-center">
-                <button class="btn bg-vert text-white texte-medium d-flex justify-content-evenly" style="width: 200px;">
+                <button class="btn bg-vert text-white texte-medium d-flex justify-content-evenly" style="width: 200px;"
+                    @onclick="OpenSelection">
                     <i class="bi bi-arrow-up-right-circle"></i>
                     <div>Ouvrir les sélections</div>
                 </button>
@@ -305,6 +309,45 @@ else
         </div>
     </div>
 }
+
+<script>
+    let flashingRows = [];  // Array to store selected row indices
+    
+    function toggleRowSelection(element) {
+        const rowIndex = Array.from(element.parentElement.children).indexOf(element);  // Get the index of the selected row
+        const isSelected = flashingRows.includes(rowIndex);
+        const isLastRow = !element.nextElementSibling;
+
+        if (isSelected) {
+            // Remove the index from the selected array
+            flashingRows = flashingRows.filter(index => index !== rowIndex);
+            element.classList.remove("selected-row");
+            element.classList.remove("has-bottom-border");
+            const previousRow = element.previousElementSibling;
+            if (previousRow) {
+                if (!flashingRows.includes(Array.from(previousRow.parentElement.children).indexOf(previousRow))) {
+                    previousRow.classList.remove("has-bottom-border");
+                }
+            }
+        } else {
+            // Add the index to the selected array
+            flashingRows.push(rowIndex);
+            element.classList.add("selected-row");
+            if (!isLastRow) {
+                element.classList.add("has-bottom-border");
+            }
+            const previousRow = element.previousElementSibling;
+            if (previousRow && !flashingRows.includes(Array.from(previousRow.parentElement.children).indexOf(previousRow))) {
+                previousRow.classList.add("has-bottom-border");
+            }
+        }
+    }
+
+    // Function to return the selected row indices
+    function getSelectedIndices() {
+        return flashingRows;
+    }
+</script>
 
 @code 
 {
@@ -506,6 +549,20 @@ else
         }
         FiltrageQuery();
     } 
+
+
+    private async Task OpenSelection() {
+        var selectedIndices = await JS.InvokeAsync<int[]>("getSelectedIndices");
+        var selectedIds = selectedIndices.Select(index => copieFournisseurFiches[index].IdFournisseur).ToList();
+        var queryString = string.Join("&", selectedIds.Select((id, index) => $"id{index + 1}={id}"));
+        Console.WriteLine($"Generated Query String: {queryString}");
+        Navigation.NavigateTo($"/listeSelection?{queryString}");
+    }
+
+    private void NavigateToTargetPage(int fournisseurID)
+    {
+        Navigation.NavigateTo($"/affichage/{fournisseurID}");
+    }
 
     public class FournisseurFiche
     {
