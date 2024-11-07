@@ -1,4 +1,4 @@
-@page "/affichage"
+@page "/affichage/{Id:int?}"
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.EntityFrameworkCore
 @using Portail_OptiVille.Data.Models
@@ -18,11 +18,16 @@
 @inject ProduitServiceService produitServiceService
 @inject LicenceRBQService licenceRBQService
 @inject ContactsService contactsService
+@using Portail_OptiVille.Data.Utilities
 @using Portail_OptiVille.Pages.Fournisseur.Inscription
 @using Portail_OptiVille.Pages.Fournisseur.Inscription.Contact
 @using System.Linq.Expressions
 @inject IJSRuntime JSRuntime
 @inject PieceJointeFormModel pieceJointeFormModel
+@inject ProtectedSessionStorage protectedSessionStore
+@inject ICookie cookie
+@inject JwtTokenGenerator tokenGenerator
+
 
 <PageTitle>Fiche</PageTitle>
 <div class="container-fluid p-0">
@@ -694,7 +699,9 @@
 
 @code{
     private bool isLoading = true;
-    private static int FournisseurID = 63;
+    [Parameter]
+    public int? Id { get; set; }
+    private static int FournisseurID;
     private bool modificationFinances = true;
     private string popperScript = "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js";
     private bool modificationInfo = true;
@@ -980,8 +987,60 @@
             throw new NotImplementedException();
         }
     }
+// Méthode pour extraire l'ID du fournisseur à partir du token
+    private int ExtraireFournisseurIDDepuisToken(string token)
+    {
+        try
+        {
+            var valeurExtraite = tokenGenerator.GetValueFromToken(token).Split(":")[1];
+            return Int32.TryParse(valeurExtraite, out int fournisseurID) ? fournisseurID : 0;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors de l'extraction du FournisseurID depuis le token: {ex.Message}");
+            return 0;
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
+// Si le paramètre Id est fourni dans l'URL, on l'utilise directement
+        if (Id.HasValue)
+        {
+            FournisseurID = Id.Value;
+        }
+        else
+        {
+            // Sinon, on suit la logique existante pour charger depuis session/cookie
+            var tempFournisseurID = await protectedSessionStore.GetAsync<int>("FournisseurID");
+            
+            if (tempFournisseurID.Success && tempFournisseurID.Value > 0)
+            {
+                FournisseurID = tempFournisseurID.Value;
+            }
+            else
+            {
+                string token = await cookie.GetValue("SToken");
+
+                if (string.IsNullOrEmpty(token))
+                {
+                    Console.WriteLine("Erreur: le token est manquant ou vide.");
+                    navigationManager.NavigateTo("/", true);
+                    return;
+                }
+                
+                // Extraction de l'ID à partir du token
+                FournisseurID = ExtraireFournisseurIDDepuisToken(token);
+
+                if (FournisseurID == 0)
+                {
+                    Console.WriteLine("Erreur: FournisseurID est 0, redirection vers la page d'accueil.");
+                    navigationManager.NavigateTo("/", true);
+                }
+            }
+        }
+
+        //FournisseurID = 63;
         editContext = new EditContext(financeFormModel);
         editContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
         try
