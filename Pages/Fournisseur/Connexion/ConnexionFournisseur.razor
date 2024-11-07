@@ -20,6 +20,9 @@
 }
 
 <PageTitle>Connexion Fournisseurs</PageTitle>
+<div class="d-flex justify-content-end pb-2">
+    <button id="btnBleu" class="btn bg-bleu texte-bold text-white" onclick="location.href='/demandeFournisseur'"><i class="bi bi-plus-circle me-1"></i>Nouvelle demande</button>
+</div>
 
 <EditForm Model="@logInModel" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="ValidateInput">
     <!-- OnValidSubmit="HandleValidSubmit" -->
