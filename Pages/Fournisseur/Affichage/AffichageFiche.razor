@@ -1,4 +1,4 @@
-@page "/affichage/{Id:int?}"
+@page "/affichage"
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.EntityFrameworkCore
 @using Portail_OptiVille.Data.Models
@@ -699,8 +699,6 @@
 
 @code{
     private bool isLoading = true;
-    [Parameter]
-    public int? Id { get; set; }
     private static int FournisseurID = 63;
     private bool modificationFinances = true;
     private string popperScript = "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js";
@@ -910,7 +908,8 @@
         return groupedCategories;
     }
 
-    @* protected override async Task OnAfterRenderAsync(bool firstRender){
+
+        @*protected override async Task OnAfterRenderAsync(bool firstRender){
         try{
             var result = await ProtectedSessionStore.GetAsync<string>("Email");
             if (!result.Success || string.IsNullOrEmpty(result.Value))
@@ -923,7 +922,7 @@
             //navigationManager.NavigateTo("/Connexion",true);
         }
 
-    } *@
+    }  *@
 
     public class ContactPhoneInfo
     {
@@ -1001,16 +1000,8 @@
             return 0;
         }
     }
-
-    protected override async Task OnInitializedAsync()
-    {
+    protected override async Task OnAfterRenderAsync(bool firstRender){
 // Si le paramètre Id est fourni dans l'URL, on l'utilise directement
-        if (Id.HasValue)
-        {
-            FournisseurID = Id.Value;
-        }
-        else
-        {
             // Sinon, on suit la logique existante pour charger depuis session/cookie
             var tempFournisseurID = await protectedSessionStore.GetAsync<int>("FournisseurID");
             
@@ -1038,7 +1029,12 @@
                     navigationManager.NavigateTo("/", true);
                 }
             }
-        }
+
+     }
+
+    protected override async Task OnInitializedAsync()
+    {
+
 
         //FournisseurID = 63;
         editContext = new EditContext(financeFormModel);
