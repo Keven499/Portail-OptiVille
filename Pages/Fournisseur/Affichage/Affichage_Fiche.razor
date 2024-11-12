@@ -1,4 +1,4 @@
-@page "/affichagee"
+@page "/affichage/{Id:int?}"
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.EntityFrameworkCore
 @using Portail_OptiVille.Data.Models
@@ -9,6 +9,8 @@
 @using Portail_OptiVille.Data.Services
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Portail_OptiVille.Data.Utilities
+@using Portail_OptiVille.Pages.Approvisionnement.Contact
+@using System.Linq.Expressions
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager navigationManager
 @inject FichierService fichierService
@@ -19,9 +21,6 @@
 @inject ProduitServiceService produitServiceService
 @inject LicenceRBQService licenceRBQService
 @inject ContactsService contactsService
-@using Portail_OptiVille.Pages.Fournisseur.Inscription
-@using Portail_OptiVille.Pages.Fournisseur.Inscription.Contact
-@using System.Linq.Expressions
 @inject IJSRuntime JSRuntime
 @inject PieceJointeFormModel pieceJointeFormModel
 @inject ProtectedSessionStorage protectedSessionStorage
@@ -32,7 +31,6 @@
 <link rel="icon" type="image/x-icon" href="images/fiche.png">
 
 <PageTitle>Fiche</PageTitle>
-
 <div class="container-fluid">
     <div class="row d-flex justify-content-center">
         <div class="col-xl-11">
@@ -236,7 +234,7 @@
                         </div>
                         <div class="card-body border-bleuFonce">
                             <div class="row">
-                                @for (int i = 0; i < contactHosterFormModel.ContactList!.Count; i++)
+                                @for (int i = 1; i < contactHosterFormModel.ContactList!.Count; i++)
                                 {
                                     var contact = contactHosterFormModel.ContactList[i];
                                     <div class="col-xl-6 col-lg-6 col-sm-12 col-12">
@@ -505,7 +503,7 @@
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-sm-12 col-12">    
                             <h3 class="texte-20bold">Total: @GetFormatSize()</h3>                                            
-                            <PiecesJointes PieceJointeFormModel="pieceJointeFormModel" ActivationModification="ModifcationPieceJointesActivation" ModifcationPieceJointesActivationONState="ModifcationPieceJointesActivationONState" ShowTitle="false"></PiecesJointes>                
+                            <PiecesJointes PieceJointeFormModel="pieceJointeFormModel" ActivationModification="ModifcationPieceJointesActivation" ModifcationPieceJointesActivationONState="ModifcationPieceJointesActivationONState" MaxSize="configappro.TailleMaxFichiers" ShowTitle="false"></PiecesJointes>                
                         </div>
                     </div>
                 </div>
@@ -632,7 +630,8 @@
 
 @code{
     private bool isLoading = true;
-    private static int FournisseurID = 63;
+    [Parameter]
+    public int? Id { get; set; }
     private bool modificationFinances = true;
     private string popperScript = "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js";
     private bool modificationInfo = true;
@@ -645,7 +644,8 @@
     private FinanceFormModel financeFormModel = new FinanceFormModel();
     private ContactHosterFormModel contactHosterFormModel = new ContactHosterFormModel();
     Produitservice produitService = new Produitservice();
-    public int MaxSize = 75;
+    public int MaxSize = 0;
+    Configappro configappro = new Configappro();
     private bool ModifcationPieceJointesActivation = true;
     private bool ModifcationPieceJointesActivationONState;
     private void ModifcationPieceJointesActivationONStateMethod()
@@ -920,11 +920,12 @@
     }
     protected override async Task OnInitializedAsync()
     {
+        
         editContext = new EditContext(financeFormModel);
         editContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
         try
         {
-            selectedFournisseur = await _context.Fournisseurs.FindAsync(FournisseurID);
+            selectedFournisseur = await _context.Fournisseurs.FindAsync(Id);
             selectedContacts = await _context.Contacts.Where(c => c.Fournisseur == selectedFournisseur.IdFournisseur).ToListAsync();
 
             foreach (var contact in selectedContacts)
@@ -967,7 +968,7 @@
             pieceJointeFormModel = new PieceJointeFormModel{
                 ListFichiers = selectedFichiers
             };
-            selectedHistoriques = await _context.Historiques.Where(c => c.Fournisseur == FournisseurID).ToListAsync();
+            selectedHistoriques = await _context.Historiques.Where(c => c.Fournisseur == Id).ToListAsync();
             closestHistorique = selectedHistoriques.Where(h => h.DateEtatChanged.HasValue).OrderBy(h => Math.Abs((h.DateEtatChanged.Value - DateTime.UtcNow).TotalDays)).FirstOrDefault();
             //closestHistorique = await _context.Historiques.Where(h => h.Fournisseur == selectedFournisseur.IdFournisseur && h.DateEtatChanged.HasValue).OrderBy(h => Math.Abs((h.DateEtatChanged.Value - DateTime.UtcNow).TotalDays)).FirstOrDefaultAsync();
             if(identification.Neq != null)
@@ -1026,7 +1027,8 @@
                 produitServiceFormModel.SousProduitSelected = allProduitService.ToDictionary(c => c.CodeUnspsc, c => false);
             }
             categorieUNSPSC = await _context.Categorieunspscs.ToListAsync();
-
+            configappro = await _context.Configappros.SingleAsync();
+            MaxSize = configappro.TailleMaxFichiers;
             selectedProduitservices = await _context.Produitservices
                 .Where(p => fournisseurProduitIds.Contains(p.CodeUnspsc))
                 .ToListAsync();
