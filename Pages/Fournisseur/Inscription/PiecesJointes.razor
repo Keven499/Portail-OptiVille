@@ -2,6 +2,8 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using System.Linq.Expressions
 @using Portail_OptiVille.Data.FormModels
+@using Microsoft.EntityFrameworkCore
+@inject A2024420517riGr1Eq6Context _context
 @using System.IO
 @using Portail_OptiVille.Data.Models
 @inject IJSRuntime _jsRuntime
@@ -159,8 +161,10 @@
     private bool isFileInputTouched = false;
     private List<String> errorTable = new List<String>();
     private long sizeTotal { get; set; } = 0;
-    private long MaxSize = 75;
+    [Parameter]
+    public long MaxSize { get; set; } = 0;
     [Parameter] public bool ShowTitle { get; set; } = true;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
