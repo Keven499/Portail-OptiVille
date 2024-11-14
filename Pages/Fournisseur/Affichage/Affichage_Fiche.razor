@@ -9,8 +9,9 @@
 @using Portail_OptiVille.Data.Services
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Portail_OptiVille.Data.Utilities
-@using Portail_OptiVille.Pages.Approvisionnement.Contact
 @using System.Linq.Expressions
+@using Portail_OptiVille.Pages.Fournisseur.Inscription
+@using Portail_OptiVille.Pages.Fournisseur.Inscription.Contact
 @inject ProtectedSessionStorage ProtectedSessionStore
 @inject NavigationManager navigationManager
 @inject FichierService fichierService
@@ -28,6 +29,7 @@
 @inject ICookie cookie
 @inject A2024420517riGr1Eq6Context _context
 @inject JwtTokenGenerator tokenGenerator
+
 <link rel="icon" type="image/x-icon" href="images/fiche.png">
 
 <PageTitle>Fiche</PageTitle>

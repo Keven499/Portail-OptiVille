@@ -20,6 +20,8 @@ public partial class A2024420517riGr1Eq6Context : DbContext
 
     public virtual DbSet<Categorieunspsc> Categorieunspscs { get; set; }
 
+    public virtual DbSet<Configappro> Configappros { get; set; }
+
     public virtual DbSet<Contact> Contacts { get; set; }
 
     public virtual DbSet<Coordonnee> Coordonnees { get; set; }
@@ -83,6 +85,32 @@ public partial class A2024420517riGr1Eq6Context : DbContext
             entity.Property(e => e.Categorie)
                 .HasMaxLength(75)
                 .HasColumnName("categorie");
+        });
+
+        modelBuilder.Entity<Configappro>(entity =>
+        {
+            entity.HasKey(e => e.IdConfigAppro).HasName("PRIMARY");
+
+            entity
+                .ToTable("configappro")
+                .HasCharSet("utf16")
+                .UseCollation("utf16_general_ci");
+
+            entity.Property(e => e.IdConfigAppro)
+                .HasColumnType("int(11)")
+                .HasColumnName("idConfigAppro");
+            entity.Property(e => e.CourrielAppro)
+                .HasMaxLength(256)
+                .HasColumnName("courrielAppro");
+            entity.Property(e => e.CourrielFinance)
+                .HasMaxLength(256)
+                .HasColumnName("courrielFinance");
+            entity.Property(e => e.DelaiRevision)
+                .HasColumnType("int(11)")
+                .HasColumnName("delaiRevision");
+            entity.Property(e => e.TailleMaxFichiers)
+                .HasColumnType("int(11)")
+                .HasColumnName("tailleMaxFichiers");
         });
 
         modelBuilder.Entity<Contact>(entity =>
@@ -203,7 +231,7 @@ public partial class A2024420517riGr1Eq6Context : DbContext
                 .HasColumnType("int(11)")
                 .HasColumnName("fournisseur");
             entity.Property(e => e.Nom)
-                .HasMaxLength(32)
+                .HasMaxLength(64)
                 .HasColumnName("nom");
             entity.Property(e => e.Path)
                 .HasMaxLength(100)
@@ -212,7 +240,7 @@ public partial class A2024420517riGr1Eq6Context : DbContext
                 .HasColumnType("int(11)")
                 .HasColumnName("taille");
             entity.Property(e => e.Type)
-                .HasMaxLength(10)
+                .HasMaxLength(25)
                 .HasColumnName("type");
 
             entity.HasOne(d => d.FournisseurNavigation).WithMany(p => p.Fichiers)
@@ -315,18 +343,27 @@ public partial class A2024420517riGr1Eq6Context : DbContext
             entity.Property(e => e.IdHistorique)
                 .HasColumnType("int(11)")
                 .HasColumnName("idHistorique");
+            entity.Property(e => e.Ajouter)
+                .HasColumnType("json")
+                .HasColumnName("ajouter");
             entity.Property(e => e.DateEtatChanged)
                 .HasColumnType("datetime")
                 .HasColumnName("dateEtatChanged");
             entity.Property(e => e.EtatDemande)
-                .HasColumnType("enum('Accepté','Refusé','En attente','À reviser')")
+                .HasColumnType("enum('Accepté','Refusé','En attente','À réviser','Désactivée','Modifiée')")
                 .HasColumnName("etatDemande");
             entity.Property(e => e.Fournisseur)
                 .HasColumnType("int(11)")
                 .HasColumnName("fournisseur");
+            entity.Property(e => e.ModifiePar)
+                .HasMaxLength(64)
+                .HasColumnName("modifiePar");
             entity.Property(e => e.RaisonRefus)
                 .HasMaxLength(500)
                 .HasColumnName("raisonRefus");
+            entity.Property(e => e.Retirer)
+                .HasColumnType("json")
+                .HasColumnName("retirer");
 
             entity.HasOne(d => d.FournisseurNavigation).WithMany(p => p.Historiques)
                 .HasForeignKey(d => d.Fournisseur)
