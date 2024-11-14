@@ -1,4 +1,4 @@
-@page "/affichage/{Id:int?}"
+@page "/affichage"
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.EntityFrameworkCore
 @using Portail_OptiVille.Data.Models
@@ -632,7 +632,6 @@
 
 @code{
     private bool isLoading = true;
-    [Parameter]
     public int? Id { get; set; }
     private bool modificationFinances = true;
     private string popperScript = "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js";
@@ -922,11 +921,51 @@
     }
     protected override async Task OnInitializedAsync()
     {
-        
+        // var idResult = await protectedSessionStorage.GetAsync<int>("IDFournisseur");
+        // var emailResult = await protectedSessionStorage.GetAsync<string>("Email");
+        // string? email = emailResult.Value;
+        // try
+        // {
+
+        //     if (idResult.Value != 0)
+        //     {
+        //         Id = idResult.Value;
+        //     }
+        //     else if (!string.IsNullOrEmpty(email) && Regex.IsMatch(email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
+        //     {
+        //         var fournisseur = await _context.Identifications.FirstOrDefaultAsync(i => i.AdresseCourriel == email);
+        //         Id = fournisseur?.Fournisseur ?? 0;
+        //     }
+        //     else
+        //     {
+        //         var token = await cookie.GetValue("SToken");
+        //         if (!string.IsNullOrEmpty(token))
+        //         {
+        //             int tempId = int.Parse(tokenGenerator.GetValueFromToken(token).Split(":")[1]);
+
+        //             if (!string.IsNullOrEmpty(email))
+        //             {
+        //                 var fournisseur = await _context.Identifications.FirstOrDefaultAsync(i => i.AdresseCourriel == email);
+        //                 Id = fournisseur?.Fournisseur ?? tempId;
+        //             }
+        //             else
+        //             {
+        //                 await Deconnexion();
+        //                 NavigationManager.NavigateTo("/", true);
+        //             }
+        //         }
+        //     }
+        // }
+        // catch
+        // {
+        //     Console.WriteLine("Erreur lors de la récupération de l'ID du fournisseur");
+        //     navigationManager.NavigateTo("/Erreur-page", true);
+        // }
         editContext = new EditContext(financeFormModel);
         editContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
         try
         {
+        await ChargerFournisseurIdAsync();
             selectedFournisseur = await _context.Fournisseurs.FindAsync(Id);
             selectedContacts = await _context.Contacts.Where(c => c.Fournisseur == selectedFournisseur.IdFournisseur).ToListAsync();
 
@@ -1216,5 +1255,41 @@
         // await _context.SaveChangesAsync();
         
         NavigationManager.NavigateTo("/", true);
+    }
+
+    private async Task ChargerFournisseurIdAsync()
+    {
+        var idResult = await protectedSessionStorage.GetAsync<int>("IDFournisseur");
+        var emailResult = await protectedSessionStorage.GetAsync<string>("Email");
+        string? email = emailResult.Value;
+
+        if (idResult.Value != 0)
+        {
+            Id = idResult.Value;
+        }
+        else if (!string.IsNullOrEmpty(email) && Regex.IsMatch(email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$"))
+        {
+            var fournisseur = await _context.Identifications.FirstOrDefaultAsync(i => i.AdresseCourriel == email);
+            Id = fournisseur?.Fournisseur ?? 0;
+        }
+        else
+        {
+            var token = await cookie.GetValue("SToken");
+            if (!string.IsNullOrEmpty(token))
+            {
+                int tempId = int.Parse(tokenGenerator.GetValueFromToken(token).Split(":")[1]);
+
+                if (!string.IsNullOrEmpty(email))
+                {
+                    var fournisseur = await _context.Identifications.FirstOrDefaultAsync(i => i.AdresseCourriel == email);
+                    Id = fournisseur?.Fournisseur ?? tempId;
+                }
+                else
+                {
+                    await Deconnexion();
+                    NavigationManager.NavigateTo("/", true);
+                }
+            }
+        }
     }
 }

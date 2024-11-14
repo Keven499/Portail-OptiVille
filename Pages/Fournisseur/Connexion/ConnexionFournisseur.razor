@@ -96,6 +96,9 @@
                         await ProtectedSessionStore.SetAsync("Email", fournisseur.AdresseCourriel);
                         await ProtectedSessionStore.SetAsync("IDFournisseur", fournisseur.Fournisseur);
 
+                        // Suppression des anciens tokens
+                        _context.Usersessions.RemoveRange(_context.Usersessions.Where(x => x.OwnerEmail == fournisseur.AdresseCourriel));
+
                         string token = tokenGenerator.GenerateToken($"{fournisseur.AdresseCourriel}:{fournisseur.Fournisseur}");
                         // ajouter le token dans la BD
                         Usersession usersession = new Usersession
