@@ -23,6 +23,19 @@
     src: url('/fonts/TT Hoves Pro Trial Bold.ttf');
 }
 
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+    background: rgb(0, 118, 213);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgb(11, 35, 65);
+}
+
 body 
 {
     background-color: #eee;       

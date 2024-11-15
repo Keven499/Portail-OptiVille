@@ -118,7 +118,7 @@
 @* Informations générales*@
                 <EditForm Model="combinedFormModel" OnValidSubmit="SaveModifcationInfo">
                     <DataAnnotationsValidator />
-                        <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
+                        <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center rounded-0">
                             <h3 class="text-white titre-bold m-0">Informations générales</h3>
                                 @if(modificationInfo)
                                 {
@@ -230,7 +230,7 @@
 @* Contacts*@
                 <EditForm Model="contactHosterFormModel">
                     <DataAnnotationsValidator />
-                        <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
+                        <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center rounded-0">
                             <h3 class="text-white titre-bold m-0">Contacts</h3>
                             <button type="button" id="btnBleu" class="btn bg-bleu texte-bold text-white" style="height: 40px; width: 200px;" @onclick="ShowContactModalAsync"><i class="bi bi-pencil me-1"></i>Modifier</button>              
                         </div>
@@ -323,7 +323,7 @@
                 </EditForm>
 @* Produits et services*@
 
-                <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
+                <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center rounded-0">
                     <h3 class="text-white titre-bold m-0">Produits et services</h3>
                     <button type="button" id="btnBleu" class="btn bg-bleu texte-bold text-white" style="height: 40px; width: 200px;" onclick="showModal('exampleModal')"><i class="bi bi-pencil me-1"></i>Modifier</button>              
                 </div>  
@@ -383,7 +383,7 @@
                     </div>
                 </div>
 @* Licence RBQ*@
-                <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
+                <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center rounded-0">
                     <h3 class="text-white titre-bold m-0">Licence RBQ</h3>
                     <button type="button" id="btnBleu" class="btn bg-bleu texte-bold text-white" style="height: 40px; width: 200px;" onclick="showModal('ModifierModalLicence')"><i class="bi bi-pencil me-1"></i>Modifier</button>             
                 </div> 
@@ -486,7 +486,7 @@
                     </div>
                 </div>
 @* Pièces jointes*@
-                <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
+                <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center rounded-0">
                     <h3 class="text-white titre-bold m-0">Brochures et cartes d'affaires</h3>            
                     @if(modificationPieceJointes)
                     {
@@ -513,7 +513,7 @@
                 @if(financeFormModel != null){
                     <EditForm EditContext="@editContext">
                         <DataAnnotationsValidator />
-                            <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
+                            <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center rounded-0">
                                 <h3 class="text-white titre-bold m-0">Finances</h3>                                
                                 @if (modificationFinances)
                                 {
