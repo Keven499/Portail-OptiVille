@@ -9,7 +9,7 @@ namespace Portail_OptiVille.Data.FormModels {
         public string TypeTelEntreprise { get; set; }
     
         [Required(ErrorMessage = "No requis")]
-        [RegularExpression(@"^\d{10}$", ErrorMessage = "Chiffres uniquement")]
+        [RegularExpression(@"^\d{10}$", ErrorMessage = "Format invalide")]
         public string NoTelEntreprise { get; set; }
 
         [RegularExpression(@"^\d{1,6}$", ErrorMessage = "Chiffres uniquement")]

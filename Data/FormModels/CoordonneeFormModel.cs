@@ -12,7 +12,7 @@ namespace Portail_OptiVille.Data.FormModels
         }
 
         [Required(ErrorMessage = "\u2116 requis")]
-        [RegularExpression(@"^[a-zA-Z0-9]{1,8}$", ErrorMessage = "Entre 1 à 8 chiffres ou lettres.")]
+        [RegularExpression(@"^[a-zA-Z0-9/]{1,8}$", ErrorMessage = "Entre 1 à 8 chiffres ou lettres.")]
         public string NoEntreprise { get; set; }
 
         [Required(ErrorMessage = "Rue requise")]
@@ -24,7 +24,7 @@ namespace Portail_OptiVille.Data.FormModels
         [Required(ErrorMessage = "Ville requise")]
         public string VilleEntreprise { get; set; }
 
-        [Required(ErrorMessage = "Province requise")]
+        // [Required(ErrorMessage = "Province requise")]
         public string ProvinceEntreprise { get; set; }
 
         [Required(ErrorMessage = "CP requis")]
