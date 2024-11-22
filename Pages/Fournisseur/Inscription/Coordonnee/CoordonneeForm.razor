@@ -60,7 +60,7 @@
                     <div class="col-lg-7 col-xl-7 col-12 col-sm-12 py-2">
                         <label class="bleuFonce texte-bold" for="RegionAdm">Région Admnistrative <i class="bi bi-braces-asterisk text-danger"></i></label>
                         <select id="RegionAdm" @bind="CoordonneeFormModel.RegionAdmEntreprise" class="form-control @GetInputClass(() => CoordonneeFormModel.RegionAdmEntreprise) form-select input-bleu texte-light">
-                            <option value="" disabled selected>Veuillez choisir une région administrative</option>
+                            <option value="" hidden selected>Veuillez choisir une région administrative</option>
                             @foreach (string region in listeRegionADM)
                             {
                                 <option value="@region">@region</option>
