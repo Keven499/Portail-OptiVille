@@ -329,10 +329,17 @@ input[type="checkbox"]:checked+.check-blanc:before {
     font-family: 'TT Hoves Bold';
     font-size: 14px;
 }
+
 .texte-20bold
 {
     font-family: 'TT Hoves Bold';
     font-size: 20px;
+}
+
+.texte-40bold
+{
+    font-family: 'TT Hoves Bold';
+    font-size: 40px;
 }
 
 .texte-validation
