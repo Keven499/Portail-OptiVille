@@ -14,52 +14,70 @@
 <div class="container-fluid">
     <div class="row ">
         <div class="col-xl-12">
-            <h1 class="titre-90bold d-flex justify-content-center align-items-center">Bienvenue</h1>
+            <h1 class="titre-90bold d-flex justify-content-center align-items-center">Bienvenue @nomEntreprise</h1>
         </div>
     </div>
 </div>
 
 @code {
+    private string nomEntreprise = "";
     protected override async Task OnAfterRenderAsync(bool firstRender)
+{
+    try
     {
-        try
+        // Vérifier si c'est le premier rendu
+        if (!firstRender) return;
+
+        // Récupération de l'email depuis la session protégée
+        var sessionResult = await ProtectedSessionStore.GetAsync<string>("Email");
+
+        string email;
+        if (!sessionResult.Success || string.IsNullOrEmpty(sessionResult.Value))
         {
-            // Récupération de l'email depuis la session protégée
-            var result = await ProtectedSessionStore.GetAsync<string>("Email");
+            // Si l'email n'est pas trouvé dans la session, récupérer depuis les cookies
+            string token = await cookie.GetValue("SToken") 
+                ?? throw new UserNotAuthenticatedException("Session expirée ou non connectée.");
+            email = tokenGenerator.GetValueFromToken(token).Split(":")[0];
 
-            if (!result.Success || string.IsNullOrEmpty(result.Value))
-            {
-                // Récupération du token depuis les cookies et extraction de l'email
-                string token = await cookie.GetValue("SToken") ?? throw new UserNotAuthenticatedException("Session expirée ou non connectée.");
-                string email = tokenGenerator.GetValueFromToken(token).Split(":")[0];
+            // Valider le format de l'email
+            if (!Regex.IsMatch(email, @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
+                throw new UserNotAuthenticatedException("Email non valide ou session expirée.");
 
-                // Vérification de la validité de l'email
-                if (!Regex.IsMatch(email, @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"))
-                    throw new UserNotAuthenticatedException("Email non valide ou session expirée.");
+            // Vérifier l'utilisateur et la date d'expiration
+            var user = _context.Usersessions
+                .FirstOrDefault(u => u.OwnerEmail == email)
+                ?? throw new UserNotAuthenticatedException("Utilisateur non trouvé ou session expirée.");
 
-                // Vérification de l'utilisateur et de la date d'expiration
-                var user = _context.Usersessions.FirstOrDefault(u => u.OwnerEmail == email)
-                           ?? throw new UserNotAuthenticatedException("Utilisateur non trouvé ou session expirée.");
+            if (user.ExpirationDate <= DateTime.Now)
+                throw new UserNotAuthenticatedException("Session expirée.");
 
-                if (user.ExpirationDate <= DateTime.Now)
-                    throw new UserNotAuthenticatedException("Session expirée.");
-
-                // Mise à jour de la session protégée avec l'email valide
-                await ProtectedSessionStore.SetAsync("Email", email);
-            }
-
-            Console.WriteLine($"Adresse courriel: {result.Value}");
+            // Mettre à jour la session protégée avec l'email valide
+            await ProtectedSessionStore.SetAsync("Email", email);
         }
-        catch (UserNotAuthenticatedException ex)
+        else
         {
-            Console.WriteLine($"Erreur lors de la récupération de l'adresse courriel : {ex.Message}");
-            navigationManager.NavigateTo("/", true);
+            email = sessionResult.Value;
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Erreur inattendue : {ex.Message}");
-            navigationManager.NavigateTo("/", true);
-        }
+
+        // Récupérer le nom de l'entreprise associé à l'email
+        nomEntreprise = _context.Identifications
+            .FirstOrDefault(i => i.AdresseCourriel == email)?.NomEntreprise;
+            StateHasChanged();
+
+        Console.WriteLine($"Adresse courriel: {email}");
+        Console.WriteLine($"Nom entreprise: {nomEntreprise}");
     }
+    catch (UserNotAuthenticatedException ex)
+    {
+        Console.WriteLine($"Erreur utilisateur : {ex.Message}");
+        navigationManager.NavigateTo("/", true);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Erreur inattendue : {ex.Message}");
+        navigationManager.NavigateTo("/", true);
+    }
+}
+
 
 }
