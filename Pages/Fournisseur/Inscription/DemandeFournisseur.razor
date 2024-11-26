@@ -8,6 +8,7 @@
 @using Microsoft.EntityFrameworkCore;
 @using System.Timers
 @using Microsoft.AspNetCore.Components.Web
+@using Data.Utilities
 @inject A2024420517riGr1Eq6Context _context
 @inject IJSRuntime JS
 @inject FournisseurService fournisseurService
@@ -19,6 +20,7 @@
 @inject ProduitServiceService produitServiceService
 @inject HistoriqueService historiqueService
 @inject NavigationManager NavigationManager
+@inject MailManager mailManager
 
 <PageTitle>Demande fournisseur</PageTitle>
 
@@ -332,6 +334,10 @@
         }
     }
 
+    /// <summary>
+    /// Sauvegarde les données dans la base de données
+    // J'envoie un mail à l'entreprise pour lui dire que sa demande est en attente à l'aide de la Template EnAttente.html
+    /// </summary>
     private async void SaveDataToDB()
     {
         await fournisseurService.SaveFournisseurData(produitServiceFormModel);
@@ -343,6 +349,8 @@
         await fichierService.SaveFichierData(pieceJointeFormModel, identicationFormModel);
         await historiqueService.AddHistoriqueEnAttente(-1);
         // IL RESTE PLUS QU'A LE REDIRIGER VERS SA FICHE FOURNISSEUR SUR SON PROPRE COMPTE OU VERS LOGIN
+        string contenuMail = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Data", "TemplatesMail", "EnAttente.html"));
+        mailManager.SendMail(identicationFormModel.CourrielEntreprise, "Nouvelle demande de fournisseur", contenuMail);
         NavigationManager.NavigateTo("/", true);
     }
 }
