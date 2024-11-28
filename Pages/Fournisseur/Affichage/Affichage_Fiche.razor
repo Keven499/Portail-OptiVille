@@ -10,6 +10,7 @@
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Portail_OptiVille.Data.Utilities
 @using System.Linq.Expressions
+@using Portail_OptiVille.Pages.Fournisseur.Inscription.Coordonnee
 @using Portail_OptiVille.Pages.Fournisseur.Inscription
 @using Portail_OptiVille.Pages.Fournisseur.Inscription.Contact
 @inject ProtectedSessionStorage ProtectedSessionStore
@@ -210,8 +211,26 @@
                                         </div>
                                     </div>
                                 </div>                    
-                            </div>                    
-                        </div> 
+                            </div>        
+                            @{
+                                var phoneNo = 1;
+                                foreach (var phoneModel in combinedFormModel.CoordonneeFormModel.PhoneList!)
+                                {
+                                    <Telephone TelephoneNumber="@phoneNo" telephoneFormModel="@phoneModel" @ref="telephoneComponents[phoneModel]" />   
+                                    if (!(combinedFormModel.CoordonneeFormModel.PhoneList.Count == phoneNo)) {
+                                        <hr class="m-0">  
+                                    }
+                                    phoneNo++;        
+                                }
+                            }
+                            @if(!modificationInfo)
+                            {
+                            <div class="d-flex justify-content-center pb-2">
+                                <button type="button" class="btn bg-bleu text-white texte-bold me-2" id="btnBleu" @onclick="AddTelephone" style="width: 200px;" ><i class="bi bi-plus-circle"></i> Ajout</button>
+                                <button type="button" class="btn bg-danger text-white texte-bold" id="btnSupp" @onclick="RemoveTelephone" disabled="@(!(combinedFormModel.CoordonneeFormModel.PhoneList.Count > 1))" style="width: 200px;"><i class="bi bi-trash"></i> Retirer</button>
+                            </div>
+                            }
+                    </div>             
                 </EditForm>
 @* Contacts*@
                 <EditForm Model="contactHosterFormModel">
@@ -646,8 +665,8 @@
     private Historique? closestHistorique;
     List<Licencerbq> selectedLicencerbqs = new List<Licencerbq>();
     List<Coordonnee> selectedCoordonnes = new List<Coordonnee>();
-    List<Telephone> selectedTelephones = new List<Telephone>();
-    List<Telephone> selectedTelephonesContacts = new List<Telephone>();
+    List<Portail_OptiVille.Data.Models.Telephone> selectedTelephones = new List<Portail_OptiVille.Data.Models.Telephone>();
+    List<Portail_OptiVille.Data.Models.Telephone> selectedTelephonesContacts = new List<Portail_OptiVille.Data.Models.Telephone>();
     Fournisseur selectedFournisseur = new Fournisseur();
     Identification identification = new Identification();
     List<Categorierbq> selectedCategorieRBQ = new List<Categorierbq>();
@@ -655,6 +674,7 @@
     Dictionary<string, List<Categorierbq>>? groupedCategories;
     Coordonnee coordonnee = new Coordonnee();
     Licencerbq licencerbqs = new Licencerbq();
+    private Dictionary<TelephoneFormModel, Portail_OptiVille.Pages.Fournisseur.Inscription.Coordonnee.Telephone> telephoneComponents = new Dictionary<TelephoneFormModel, Portail_OptiVille.Pages.Fournisseur.Inscription.Coordonnee.Telephone>();
     List<ContactPhoneInfo> contactPhoneInfo = new List<ContactPhoneInfo>();
     private List<Categorierbq> allCategories = new List<Categorierbq>();
     private List<Categorierbq> allCategoriesForm = new List<Categorierbq>();
@@ -683,7 +703,7 @@
         public CoordonneeFormModel CoordonneeFormModel { get; set; }
         public IdenticationFormModel IdentificationFormModel { get; set; }
 
-        public void FillData(Coordonnee coordonnee, Identification identification, List<Telephone> telephones)
+        public void FillData(Coordonnee coordonnee, Identification identification, List<Portail_OptiVille.Data.Models.Telephone> telephones)
         {
             CoordonneeFormModel.IdCoordonnee = coordonnee.IdCoordonnee;
             CoordonneeFormModel.NoEntreprise = coordonnee.NoCivique;
@@ -729,7 +749,17 @@
     {
         modificationContact = false;
     }
-
+    public bool ValidatePhones()
+    {
+        bool isValid = true;
+        foreach (var component in telephoneComponents.Values) {
+            var phoneState = component.TriggerValidation();
+            if (!phoneState) {
+                isValid = false;
+            }
+        }
+        return isValid;
+    }
     private void ModifcationInfo()
     {
         modificationInfo = false;
@@ -754,7 +784,17 @@
         
         await JSRuntime.InvokeVoidAsync("hideModal", "ModifierModalLicence");
     }
+    private void AddTelephone()
+    {
+        combinedFormModel.CoordonneeFormModel.PhoneList.Add(new TelephoneFormModel());
+    }
 
+    private void RemoveTelephone()
+    {
+        if (combinedFormModel.CoordonneeFormModel.PhoneList.Count > 1) {
+            combinedFormModel.CoordonneeFormModel.PhoneList.RemoveAt(combinedFormModel.CoordonneeFormModel.PhoneList.Count - 1);
+        }
+    }
     private async Task SaveModifcationProduitServices()
     {
         await produitServiceService.UpdateProduitServiceData(produitServiceFormModel, selectedFournisseur.IdFournisseur);
@@ -787,9 +827,14 @@
 
     private async Task SaveModifcationInfo()
     {
-        await identificationService.UpdateIdentificationData(combinedFormModel.IdentificationFormModel);
-        await coordonneeService.UpdateCoordonneeData(combinedFormModel.CoordonneeFormModel);
-
+        isSubmit = true;
+        StateHasChanged();
+        var isAllPhonesValid = ValidatePhones();
+        if (isAllPhonesValid)
+        {
+            await identificationService.UpdateIdentificationData(combinedFormModel.IdentificationFormModel);
+            await coordonneeService.UpdateCoordonneeData(combinedFormModel.CoordonneeFormModel);
+        }
         modificationInfo = true;
     }
 
@@ -846,7 +891,7 @@
     public class ContactPhoneInfo
     {
         public Portail_OptiVille.Data.Models.Contact Contact { get; set; }
-        public List<Telephone> PhoneNumbers { get; set; }
+        public List<Portail_OptiVille.Data.Models.Telephone> PhoneNumbers { get; set; }
     }
     private ProduitServiceFormModel produitServiceFormModel = new ProduitServiceFormModel();
     private List<Produitservice> allProduitService = new List<Produitservice>();
@@ -1000,6 +1045,7 @@
             //closestHistorique = await _context.Historiques.Where(h => h.Fournisseur == selectedFournisseur.IdFournisseur && h.DateEtatChanged.HasValue).OrderBy(h => Math.Abs((h.DateEtatChanged.Value - DateTime.UtcNow).TotalDays)).FirstOrDefaultAsync();
             if(identification.Neq != null)
             {
+                try{
                 licencerbqs = await _context.Licencerbqs.SingleAsync(c => c.Fournisseur == selectedFournisseur.IdFournisseur);
                 selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
                 selectedLicencerbqs = await _context.Licencerbqs.Where(l => l.Fournisseur == selectedFournisseur.IdFournisseur).Include(l => l.IdCategorieRbqs).ToListAsync();
@@ -1033,6 +1079,11 @@
                 if(licencerbqs == null && selectedCategorieRBQ == null)
                 {
                     LicenceRBQInfoNull = true;
+                }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Erreur NEQ: {ex.Message}");
                 }
             }
                 //allCategories = await _context.Categorierbqs.ToListAsync();
