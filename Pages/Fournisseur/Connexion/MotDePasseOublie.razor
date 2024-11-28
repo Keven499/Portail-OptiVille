@@ -7,11 +7,14 @@
 @using System;
 @using System.Linq;
 @using System.Text;
+@using Shared.LoginLayout
 @inject ProtectedSessionStorage protectedSessionStorage
 @inject NavigationManager NavigationManager
 @inject MailManager mailManager
 @inject A2024420517riGr1Eq6Context _context
 @inject IJSRuntime JSRuntime
+
+@layout LoginLayout
 
 @code {
     private LogInModel logInModel = new LogInModel();
