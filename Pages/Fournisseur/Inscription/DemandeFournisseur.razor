@@ -351,9 +351,9 @@
         await coordonneeService.SaveCoordonneeData(coordonneeFormModel);
         await contactsService.SaveContactsData(contactHosterFormModel);
         await produitServiceService.SaveProduitServiceData(produitServiceFormModel);
-        await licenceRBQService.SaveLicenceRBQData(licenceRBQFormModel);
+        await licenceRBQService.SaveLicenceRBQData(licenceRBQFormModel, string.Empty);
         await fichierService.SaveFichierData(pieceJointeFormModel, identicationFormModel);
-        await historiqueService.AddHistoriqueEnAttente(-1);
+        await historiqueService.ModifyEtat("En Attente", -1, "Système", null, null);
         // IL RESTE PLUS QU'A LE REDIRIGER VERS SA FICHE FOURNISSEUR SUR SON PROPRE COMPTE OU VERS LOGIN
         string contenuMail = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Data", "TemplatesMail", "EnAttente.html"));
         mailManager.SendMail(identicationFormModel.CourrielEntreprise, "Nouvelle demande de fournisseur", contenuMail);

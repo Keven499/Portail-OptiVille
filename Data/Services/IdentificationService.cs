@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Portail_OptiVille.Data.FormModels;
 using Portail_OptiVille.Data.Models;
 using System.Security.Cryptography;
@@ -10,9 +11,11 @@ namespace Portail_OptiVille.Data.Services
     {
         private readonly A2024420517riGr1Eq6Context _context;
 
-        public IdentificationService(A2024420517riGr1Eq6Context context)
+        private HistoriqueService _historiqueService;
+        public IdentificationService(A2024420517riGr1Eq6Context context, HistoriqueService historiqueService)
         {
             _context = context;
+            _historiqueService = historiqueService;
         }
 
         private string HashPassword(string password)
@@ -53,14 +56,34 @@ namespace Portail_OptiVille.Data.Services
             }
         }
 
-        public async Task UpdateIdentificationData(IdenticationFormModel identicationFormModel)
+        public async Task UpdateIdentificationData(IdenticationFormModel identicationFormModel, string email)
         {
+            bool isEqual = true;
             var identification = await _context.Identifications.FindAsync(identicationFormModel.IdIdentification);
+            string[] oldData = {identification.Neq, identification.NomEntreprise, identification.AdresseCourriel};
+            string[] newData = {identicationFormModel.NEQ, identicationFormModel.NomEntreprise, identicationFormModel.CourrielEntreprise};
+            string[] keyData = {"NEQ", "Nom de l'entreprise", "Adresse courriel"};
+            var oldDict = new Dictionary<string, object> { { "Section", "Identification" } };
+            var newDict = new Dictionary<string, object> { { "Section", "Identification" } };
+            for (int i = 0; i < oldData.Length; i++)
+                {
+                    if (!oldData[i].Equals(newData[i]))
+                    {
+                        isEqual = false;
+                        oldDict.Add(keyData[i], oldData[i]);
+                        newDict.Add(keyData[i], newData[i]);
+                    }
+                }
+                string oldJSON = JsonConvert.SerializeObject(oldDict, Formatting.None);
+                string newJSON = JsonConvert.SerializeObject(newDict, Formatting.None);
+            if (!isEqual)
+                await _historiqueService.ModifyEtat("Modifiée", (int)identification.Fournisseur, email, null, oldJSON, newJSON);
+            
             identification.Neq = identicationFormModel.NEQ;
             identification.NomEntreprise = identicationFormModel.NomEntreprise;
             identification.AdresseCourriel = identicationFormModel.CourrielEntreprise;
             identification.MotDePasse = identicationFormModel.MotDePasse;
-
+            
             _context.Identifications.Update(identification);
             await _context.SaveChangesAsync();
         }

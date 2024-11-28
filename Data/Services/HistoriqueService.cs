@@ -13,47 +13,26 @@ namespace Portail_OptiVille.Data.Services
             _context = context;
         }
 
-        public async Task AddHistoriqueRefuser(int _idFournisseur, string _raisonRefus)
+       public async Task ModifyEtat(string _etat, int _idFournisseur, string _modifiePar, string? _raisonRefus = null, string? _retirer = null, string? _ajouter = null)
         {
-            var historique = new Historique
-            {
-                EtatDemande = "Refusé",
-                Fournisseur = _idFournisseur,
-                RaisonRefus = _raisonRefus,
-                DateEtatChanged = DateTime.UtcNow
-            };
-
-            _context.Historiques.Add(historique);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task AddHistoriqueAccepter(int _idFournisseur)
-        {
-            var historique = new Historique
-            {
-                EtatDemande = "Accepté",
-                Fournisseur = _idFournisseur,
-                DateEtatChanged = DateTime.UtcNow
-            };
-
-            _context.Historiques.Add(historique);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task AddHistoriqueEnAttente(int _idFournisseur)
-        {
+            Console.WriteLine(_retirer);
+            Console.WriteLine(_ajouter);
             if (_idFournisseur == -1)
             {
                 _idFournisseur = await _context.Fournisseurs.MaxAsync(f => (int)f.IdFournisseur);
             }
             var historique = new Historique
             {
-                EtatDemande = "En attente",
+                EtatDemande = _etat,
                 Fournisseur = _idFournisseur,
-                DateEtatChanged = DateTime.UtcNow
+                RaisonRefus = _raisonRefus,
+                ModifiePar = _modifiePar,
+                Retirer = _retirer,
+                Ajouter = _ajouter,
+                DateEtatChanged = DateTime.Now
             };
 
-            _context.Historiques.Add(historique);
+             _context.Historiques.Add(historique);
             await _context.SaveChangesAsync();
         }
     }
