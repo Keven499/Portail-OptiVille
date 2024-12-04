@@ -1,15 +1,20 @@
 @page "/affichage"
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.EntityFrameworkCore
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@using Microsoft.IdentityModel.Tokens
+@using Newtonsoft.Json
 @using Portail_OptiVille.Data.Models
-@using System.Text.RegularExpressions;
-@inject A2024420517riGr1Eq6Context _context
+@using System.Text.RegularExpressions
+@inject NavigationManager Navigation
 @using Portail_OptiVille.Data.FormModels
 @using Portail_OptiVille.Data.Exceptions
 @using Portail_OptiVille.Data.Services
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
 @using Portail_OptiVille.Data.Utilities
+
 @using System.Linq.Expressions
+@using System.Timers
 @using Portail_OptiVille.Pages.Fournisseur.Inscription.Coordonnee
 @using Portail_OptiVille.Pages.Fournisseur.Inscription
 @using Portail_OptiVille.Pages.Fournisseur.Inscription.Contact
@@ -22,6 +27,7 @@
 @inject FinanceService financeService
 @inject ProduitServiceService produitServiceService
 @inject LicenceRBQService licenceRBQService
+@inject EncryptionService encryptionService
 @inject ContactsService contactsService
 @inject IJSRuntime JSRuntime
 @inject PieceJointeFormModel pieceJointeFormModel
@@ -30,16 +36,24 @@
 @inject ICookie cookie
 @inject A2024420517riGr1Eq6Context _context
 @inject JwtTokenGenerator tokenGenerator
-
 <link rel="icon" type="image/x-icon" href="images/fiche.png">
 
 <PageTitle>Fiche</PageTitle>
 <div class="container-fluid">
+@if (isLoading)
+    {
+        <div class="d-flex justify-content-center align-items-center" style="height: 80vh; position: relative;">
+            <div class="spinner-border text-success me-2" role="status"></div>
+            <div class="d-flex flex-column">
+                <span class="titre-medium fs-3">Chargement en cours..</span>
+            </div>
+        </div>
+    }
+    else
+    {    
     <div class="row d-flex justify-content-center">
         <div class="col-xl-11">
-            <div class="d-flex justify-content-end pb-3">
-                <button id="btnBleu" class="btn bg-bleu text-white texte-bold" style="width: 200px" @onclick="Deconnexion"><i class="bi bi-box-arrow-left me-1"></i>Déconnexion</button>
-            </div> 
+            
             <div class="card">
 @*Demande*@
                 <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
@@ -129,97 +143,130 @@
                                         <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
                                             <label for="inputEmail4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Nom de l'entreprise</label>
                                             <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.NomEntreprise" readonly="@modificationInfo">
+                                            <div>
+                                                <input type="text" style="width: 325px;" 
+                                                    class="form-control @ValidateClass(errorMessagesInfoGen[0]) input-bleu texte-light py-1" 
+                                                    id="inputEmail4" 
+                                                    @bind="@combinedFormModel.IdentificationFormModel.NomEntreprise" 
+                                                    readonly="@modificationInfo">
+@((MarkupString)errorMessagesInfoGen[0])
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
                                             <label for="inputEmail4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Adresse courriel</label>
                                             <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.CourrielEntreprise" readonly="@modificationInfo">
+                                            <div>
+                                                <input type="text" style="width: 325px;" 
+                                                    class="form-control @ValidateClass(errorMessagesInfoGen[1]) input-bleu texte-light py-1" id="inputEmail4" 
+                                                    @bind="@combinedFormModel.IdentificationFormModel.CourrielEntreprise" 
+                                                    readonly="@modificationInfo">
+@((MarkupString)errorMessagesInfoGen[1])
                                         </div>
                                     </div>
-
-                                    @foreach(var telephone in combinedFormModel.CoordonneeFormModel.PhoneList!)
-                                    {
+</div>
                                         <div class="row mb-3">
                                             <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                                <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Numéro de téléphone</label>
+                                                <label for="province" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Province</label>
                                                 <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                                <select class="form-select input-bleu texte-light py-1" id="telephoneType" @bind="@telephone.TypeTelEntreprise" style="width: 325px; @(modificationInfo ? "pointer-events: none;" : null)">
-                                                        <option value="Bureau">Bureau</option>
-                                                        <option value="Télécopieur">Télécopieur</option>
-                                                        <option value="Cellulaire">Cellulaire</option>
+                                                <select class="form-select input-bleu texte-light py-1" id="province" @bind="@combinedFormModel.CoordonneeFormModel.ProvinceEntreprise" style="width: 325px; @(modificationInfo ? "pointer-events: none;" : null)">
+                                                        @foreach (var item in listeProvinces)
+                                            {
+                                                
+                                                <option value="@item">@item</option>
+                                            }
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="row mb-3 pb-1">
-                                            <div class="col-xl-12 d-xl-flex justify-content-xl-end col-lg-12 d-lg-flex justify-content-lg-end col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                                <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputEmail4" @bind="telephone.NoTelEntreprise" readonly="@modificationInfo">
+                                        <div class="row mb-3">
+                                            <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
+                                                <label for="regionAdministrative" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Région administrative</label>
+                                            <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
+                                            <select class="form-select input-bleu texte-light py-1" id="regionAdministrative" @bind="@combinedFormModel.CoordonneeFormModel.RegionAdmEntreprise" style="width: 325px; @(modificationInfo ? "pointer-events: none;" : null)">
+@foreach (var item in listeRegionADM)
+                                            {
+                                                
+                                                <option value="@item">@item</option>
+                                            }
+                                            </select>
                                             </div>
                                         </div>
                                         <div class="row mb-3">
                                             <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                                <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Poste</label>
+                                                <label for="siteInternet" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Site internet</label>
                                                 <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                                <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputEmail4" @bind="telephone.PosteTelEntreprise" readonly="@modificationInfo">                                
+                                                <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="siteInternet" @bind="@combinedFormModel.CoordonneeFormModel.SiteWebEntreprise" readonly="@modificationInfo">                                
                                             </div>
                                         </div>
-                                    }
-                                </div>
+                                    </div>
                                 <div class="col-xl-6 col-lg-6 col-sm-12 col-12">
                                     <div class="row mb-3">
                                         <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                            <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">No Civique</label>
+                                            <label for="noEntreprise" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">No Civique</label>
                                             <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.NoEntreprise" readonly="@modificationInfo">
+                                            <div>
+                                                <input type="text" style="width: 325px;" class="form-control @ValidateClass(errorMessagesInfoGen[2]) input-bleu texte-light py-1" id="noEntreprise" @bind="@combinedFormModel.CoordonneeFormModel.NoEntreprise" readonly="@modificationInfo">
+@((MarkupString)errorMessagesInfoGen[2])
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                            <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Rue</label>
+                                            <label for="rueEntreprise" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Rue</label>
                                             <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.RueEntreprise" readonly="@modificationInfo">
+                                            <div>
+                                                <input type="text" style="width: 325px;" class="form-control @ValidateClass(errorMessagesInfoGen[3]) input-bleu texte-light py-1" id="rueEntreprise" @bind="@combinedFormModel.CoordonneeFormModel.RueEntreprise" readonly="@modificationInfo">
+@((MarkupString)errorMessagesInfoGen[3])
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                            <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Bureau</label>
+                                            <label for="bureauEntreprise" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Bureau</label>
                                             <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.BureauEntreprise" readonly="@modificationInfo">
+                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="bureauEntreprise" @bind="@combinedFormModel.CoordonneeFormModel.BureauEntreprise" readonly="@modificationInfo">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                            <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Ville</label>
+                                            <label for="villeEntreprise" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Ville</label>
                                             <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.VilleEntreprise" readonly="@modificationInfo">
+                                            <div>
+                                                <input type="text" style="width: 325px;" class="form-control @ValidateClass(errorMessagesInfoGen[4]) input-bleu texte-light py-1" id="villeEntreprise" @bind="@combinedFormModel.CoordonneeFormModel.VilleEntreprise" readonly="@modificationInfo">
+@((MarkupString)errorMessagesInfoGen[4])
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                            <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Code Postal</label>
+                                            <label for="codePostal" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Code Postal</label>
                                             <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.CodePostalEntreprise" readonly="@modificationInfo">
+                                            <div>
+                                                <input type="text" style="width: 325px;" class="form-control @ValidateClass(errorMessagesInfoGen[5]) input-bleu texte-light py-1" id="codePostal" @bind="@combinedFormModel.CoordonneeFormModel.CodePostalEntreprise" readonly="@modificationInfo">
+@((MarkupString)errorMessagesInfoGen[5])
                                         </div>
                                     </div>
-                                    <div class="row mb-3">
-                                        <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
-                                            <label for="inputPassword4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Province</label>
-                                            <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputPassword4" @bind="@combinedFormModel.CoordonneeFormModel.ProvinceEntreprise" readonly="@modificationInfo">
-                                        </div>
+                                                                            </div>
                                     </div>
                                 </div>                    
-                            </div>        
-                            @{
+                            @if (phoneExistsResults != null)
+                            {
                                 var phoneNo = 1;
+var phoneListCount = combinedFormModel.CoordonneeFormModel.PhoneList.Count;
                                 foreach (var phoneModel in combinedFormModel.CoordonneeFormModel.PhoneList!)
                                 {
-                                    <Telephone TelephoneNumber="@phoneNo" telephoneFormModel="@phoneModel" @ref="telephoneComponents[phoneModel]" />   
-                                    if (!(combinedFormModel.CoordonneeFormModel.PhoneList.Count == phoneNo)) {
-                                        <hr class="m-0">  
+                                    bool exists = phoneExistsResults[phoneNo - 1];
+                                    <Telephone TelephoneNumber="@phoneNo" 
+                                            telephoneFormModel="@phoneModel" 
+                                            isView="@(exists)" 
+                                            @ref="telephoneComponents[phoneModel]" />   
+                                    
+                                    if (phoneNo < phoneListCount)
+                                    {
+                                        <hr class="m-0" />  
                                     }
+
                                     phoneNo++;        
                                 }
                             }
@@ -241,9 +288,12 @@
                         </div>
                         <div class="card-body border-bleuFonce">
                             <div class="row">
-                                @for (int i = 1; i < contactHosterFormModel.ContactList!.Count; i++)
+                                @for (int i = 0; i < contactHosterFormModel.ContactList!.Count; i++)
                                 {
                                     var contact = contactHosterFormModel.ContactList[i];
+                                    <div class="col-xl-12 col-lg-12 col-sm-12 col-12">
+                                        <h4 class="titre-bold bleuFonce">Contact @(i + 1)</h4>
+                                    </div>
                                     <div class="col-xl-6 col-lg-6 col-sm-12 col-12">
                                         <div class="row mb-3">
                                             <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
@@ -270,7 +320,7 @@
                                             <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
                                                 <label for="courrielInput" class="bleuFonce texte-bold">Adresse courriel</label>
                                                 <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                                <InputText id="prenomInput" style="width: 325px; outline: none;" class="form-control input-bleu texte-light py-1" @bind-Value="contact.AdresseCourriel" readonly="@modificationContact" />
+                                                <InputText id="courrielInput" style="width: 325px; outline: none;" class="form-control input-bleu texte-light py-1" @bind-Value="contact.AdresseCourriel" readonly="@modificationContact" />
                                             </div>
                                         </div>
                                     </div>
@@ -317,7 +367,7 @@
                                         <div class="modal-body p-0">
                                             <ContactFormHoster AssignReference="AssignReferenceContactFormHoster" ContactHosterFormModel="contactHosterFormModel" ShowTitle="false"></ContactFormHoster>
                                         </div>
-                                        <div class="modal-footer d-flex justify-content-center bg-bleuFonce">
+                                        <div class="modal-footer border-0 d-flex justify-content-center bg-bleuFonce">
                                             <button type="button" id="btnBleu" class="btn bg-bleu text-white texte-bold" data-bs-dismiss="modal"><i class="bi bi-x-circle me-1"></i>Annuler</button>
                                             <button type="submit" id="btnBleu" class="btn bg-bleu text-white texte-bold" @onclick="SaveContact"><i class="bi bi-floppy me-1"></i>Sauvegarder</button>
                                         </div>
@@ -377,7 +427,7 @@
                                         <div class="modal-body p-0">
                                             <ProduitsServices AssignReference="AssignReferenceProduitsServices" AllProduitServices="allProduitService" ProduitServiceFormModel="produitServiceFormModel" CategorieUNSPSC="categorieUNSPSC" ShowTitle="false"></ProduitsServices>
                                         </div>
-                                        <div class="modal-footer d-flex justify-content-center bg-bleuFonce">
+                                        <div class="modal-footer border-0 d-flex justify-content-center bg-bleuFonce">
                                             <button type="button" id="btnBleu" class="btn bg-bleu text-white texte-bold" data-bs-dismiss="modal"><i class="bi bi-x-circle me-1"></i>Annuler</button>
                                             <button type="submit" id="btnBleu" class="btn bg-bleu text-white texte-bold" @onclick="SaveModifcationProduitServices"><i class="bi bi-floppy me-1"></i>Sauvegarder</button>
                                         </div>
@@ -480,7 +530,7 @@
                                         <div class="modal-body p-0">
                                             <LicenceRBQ AssignReference="AssignReferenceLicenceRBQ" LicenceRBQFormModel="licenceRBQFormModel" AllCategories="allCategories" ShowTitle="false"></LicenceRBQ>
                                         </div>
-                                        <div class="modal-footer d-flex justify-content-center bg-bleuFonce">
+                                        <div class="modal-footer border-0 d-flex justify-content-center bg-bleuFonce">
                                             <button type="button" id="btnBleu" class="btn bg-bleu text-white texte-bold" data-bs-dismiss="modal"><i class="bi bi-x-circle me-1"></i>Annuler</button>
                                             <button type="submit" id="btnBleu" class="btn bg-bleu text-white texte-bold" @onclick="SaveModifcationLicenceRBQ"><i class="bi bi-floppy me-1"></i>Sauvegarder</button>
                                         </div>
@@ -519,7 +569,7 @@
                     <EditForm EditContext="@editContext">
                         <DataAnnotationsValidator />
                             <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center rounded-0">
-                                <h3 class="text-white titre-bold m-0">Finances</h3>                                
+                                <h3 class="text-white titre-bold m-0" id="FinanceDest">Finances</h3>                                
                                 @if (modificationFinances)
                                 {
                                     <button type="button" id="btnBleu" class="btn bg-bleu texte-bold text-white" style="height: 40px; width: 200px;" @onclick="ModifcationFinances"><i class="bi bi-pencil me-1"></i>Modifier</button>
@@ -536,20 +586,20 @@
                                             <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
                                                 <label for="inputTPS" class="bleuFonce texte-bold">TPS</label>
                                                 <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                                <input type="text" style="width: 325px;" class="form-control @GetInputClass(() => financeFormModel.NumeroTps) input-bleu texte-light py-1" id="inputTPS" @bind="@financeFormModel.NumeroTps" readonly="@modificationFinances">                                                                                               
-                                            </div>                                                                                      
-                                            <div class="col-xl-11 d-xl-flex justify-content-xl-end col-lg-11 d-lg-flex justify-content-lg-end col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12 mt-1">
-                                                @((MarkupString)GetValidationHTML(() => financeFormModel.NumeroTps))
+                                                <div>
+                                                    <input type="text" style="width: 325px;" class="form-control @GetInputClass(() => financeFormModel.NumeroTps) input-bleu texte-light py-1" id="inputTPS" @bind="@financeFormModel.NumeroTps" readonly="@modificationFinances">                                                                                               
+                                                                                            @((MarkupString)GetValidationHTML(() => financeFormModel.NumeroTps))
+</div>
                                             </div>                                            
                                         </div>
                                         <div class="row mb-3">
                                             <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
                                                 <label for="inputTVQ" class="bleuFonce texte-bold">TVQ</label>
                                                 <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                                <input type="text" style="width: 325px;" class="form-control @GetInputClass(() => financeFormModel.NumeroTvq) input-bleu texte-light py-1" id="inputTVQ" @bind="@financeFormModel.NumeroTvq" readonly="@modificationFinances">                                                                                               
-                                            </div>
-                                            <div class="col-xl-11 d-xl-flex justify-content-xl-end col-lg-11 d-lg-flex justify-content-lg-end col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12 mt-1">
-                                                @((MarkupString)GetValidationHTML(() => financeFormModel.NumeroTvq))
+                                                <div>
+                                                    <input type="text" style="width: 325px;" class="form-control @GetInputClass(() => financeFormModel.NumeroTvq) input-bleu texte-light py-1" id="inputTVQ" @bind="@financeFormModel.NumeroTvq" readonly="@modificationFinances">                                                                                               
+                                                                                            @((MarkupString)GetValidationHTML(() => financeFormModel.NumeroTvq))
+</div>
                                             </div>
                                         </div>
                                     </div>
@@ -558,64 +608,62 @@
                                             <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
                                                 <label for="inputModeComm" class="bleuFonce texte-bold">Mode de communication</label>
                                                 <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                                <select class="form-select @GetInputClass(() => financeFormModel.ModeCommunication) input-bleu texte-light py-1" id="inputModeComm" @bind="@financeFormModel.ModeCommunication"
+                                                <div>
+                                                    <select class="form-select @GetInputClass(() => financeFormModel.ModeCommunication) input-bleu texte-light py-1" id="inputModeComm" @bind="@financeFormModel.ModeCommunication"
                                                         style="@(modificationFinances ? "pointer-events: none;" : null) width: 325px; ">
-                                                    <option value="">Choisir une option</option>
-                                                    <option value="Courriel">Courriel</option>
-                                                    <option value="Courrier régulier">Courrier régulier</option>
-                                                </select>                                            
+                                                        <option value="" disabled selected>Choisir une option</option>
+                                                        <option value="Courriel">Courriel</option>
+                                                        <option value="Courrier régulier">Courrier régulier</option>
+                                                    </select>      
+                                                    @((MarkupString)GetValidationHTML(() => financeFormModel.ModeCommunication))  
+                                                </div>                                    
                                             </div>
-                                            <div class="col-xl-11 d-xl-flex justify-content-xl-end col-lg-11 d-lg-flex justify-content-lg-end col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12 mt-1">
-                                                @((MarkupString)GetValidationHTML(() => financeFormModel.ModeCommunication))
-                                            </div> 
                                         </div>
                                         <div class="row mb-3">
                                             <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
                                                 <label for="inputDevise" class="bleuFonce texte-bold">Devise</label>
                                                 <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                                <select class="form-select @GetInputClass(() => financeFormModel.Devise) input-bleu texte-light py-1" id="inputDevise" @bind="@financeFormModel.Devise"
+                                                <div>
+                                                    <select class="form-select @GetInputClass(() => financeFormModel.Devise) input-bleu texte-light py-1" id="inputDevise" @bind="@financeFormModel.Devise"
                                                         style="@(modificationFinances ? "pointer-events: none;" : null) width: 325px;">
-                                                    <option value="">Choisir une option</option>
+                                                    <option value="" disabled selected>Choisir une option</option>
                                                     <option value="CAD">CAD</option>
                                                     <option value="USD">USD</option>
                                                 </select>                                            
+                                                @((MarkupString)GetValidationHTML(() => financeFormModel.Devise)) 
+                                                </div>                                       
                                             </div>
                                             <div class="col-xl-11 d-xl-flex justify-content-xl-end col-lg-11 d-lg-flex justify-content-lg-end col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12 mt-1">
-                                                @((MarkupString)GetValidationHTML(() => financeFormModel.Devise))
+                                                
                                             </div> 
                                         </div>
                                         <div class="row mb-3">
                                             <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
                                                 <label for="inputCondPaiement" class="bleuFonce texte-bold">Conditions de paiement</label>
                                                 <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                                <select class="form-select @GetInputClass(() => financeFormModel.ConditionPaiement) input-bleu texte-light py-1" id="inputCondPaiement" @bind="@financeFormModel.ConditionPaiement" readonly="@modificationFinances"
+                                                <div>
+                                                    <select class="form-select @GetInputClass(() => financeFormModel.ConditionPaiement) input-bleu texte-light py-1" id="inputCondPaiement" @bind="@financeFormModel.ConditionPaiement" readonly="@modificationFinances"
                                                     style="@(modificationFinances ? "pointer-events: none;" : null)width: 325px;">
-                                                    <option value="">Choisir une option</option>
+                                                    <option value="" disabled selected>Choisir une option</option>
                                                     @foreach (var item in listConditionPaiement)
                                                     {
-                                                        <option value="item">@item</option>
+                                                        <option value="@item">@item</option>
                                                     }
                                                 </select>                                           
-                                            </div>
-                                            <div class="col-xl-11 d-xl-flex justify-content-xl-end col-lg-11 d-lg-flex justify-content-lg-end col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12 mt-1">
-                                                @((MarkupString)GetValidationHTML(() => financeFormModel.ConditionPaiement))
+                                                    @((MarkupString)GetValidationHTML(() => financeFormModel.ConditionPaiement))
                                             </div>
                                         </div>
-
+</div>
                                     </div>
                                 </div>
                             </div>
                     </EditForm>
                 }
-    
-
-
-            </div>
+                </div>
         </div>
     </div>
+}
 </div>
-
-
 <script src="@popperScript"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 <script>
@@ -647,16 +695,28 @@
     }
 </script>
 
+<style>
+    select option:first-child:checked {
+        display: none;
+    }
+</style>
+
 @code{
+    private bool isValidFormFinance = false;
+    private List<bool> phoneExistsResults;
+    private string email = string.Empty;
+    private string[] errorMessagesInfoGen = Enumerable.Repeat(string.Empty, 6).ToArray();
+    private bool isRefused = false;
+    private string strRaisonRefus = "";
+    private bool isConfirmed = false;
     private bool isLoading = true;
-    public int? Id { get; set; }
+    public int Id { get; set; }
     private bool modificationFinances = true;
     private string popperScript = "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js";
     private bool modificationInfo = true;
     private bool modificationPieceJointes = true;
     private bool FinanceInfoNull = false;
     private bool LicenceRBQInfoNull = false;
-    private string email = string.Empty;
     private bool modificationContact = true;
     public int sizeTotal { get; set; } = 0;
     private CombinedFormModel combinedFormModel = new CombinedFormModel();
@@ -682,12 +742,12 @@
     List<Portail_OptiVille.Data.Models.Telephone> selectedTelephonesContacts = new List<Portail_OptiVille.Data.Models.Telephone>();
     Fournisseur selectedFournisseur = new Fournisseur();
     Identification identification = new Identification();
+    private Dictionary<TelephoneFormModel, Portail_OptiVille.Pages.Fournisseur.Inscription.Coordonnee.Telephone> telephoneComponents = new Dictionary<TelephoneFormModel, Portail_OptiVille.Pages.Fournisseur.Inscription.Coordonnee.Telephone>();
     List<Categorierbq> selectedCategorieRBQ = new List<Categorierbq>();
     Finance finance = new Finance();
     Dictionary<string, List<Categorierbq>>? groupedCategories;
     Coordonnee coordonnee = new Coordonnee();
     Licencerbq licencerbqs = new Licencerbq();
-    private Dictionary<TelephoneFormModel, Portail_OptiVille.Pages.Fournisseur.Inscription.Coordonnee.Telephone> telephoneComponents = new Dictionary<TelephoneFormModel, Portail_OptiVille.Pages.Fournisseur.Inscription.Coordonnee.Telephone>();
     List<ContactPhoneInfo> contactPhoneInfo = new List<ContactPhoneInfo>();
     private List<Categorierbq> allCategories = new List<Categorierbq>();
     private List<Categorierbq> allCategoriesForm = new List<Categorierbq>();
@@ -703,6 +763,13 @@
         "Dans les 45 jours sans déduction",
         "Dans les 60 jours sans déduction"
         };
+private List<string> listeRegionADM = new List<string>{"(01) Bas-Saint-Laurent", "(02) Saguenay-Lac-Saint-Jean", "(03) Capitale-Nationale",
+        "(04) Mauricie", "(05) Estrie", "(06) Montréal", "(07) Outaouais", "(08) Abitibi-Témiscamingue", "(09) Côte-Nord", "(10) Nord-du-Québec",
+        "(11) Gaspésie-Îles-de-la-Madeleine", "(12) Chaudière-Appalaches", "(13) Laval", "(14) Lanaudière", "(15) Laurentides", "(16) Montérégie",
+        "(17) Centre-du-Québec"};
+    private List<string> listeProvinces = new List<string>{"Québec", "Ontario", "Manitoba", "Saskatchewan", "Alberta", "Colombie-Britannique",
+        "Île-du-Prince-Édouard", "Nouveau-Brunswick", "Nouvelle-Écosse", "Terre-Neuve-et-Labrador", "Nunavut", "Territoires du Nord-Ouest",
+        "Yukon"};
     private LicenceRBQ LicenceRBQRef;   
     private ContactFormHoster ContactFormHosterRef; 
     public Action<ContactFormHoster>? AssignReferenceContactFormHoster => (contactFormHoster) => ContactFormHosterRef = contactFormHoster;
@@ -725,7 +792,9 @@
             CoordonneeFormModel.VilleEntreprise = coordonnee.Ville;
             CoordonneeFormModel.ProvinceEntreprise = coordonnee.Province;
             CoordonneeFormModel.CodePostalEntreprise = coordonnee.CodePostal;
-            CoordonneeFormModel.RegionAdmEntreprise = coordonnee.RegionAdministrative;
+            CoordonneeFormModel.CodeRegionAdmEntreprise = coordonnee.CodeRegionAdministrative;
+            CoordonneeFormModel.RegionAdmEntreprise = "(" + coordonnee.CodeRegionAdministrative + ") " + coordonnee.RegionAdministrative;
+Console.WriteLine(CoordonneeFormModel.RegionAdmEntreprise);
             CoordonneeFormModel.SiteWebEntreprise = coordonnee.SiteInternet;
             CoordonneeFormModel.PhoneList = telephones.Select(t => new TelephoneFormModel
             {
@@ -746,6 +815,7 @@
             IdentificationFormModel = new IdenticationFormModel();
         }
     }
+#region Modals
     private async Task ShowContactModalAsync()
     {
         await JSRuntime.InvokeVoidAsync("showBootstrapModal", "ContactModal");
@@ -753,7 +823,9 @@
     private async Task ShowPieceJointesModalAsync()
     {
         await JSRuntime.InvokeVoidAsync("showBootstrapModal", "ModifierModalPieceJointe");
-    }
+    }    
+#endregion
+#region EditComponents+Save
     private void ModifcationFinances()
     {
         modificationFinances = false;
@@ -762,17 +834,7 @@
     {
         modificationContact = false;
     }
-    public bool ValidatePhones()
-    {
-        bool isValid = true;
-        foreach (var component in telephoneComponents.Values) {
-            var phoneState = component.TriggerValidation();
-            if (!phoneState) {
-                isValid = false;
-            }
-        }
-        return isValid;
-    }
+    
     private void ModifcationInfo()
     {
         modificationInfo = false;
@@ -790,24 +852,16 @@
     }
     private async Task SaveModifcationLicenceRBQ()
     {
-
         await licenceRBQService.SaveLicenceRBQData(licenceRBQFormModel, email, selectedFournisseur.IdFournisseur);
+licencerbqs.Statut = licenceRBQFormModel.StatutLicence;
+        licencerbqs.Type = licenceRBQFormModel.TypeLicence;
+        licencerbqs.IdLicenceRbq = licenceRBQFormModel.NumeroLicence;
         selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
         groupedCategories = GroupCategoriesByType();
-        
         await JSRuntime.InvokeVoidAsync("hideModal", "ModifierModalLicence");
-    }
-    private void AddTelephone()
-    {
-        combinedFormModel.CoordonneeFormModel.PhoneList.Add(new TelephoneFormModel());
+    
     }
 
-    private void RemoveTelephone()
-    {
-        if (combinedFormModel.CoordonneeFormModel.PhoneList.Count > 1) {
-            combinedFormModel.CoordonneeFormModel.PhoneList.RemoveAt(combinedFormModel.CoordonneeFormModel.PhoneList.Count - 1);
-        }
-    }
     private async Task SaveModifcationProduitServices()
     {
         await produitServiceService.UpdateProduitServiceData(produitServiceFormModel, selectedFournisseur.IdFournisseur, email);
@@ -840,17 +894,136 @@
 
     private async Task SaveModifcationInfo()
     {
-        isSubmit = true;
-        StateHasChanged();
+        var isValidInfoGen = ValidationsInformationGen();
         var isAllPhonesValid = ValidatePhones();
-        if (isAllPhonesValid)
+        if (isAllPhonesValid && isValidInfoGen)
         {
+modificationInfo = true;
+            for (int i = 0; i < errorMessagesInfoGen.Length; i++)
+            {
+                errorMessagesInfoGen[i] = ValidateField(true, string.Empty);
+            }
             await identificationService.UpdateIdentificationData(combinedFormModel.IdentificationFormModel, email);
             await coordonneeService.UpdateCoordonneeData(combinedFormModel.CoordonneeFormModel, email);
         }
-        modificationInfo = true;
+        }
+
+    private bool ValidationsInformationGen()
+    {
+        bool isValid = true;
+        // NOM D'ENTREPRISE
+        if (combinedFormModel.IdentificationFormModel.NomEntreprise.IsNullOrEmpty())
+        {
+            errorMessagesInfoGen[0] = ValidateField(false, "Nom requis");
+            isValid = false;
+        }
+else
+        {
+            errorMessagesInfoGen[0] = ValidateField(true, string.Empty);
+        }
+
+        // ADRESSE COURRIEL
+        string courriel = combinedFormModel.IdentificationFormModel.CourrielEntreprise;
+        if (courriel.IsNullOrEmpty())
+        {
+            errorMessagesInfoGen[1] = ValidateField(false, "Courriel requis");
+            isValid = false;
+        }
+        else
+        {
+            string pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+            if (!Regex.IsMatch(courriel, pattern, RegexOptions.IgnoreCase))
+            {
+                errorMessagesInfoGen[1] = ValidateField(false, "Format invalide");
+                isValid = false;
+            }
+            else
+            {
+                errorMessagesInfoGen[1] = ValidateField(true, string.Empty);
+            }
+        }
+
+        // NO CIVIQUE
+        string noCivique = combinedFormModel.CoordonneeFormModel.NoEntreprise;
+        if (noCivique.IsNullOrEmpty())
+        {
+            errorMessagesInfoGen[2] = ValidateField(false, "\u2116 requis");
+            isValid = false;
+        }
+        else
+        {
+            string pattern = @"^[a-zA-Z0-9]{1,8}$";
+            if (!Regex.IsMatch(noCivique, pattern, RegexOptions.IgnoreCase))
+            {
+                errorMessagesInfoGen[2] = ValidateField(false, "Entre 1 à 8 chiffres ou lettres");
+                isValid = false;
+            }
+            else
+            {
+                errorMessagesInfoGen[2] = ValidateField(true, string.Empty);
+            }
+        }
+
+        // RUE
+        if (combinedFormModel.CoordonneeFormModel.RueEntreprise.IsNullOrEmpty())
+        {
+            errorMessagesInfoGen[3] = ValidateField(false, "Rue requise");
+            isValid = false;
+        }
+        else
+        {
+            errorMessagesInfoGen[3] = ValidateField(true, string.Empty);
+        }
+
+        // VILLE
+        if (combinedFormModel.CoordonneeFormModel.VilleEntreprise.IsNullOrEmpty())
+        {
+            errorMessagesInfoGen[4] = ValidateField(false, "Ville requise");
+            isValid = false;
+        }
+        else
+        {
+            errorMessagesInfoGen[4] = ValidateField(true, string.Empty);
+        }
+
+        // CODE POSTAL
+        string CP = combinedFormModel.CoordonneeFormModel.CodePostalEntreprise;
+        if (CP.IsNullOrEmpty())
+        {
+            errorMessagesInfoGen[5] = ValidateField(false, "CP requis");
+            isValid = false;
+        }
+        else
+        {
+            string pattern = @"^(?!.*[DFIOQU])[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9]$";
+            if (!Regex.IsMatch(CP, pattern, RegexOptions.IgnoreCase))
+            {
+                errorMessagesInfoGen[5] = ValidateField(false, "Format invalide");
+                isValid = false;
+            }
+            else
+            {
+                errorMessagesInfoGen[5] = ValidateField(true, string.Empty);
+            }
+        }
+        return isValid;
     }
 
+    private string ValidateField(bool state, string errorMessage)
+    {
+        return state ? "" 
+                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + errorMessage + "</span></span>"; 
+    }
+
+    private string ValidateClass(string errorMessage)
+    {
+        if (errorMessage.IsNullOrEmpty())
+        {
+            return string.Empty;
+        }
+        return "invalid";
+    }
+#endregion
     public class GroupKey
     {
         public string? CodeCategorie { get; set; }
@@ -1048,7 +1221,8 @@
             }
             catch(Exception ex)
             {
-                Console.WriteLine($"Erreur lors de la récupération des informations: {ex.Message}"); 
+                Console.WriteLine($"Erreur lors de la récupération des informations(Finance): {ex.Message}"); 
+FinanceInfoNull = true;
             }
             identification = await _context.Identifications.SingleAsync(c => c.Fournisseur == selectedFournisseur.IdFournisseur);
             selectedFichiers = await _context.Fichiers.Where(c => c.Fournisseur == selectedFournisseur.IdFournisseur).ToListAsync();
@@ -1060,28 +1234,38 @@
             selectedHistoriques = await _context.Historiques.Where(c => c.Fournisseur == Id).ToListAsync();
             closestHistorique = selectedHistoriques.Where(h => h.DateEtatChanged.HasValue).OrderBy(h => Math.Abs((h.DateEtatChanged.Value - DateTime.UtcNow).TotalDays)).FirstOrDefault();
             //closestHistorique = await _context.Historiques.Where(h => h.Fournisseur == selectedFournisseur.IdFournisseur && h.DateEtatChanged.HasValue).OrderBy(h => Math.Abs((h.DateEtatChanged.Value - DateTime.UtcNow).TotalDays)).FirstOrDefaultAsync();
-            if(identification.Neq != null)
+            
+            try
             {
-                try{
-                licencerbqs = await _context.Licencerbqs.SingleAsync(c => c.Fournisseur == selectedFournisseur.IdFournisseur);
+                                licencerbqs = await _context.Licencerbqs.SingleAsync(c => c.Fournisseur == selectedFournisseur.IdFournisseur);
+}
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Erreur lors de la récupération de la licence: {ex.Message}"); 
+            }
+
+            if(licencerbqs != null)
+            {
+                allCategoriesForm = await _context.Categorierbqs.ToListAsync();
+                allCategories = await _context.Categorierbqs.ToListAsync();
                 selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
                 selectedLicencerbqs = await _context.Licencerbqs.Where(l => l.Fournisseur == selectedFournisseur.IdFournisseur).Include(l => l.IdCategorieRbqs).ToListAsync();
-                allCategoriesForm = await _context.Categorierbqs.ToListAsync();
-                selectedCurrentCategorieRBQ = allCategoriesForm.ToDictionary(c => c.CodeSousCategorie, c => false);
+                                selectedCurrentCategorieRBQ = allCategoriesForm.ToDictionary(c => c.CodeSousCategorie, c => false);
             
-                allCategories = await _context.Categorierbqs.ToListAsync(); 
-                foreach(var categorie in allCategoriesForm)
+                                foreach(var categorie in allCategoriesForm)
                 {
                     AllCodeSousCategorie.Add(categorie.CodeSousCategorie);
                 }
+
                 licenceRBQFormModel = new LicenceRBQFormModel
                 {
                     NumeroLicence = licencerbqs.IdLicenceRbq,
                     StatutLicence = licencerbqs.Statut,
                     TypeLicence = licencerbqs.Type,
                     CodeSousCategorie = AllCodeSousCategorie,
-                    SousCategoSelected = allCategories.ToDictionary(c => c.CodeSousCategorie, c => false)
+                    SousCategoSelected = selectedCurrentCategorieRBQ
                 };
+
                 foreach(var item in selectedCurrentCategorieRBQ)
                 {
                     foreach(var cate in selectedCategorieRBQ)
@@ -1089,6 +1273,7 @@
                         if (cate.CodeSousCategorie == item.Key)
                         {
                             licenceRBQFormModel.SousCategoSelected[item.Key] = true;
+}
                         }
                     }
                 }
@@ -1097,13 +1282,7 @@
                 {
                     LicenceRBQInfoNull = true;
                 }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Erreur NEQ: {ex.Message}");
-                }
-            }
-                //allCategories = await _context.Categorierbqs.ToListAsync();
+                
             Console.WriteLine("allCategoriesRBQ.count:" + allCategories.Count);
             fournisseurProduitIds = await _context.Database
             .SqlQueryRaw<string>(@"
@@ -1137,6 +1316,7 @@
             GetGroupProduitService();
             groupedCategories = GroupCategoriesByType();
             combinedFormModel.FillData(coordonnee, identification, selectedTelephones);
+phoneExistsResults = await GetPhoneExistenceResults();
             Console.WriteLine("Fin Fetch Data");
             ModifcationPieceJointesActivationONStateMethod();
         }
@@ -1145,11 +1325,55 @@
             Console.WriteLine($"Erreur lors de la récupération des informations(Fetch Crash): {ex.Message}");
         }
         isLoading = false;
+
+        // Initialise `currentValue` avec l'état de la demande actuelle
+        var lastHistorique = await _context.Historiques
+            .Where(h => h.Fournisseur == Id)
+            .OrderByDescending(h => h.DateEtatChanged)
+            .FirstOrDefaultAsync();
+
+    }
+
+    private async Task<List<bool>> GetPhoneExistenceResults()
+    {
+        var results = new List<bool>();
+        foreach (var phoneModel in combinedFormModel.CoordonneeFormModel.PhoneList!)
+        {
+            bool exists = await _context.Telephones.AnyAsync(p => p.NumTelephone.Equals(phoneModel.NoTelEntreprise));
+            results.Add(exists);
+        }
+        return results;
+    }
+
+    private void AddTelephone()
+    {
+        phoneExistsResults.Add(false);
+        combinedFormModel.CoordonneeFormModel.PhoneList.Add(new TelephoneFormModel());
+    }
+
+    private void RemoveTelephone()
+    {
+        if (combinedFormModel.CoordonneeFormModel.PhoneList.Count > 1) {
+            phoneExistsResults.RemoveAt(phoneExistsResults.Count - 1);
+            combinedFormModel.CoordonneeFormModel.PhoneList.RemoveAt(combinedFormModel.CoordonneeFormModel.PhoneList.Count - 1);
+        }
+    }
+
+    public bool ValidatePhones()
+    {
+        bool isValid = true;
+        foreach (var component in telephoneComponents.Values) {
+            var phoneState = component.TriggerValidation();
+            if (!phoneState) {
+                isValid = false;
+            }
+        }
+        return isValid;
     }
 
     private string GetInputClass<TField> (Expression<Func<TField>> fieldExpression)
     {
-        if (!isSubmit) {
+        if (!isSubmit || isValidFormFinance) {
             return "";
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
@@ -1159,22 +1383,20 @@
 
     private string GetValidationHTML<TField> (Expression<Func<TField>> fieldExpression) 
     {
-        if (!isSubmit) {
+        if (!isSubmit || isValidFormFinance) {
             return "";
         }
         var fieldIdentifier = FieldIdentifier.Create(fieldExpression);
         var isValid = !editContext.GetValidationMessages(fieldIdentifier).Any();
-        return isValid ? "<span class=\"input-group-text text-success\" style=\"width: 200px;\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-validation\">Valide</span></span>" 
-                       : "<span class=\"input-group-text text-danger\" style=\"width: 200px;\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
+        return isValid ? "<span class=\"input-group-text text-success\"><i class=\"bi bi-check-circle me-2\"></i><span class=\"texte-validation\">Valide</span></span>" 
+                       : "<span class=\"input-group-text text-danger\"><i class=\"bi bi-x-circle me-2\"></i><span class=\"texte-validation\">" + editContext.GetValidationMessages(fieldIdentifier).FirstOrDefault() + "</span></span>";  
     }
 
     public bool TriggerValidation() 
     {
         isSubmit = true;
-        bool isValid = false;
-        isValid = editContext.Validate();
-        StateHasChanged();
-        return isValid;
+        isValidFormFinance = editContext.Validate();
+        return isValidFormFinance;
     }
 
     private void GetGroupProduitService()
@@ -1230,11 +1452,23 @@
 
     private async Task DeleteFiche()
     {
-        await historiqueService.ModifyEtat("Désactivée",selectedFournisseur.IdFournisseur, email, null, null, null);
+        var result = await protectedSessionStorage.GetAsync<string>("Email");
+        if(!result.Success)
+        {
+            var token = await cookie.GetValue("SToken");
+            if(!string.IsNullOrEmpty(token))
+            {
+                var email = tokenGenerator.GetValueFromToken(token).Split(":")[0];
+                await historiqueService.ModifyEtat("Désactivée",selectedFournisseur.IdFournisseur, email, null, null, null);//A mettre un message que l'admin peut changer
+            }
+        }
+        else
+        {
+            await historiqueService.ModifyEtat("Désactivée",selectedFournisseur.IdFournisseur, result.Value, null, null, null);//A mettre un message que l'admin peut changer
+            
+        }
         await fichierService.DeleteAllFichiersData(selectedFichiers);
-        //closestHistorique.EtatDemande = "Refusé";
-        //closestHistorique.DateEtatChanged = DateTime.UtcNow;
-        selectedFichiers.Clear();// A enlever si on peut changer les donnnes sans refresh la page
+                selectedFichiers.Clear();// A enlever si on peut changer les donnnes sans refresh la page
     }
 
     public class CustomBrowserFile : IBrowserFile
