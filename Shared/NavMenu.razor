@@ -31,22 +31,24 @@
                 </NavLink>
             </div>
         </div>
-        @* <div>
+        <div>
             <div class="nav-item px-3">
-                <button class="btn bg-bleu text-white texte-bold" style="width: 200px" @onclick="Deconnexion">Déconnexion</button>
+                <button id="btnBleu" class="btn bg-bleu text-white texte-bold" style="width: 200px" @onclick="Deconnexion"><i class="bi bi-box-arrow-left me-1"></i>Déconnexion</button>
             </div> 
-        </div>  *@
+        </div> 
     </nav>
 </div>
 
 @code {
     private bool collapseNavMenu = true;
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : "show";
+
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
     }
-    @* private async Task Deconnexion()
+
+    private async Task Deconnexion()
     {
         Usersession[] usersessions;
         string email;
@@ -93,5 +95,5 @@
         // await _context.SaveChangesAsync();
         
         NavigationManager.NavigateTo("/", true);
-    }   *@
+    }  
 }
