@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using Portail_OptiVille.Data.FormModels;
 using Portail_OptiVille.Data.Models;
+using Newtonsoft.Json;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Portail_OptiVille.Data.Services
 {

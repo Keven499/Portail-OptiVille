@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Portail_OptiVille.Data.FormModels;
 using Portail_OptiVille.Data.Models;
 
 namespace Portail_OptiVille.Data.Services
@@ -13,7 +12,8 @@ namespace Portail_OptiVille.Data.Services
             _context = context;
         }
 
-       public async Task ModifyEtat(string _etat, int _idFournisseur, string _modifiePar, string? _raisonRefus = null, string? _retirer = null, string? _ajouter = null)
+        // CETTE MÉTHODE DOIT ÊTRE APPELER À CHAQUE MODIFICATION D'ÉTAT
+        public async Task ModifyEtat(string _etat, int _idFournisseur, string _modifiePar, string? _raisonRefus = null, string? _retirer = null, string? _ajouter = null)
         {
             Console.WriteLine(_retirer);
             Console.WriteLine(_ajouter);

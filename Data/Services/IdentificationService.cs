@@ -1,16 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using Portail_OptiVille.Data.FormModels;
 using Portail_OptiVille.Data.Models;
 using System.Security.Cryptography;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Portail_OptiVille.Data.Services
 {
     public class IdentificationService
     {
         private readonly A2024420517riGr1Eq6Context _context;
-
         private HistoriqueService _historiqueService;
         public IdentificationService(A2024420517riGr1Eq6Context context, HistoriqueService historiqueService)
         {

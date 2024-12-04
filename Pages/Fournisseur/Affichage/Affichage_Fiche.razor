@@ -791,7 +791,7 @@
     private async Task SaveModifcationLicenceRBQ()
     {
 
-        await licenceRBQService.SaveLicenceRBQData(licenceRBQFormModel, email);
+        await licenceRBQService.SaveLicenceRBQData(licenceRBQFormModel, email, selectedFournisseur.IdFournisseur);
         selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
         groupedCategories = GroupCategoriesByType();
         

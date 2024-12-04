@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using Portail_OptiVille.Data.FormModels;
 using Portail_OptiVille.Data.Models;
+using Newtonsoft.Json;
 
 namespace Portail_OptiVille.Data.Services
 {
