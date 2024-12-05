@@ -58,14 +58,14 @@
 @*Demande*@
                 <div class="card-header py-2 bg-bleuFonce d-flex justify-content-between align-items-center">
                     <h3 class="text-white titre-bold m-0">Demande</h3>
-                    <button type="button" style="height: 40px; width: 200px;" class="btn bg-danger text-white texte-bold" data-bs-target="#ModalConfirmationDeleteFiche" data-bs-toggle="modal"><i class="bi bi-trash me-1"></i>Supprimer la fiche</button>
+                    <button type="button" style="height: 40px; width: 200px;" class="btn bg-danger text-white texte-bold" data-bs-target="#ModalConfirmationDeleteFiche" data-bs-toggle="modal"><i class="bi bi-trash me-1"></i>Désactiver la fiche</button>
                 </div>
 @*Bouton confirmation suppression*@
                 <div class="modal fade" id="ModalConfirmationDeleteFiche" tabindex="-1" aria-labelledby="ModalConfirmationDeleteFiche" aria-hidden="true" data-bs-backdrop="static">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
                             <div class="modal-header border-0 text-center w-100 bg-bleu">
-                                <h1 class="modal-title fs-5 mx-auto texte-bold text-white" id="ModalConfirmationDeleteFiche">Êtes-vous sûre de vouloir effacer la fiche?</h1>
+                                <h1 class="modal-title fs-5 mx-auto texte-bold text-white" id="ModalConfirmationDeleteFiche">Êtes-vous sûre de vouloir désactiver la fiche?</h1>
                             </div>
                             <div class="modal-footer border-0 d-flex justify-content-center bg-bleuPale">
                                 <button type="button" id="btnBleu" class="btn bg-bleu texte-bold text-white" data-bs-dismiss="modal" @onclick="DeleteFiche"><i class="bi bi-check-circle me-1"></i>Confirmer</button>
@@ -107,7 +107,7 @@
                             </div>
                         </div>
                     </div> 
-                    @if (FinanceInfoNull)
+                    @if (FinanceInfoNull || closestHistorique.EtatDemande == "Accepté")
                     {
                         <div class="alert alert-warning alert-dismissible fade show text-center d-flex justify-content-center align-items-center" role="alert">
                             <strong>Veuillez entrer vos informations financières! <a href="/affichage#FinanceDest">(Cliquez ici)</a></strong>
@@ -560,7 +560,7 @@
                     <div class="row">
                         <div class="col-xl-12 col-lg-12 col-sm-12 col-12">    
                             <h3 class="texte-20bold">Total: @GetFormatSize()</h3>                                            
-                            <PiecesJointes PieceJointeFormModel="pieceJointeFormModel" ActivationModification="ModifcationPieceJointesActivation" ModifcationPieceJointesActivationONState="ModifcationPieceJointesActivationONState" MaxSize="configappro.TailleMaxFichiers" ShowTitle="false"></PiecesJointes>                
+                            <PiecesJointes PieceJointeFormModel="pieceJointeFormModel" ActivationModification="ModifcationPieceJointesActivation" ModifcationPieceJointesActivationONState="ModifcationPieceJointesActivationONState" MaxSize="configappro.TailleMaxFichiers" ShowTitle="false" LimiteFile="configappro.LimiteMaxFichiers"></PiecesJointes>             
                         </div>
                     </div>
                 </div>
