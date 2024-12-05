@@ -234,7 +234,7 @@
                                             <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
                                             <div>
                                                 <input type="text" style="width: 325px;" class="form-control @ValidateClass(errorMessagesInfoGen[4]) input-bleu texte-light py-1" id="villeEntreprise" @bind="@combinedFormModel.CoordonneeFormModel.VilleEntreprise" readonly="@modificationInfo">
-@((MarkupString)errorMessagesInfoGen[4])
+                                                @((MarkupString)errorMessagesInfoGen[4])
                                             </div>
                                         </div>
                                     </div>
@@ -244,16 +244,16 @@
                                             <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
                                             <div>
                                                 <input type="text" style="width: 325px;" class="form-control @ValidateClass(errorMessagesInfoGen[5]) input-bleu texte-light py-1" id="codePostal" @bind="@combinedFormModel.CoordonneeFormModel.CodePostalEntreprise" readonly="@modificationInfo">
-@((MarkupString)errorMessagesInfoGen[5])
+                                                @((MarkupString)errorMessagesInfoGen[5])
                                         </div>
                                     </div>
-                                                                            </div>
+                                        </div>
                                     </div>
                                 </div>                    
                             @if (phoneExistsResults != null)
                             {
                                 var phoneNo = 1;
-var phoneListCount = combinedFormModel.CoordonneeFormModel.PhoneList.Count;
+                                var phoneListCount = combinedFormModel.CoordonneeFormModel.PhoneList.Count;
                                 foreach (var phoneModel in combinedFormModel.CoordonneeFormModel.PhoneList!)
                                 {
                                     bool exists = phoneExistsResults[phoneNo - 1];
@@ -852,8 +852,14 @@ Console.WriteLine(CoordonneeFormModel.RegionAdmEntreprise);
     }
     private async Task SaveModifcationLicenceRBQ()
     {
+        Task<bool> isValidTask = LicenceRBQRef.TriggerValidation();
+        bool isValid = await isValidTask;
+        if (!isValid)
+        {
+            return;
+        }
         await licenceRBQService.SaveLicenceRBQData(licenceRBQFormModel, email, selectedFournisseur.IdFournisseur);
-licencerbqs.Statut = licenceRBQFormModel.StatutLicence;
+        licencerbqs.Statut = licenceRBQFormModel.StatutLicence;
         licencerbqs.Type = licenceRBQFormModel.TypeLicence;
         licencerbqs.IdLicenceRbq = licenceRBQFormModel.NumeroLicence;
         selectedCategorieRBQ = await _context.Categorierbqs.Where(c => c.IdLicenceRbqs.Any(l => l.IdLicenceRbq == licencerbqs.IdLicenceRbq)).ToListAsync();
@@ -864,8 +870,12 @@ licencerbqs.Statut = licenceRBQFormModel.StatutLicence;
 
     private async Task SaveModifcationProduitServices()
     {
+        bool isValid = produitServiceRef.TriggerValidation();
+        if (!isValid)
+        {
+            return;
+        }
         await produitServiceService.UpdateProduitServiceData(produitServiceFormModel, selectedFournisseur.IdFournisseur, email);
-
         selectedProduitservices = allProduitService
         .Where(p => produitServiceFormModel.SousProduitSelected.ContainsKey(p.CodeUnspsc) &&
                     produitServiceFormModel.SousProduitSelected[p.CodeUnspsc])
