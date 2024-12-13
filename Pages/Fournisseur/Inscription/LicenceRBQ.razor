@@ -36,7 +36,7 @@
                 <label class="bleuFonce texte-bold" for="statut">Statut</label>
                 <select class="form-select @GetInputClass(() => LicenceRBQFormModel.StatutLicence) input-bleu texte-light" 
                     @attributes="inputAttributes" id="statut"
-                        @oninput="@(e => ButtonLogicChange(e, "StatutLicence"))"
+                    @oninput="@(e => ButtonLogicChange(e, "StatutLicence"))"
                     @bind="LicenceRBQFormModel.StatutLicence">
                     <option value="">Veuillez choisir un statut</option>
                     <option value="Valide">Valide</option>
@@ -49,7 +49,7 @@
                 <label class="bleuFonce texte-bold" for="licenceType">Type</label>
                 <select class="form-select @GetInputClass(() => LicenceRBQFormModel.TypeLicence) input-bleu texte-light" 
                     @attributes="inputAttributes" id="licenceType"
-                        @oninput="@(e => ButtonLogicChange(e, "TypeLicence"))"
+                    @oninput="@(e => ButtonLogicChange(e, "TypeLicence"))"
                     @bind="LicenceRBQFormModel.TypeLicence">
                     <option value="">Veuillez choisir un type</option>
                     <option value="Entrepreneur">Entrepreneur</option>
@@ -60,7 +60,7 @@
         </div>
         <div class="col-xl-12 col-lg-12 col-12 col-sm-12 py-2">
             <label class="texte-bold">Entrepeneur général</label>               
-            <div class="@GetInputClass(() => LicenceRBQFormModel.SousCategoSelected) overflow-auto card @((isDisabled ? "box-gris" : "box-bleu"))">
+            <div class="@GetInputClass(() => LicenceRBQFormModel.SousCategoSelected) overflow-auto card box-bleu">
             @{
                 int i = 0;
                 foreach (var categorie in categorieGeneral)
@@ -84,7 +84,7 @@
         </div>    
         <div class="col-xl-12 col-lg-12 col-12 col-sm-12 py-2">
             <label class="texte-bold">Entrepeneur spécialisé</label>
-            <div class="@GetInputClass(() => LicenceRBQFormModel.SousCategoSelected) overflow-auto card @((isDisabled ? "box-gris" : "box-bleu"))">
+            <div class="@GetInputClass(() => LicenceRBQFormModel.SousCategoSelected) overflow-auto card box-bleu">
             @foreach (var categorie in categorieSpecialise)
             {
                 <div class="row m-0">
@@ -131,7 +131,6 @@
     private List<Categorierbq> categorieSpecialise = new List<Categorierbq>();
     private Dictionary<string, object> inputAttributes;
     private bool isSubmit = false;
-    bool isDisabled = false;
     [Parameter] public bool ShowTitle { get; set; } = true;
     protected override void OnParametersSet()
     {
@@ -161,10 +160,6 @@
     }
     protected override void OnInitialized()
     {
-        isDisabled = LicenceRBQFormModel.Disabled;
-        inputAttributes = isDisabled
-            ? new Dictionary<string, object> { { "disabled", "disabled" } }
-            : new Dictionary<string, object>(); 
         editContext = new EditContext(LicenceRBQFormModel);
         editContext.OnValidationStateChanged += (sender, args) => StateHasChanged();
         validationMessageStore = new ValidationMessageStore(editContext);
