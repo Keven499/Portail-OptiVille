@@ -15,11 +15,11 @@
         @foreach (var contactModel in ContactHosterFormModel.ContactList)
         {
             <Contact ContactNumber="@contactNo" contactFormModel="contactModel" @ref="contactComponents[contactModel]" />
-            if (!(ContactHosterFormModel.ContactList.Count == contactNo)) {
-                    <div class="">
-                        <hr class="m-0 mb-2">  
-                    </div> 
-                }    
+            if (!(ContactHosterFormModel.ContactList.Count == contactNo + 1)) {
+                <div>
+                    <hr class="m-0 mb-2">  
+                </div> 
+            }    
             contactNo++;        
         }
     }
