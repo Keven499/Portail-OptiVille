@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Portail_OptiVille.Data.Attributes;
+using System.Text.RegularExpressions;
 
 namespace Portail_OptiVille.Data.FormModels
 {
@@ -28,8 +29,12 @@ namespace Portail_OptiVille.Data.FormModels
         public string ProvinceEntreprise { get; set; }
 
         [Required(ErrorMessage = "CP requis")]
-        [RegularExpression(@"^(?!.*[DFIOQU])[A-VXY][0-9][A-Z] ?[0-9][A-Z][0-9]$", ErrorMessage = "Format invalide")]
-        public string CodePostalEntreprise { get; set; }
+        [RegularExpression(@"^[A-Za-z][0-9][A-Za-z] ?[0-9][A-Za-z][0-9]$", ErrorMessage = "Format invalide")]
+        public string CodePostalEntreprise
+        {
+            get => _codePostalEntreprise;
+            set => _codePostalEntreprise = NormalizeCodePostal(value);
+        }
 
         [Required(ErrorMessage = "Région adm. requise")]
         public string? RegionAdmEntreprise { get; set; }
@@ -39,5 +44,15 @@ namespace Portail_OptiVille.Data.FormModels
         public string? SiteWebEntreprise { get; set; }
 
         public List<TelephoneFormModel>? PhoneList { get ; set; }
-    }
+
+        private string _codePostalEntreprise;
+        public string NormalizeCodePostal(string codePostal)
+        {
+            if (string.IsNullOrWhiteSpace(codePostal))
+                return codePostal;
+
+            // Enlève les espaces et met tout en majuscules
+            return Regex.Replace(codePostal.ToUpper(), @"\s+", "");
+        }
+    }    
 }
