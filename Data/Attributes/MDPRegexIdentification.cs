@@ -10,28 +10,25 @@ public class MDPRegexIdentification : ValidationAttribute
         {
             return new ValidationResult("Mot de passe requis", new[] { validationContext.MemberName });
         }
-        if (password.Length < 7 || password.Length > 12)
+        if (password.Length < 7 || password.Length > 12 
+            || !Regex.IsMatch(password, @"[A-Z]")
+            || !Regex.IsMatch(password, @"[a-z]")
+            || !Regex.IsMatch(password, @"[0-9]")
+            || !Regex.IsMatch(password, @"[!@#$%^&*(),.?""':;{}|<>]"))
         {
-            return new ValidationResult("Entre 7 à 12 caractères", new[] { validationContext.MemberName });
+            var message = @"
+                <div style=""text-align: left;"">
+                    Doit contenir : <br>
+                    - Entre 7 à 12 caractères<br>
+                    - Une majuscule<br>
+                    - Une minuscule<br>
+                    - Un chiffre<br>
+                    - Un caractère spécial
+                </div>";
+        
+            return new ValidationResult(message, new[] { validationContext.MemberName });
         }
-        if (!Regex.IsMatch(password, @"[A-Z]"))
-        {
-            return new ValidationResult("Doit contenir une majuscule", new[] { validationContext.MemberName });
-        }
-        if (!Regex.IsMatch(password, @"[a-z]"))
-        {
-            return new ValidationResult("Doit contenir une minuscule", new[] { validationContext.MemberName });
-        }
-        if (!Regex.IsMatch(password, @"[0-9]"))
-        {
-            return new ValidationResult("Doit contenir un chiffre", new[] { validationContext.MemberName });
-        }
-        if (!Regex.IsMatch(password, @"[!@#$%^&*(),.?""':;{}|<>]"))
-        {
-            return new ValidationResult("Doit contenir un caractère spécial", new[] { validationContext.MemberName });
-        }
-
         return ValidationResult.Success;
     }
-
 }
+

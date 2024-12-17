@@ -107,13 +107,20 @@
                             </div>
                         </div>
                     </div> 
-                    @if (FinanceInfoNull || closestHistorique.EtatDemande == "Accepté")
+                    @* @if (FinanceInfoNull || closestHistorique.EtatDemande == "Accepté")
                     {
                         <div class="alert alert-warning alert-dismissible fade show text-center d-flex justify-content-center align-items-center" role="alert">
                             <strong>Veuillez entrer vos informations financières! <a href="/affichage#FinanceDest">(Cliquez ici)</a></strong>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
-                    }                   
+                    }                    *@
+                    @if ((FinanceInfoNull != null && FinanceInfoNull) || (closestHistorique?.EtatDemande == "Accepté"))
+                    {
+                        <div class="alert alert-warning alert-dismissible fade show text-center d-flex justify-content-center align-items-center" role="alert">
+                            <strong>Veuillez entrer vos informations financières! <a href="/affichage#FinanceDest">(Cliquez ici)</a></strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
                 </div>
 @* Informations générales*@
                 <EditForm Model="combinedFormModel" OnValidSubmit="SaveModifcationInfo">
