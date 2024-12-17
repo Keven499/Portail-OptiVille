@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Portail_OptiVille.Data.Attributes;
+using System.Text.RegularExpressions;
 
 namespace Portail_OptiVille.Data.FormModels {
     public class ContactFormModel
@@ -27,10 +28,24 @@ namespace Portail_OptiVille.Data.FormModels {
         public string TypeTelephone { get; set; } = null!;
 
         [Required(ErrorMessage = "No requis")]
-        [RegularExpression(@"^\d{10}$", ErrorMessage = "Format invalide")]
-        public string Telephone { get; set; }
+        [RegularExpression(@"^(\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}$", ErrorMessage = "Format invalide")]
+        public string Telephone
+        {
+            get => _Telephone;
+            set => _Telephone = NormalizePhoneNumber(value);
+        }
 
         [RegularExpression(@"^\d{1,6}$", ErrorMessage = "Chiffres uniquement")]
         public string? Poste { get; set; }
+
+        private string _Telephone;
+        public string NormalizePhoneNumber(string phoneNumber)
+        {
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+                return phoneNumber;
+
+            // Enlève tout sauf les chiffres
+            return Regex.Replace(phoneNumber, @"\D", "");
+        }
     }
 }

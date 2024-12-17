@@ -143,7 +143,7 @@
                                         <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
                                             <label for="inputEmail4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">NEQ</label>
                                             <div class="flex-grow-1 d-none d-md-block ligneTxt"></div> <!-- Barre entre label et input -->
-                                            <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.NEQ" readonly="@modificationInfo">
+                                            <input type="text" style="width: 325px;" maxlength="10" class="form-control input-bleu texte-light py-1" id="inputEmail4" @bind="@combinedFormModel.IdentificationFormModel.NEQ" readonly="@modificationInfo">
                                         </div>
                                     </div>
                                     <div class="row mb-3">
@@ -151,7 +151,7 @@
                                             <label for="inputEmail4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Nom de l'entreprise</label>
                                             <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
                                             <div>
-                                                <input type="text" style="width: 325px;" 
+                                                <input type="text" maxlength="64" style="width: 325px;" 
                                                     class="form-control @ValidateClass(errorMessagesInfoGen[0]) input-bleu texte-light py-1" 
                                                     id="inputEmail4" 
                                                     @bind="@combinedFormModel.IdentificationFormModel.NomEntreprise" 
@@ -165,7 +165,7 @@
                                             <label for="inputEmail4" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Adresse courriel</label>
                                             <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
                                             <div>
-                                                <input type="text" style="width: 325px;" 
+                                                <input type="text" maxlength="64" style="width: 325px;" 
                                                     class="form-control @ValidateClass(errorMessagesInfoGen[1]) input-bleu texte-light py-1" id="inputEmail4" 
                                                     @bind="@combinedFormModel.IdentificationFormModel.CourrielEntreprise" 
                                                     readonly="@modificationInfo">
@@ -203,7 +203,7 @@
                                             <div class="col-xl-12 col-lg-12 col-12 d-md-flex flex-md-row flex-column align-items-md-center col-sm-12">
                                                 <label for="siteInternet" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Site internet</label>
                                                 <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
-                                                <input type="text" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="siteInternet" @bind="@combinedFormModel.CoordonneeFormModel.SiteWebEntreprise" readonly="@modificationInfo">                                
+                                                <input type="text" maxlength="64" style="width: 325px;" class="form-control input-bleu texte-light py-1" id="siteInternet" @bind="@combinedFormModel.CoordonneeFormModel.SiteWebEntreprise" readonly="@modificationInfo">                                
                                             </div>
                                         </div>
                                     </div>
