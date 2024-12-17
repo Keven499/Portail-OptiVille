@@ -176,16 +176,21 @@
     }
 
     private void OnSearch() {
+        if (string.IsNullOrEmpty(searchBarValue))
+        {
+            produitServiceCatego = AllProduitServices.Take(500).ToList();
+            return;
+        }
         if (!string.IsNullOrEmpty(searchBarValue) && char.IsDigit(searchBarValue[0]) && selectedCategorie != null)
         {
             if (!selectedCategorie.Equals("Toutes les catégories")) {
                 produitServiceCatego = produitServiceCatego
-                    .Where(c => c.CodeUnspsc != null && c.CodeUnspsc.Contains(searchBarValue))
+                    .Where(c => c.CodeUnspsc != null && c.CodeUnspsc.Contains(searchBarValue, StringComparison.OrdinalIgnoreCase))
                     .ToList();
             }   
             else {
                 produitServiceCatego = AllProduitServices
-                    .Where(c => c.CodeUnspsc != null && c.CodeUnspsc.Contains(searchBarValue))
+                    .Where(c => c.CodeUnspsc != null && c.CodeUnspsc.Contains(searchBarValue, StringComparison.OrdinalIgnoreCase))
                     .ToList();
             }
         }
@@ -193,12 +198,12 @@
             if (!string.IsNullOrEmpty(searchBarValue) && selectedCategorie != null) {
                 if (!selectedCategorie.Equals("Toutes les catégories")) {
                     produitServiceCatego = produitServiceCatego
-                        .Where(c => c.Description != null && c.Description.Contains(searchBarValue))
+                        .Where(c => c.Description != null && c.Description.Contains(searchBarValue, StringComparison.OrdinalIgnoreCase))
                         .ToList();
                 }
                 else {
                     produitServiceCatego = AllProduitServices
-                        .Where(c => c.Description != null && c.Description.Contains(searchBarValue))
+                        .Where(c => c.Description != null && c.Description.Contains(searchBarValue, StringComparison.OrdinalIgnoreCase))
                         .ToList();
                 }
             }
