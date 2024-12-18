@@ -1,7 +1,7 @@
 # Portail-OptiVille
 Un portail pour les fournisseurs ainsi que les employés. Le but étant de créer un service centralisé.
 
-Avant de pouvoir utiliser le proje il faut modifier le fichier appsettings.json
+Avant de pouvoir utiliser le projet, il faut modifier le fichier appsettings.json
 - Là où c'est écrit: "DefaultConnection", c'est la String de connexion à la BD. La changer avant l'utilisation.
 - La section "DefaultMail" doit être changé également
 - "MailAddress" -> Il faut mettre l'adresse ou l'alias que le destinataire des courriel va voir.
