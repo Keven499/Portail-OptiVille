@@ -242,7 +242,7 @@
                                             <label for="villeEntreprise" class="bleuFonce texte-bold mb-0 mb-md-0 me-md-3">Ville</label>
                                             <div class="flex-grow-1 d-none d-md-block ligneTxt"></div>
                                             <div>
-                                                <select style="width: 325px;" class="form-select @ValidateClass(errorMessagesInfoGen[4]) input-vert texte-light py-1" id="villeEntreprise" @bind="@combinedFormModel.CoordonneeFormModel.VilleEntreprise" readonly="@modificationInfo">
+                                                <select style="width: 325px;" class="form-select @ValidateClass(errorMessagesInfoGen[4]) input-bleu texte-light py-1" id="villeEntreprise" @bind="@combinedFormModel.CoordonneeFormModel.VilleEntreprise" readonly="@modificationInfo">
                                                 @foreach (var city in cities)
                                                 {
                                                     <option value="@city">@city</option>
